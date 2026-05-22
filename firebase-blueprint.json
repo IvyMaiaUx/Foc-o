@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Tutor profile data and subscription status",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "subscriptionTier": { "type": "string", "enum": ["trial", "premium", "free"] },
+        "trialEndsAt": { "type": "number" },
+        "onboardingComplete": { "type": "boolean" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["email", "subscriptionTier", "createdAt", "updatedAt"]
+    },
+    "Dog": {
+      "title": "Dog",
+      "description": "The pet profile under the tutor",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "breed": { "type": "string" },
+        "ageMonths": { "type": "number" },
+        "weightKg": { "type": "number" },
+        "energyLevel": { "type": "string", "enum": ["low", "medium", "high"] },
+        "behaviorIssues": { "type": "array", "items": { "type": "string" } },
+        "trainingBase": { "type": "string" },
+        "goals": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["name", "breed", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Users (Tutors)"
+    },
+    "users/{userId}/dogs/{dogId}": {
+      "schema": { "$ref": "#/entities/Dog" },
+      "description": "Dogs associated with the User"
+    }
+  }
+}

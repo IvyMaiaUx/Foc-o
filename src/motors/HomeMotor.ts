@@ -1,0 +1,192 @@
+import { DogProfile, CurrentPlan, UserProfile, hasPremiumAccess } from '../types';
+import { EvolutionSummary } from '../repositories/EvolutionRepository';
+import { CheckinData } from '../repositories/CheckinRepository';
+import { VaccineData } from '../repositories/VaccineRepository';
+import { NutritionMotor } from './NutritionMotor';
+import { TRAINING_TEMPLATES } from '../lib/trainingTemplates';
+
+
+export interface HomeState {
+  hasCompletedTrainingToday: boolean;
+  hasCheckedInToday: boolean;
+  upcomingVaccine: VaccineData | null;
+  nutritionIsPending: boolean;
+  isNewUser: boolean;
+  
+  heroTitle: string;
+  heroSubtitle: string;
+  heroCta: string;
+  
+  priorityAction: 'training' | 'checkin' | 'nutrition' | 'vaccine' | 'all_done';
+  priorityAlert: string | null;
+
+  isTrialActive: boolean;
+  trialDaysLeft: number;
+  isPremiumLocked: boolean;
+
+  mainInsight: string;
+  emotionalMessage: string;
+  primaryCTA: string;
+  secondaryCTA: string;
+}
+
+export class HomeMotor {
+  static calculateState(
+    userProfile: UserProfile | null,
+    dogProfile: DogProfile | null,
+    currentPlan: CurrentPlan | null,
+    evolution: EvolutionSummary | null,
+    trainingLogs: any[],
+    checkinToday: CheckinData | null,
+    vaccines: VaccineData[]
+  ): HomeState {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const hasCheckedInToday = !!checkinToday;
+    
+    // Check if training completed today (and not failed)
+    const logsToday = trainingLogs.filter(log => log.completedAt >= todayStart.getTime());
+    const hasCompletedTrainingToday = logsToday.some(log => log.feedback !== 'failed');
+    
+    // Check trial
+    const isTrialActive = userProfile?.subscription?.status === 'trialing'
+      || userProfile?.subscriptionTier === 'trial';
+    const rawTrialEnd = userProfile?.subscription?.trialEndsAt ?? userProfile?.trialEndsAt ?? 0;
+    const trialDaysLeft = isTrialActive && rawTrialEnd
+      ? Math.ceil((rawTrialEnd - Date.now()) / (1000 * 60 * 60 * 24))
+      : 0;
+    
+    // Check for upcoming vaccines (next 30 days)
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(todayStart.getDate() + 30);
+    
+    let upcomingVaccine: VaccineData | null = null;
+    for (const v of vaccines) {
+      if (v.nextDose) {
+        const nextDate = new Date(v.nextDose);
+        const [y, m, d] = v.nextDose.split('-');
+        if (y) {
+           const parsedNextDate = new Date(Number(y), Number(m) - 1, Number(d));
+           if (parsedNextDate >= todayStart && parsedNextDate <= thirtyDaysFromNow) {
+             upcomingVaccine = v;
+             break;
+           }
+        }
+      }
+    }
+
+    // Check nutrition
+    const nutritionIsPending = !dogProfile?.foodBrand;
+
+    // Check if new user
+    const totalSessions = evolution?.totalSessions || 0;
+    const isNewUser = totalSessions === 0 && trainingLogs.length === 0;
+
+    let priorityAction: 'training' | 'checkin' | 'nutrition' | 'vaccine' | 'all_done' = 'all_done';
+    let priorityAlert: string | null = null;
+    let isPremiumLocked = !hasPremiumAccess(userProfile);
+
+    if (isPremiumLocked) {
+       priorityAlert = 'Seu período premium ou de teste expirou. Escolha um plano para liberar os próximos treinos.';
+    } else if (isTrialActive && trialDaysLeft <= 3) {
+       priorityAlert = `Aproveite! Seu período de teste acaba em ${trialDaysLeft} ${trialDaysLeft === 1 ? 'dia' : 'dias'}.`;
+    }
+
+    if (!hasCompletedTrainingToday) {
+       priorityAction = 'training';
+    } else if (!hasCheckedInToday) {
+       priorityAction = 'checkin';
+       if (!priorityAlert) {
+         priorityAlert = 'Treino do dia concluído! Registre o check-in para analisarmos o comportamento.';
+       }
+    } else if (upcomingVaccine) {
+       priorityAction = 'vaccine';
+       if (!priorityAlert) {
+         priorityAlert = `Lembrete: Vacina "${upcomingVaccine.name}" agendada para os próximos dias.`;
+       }
+    } else if (nutritionIsPending) {
+       priorityAction = 'nutrition';
+       if (!priorityAlert) {
+         priorityAlert = 'Aproveite para cadastrar a ração real do seu cão para ajustar a porção diária ideal.';
+       }
+    } else {
+       priorityAction = 'all_done';
+    }
+
+    const activeTask = currentPlan?.tasks[currentPlan?.currentTaskIndex || 0];
+    const objectiveText = activeTask?.title ? `focar em ${activeTask.title.toLowerCase()}` : 'manter a rotina';
+    
+    let heroTitle = activeTask?.title || 'Plano Concluído';
+    let heroSubtitle = TRAINING_TEMPLATES[activeTask?.id || '']?.objective || 'Sem pendências.';
+    let heroCta = 'Começar agora';
+    
+    let mainInsight = '';
+    let emotionalMessage = '';
+    let primaryCTA = 'Começar treino';
+    let secondaryCTA = 'Registrar check-in';
+
+    if (isPremiumLocked) {
+       heroCta = 'Assinar Premium';
+       mainInsight = 'Sua jornada no Focão está pausada. Desbloqueie o acesso para continuar acompanhando a evolução inteligente do seu cão.';
+       emotionalMessage = 'Acompanhar a rotina dele é o primeiro passo para o comportamento ideal.';
+       primaryCTA = 'Ver Planos';
+       secondaryCTA = 'Continuar Free';
+    } else if (isNewUser) {
+       heroTitle = 'Primeiro passo do plano';
+       heroSubtitle = 'Ative sua primeira sessão de treinamento.';
+       mainInsight = `A jornada do ${dogProfile?.name || 'seu cão'} começa pelos primeiros registros. Comece pelo treino de hoje ou registre o primeiro check-in.`;
+       emotionalMessage = 'Cada pequeno registro hoje molda as recomendações de amanhã.';
+       primaryCTA = 'Começar treino';
+       secondaryCTA = 'Fazer check-in';
+    } else if (hasCompletedTrainingToday) {
+       heroTitle = 'Sessão concluída';
+       heroSubtitle = 'Hoje vocês deram mais um passo. Amanhã seguimos com a próxima etapa.';
+       heroCta = 'Ver evolução';
+       if (!hasCheckedInToday) {
+         mainInsight = `O treino do ${dogProfile?.name || 'seu cão'} já foi feito hoje. Como está o comportamento dele agora?`;
+         emotionalMessage = 'Entender o reflexo do treino na rotina é o que cria a verdadeira consistência.';
+         primaryCTA = 'Fazer check-in';
+         secondaryCTA = 'Ver evolução';
+       } else {
+         mainInsight = `Dia completo! Vocês treinaram e acompanharam a rotina do ${dogProfile?.name || 'seu cão'} com sucesso.`;
+         emotionalMessage = 'Dia após dia, o comportamento que você espera toma forma.';
+         primaryCTA = 'Ver relatório';
+         secondaryCTA = 'Explorar dicas';
+       }
+    } else {
+       if (!activeTask) {
+          heroSubtitle = 'Aguarde a geração do seu próximo plano de treinos.';
+          mainInsight = 'Vocês concluíram a etapa programada. Estamos preparando a continuidade.';
+          emotionalMessage = 'A pausa também faz parte do aprendizado.';
+          primaryCTA = 'Ver histórico';
+          secondaryCTA = 'Revisar nutrição';
+       } else {
+          mainInsight = `Hoje o objetivo do ${dogProfile?.name || 'seu cão'} é ${objectiveText}.`;
+          emotionalMessage = 'Consistência é mais importante do que intensidade. Alguns minutos hoje já fazem a diferença.';
+          primaryCTA = 'Começar treino';
+          secondaryCTA = 'Fazer check-in';
+       }
+    }
+
+    return {
+      hasCompletedTrainingToday,
+      hasCheckedInToday,
+      upcomingVaccine,
+      nutritionIsPending,
+      isNewUser,
+      heroTitle,
+      heroSubtitle,
+      heroCta,
+      priorityAction,
+      priorityAlert,
+      isTrialActive,
+      trialDaysLeft,
+      isPremiumLocked,
+      mainInsight,
+      emotionalMessage,
+      primaryCTA,
+      secondaryCTA
+    };
+  }
+}

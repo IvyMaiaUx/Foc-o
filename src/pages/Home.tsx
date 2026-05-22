@@ -1,0 +1,508 @@
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { auth, db } from '@/src/lib/firebase';
+import { useNavigate } from 'react-router-dom';
+import { Play, CheckCircle2, Flame, Utensils, Bell, FileText, ChevronRight, Sparkles, Activity, X, Lock, Calendar, Syringe } from 'lucide-react';
+import { DogRepository } from '@/src/repositories/DogRepository';
+import { UserRepository } from '@/src/repositories/UserRepository';
+import { TrainingRepository } from '@/src/repositories/TrainingRepository';
+import { EvolutionRepository } from '@/src/repositories/EvolutionRepository';
+import { DogProfile, CurrentPlan, TrainingTask, UserProfile } from '@/src/types';
+import { EvolutionSummary } from '@/src/repositories/EvolutionRepository';
+import { CheckinRepository } from '@/src/repositories/CheckinRepository';
+import { NutritionMotor } from '@/src/motors/NutritionMotor';
+import { TRAINING_TEMPLATES } from '@/src/lib/trainingTemplates';
+import { HomeMotor, HomeState } from '@/src/motors/HomeMotor';
+import { VaccineRepository } from '@/src/repositories/VaccineRepository';
+import { CheckinInsightsMotor, CheckinInsights } from '@/src/motors/CheckinInsightsMotor';
+import { NotificationRepository } from '@/src/repositories/NotificationRepository';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { useAuth } from '@/src/contexts/AuthContext';
+
+export function Home() {
+  const navigate = useNavigate();
+  const { isPremium } = useAuth();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userName, setUserName] = useState<string>('Tutor');
+  const [dogProfile, setDogProfile] = useState<DogProfile | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<CurrentPlan | null>(null);
+  const [evolution, setEvolution] = useState<EvolutionSummary | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [homeState, setHomeState] = useState<HomeState | null>(null);
+
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [checkinInsights, setCheckinInsights] = useState<CheckinInsights | null>(null);
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const profile = await UserRepository.getUserProfile(user.uid);
+        if (profile) {
+          if (profile.onboardingComplete === false) {
+             navigate('/onboarding/dog-data');
+             return;
+          }
+          setUserProfile(profile);
+          setUserName(profile.name || 'Tutor');
+        }
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        const [dog, plan, evol, todayCheckin, logs, vaccines, recentCheckins, activeNotifs] = await Promise.all([
+          DogRepository.getDogProfile(user.uid),
+          TrainingRepository.getCurrentPlan(user.uid),
+          EvolutionRepository.getSummary(user.uid),
+          CheckinRepository.getCheckin(user.uid, todayStr),
+          TrainingRepository.getTrainingLogs(user.uid),
+          VaccineRepository.getVaccines(user.uid),
+          CheckinRepository.getRecentCheckins(user.uid, 7),
+          NotificationRepository.getActiveNotifications(user.uid)
+        ]);
+        
+        setDogProfile(dog);
+        setCurrentPlan(plan);
+        setEvolution(evol);
+        
+        const state = HomeMotor.calculateState(profile, dog, plan, evol, logs, todayCheckin, vaccines);
+        setHomeState(state);
+
+        const insights = CheckinInsightsMotor.analyze(recentCheckins, logs);
+        setCheckinInsights(insights);
+
+        const mappedNotifs = activeNotifs.map(n => ({
+          id: n.id,
+          title: n.title,
+          message: n.body,
+          time: formatDistanceToNow(n.createdAt, { locale: ptBR, addSuffix: true }),
+          isNew: true,
+          type: n.title.toLowerCase().includes('vacina') ? 'vaccine'
+              : n.title.toLowerCase().includes('relatório') ? 'report'
+              : 'system',
+          link: n.link
+        }));
+        setNotifications(mappedNotifs);
+
+      } catch (err) {
+        console.error("Erro ao carregar dados", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 bg-[#FAFAFA] flex items-center justify-center">
+        <div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" />
+      </div>
+    );
+  }
+
+  const activeTask = currentPlan?.tasks[currentPlan?.currentTaskIndex || 0];
+  const dogName = dogProfile?.name || 'Seu cão';
+  const streak = evolution?.streak || 0;
+  // Calculate nutrition info
+  const nutritionDaily = NutritionMotor.calculateFood(dogProfile).daily;
+
+  const showReportReady = (homeState?.hasCompletedTrainingToday || false) && (evolution?.totalSessions ?? 0) >= 7;
+
+  return (
+    <div className="flex-1 bg-[#F9F9F8] font-sans pb-24 overflow-x-hidden selection:bg-[#055A43]/20">
+      <main className="flex flex-col gap-8 pt-10 px-6 max-w-lg mx-auto w-full">
+        
+        {/* Header - Minimal & Elegant */}
+        <motion.header 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex justify-between items-center"
+        >
+          <div className="flex flex-col">
+            <p className="text-[13px] font-medium text-[#5C615D]/80 mb-1 uppercase tracking-widest pl-1">
+              Olá, {userName?.split(' ')[0] || 'Tutor'}
+            </p>
+            <h1 className="font-serif text-[36px] text-[#055A43] tracking-tighter leading-none">
+              Resumo <br />
+              <span className="italic font-light text-[#506352]">de hoje</span>
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={toggleNotifications}
+              className="w-10 h-10 rounded-full bg-white border border-[#055A43]/10 shadow-[0_4px_10px_rgba(5,90,67,0.05)] flex items-center justify-center text-[#5C615D] hover:text-[#055A43] hover:border-[#055A43]/30 transition-all cursor-pointer relative"
+              aria-label="Notificações"
+            >
+              {notifications.some(n => n.isNew) && (
+                <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-orange-400 rounded-full border border-white" />
+              )}
+              <Bell className="w-[18px] h-[18px]" strokeWidth={2.5} />
+            </button>
+            <button onClick={() => navigate('/perfil')} className="relative active:scale-95 transition-transform text-left">
+              <div className="w-[68px] h-[68px] rounded-full overflow-hidden border-2 border-white shadow-[0_8px_20px_rgb(5,90,67,0.1)] bg-white/50 backdrop-blur-md">
+                {dogProfile?.photoUrl ? (
+                  <img 
+                    src={dogProfile.photoUrl} 
+                    alt="Avatar do cão" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-[#055A43] flex items-center justify-center">
+                    <span className="font-serif text-white text-3xl opacity-90">
+                      {dogProfile?.name?.charAt(0).toUpperCase() || 'C'}
+                    </span>
+                  </div>
+                )}
+              </div>
+              {streak > 0 && (
+                <div className="absolute -bottom-2 -left-2 bg-gradient-to-r from-orange-400 to-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-[#F9F9F8] shadow-sm flex items-center gap-1">
+                  <Flame className="w-3 h-3" />
+                  {streak}
+                </div>
+              )}
+            </button>
+          </div>
+        </motion.header>
+
+        {/* Priority Alert banner if any */}
+        <AnimatePresence>
+          {homeState?.priorityAlert && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, height: 'auto', marginBottom: -16 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+              className="bg-orange-50 border border-orange-200 rounded-2xl p-4 overflow-hidden -mt-2"
+            >
+              <div className="flex gap-3 items-center">
+                <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                  <Flame className="w-4 h-4 text-orange-600" />
+                </div>
+                <p className="text-sm font-medium text-orange-800 leading-snug">{homeState.priorityAlert}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Resumo Inteligente */}
+        <motion.section
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.05 }}
+          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.03)]"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-4 h-4 text-[#055A43]" />
+            <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#055A43]">Leitura de Hoje</h3>
+          </div>
+          <p className="font-serif text-2xl text-gray-900 leading-snug mb-3">
+            {homeState?.mainInsight}
+          </p>
+          <p className="text-[14px] text-[#5C615D] leading-relaxed">
+            {homeState?.emotionalMessage}
+          </p>
+        </motion.section>
+
+        {/* Dynamic Notification (Report) */}
+        <AnimatePresence>
+          {showReportReady && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5, type: 'spring', bounce: 0.4 }}
+              className="bg-white rounded-[2rem] p-4 flex items-center justify-between border border-[#055A43]/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer hover:border-[#055A43]/30 transition-colors"
+              onClick={() => navigate('/relatorio')}
+            >
+              <div className="flex items-center gap-4 pl-2">
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute inset-0 bg-[#055A43]/20 rounded-full blur animate-pulse" />
+                  <div className="relative w-12 h-12 bg-[#055A43] rounded-full flex items-center justify-center text-white shadow-inner">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-[15px] font-bold text-[#055A43] mb-0.5 flex items-center gap-2">
+                    Relatório da Semana <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
+                  </h4>
+                  <p className="text-[12px] text-[#5C615D] font-medium">Sua análise semanal está pronta.</p>
+                </div>
+              </div>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-[#055A43]/50">
+                <ChevronRight className="w-5 h-5" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Daily Training Card - Hero */}
+        {(activeTask || homeState?.hasCompletedTrainingToday) ? (
+          <motion.section 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className={`relative rounded-[2.5rem] p-7 overflow-hidden shadow-[0_20px_40px_-15px_rgb(5,90,67,0.5)] cursor-pointer group bg-[#055A43]`}
+            onClick={() => {
+               if (homeState?.isPremiumLocked) {
+                 navigate('/plano-assinatura');
+                 return;
+               }
+               homeState?.hasCompletedTrainingToday ? navigate('/evolucao') : navigate('/treino')
+            }}
+          >
+            {/* Ambient Background Glows */}
+            <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 transition-transform duration-700 group-hover:scale-110 bg-emerald-400/20`} />
+            <div className={`absolute bottom-0 left-0 w-48 h-48 rounded-full blur-2xl translate-y-1/4 -translate-x-1/4 bg-teal-600/30`} />
+            
+            <div className="relative z-10 flex flex-col text-white h-[260px]">
+              <div className="flex justify-between items-center mb-auto pt-1">
+                <span className={`text-[10px] font-bold tracking-[0.15em] uppercase border px-4 py-1.5 rounded-full backdrop-blur-md text-emerald-100/90 border-emerald-100/20 bg-black/10`}>
+                  {homeState?.hasCompletedTrainingToday ? 'Concluído' : 'Treino do Dia'}
+                </span>
+                {!homeState?.hasCompletedTrainingToday && activeTask && (
+                  <span className="text-emerald-100/90 text-[12px] font-semibold bg-black/10 px-3 py-1 rounded-full backdrop-blur-md">
+                    {activeTask.duration}
+                  </span>
+                )}
+                {homeState?.hasCompletedTrainingToday && (
+                  <CheckCircle2 className="w-5 h-5 text-white/50" />
+                )}
+              </div>
+              
+              <div className="mt-auto mb-6">
+                <h3 className="font-serif text-[34px] tracking-tight leading-[1.05] mb-4 text-white drop-shadow-sm">
+                  {homeState?.heroTitle}
+                </h3>
+                <p className={`text-emerald-50/80 text-[16px] font-light leading-snug line-clamp-2 max-w-[90%]`}>
+                  {homeState?.heroSubtitle}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className={`w-[3.5rem] h-[3.5rem] rounded-full bg-white text-[#055A43] flex items-center justify-center shadow-[0_8px_20px_rgb(0,0,0,0.15)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_12px_25px_rgb(0,0,0,0.2)]`}>
+                  {homeState?.isPremiumLocked ? <Lock className="w-5 h-5 ml-0" /> : (homeState?.hasCompletedTrainingToday ? <Activity className="w-5 h-5 ml-0" /> : <Play className="w-5 h-5 ml-1" fill="currentColor" />)}
+                </div>
+                <span className="text-sm font-semibold tracking-wide text-white drop-shadow-sm">{homeState?.heroCta}</span>
+              </div>
+            </div>
+          </motion.section>
+        ) : (
+          <motion.section 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="flex flex-col items-center justify-center bg-white border border-[#055A43]/10 rounded-[2.5rem] p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.03)]"
+          >
+            <div className="w-16 h-16 bg-[#055A43]/5 text-[#055A43] rounded-full flex items-center justify-center mb-6">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+            <h3 className="font-serif text-2xl text-[#055A43] mb-3">Tudo concluído!</h3>
+            <p className="text-[#5C615D] text-[15px] leading-relaxed max-w-[240px]">Aguarde a geração do seu próximo plano de treinos pelo sistema.</p>
+          </motion.section>
+        )}
+
+        {/* Bento Grid Actions */}
+        <motion.section 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="grid grid-cols-2 gap-4"
+        >
+          {/* Check-in */}
+          <button 
+            onClick={() => navigate('/checkin')}
+            className={`group relative overflow-hidden flex flex-col p-6 rounded-[2rem] border shadow-[0_8px_20px_rgb(0,0,0,0.02)] items-start text-left gap-5 transition-all duration-300 hover:-translate-y-1 ${homeState?.hasCheckedInToday ? 'bg-[#055A43]/[0.02] border-[#055A43]/20 hover:border-[#055A43]/40' : (homeState?.priorityAction === 'checkin' ? 'bg-[#055A43]/10 border-[#055A43]/30' : 'bg-white border-[#055A43]/10 hover:border-[#055A43]/30')}`}
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <CheckCircle2 className="w-16 h-16 text-[#055A43] -mr-4 -mt-4" />
+            </div>
+            <div className={`relative w-12 h-12 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${homeState?.hasCheckedInToday ? 'bg-[#055A43] text-white' : 'bg-[#055A43]/5 text-[#055A43]'}`}>
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <div className="relative">
+              <p className="font-bold text-gray-900 text-[16px] mb-1">Check-in</p>
+              <p className={`text-[13px] font-medium leading-tight ${homeState?.hasCheckedInToday ? 'text-[#055A43]' : 'text-[#5C615D]'}`}>
+                {homeState?.hasCheckedInToday ? "Registrado hoje" : "Pendente hoje"}
+              </p>
+            </div>
+          </button>
+
+          {/* Nutrição */}
+          <button 
+            onClick={() => navigate('/nutricao')}
+            className={`group relative overflow-hidden flex flex-col p-6 rounded-[2rem] border shadow-[0_8px_20px_rgb(0,0,0,0.02)] items-start text-left gap-5 hover:-translate-y-1 transition-all duration-300 ${homeState?.nutritionIsPending && homeState?.priorityAction === 'nutrition' ? 'bg-[#506352]/10 border-[#506352]/30' : 'bg-white border-[#055A43]/10 hover:border-[#506352]/30'}`}
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Utensils className="w-16 h-16 text-[#506352] -mr-4 -mt-4" />
+            </div>
+            <div className="relative w-12 h-12 rounded-full bg-[#506352]/5 text-[#506352] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Utensils className="w-6 h-6" />
+            </div>
+            <div className="relative">
+              <p className="font-bold text-gray-900 text-[16px] mb-1">Alimentação</p>
+              {homeState?.nutritionIsPending ? (
+                <p className="text-[13px] text-orange-600 font-medium leading-tight">Configuração<br />pendente</p>
+              ) : (
+                <p className="text-[13px] text-[#5C615D] font-medium leading-tight">Sugestão <br />consciente</p>
+              )}
+            </div>
+          </button>
+
+        </motion.section>
+
+        {/* Agenda Mini Card */}
+        <motion.section 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_20px_rgb(0,0,0,0.02)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
+          onClick={() => navigate('/agenda')}
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 group-hover:text-[#055A43] group-hover:bg-[#055A43]/5 transition-colors">
+              <Calendar className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-[15px] font-bold text-gray-900 mb-0.5">Agenda do Cão</h4>
+              <p className="text-[13px] font-medium text-[#5C615D]">Ver próximos treinos</p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#055A43] transition-colors" />
+        </motion.section>
+
+        {/* Evolução Mini Card */}
+        <motion.section 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_20px_rgb(0,0,0,0.02)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
+          onClick={() => navigate('/evolucao')}
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 group-hover:text-[#055A43] group-hover:bg-[#055A43]/5 transition-colors">
+              <Activity className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-[15px] font-bold text-gray-900 mb-0.5">Evolução Geral</h4>
+              <p className="text-[13px] font-medium text-[#5C615D]">{evolution?.totalSessions || 0} treinos concluídos</p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#055A43] transition-colors" />
+        </motion.section>
+
+        {/* Checkin Insights */}
+        {checkinInsights?.hasEnoughData && isPremium && (
+          <motion.section 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_20px_rgb(0,0,0,0.02)]"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#055A43]/5 rounded-full flex items-center justify-center shrink-0">
+                <Sparkles className="w-6 h-6 text-[#055A43]" />
+              </div>
+              <div>
+                <h4 className="text-[15px] font-bold text-gray-900 mb-1">Padrão observado</h4>
+                <p className="text-[13px] text-[#5C615D] leading-relaxed">{checkinInsights.insightText}</p>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+      </main>
+
+      {/* Notifications Panel */}
+      <AnimatePresence>
+        {showNotifications && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={toggleNotifications}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#F9F9F8] rounded-t-[2rem] z-[70] shadow-2xl max-h-[80vh] flex flex-col"
+            >
+              <div className="flex items-center justify-between p-6 pb-2">
+                <h2 className="font-serif text-[24px] text-[#055A43]">Notificações</h2>
+                <button 
+                  onClick={toggleNotifications}
+                  className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-[#5C615D] hover:bg-black/10 active:scale-95 transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto flex-1 pb-safe pt-2">
+                {notifications.length === 0 ? (
+                  <div className="text-center py-10 text-[#5C615D]/60 flex flex-col items-center">
+                    <Bell className="w-12 h-12 mb-3 text-[#055A43]/20" />
+                    <p>Nenhuma notificação no momento.</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    {notifications.map(n => (
+                      <button 
+                        key={n.id}
+                        onClick={async () => {
+                          if (auth.currentUser) {
+                            await NotificationRepository.markAsRead(n.id, auth.currentUser.uid);
+                            // Optimistically update local state to remove the blue dot
+                            setNotifications(prev => prev.map(notif => notif.id === n.id ? { ...notif, isNew: false } : notif));
+                          }
+                          if (n.link) navigate(n.link);
+                          else if (n.type === 'report') navigate('/relatorio');
+                          else if (n.type === 'vaccine') navigate('/vacinas');
+                          toggleNotifications();
+                        }}
+                        className={`text-left p-4 rounded-2xl border transition-colors ${
+                          n.isNew ? 'bg-white border-[#055A43]/10 shadow-sm' : 'bg-transparent border-transparent hover:bg-black/5'
+                        }`}
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center ${
+                            n.type === 'report' ? 'bg-[#055A43]/10 text-[#055A43]' :
+                            n.type === 'vaccine' ? 'bg-orange-50 text-orange-500' :
+                            'bg-[#E5F2ED] text-[#506352]'
+                          }`}>
+                            {n.type === 'report' ? <FileText className="w-5 h-5" /> :
+                             n.type === 'vaccine' ? <Syringe className="w-5 h-5" /> :
+                             <Sparkles className="w-5 h-5" />}
+                          </div>
+                          <div>
+                            <div className="flex justify-between items-start mb-1">
+                              <h4 className={`font-bold text-[14px] ${n.isNew ? 'text-gray-900' : 'text-[#506352]'}`}>{n.title}</h4>
+                              {n.isNew && <span className="w-2 h-2 rounded-full bg-orange-400 mt-1.5 shrink-0" />}
+                            </div>
+                            <p className="text-[13px] text-[#5C615D] mb-2 leading-relaxed">{n.message}</p>
+                            <span className="text-[10px] uppercase tracking-widest text-[#5C615D]/60 font-medium">{n.time}</span>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+

@@ -1,0 +1,194 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { doc, writeBatch } from "firebase/firestore";
+import { auth, db } from "@/src/lib/firebase";
+import { motion } from "motion/react";
+import { DogRepository } from "@/src/repositories/DogRepository";
+import { UserRepository } from "@/src/repositories/UserRepository";
+import { TrainingRepository } from "@/src/repositories/TrainingRepository";
+import { EvolutionRepository } from "@/src/repositories/EvolutionRepository";
+import { AdaptivePlanMotor } from "@/src/motors/AdaptivePlanMotor";
+import { DogProfile } from "@/src/types";
+
+export function Analyzing() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const stateData = location.state || {};
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const saveAndRedirect = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          navigate("/login");
+          return;
+        }
+
+        // Simulate analysis delay
+        for (let i = 0; i <= 100; i += 20) {
+          setProgress(i);
+          await new Promise((r) => setTimeout(r, 600));
+        }
+
+        const {
+          dogData,
+          routine,
+          walksPerDay,
+          livesWithPeople,
+          livesWithAnimals,
+          animalRelationship,
+          health,
+          energyLevel,
+          personalityTraits,
+          rewardPreference,
+          behaviors,
+          base,
+          goals,
+          knownCommands,
+        } = stateData;
+
+        // 1. Build Dog Profile Object
+        const fullDogProfile: Partial<DogProfile> = {
+          name: dogData?.name || "Cão",
+          breed: dogData?.breed || "SRD",
+          photoUrl: dogData?.photoUrl || "",
+          age: dogData?.age || "0",
+          weight: dogData?.weight || "0",
+          routine: routine ? [routine] : [],
+          walksPerDay: walksPerDay || "",
+          livesWithPeople,
+          livesWithAnimals,
+          animalRelationship,
+          energyLevel: energyLevel || "medium",
+          personalityTraits: personalityTraits || [],
+          rewardPreference: rewardPreference || "",
+          behaviorIssues: behaviors || [],
+          trainingBase: base || "beginner",
+          knownCommands: knownCommands || [],
+          goals: goals || [],
+          diet: health?.diet || "",
+          foodBrand: health?.foodBrand || "",
+          mealsPerDay: health?.mealsPerDay || "",
+          lastVaccine: health?.lastVaccine || "",
+          nextCheckup: health?.nextCheckup || "",
+          observations: health?.observations || "",
+        };
+
+        // Execute everything in a single atomic batch
+        const batch = writeBatch(db);
+        const now = Date.now();
+
+        // 1. Save Dog Profile
+        const dogRef = doc(db, "users", user.uid, "dog", "profile");
+        const finalDogProfile = {
+          ...fullDogProfile,
+          createdAt: now,
+          updatedAt: now,
+        };
+        batch.set(dogRef, finalDogProfile);
+
+        // 2. Generate Plan
+        // Use the generated dog profile directly to avoid an extra read
+        const generatedPlan = AdaptivePlanMotor.generatePlan({
+          id: "profile",
+          ...finalDogProfile,
+        } as DogProfile);
+        const planRef = doc(db, "users", user.uid, "plan", "current");
+        batch.set(planRef, generatedPlan);
+
+        // 3. Initialize Evolution
+        const evolutionRef = doc(db, "users", user.uid, "evolution", "summary");
+        batch.set(evolutionRef, {
+          streak: 0,
+          totalSessions: 0,
+          activeDays: 0,
+          averageBehaviorScore: 0,
+          lastTrainedAt: null,
+          lastCheckinAt: null,
+        });
+
+        // 4. Mark Onboarding Complete
+        const userRef = doc(db, "users", user.uid);
+        batch.update(userRef, {
+          onboardingComplete: true,
+          updatedAt: now,
+        });
+
+        // Commit transaction
+        try {
+          await batch.commit();
+        } catch (e: any) {
+          throw new Error("Transaction error: " + e.message);
+        }
+
+        navigate("/"); // Go to Home
+      } catch (error: any) {
+        console.error("Error saving onboarding data:", error?.message);
+        alert(`Erro de permissão ou conexão: ${error?.message}`);
+        navigate("/");
+      }
+    };
+
+    saveAndRedirect();
+  }, [navigate, stateData]);
+
+  return (
+    <div className="min-h-screen bg-[#055A43] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
+      <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/4" />
+
+      <div className="z-10 flex flex-col items-center max-w-sm text-center">
+        {stateData?.dogData?.photoUrl && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/20 mb-6 shadow-2xl"
+          >
+            <img
+              src={stateData.dogData.photoUrl}
+              alt="Cão"
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        )}
+
+        <div className="relative w-24 h-24 mb-8">
+          <svg
+            className="w-full h-full transform -rotate-90"
+            viewBox="0 0 100 100"
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              className="stroke-current text-white/20"
+              strokeWidth="4"
+              fill="none"
+            />
+            <motion.circle
+              cx="50"
+              cy="50"
+              r="40"
+              className="stroke-current text-white"
+              strokeWidth="4"
+              fill="none"
+              strokeLinecap="round"
+              initial={{ strokeDasharray: "251.2", strokeDashoffset: "251.2" }}
+              animate={{ strokeDashoffset: 251.2 - (251.2 * progress) / 100 }}
+              transition={{ duration: 0.5 }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center text-xl font-medium">
+            {progress}%
+          </div>
+        </div>
+
+        <h1 className="font-serif text-3xl mb-3">Analisando o perfil</h1>
+        <p className="text-white/80">
+          Cruzando raça, energia e objetivos para criar o plano perfeito para o{" "}
+          {stateData?.dogData?.name || "seu cão"}...
+        </p>
+      </div>
+    </div>
+  );
+}
