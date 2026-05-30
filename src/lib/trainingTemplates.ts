@@ -8,14 +8,23 @@ export interface TrainingTemplate {
   prerequisites: string[];
   nextPossible: string[];
   tags: string[];
-  steps: string[];
+  problemTags: string[];
+  objectiveTags: string[];
+  profileTags: string[];
+  levelTag: 'iniciante' | 'intermediario' | 'avancado';
   beforeStart?: string;
+  steps: string[];
 }
 
 export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   'b1-t1': {
     id: 'b1-t1', name: 'Nome e contato visual', blockId: 'b1', level: 'iniciante', duration: '10 min',
-    objective: 'Cultive presença e resposta ao chamado com mais conexão.', prerequisites: [], nextPossible: ["b1-t2"], tags: ["treino"],
+    objective: 'Cultive presença e resposta ao chamado com mais conexão.', prerequisites: [], nextPossible: ["b1-t2"],
+    tags: ["foco", "conexao"],
+    problemTags: ["falta_de_foco"],
+    objectiveTags: ["foco", "obediencia"],
+    profileTags: ["filhote", "adulto", "senior", "agitado"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Fique em um ambiente calmo, com o cão perto de você e petiscos em mãos.',
@@ -26,7 +35,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b1-t2': {
     id: 'b1-t2', name: 'Segue minha mão', blockId: 'b1', level: 'iniciante', duration: '10 min',
-    objective: 'Conduza a atenção do cão de forma suave e precisa.', prerequisites: ["b1-t1"], nextPossible: ["b1-t3"], tags: ["treino"],
+    objective: 'Conduza a atenção do cão de forma suave e precisa.', prerequisites: ["b1-t1"], nextPossible: ["b1-t3"],
+    tags: ["foco", "conexao"],
+    problemTags: ["falta_de_foco"],
+    objectiveTags: ["foco", "obediencia"],
+    profileTags: ["filhote", "adulto", "senior", "agitado"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Mostre um petisco próximo ao focinho do cão, sem deixar que ele pegue de imediato.',
@@ -37,7 +51,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b1-t3': {
     id: 'b1-t3', name: 'Atenção em ambiente calmo', blockId: 'b1', level: 'iniciante', duration: '12 min',
-    objective: 'Fortaleça o foco em um contexto de baixa distração.', prerequisites: ["b1-t2"], nextPossible: ["b1-t4"], tags: ["treino"],
+    objective: 'Fortaleça o foco em um context de baixa distração.', prerequisites: ["b1-t2"], nextPossible: ["b1-t4"],
+    tags: ["foco", "conexao"],
+    problemTags: ["falta_de_foco"],
+    objectiveTags: ["foco", "calma"],
+    profileTags: ["filhote", "adulto", "senior"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Fique parado com o cão em frente ou ao seu lado, em um ambiente sem distrações.',
@@ -48,7 +67,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b1-t4': {
     id: 'b1-t4', name: 'Atenção com pequena distração', blockId: 'b1', level: 'iniciante', duration: '12 min',
-    objective: 'Ensine o cão a retornar para você com mais facilidade.', prerequisites: ["b1-t3"], nextPossible: ["b1-t5"], tags: ["treino"],
+    objective: 'Ensine o cão a retornar para você com mais facilidade.', prerequisites: ["b1-t3"], nextPossible: ["b1-t5"],
+    tags: ["foco", "conexao"],
+    problemTags: ["falta_de_foco"],
+    objectiveTags: ["foco", "calma"],
+    profileTags: ["filhote", "adulto", "senior", "agitado"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Coloque uma distração leve no ambiente, como um brinquedo parado ou um som baixo.',
@@ -59,7 +83,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b1-t5': {
     id: 'b1-t5', name: 'Atenção em movimento', blockId: 'b1', level: 'iniciante', duration: '12 min',
-    objective: 'Leve a conexão para situações com deslocamento e ação.', prerequisites: ["b1-t4"], nextPossible: ["b1-t6"], tags: ["treino"],
+    objective: 'Leve a conexão para situações com deslocamento e ação.', prerequisites: ["b1-t4"], nextPossible: ["b1-t6"],
+    tags: ["foco", "conexao"],
+    problemTags: ["falta_de_foco"],
+    objectiveTags: ["foco", "passeio"],
+    profileTags: ["filhote", "adulto", "senior", "alta_energia"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Caminhe alguns passos lentos pelo ambiente com o cão por perto.',
@@ -70,7 +99,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b1-t6': {
     id: 'b1-t6', name: 'Conexão antes do comando', blockId: 'b1', level: 'iniciante', duration: '12 min',
-    objective: 'Construa atenção antes de qualquer pedido.', prerequisites: ["b1-t5"], nextPossible: [], tags: ["treino"],
+    objective: 'Construa atenção antes de qualquer pedido.', prerequisites: ["b1-t5"], nextPossible: [],
+    tags: ["foco", "conexao"],
+    problemTags: ["falta_de_foco"],
+    objectiveTags: ["foco", "obediencia"],
+    profileTags: ["filhote", "adulto", "senior"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Antes de pedir qualquer comando simples, espere o cão te olhar primeiro.',
@@ -81,7 +115,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b2-t1': {
     id: 'b2-t1', name: 'Senta', blockId: 'b2', level: 'iniciante', duration: '10 min',
-    objective: 'Estabeleça uma resposta clara para momentos do dia a dia.', prerequisites: [], nextPossible: ["b2-t2"], tags: ["treino"],
+    objective: 'Estabeleça uma resposta clara para momentos do dia a dia.', prerequisites: [], nextPossible: ["b2-t2"],
+    tags: ["obediencia_basica"],
+    problemTags: ["falta_de_foco", "pula_em_pessoas"],
+    objectiveTags: ["obediencia", "calma"],
+    profileTags: ["filhote", "adulto", "senior"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Com um petisco na mão, leve-o lentamente para cima e um pouco para trás da cabeça do cão.',
@@ -92,7 +131,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b2-t2': {
     id: 'b2-t2', name: 'Deita', blockId: 'b2', level: 'iniciante', duration: '10 min',
-    objective: 'Trabalhe calma, postura e disponibilidade para ouvir.', prerequisites: ["b2-t1"], nextPossible: ["b2-t3"], tags: ["treino"],
+    objective: 'Trabalhe calma, postura e disponibilidade para ouvir.', prerequisites: ["b2-t1"], nextPossible: ["b2-t3"],
+    tags: ["obediencia_basica"],
+    problemTags: ["falta_de_foco", "pula_em_pessoas"],
+    objectiveTags: ["obediencia", "calma"],
+    profileTags: ["filhote", "adulto", "senior"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Com o cão sentado, leve o petisco da altura do focinho em direção ao chão.',
@@ -103,7 +147,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b2-t3': {
     id: 'b2-t3', name: 'Fica por 3 segundos', blockId: 'b2', level: 'iniciante', duration: '8 min',
-    objective: 'Desenvolva permanência com serenidade e controle.', prerequisites: ["b2-t2"], nextPossible: ["b2-t4"], tags: ["treino"],
+    objective: 'Desenvolva permanência com serenidade e controle.', prerequisites: ["b2-t2"], nextPossible: ["b2-t4"],
+    tags: ["obediencia_basica"],
+    problemTags: ["falta_de_foco", "pula_em_pessoas"],
+    objectiveTags: ["obediencia", "calma"],
+    profileTags: ["filhote", "adulto", "senior"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Peça "Senta" ou "Deita" e mostre a mão aberta como sinal de pausa.',
@@ -114,7 +163,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b2-t4': {
     id: 'b2-t4', name: 'Fica com pequena distância', blockId: 'b2', level: 'iniciante', duration: '10 min',
-    objective: 'Amplie a estabilidade mesmo com um pouco mais de espaço.', prerequisites: ["b2-t3"], nextPossible: ["b2-t5"], tags: ["treino"],
+    objective: 'Amplie a estabilidade mesmo com um pouco mais de espaço.', prerequisites: ["b2-t3"], nextPossible: ["b2-t5"],
+    tags: ["obediencia_basica"],
+    problemTags: ["falta_de_foco", "pula_em_pessoas"],
+    objectiveTags: ["obediencia", "calma"],
+    profileTags: ["filhote", "adulto", "senior"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Peça "Fica" com o cão sentado ou deitado.',
@@ -125,7 +179,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b2-t5': {
     id: 'b2-t5', name: 'Vem quando chamado', blockId: 'b2', level: 'iniciante', duration: '12 min',
-    objective: 'Reforce proximidade, vínculo e retorno com segurança.', prerequisites: ["b2-t4"], nextPossible: ["b2-t6"], tags: ["treino"],
+    objective: 'Reforce proximidade, vínculo e retorno com segurança.', prerequisites: ["b2-t4"], nextPossible: ["b2-t6"],
+    tags: ["obediencia_basica"],
+    problemTags: ["falta_de_foco"],
+    objectiveTags: ["obediencia", "convivencia"],
+    profileTags: ["filhote", "adulto", "senior"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Fique a poucos passos do cão em um ambiente seguro e sem distrações.',
@@ -136,7 +195,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b2-t6': {
     id: 'b2-t6', name: 'Espera', blockId: 'b2', level: 'iniciante', duration: '10 min',
-    objective: 'Introduza pausas curtas com mais equilíbrio emocional.', prerequisites: ["b2-t5"], nextPossible: [], tags: ["treino"],
+    objective: 'Introduza pausas curtas com mais equilíbrio emocional.', prerequisites: ["b2-t5"], nextPossible: [],
+    tags: ["obediencia_basica"],
+    problemTags: ["falta_de_foco", "pula_em_pessoas"],
+    objectiveTags: ["obediencia", "calma"],
+    profileTags: ["filhote", "adulto", "senior"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Coloque o cão em posição calma diante de você, perto de uma porta ou alimento.',
@@ -147,7 +211,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b3-t1': {
     id: 'b3-t1', name: 'Ignorar petisco na mão', blockId: 'b3', level: 'iniciante', duration: '8 min',
-    objective: 'Mostre que a calma também faz parte da recompensa.', prerequisites: [], nextPossible: ["b3-t2"], tags: ["treino"],
+    objective: 'Mostre que a calma também faz parte da recompensa.', prerequisites: [], nextPossible: ["b3-t2"],
+    tags: ["autocontrole"],
+    problemTags: ["destruicao", "mordidas", "pula_em_pessoas"],
+    objectiveTags: ["calma", "convivencia"],
+    profileTags: ["filhote", "adulto", "alta_energia", "agitado"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Mostre um petisco na mão fechada e deixe o cão cheirar sem abrir.',
@@ -158,7 +227,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b3-t2': {
     id: 'b3-t2', name: 'Esperar liberação para comer', blockId: 'b3', level: 'iniciante', duration: '10 min',
-    objective: 'Transforme a refeição em um momento de autocontrole.', prerequisites: ["b3-t1"], nextPossible: ["b3-t3"], tags: ["treino"],
+    objective: 'Transforme a refeição em um momento de autocontrole.', prerequisites: ["b3-t1"], nextPossible: ["b3-t3"],
+    tags: ["autocontrole"],
+    problemTags: ["destruicao", "mordidas"],
+    objectiveTags: ["calma", "convivencia", "rotina"],
+    profileTags: ["filhote", "adulto", "alta_energia", "agitado"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Prepare o pote de comida e peça ao cão que sente ou fique parado.',
@@ -169,7 +243,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b3-t3': {
     id: 'b3-t3', name: 'Soltar objeto', blockId: 'b3', level: 'iniciante', duration: '10 min',
-    objective: 'Desenvolva trocas leves e cooperação no manejo diário.', prerequisites: ["b3-t2"], nextPossible: ["b3-t4"], tags: ["treino"],
+    objective: 'Desenvolva trocas leves e cooperação no manejo diário.', prerequisites: ["b3-t2"], nextPossible: ["b3-t4"],
+    tags: ["autocontrole"],
+    problemTags: ["destruicao", "mordidas"],
+    objectiveTags: ["calma", "convivencia"],
+    profileTags: ["filhote", "adulto", "alta_energia", "agitado"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Ofereça um brinquedo que o cão goste e deixe-o segurar por alguns segundos.',
@@ -180,7 +259,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b3-t4': {
     id: 'b3-t4', name: 'Não pular nas pessoas', blockId: 'b3', level: 'iniciante', duration: '12 min',
-    objective: 'Incentive chegadas mais estáveis e receptivas.', prerequisites: ["b3-t3"], nextPossible: ["b3-t5"], tags: ["treino"],
+    objective: 'Incentive chegadas mais estáveis e receptivas.', prerequisites: ["b3-t3"], nextPossible: ["b3-t5"],
+    tags: ["autocontrole"],
+    problemTags: ["pula_em_pessoas", "agitado"],
+    objectiveTags: ["calma", "convivencia"],
+    profileTags: ["filhote", "adulto", "alta_energia", "agitado"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Aproxime-se do cão ou peça ajuda de outra pessoa para simular uma chegada.',
@@ -191,7 +275,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b3-t5': {
     id: 'b3-t5', name: 'Esperar na porta', blockId: 'b3', level: 'iniciante', duration: '10 min',
-    objective: 'Pratique pausas conscientes antes do movimento.', prerequisites: ["b3-t4"], nextPossible: ["b3-t6"], tags: ["treino"],
+    objective: 'Pratique pausas conscientes antes do movimento.', prerequisites: ["b3-t4"], nextPossible: ["b3-t6"],
+    tags: ["autocontrole"],
+    problemTags: ["pula_em_pessoas", "falta_de_foco"],
+    objectiveTags: ["calma", "convivencia"],
+    profileTags: ["filhote", "adulto", "alta_energia", "agitado"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Leve o cão até uma porta fechada e peça para ele parar ou sentar.',
@@ -202,7 +291,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b3-t6': {
     id: 'b3-t6', name: 'Permanecer calmo antes da recompensa', blockId: 'b3', level: 'iniciante', duration: '10 min',
-    objective: 'Ensine o cão a sustentar o equilíbrio antes de receber.', prerequisites: ["b3-t5"], nextPossible: [], tags: ["treino"],
+    objective: 'Ensine o cão a sustentar o equilíbrio antes de receber.', prerequisites: ["b3-t5"], nextPossible: [],
+    tags: ["autocontrole"],
+    problemTags: ["destruicao", "mordidas", "pula_em_pessoas"],
+    objectiveTags: ["calma", "convivencia"],
+    profileTags: ["filhote", "adulto", "alta_energia", "agitado"],
+    levelTag: 'iniciante',
     beforeStart: 'Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.',
     steps: [
       'Segure algo que o cão queira muito: petisco, brinquedo ou guia do passeio.',
@@ -213,7 +307,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b4-t1': {
     id: 'b4-t1', name: 'Junto parado', blockId: 'b4', level: 'intermediário', duration: '8 min',
-    objective: 'Apresente a posição com clareza antes do movimento.', prerequisites: [], nextPossible: ["b4-t2"], tags: ["treino"],
+    objective: 'Apresente a posição com clareza antes do movimento.', prerequisites: [], nextPossible: ["b4-t2"],
+    tags: ["passeio"],
+    problemTags: ["puxa_na_guia", "falta_de_foco"],
+    objectiveTags: ["passeio", "foco"],
+    profileTags: ["adulto", "alta_energia", "grande_porte"],
+    levelTag: 'intermediario',
     beforeStart: 'Mantenha o foco na calma. Ajuste a distância ou a distração se o cão se dispersar, e sempre recompense bons comportamentos.',
     steps: [
       'Fique com o cão ao seu lado, com a guia frouxa e petiscos em mãos.',
@@ -224,7 +323,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b4-t2': {
     id: 'b4-t2', name: 'Junto por poucos passos', blockId: 'b4', level: 'intermediário', duration: '10 min',
-    objective: 'Comece a construir uma caminhada mais conectada.', prerequisites: ["b4-t1"], nextPossible: ["b4-t3"], tags: ["treino"],
+    objective: 'Comece a construir uma caminhada mais conectada.', prerequisites: ["b4-t1"], nextPossible: ["b4-t3"],
+    tags: ["passeio"],
+    problemTags: ["puxa_na_guia", "falta_de_foco"],
+    objectiveTags: ["passeio", "foco"],
+    profileTags: ["adulto", "alta_energia", "grande_porte"],
+    levelTag: 'intermediario',
     beforeStart: 'Mantenha o foco na calma. Ajuste a distância ou a distração se o cão se dispersar, e sempre recompense bons comportamentos.',
     steps: [
       'Com o cão ao seu lado, dê 2 ou 3 passos lentos para frente.',
@@ -235,7 +339,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b4-t3': {
     id: 'b4-t3', name: 'Junto com mudança de direção', blockId: 'b4', level: 'intermediário', duration: '12 min',
-    objective: 'Trabalhe adaptação e atenção durante o percurso.', prerequisites: ["b4-t2"], nextPossible: ["b4-t4"], tags: ["treino"],
+    objective: 'Trabalhe adaptação e atenção durante o percurso.', prerequisites: ["b4-t2"], nextPossible: ["b4-t4"],
+    tags: ["passeio"],
+    problemTags: ["puxa_na_guia", "falta_de_foco"],
+    objectiveTags: ["passeio", "foco"],
+    profileTags: ["adulto", "alta_energia", "grande_porte"],
+    levelTag: 'intermediario',
     beforeStart: 'Mantenha o foco na calma. Ajuste a distância ou a distração se o cão se dispersar, e sempre recompense bons comportamentos.',
     steps: [
       'Caminhe com o cão ao seu lado por poucos passos.',
@@ -246,7 +355,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b4-t4': {
     id: 'b4-t4', name: 'Redirecionar ao puxar', blockId: 'b4', level: 'intermediário', duration: '12 min',
-    objective: 'Ensine o retorno ao foco quando a tensão aparece.', prerequisites: ["b4-t3"], nextPossible: ["b4-t5"], tags: ["treino"],
+    objective: 'Ensine o retorno ao foco quando a tensão aparece.', prerequisites: ["b4-t3"], nextPossible: ["b4-t5"],
+    tags: ["passeio"],
+    problemTags: ["puxa_na_guia", "falta_de_foco"],
+    objectiveTags: ["passeio", "foco"],
+    profileTags: ["adulto", "alta_energia", "grande_porte"],
+    levelTag: 'intermediario',
     beforeStart: 'Mantenha o foco na calma. Ajuste a distância ou a distração se o cão se dispersar, e sempre recompense bons comportamentos.',
     steps: [
       'Comece uma caminhada curta em ambiente tranquilo.',
@@ -257,7 +371,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b4-t5': {
     id: 'b4-t5', name: 'Passeio com distrações leves', blockId: 'b4', level: 'intermediário', duration: '15 min',
-    objective: 'Leve o treino para um cenário mais próximo da rotina.', prerequisites: ["b4-t4"], nextPossible: ["b4-t6"], tags: ["treino"],
+    objective: 'Leve o treino para um cenário mais próximo da rotina.', prerequisites: ["b4-t4"], nextPossible: ["b4-t6"],
+    tags: ["passeio"],
+    problemTags: ["puxa_na_guia", "falta_de_foco"],
+    objectiveTags: ["passeio", "foco"],
+    profileTags: ["adulto", "alta_energia", "grande_porte"],
+    levelTag: 'intermediario',
     beforeStart: 'Mantenha o foco na calma. Ajuste a distância ou a distração se o cão se dispersar, e sempre recompense bons comportamentos.',
     steps: [
       'Leve o cão para um local com estímulos leves, como movimento distante ou cheiros suaves.',
@@ -268,7 +387,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b4-t6': {
     id: 'b4-t6', name: 'Passeio com distrações moderadas', blockId: 'b4', level: 'intermediário', duration: '15 min',
-    objective: 'Aumente o desafio sem perder a qualidade do passeio.', prerequisites: ["b4-t5"], nextPossible: [], tags: ["treino"],
+    objective: 'Aumente o desafio sem perder a qualidade do passeio.', prerequisites: ["b4-t5"], nextPossible: [],
+    tags: ["passeio"],
+    problemTags: ["puxa_na_guia", "falta_de_foco"],
+    objectiveTags: ["passeio", "foco"],
+    profileTags: ["adulto", "alta_energia", "grande_porte"],
+    levelTag: 'intermediario',
     beforeStart: 'Mantenha o foco na calma. Ajuste a distância ou a distração se o cão se dispersar, e sempre recompense bons comportamentos.',
     steps: [
       'Vá para um ambiente com um pouco mais de movimento, mantendo controle e distância segura.',
@@ -279,7 +403,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b5-t1': {
     id: 'b5-t1', name: 'Observar sem reagir', blockId: 'b5', level: 'intermediário', duration: '10 min',
-    objective: 'Pratique presença diante de estímulos com mais estabilidade.', prerequisites: [], nextPossible: ["b5-t2"], tags: ["treino"],
+    objective: 'Pratique presença diante de estímulos com mais estabilidade.', prerequisites: [], nextPossible: ["b5-t2"],
+    tags: ["socializacao"],
+    problemTags: ["reatividade", "medo", "latidos"],
+    objectiveTags: ["socializacao", "convivencia"],
+    profileTags: ["medroso", "reativo", "apartamento", "casa"],
+    levelTag: 'intermediario',
     beforeStart: 'Priorize sempre a sensação de segurança. Trabalhe à distância e recompense a tranquilidade antes de qualquer aproximação.',
     steps: [
       'Posicione o cão a uma distância confortável do estímulo que costuma chamar atenção.',
@@ -290,18 +419,28 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b5-t2': {
     id: 'b5-t2', name: 'Aproximação controlada', blockId: 'b5', level: 'intermediário', duration: '12 min',
-    objective: 'Construa confiança em encontros feitos no ritmo certo.', prerequisites: ["b5-t1"], nextPossible: ["b5-t3"], tags: ["treino"],
+    objective: 'Construa confiança em encontros feitos no ritmo certo.', prerequisites: ["b5-t1"], nextPossible: ["b5-t3"],
+    tags: ["socializacao"],
+    problemTags: ["reatividade", "medo", "latidos"],
+    objectiveTags: ["socializacao", "convivencia"],
+    profileTags: ["medroso", "reativo", "apartamento", "casa"],
+    levelTag: 'intermediario',
     beforeStart: 'Priorize sempre a sensação de segurança. Trabalhe à distância e recompense a tranquilidade antes de qualquer aproximação.',
     steps: [
       'Escolha uma pessoa, objeto ou contexto que o cão possa observar com segurança.',
       'Aproximem-se em pequenos passos, sempre respeitando o conforto do cão.',
       'Recompense calma, curiosidade e recuperação rápida.',
-      'Se ele demonstrar desconforto, volte alguns passos e alivie a situação.',
+      'Se ele demonstrar desconforto, voltar alguns passos e alivie a situação.',
     ]
   },
   'b5-t3': {
     id: 'b5-t3', name: 'Receber pessoas em casa com calma', blockId: 'b5', level: 'intermediário', duration: '15 min',
-    objective: 'Organize chegadas de forma mais previsível e tranquila.', prerequisites: ["b5-t2"], nextPossible: ["b5-t4"], tags: ["treino"],
+    objective: 'Organize chegadas de forma mais previsível e tranquila.', prerequisites: ["b5-t2"], nextPossible: ["b5-t4"],
+    tags: ["socializacao"],
+    problemTags: ["reatividade", "medo", "latidos"],
+    objectiveTags: ["socializacao", "convivencia"],
+    profileTags: ["medroso", "reativo", "apartamento", "casa"],
+    levelTag: 'intermediario',
     beforeStart: 'Priorize sempre a sensação de segurança. Trabalhe à distância e recompense a tranquilidade antes de qualquer aproximação.',
     steps: [
       'Prepare o ambiente antes da chegada da visita, com guia, petiscos e espaço organizado.',
@@ -312,7 +451,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b5-t4': {
     id: 'b5-t4', name: 'Ver outros cães à distância', blockId: 'b5', level: 'intermediário', duration: '12 min',
-    objective: 'Trabalhe regulação antes da aproximação.', prerequisites: ["b5-t3"], nextPossible: ["b5-t5"], tags: ["treino"],
+    objective: 'Trabalhe regulação antes da aproximação.', prerequisites: ["b5-t3"], nextPossible: ["b5-t5"],
+    tags: ["socializacao"],
+    problemTags: ["reatividade", "medo", "latidos"],
+    objectiveTags: ["socializacao", "convivencia"],
+    profileTags: ["medroso", "reativo", "apartamento", "casa"],
+    levelTag: 'intermediario',
     beforeStart: 'Priorize sempre a sensação de segurança. Trabalhe à distância e recompense a tranquilidade antes de qualquer aproximação.',
     steps: [
       'Escolha um local onde o cão possa ver outro cão sem ficar sobrecarregado.',
@@ -323,7 +467,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b5-t5': {
     id: 'b5-t5', name: 'Sons e objetos novos', blockId: 'b5', level: 'intermediário', duration: '10 min',
-    objective: 'Amplie a segurança do cão diante do inesperado.', prerequisites: ["b5-t4"], nextPossible: ["b5-t6"], tags: ["treino"],
+    objective: 'Amplie a segurança do cão diante do inesperado.', prerequisites: ["b5-t4"], nextPossible: ["b5-t6"],
+    tags: ["socializacao"],
+    problemTags: ["reatividade", "medo", "latidos"],
+    objectiveTags: ["socializacao", "convivencia"],
+    profileTags: ["medroso", "reativo", "apartamento", "casa"],
+    levelTag: 'intermediario',
     beforeStart: 'Priorize sempre a sensação de segurança. Trabalhe à distância e recompense a tranquilidade antes de qualquer aproximação.',
     steps: [
       'Apresente um som ou objeto novo de forma leve e controlada.',
@@ -334,7 +483,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b5-t6': {
     id: 'b5-t6', name: 'Generalização em rua/parque', blockId: 'b5', level: 'intermediário', duration: '15 min',
-    objective: 'Leve os aprendizados para contextos mais reais.', prerequisites: ["b5-t5"], nextPossible: [], tags: ["treino"],
+    objective: 'Leve os aprendizados para contextos mais reais.', prerequisites: ["b5-t5"], nextPossible: [],
+    tags: ["socializacao"],
+    problemTags: ["reatividade", "medo", "latidos"],
+    objectiveTags: ["socializacao", "convivencia"],
+    profileTags: ["medroso", "reativo", "apartamento", "casa"],
+    levelTag: 'intermediario',
     beforeStart: 'Priorize sempre a sensação de segurança. Trabalhe à distância e recompense a tranquilidade antes de qualquer aproximação.',
     steps: [
       'Leve para um ambiente um pouco mais real, como rua tranquila ou parque com espaço.',
@@ -345,18 +499,28 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b6-t1': {
     id: 'b6-t1', name: 'Tapetinho / lugar de calma', blockId: 'b6', level: 'intermediário', duration: '10 min',
-    objective: 'Crie uma referência física de segurança e descanso.', prerequisites: [], nextPossible: ["b6-t2"], tags: ["treino"],
+    objective: 'Crie uma referência física de segurança e descanso.', prerequisites: [], nextPossible: ["b6-t2"],
+    tags: ["ansiedade_separacao"],
+    problemTags: ["ansiedade_separacao", "destruicao", "latidos"],
+    objectiveTags: ["independencia", "calma"],
+    profileTags: ["apartamento", "filhote", "medroso"],
+    levelTag: 'intermediario',
     beforeStart: 'A independência se constrói aos poucos. Aja com naturalidade e evite fazer muita festa nas idas e vindas.',
     steps: [
       'Apresente um tapete ou cama como ponto fixo de descanso.',
       'Recompense qualquer aproximação voluntária ao local.',
       'Depois, recompense quando o cão permanecer alguns segundos ali.',
-      'Aos poucos, associe o espaço a relaxamento e previsibilidade.',
+      'Aos quais, associe o espaço a relaxamento e previsibilidade.',
     ]
   },
   'b6-t2': {
     id: 'b6-t2', name: 'Ficar sozinho por 30 segundos', blockId: 'b6', level: 'intermediário', duration: '8 min',
-    objective: 'Comece a construir autonomia em ausências breves.', prerequisites: ["b6-t1"], nextPossible: ["b6-t3"], tags: ["treino"],
+    objective: 'Comece a construir autonomia em ausências breves.', prerequisites: ["b6-t1"], nextPossible: ["b6-t3"],
+    tags: ["ansiedade_separacao"],
+    problemTags: ["ansiedade_separacao", "destruicao", "latidos"],
+    objectiveTags: ["independencia", "calma"],
+    profileTags: ["apartamento", "filhote", "medroso"],
+    levelTag: 'intermediario',
     beforeStart: 'A independência se constrói aos poucos. Aja com naturalidade e evite fazer muita festa nas idas e vindas.',
     steps: [
       'Deixe o cão em um ambiente seguro e familiar, sem grande ritual.',
@@ -367,7 +531,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b6-t3': {
     id: 'b6-t3', name: 'Ficar sozinho por 2 minutos', blockId: 'b6', level: 'intermediário', duration: '10 min',
-    objective: 'Amplie a tolerância à separação de forma gradual.', prerequisites: ["b6-t2"], nextPossible: ["b6-t4"], tags: ["treino"],
+    objective: 'Amplie a tolerância à separação de forma gradual.', prerequisites: ["b6-t2"], nextPossible: ["b6-t4"],
+    tags: ["ansiedade_separacao"],
+    problemTags: ["ansiedade_separacao", "destruicao", "latidos"],
+    objectiveTags: ["independencia", "calma"],
+    profileTags: ["apartamento", "filhote", "medroso"],
+    levelTag: 'intermediario',
     beforeStart: 'A independência se constrói aos poucos. Aja com naturalidade e evite fazer muita festa nas idas e vindas.',
     steps: [
       'Comece só depois que os 30 segundos já estiverem bem aceitos.',
@@ -378,7 +547,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b6-t4': {
     id: 'b6-t4', name: 'Ritual de saída calmo', blockId: 'b6', level: 'intermediário', duration: '8 min',
-    objective: 'Reduza a carga emocional dos sinais de partida.', prerequisites: ["b6-t3"], nextPossible: ["b6-t5"], tags: ["treino"],
+    objective: 'Reduza a carga emocional dos sinais de partida.', prerequisites: ["b6-t3"], nextPossible: ["b6-t5"],
+    tags: ["ansiedade_separacao"],
+    problemTags: ["ansiedade_separacao", "destruicao", "latidos"],
+    objectiveTags: ["independencia", "calma"],
+    profileTags: ["apartamento", "filhote", "medroso"],
+    levelTag: 'intermediario',
     beforeStart: 'A independência se constrói aos poucos. Aja com naturalidade e evite fazer muita festa nas idas e vindas.',
     steps: [
       'Simule pequenos sinais de saída, como pegar chave ou calçar sapato.',
@@ -389,7 +563,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b6-t5': {
     id: 'b6-t5', name: 'Independência em outro cômodo', blockId: 'b6', level: 'intermediário', duration: '10 min',
-    objective: 'Incentive conforto mesmo sem proximidade constante.', prerequisites: ["b6-t4"], nextPossible: ["b6-t6"], tags: ["treino"],
+    objective: 'Incentive conforto mesmo sem proximidade constante.', prerequisites: ["b6-t4"], nextPossible: ["b6-t6"],
+    tags: ["ansiedade_separacao"],
+    problemTags: ["ansiedade_separacao", "destruicao", "latidos"],
+    objectiveTags: ["independencia", "calma"],
+    profileTags: ["apartamento", "filhote", "medroso"],
+    levelTag: 'intermediario',
     beforeStart: 'A independência se constrói aos poucos. Aja com naturalidade e evite fazer muita festa nas idas e vindas.',
     steps: [
       'Incentive o cão a ficar confortável em outro cômodo por alguns instantes.',
@@ -400,7 +579,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b6-t6': {
     id: 'b6-t6', name: 'Relaxamento após ausência', blockId: 'b6', level: 'intermediário', duration: '10 min',
-    objective: 'Transforme o reencontro em um retorno mais sereno.', prerequisites: ["b6-t5"], nextPossible: [], tags: ["treino"],
+    objective: 'Transforme o reencontro em um retorno mais sereno.', prerequisites: ["b6-t5"], nextPossible: [],
+    tags: ["ansiedade_separacao"],
+    problemTags: ["ansiedade_separacao", "destruicao", "latidos"],
+    objectiveTags: ["independencia", "calma"],
+    profileTags: ["apartamento", "filhote", "medroso"],
+    levelTag: 'intermediario',
     beforeStart: 'A independência se constrói aos poucos. Aja com naturalidade e evite fazer muita festa nas idas e vindas.',
     steps: [
       'Ao retornar, observe como o cão responde e mantenha sua energia baixa.',
@@ -411,7 +595,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b7-t1': {
     id: 'b7-t1', name: 'Acertar xixi/cocô no local', blockId: 'b7', level: 'avançado', duration: '12 min',
-    objective: 'Fortaleça acertos com consistência e clareza.', prerequisites: [], nextPossible: ["b7-t2"], tags: ["treino"],
+    objective: 'Fortaleça acertos com consistência e clareza.', prerequisites: [], nextPossible: ["b7-t2"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["filhote", "apartamento"],
+    levelTag: 'avancado',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Leve o cão ao local certo em horários de maior chance de acerto.',
@@ -422,7 +611,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b7-t2': {
     id: 'b7-t2', name: 'Sinal pós-refeição', blockId: 'b7', level: 'avançado', duration: '10 min',
-    objective: 'Use a rotina a favor do aprendizado.', prerequisites: ["b7-t1"], nextPossible: ["b7-t3"], tags: ["treino"],
+    objective: 'Use a rotina a favor do aprendizado.', prerequisites: ["b7-t1"], nextPossible: ["b7-t3"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["filhote", "apartamento"],
+    levelTag: 'avancado',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Após a refeição, conduza o cão ao local de necessidade no tempo mais adequado para ele.',
@@ -433,7 +627,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b7-t3': {
     id: 'b7-t3', name: 'Recompensa por acerto', blockId: 'b7', level: 'avançado', duration: '8 min',
-    objective: 'Associe o comportamento certo a uma resposta imediata.', prerequisites: ["b7-t2"], nextPossible: ["b7-t4"], tags: ["treino"],
+    objective: 'Associe o comportamento certo a uma resposta imediata.', prerequisites: ["b7-t2"], nextPossible: ["b7-t4"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["filhote", "apartamento"],
+    levelTag: 'avancado',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Escolha uma recompensa simples e rápida para o momento do acerto.',
@@ -444,7 +643,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b7-t4': {
     id: 'b7-t4', name: 'Rotina de saída', blockId: 'b7', level: 'avançado', duration: '10 min',
-    objective: 'Organize previsibilidade para facilitar o acerto.', prerequisites: ["b7-t3"], nextPossible: ["b7-t5"], tags: ["treino"],
+    objective: 'Organize previsibilidade para facilitar o acerto.', prerequisites: ["b7-t3"], nextPossible: ["b7-t5"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["filhote", "apartamento"],
+    levelTag: 'avancado',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Organize horários consistentes para levar o cão ao local adequado.',
@@ -455,7 +659,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b7-t5': {
     id: 'b7-t5', name: 'Controle de acidentes', blockId: 'b7', level: 'avançado', duration: '8 min',
-    objective: 'Corrija a rota com observação e ajustes leves.', prerequisites: ["b7-t4"], nextPossible: ["b7-t6"], tags: ["treino"],
+    objective: 'Corrija a rota com observação e ajustes leves.', prerequisites: ["b7-t4"], nextPossible: ["b7-t6"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["filhote", "apartamento"],
+    levelTag: 'avancado',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Se houver acidente, limpe sem bronca e sem chamar atenção do cão para o erro.',
@@ -466,7 +675,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b7-t6': {
     id: 'b7-t6', name: 'Generalização da rotina', blockId: 'b7', level: 'avançado', duration: '12 min',
-    objective: 'Consolide o comportamento em diferentes momentos do dia.', prerequisites: ["b7-t5"], nextPossible: [], tags: ["treino"],
+    objective: 'Consolide o comportamento em diferentes momentos do dia.', prerequisites: ["b7-t5"], nextPossible: [],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["filhote", "apartamento"],
+    levelTag: 'avancado',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Aplique a rotina de acerto em diferentes dias, horários e pequenas variações do ambiente.',
@@ -477,18 +691,28 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b8-t1': {
     id: 'b8-t1', name: 'Aceitar toque em patas e orelhas', blockId: 'b8', level: 'avançado', duration: '8 min',
-    objective: 'Desenvolva tolerância ao cuidado com mais confiança.', prerequisites: [], nextPossible: ["b8-t2"], tags: ["treino"],
+    objective: 'Desenvolva tolerância ao cuidado com mais confiança.', prerequisites: [], nextPossible: ["b8-t2"],
+    tags: ["manejo"],
+    problemTags: ["medo", "reatividade"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["medroso", "filhote", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Toque levemente uma região por vez, por pouco tempo.',
       'Recompense se o cão permanecer calmo e tolerar o contato.',
-      'Aumente a duração e a precisão do toque aos poucos.',
+      'Aumente a duração e a precisão do toque aos quais.',
       'Pare antes do desconforto aumentar.',
     ]
   },
   'b8-t2': {
     id: 'b8-t2', name: 'Escovação calma', blockId: 'b8', level: 'avançado', duration: '10 min',
-    objective: 'Transforme o manejo em uma experiência mais leve.', prerequisites: ["b8-t1"], nextPossible: ["b8-t3"], tags: ["treino"],
+    objective: 'Transforme o manejo em uma experiência mais leve.', prerequisites: ["b8-t1"], nextPossible: ["b8-t3"],
+    tags: ["manejo"],
+    problemTags: ["medo", "reatividade"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["medroso", "filhote", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Mostre a escova e recompense o cão por se manter tranquilo.',
@@ -499,7 +723,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b8-t3': {
     id: 'b8-t3', name: 'Coleira e guia sem estresse', blockId: 'b8', level: 'avançado', duration: '8 min',
-    objective: 'Organize o início do passeio com mais equilíbrio.', prerequisites: ["b8-t2"], nextPossible: ["b8-t4"], tags: ["treino"],
+    objective: 'Organize o início do passeio com mais equilíbrio.', prerequisites: ["b8-t2"], nextPossible: ["b8-t4"],
+    tags: ["manejo"],
+    problemTags: ["medo", "reatividade"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["medroso", "filhote", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Apresente coleira e guia como objetos neutros ou positivos.',
@@ -510,7 +739,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b8-t4': {
     id: 'b8-t4', name: 'Banho e toalha', blockId: 'b8', level: 'avançado', duration: '10 min',
-    objective: 'Construa cooperação nos momentos de cuidado físico.', prerequisites: ["b8-t3"], nextPossible: ["b8-t5"], tags: ["treino"],
+    objective: 'Construa cooperação nos momentos de cuidado físico.', prerequisites: ["b8-t3"], nextPossible: ["b8-t5"],
+    tags: ["manejo"],
+    problemTags: ["medo", "reatividade"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["medroso", "filhote", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Introduza toalha, ambiente do banho e pequenos toques com água de forma leve.',
@@ -521,7 +755,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b8-t5': {
     id: 'b8-t5', name: 'Entrar e sair do carro / caixa', blockId: 'b8', level: 'avançado', duration: '10 min',
-    objective: 'Trabalhe deslocamentos com mais segurança e fluidez.', prerequisites: ["b8-t4"], nextPossible: ["b8-t6"], tags: ["treino"],
+    objective: 'Trabalhe deslocamentos com mais segurança e fluidez.', prerequisites: ["b8-t4"], nextPossible: ["b8-t6"],
+    tags: ["manejo"],
+    problemTags: ["medo", "reatividade"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["medroso", "filhote", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Apresente o espaço de forma aberta e segura, sem pressão.',
@@ -532,7 +771,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b8-t6': {
     id: 'b8-t6', name: 'Cooperação em contexto veterinário', blockId: 'b8', level: 'avançado', duration: '10 min',
-    objective: 'Prepare o cão para manejos delicados com menos tensão.', prerequisites: ["b8-t5"], nextPossible: [], tags: ["treino"],
+    objective: 'Prepare o cão para manejos delicados com menos tensão.', prerequisites: ["b8-t5"], nextPossible: [],
+    tags: ["manejo"],
+    problemTags: ["medo", "reatividade"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["medroso", "filhote", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Simule pequenos manejos, como olhar boca, orelhas e corpo.',
@@ -543,7 +787,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b9-t1': {
     id: 'b9-t1', name: 'Toca', blockId: 'b9', level: 'avançado', duration: '8 min',
-    objective: 'Crie uma interação simples, útil e responsiva.', prerequisites: [], nextPossible: ["b9-t2"], tags: ["treino"],
+    objective: 'Crie uma interação simples, útil e responsiva.', prerequisites: [], nextPossible: ["b9-t2"],
+    tags: ["enriquecimento"],
+    problemTags: ["destruicao", "falta_de_foco"],
+    objectiveTags: ["energia_mental", "foco"],
+    profileTags: ["alta_energia", "agitado", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Apresente a mão aberta perto do focinho do cão.',
@@ -554,7 +803,12 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b9-t2': {
     id: 'b9-t2', name: 'Gira', blockId: 'b9', level: 'avançado', duration: '8 min',
-    objective: 'Trabalhe leveza, atenção e coordenação.', prerequisites: ["b9-t1"], nextPossible: ["b9-t3"], tags: ["treino"],
+    objective: 'Trabalhe leveza, atenção e coordenação.', prerequisites: ["b9-t1"], nextPossible: ["b9-t3"],
+    tags: ["enriquecimento"],
+    problemTags: ["destruicao", "falta_de_foco"],
+    objectiveTags: ["energia_mental", "foco"],
+    profileTags: ["alta_energia", "agitado", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Use um petisco para guiar o cão em um pequeno círculo.',
@@ -565,40 +819,60 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b9-t3': {
     id: 'b9-t3', name: 'Vai para a cama', blockId: 'b9', level: 'avançado', duration: '10 min',
-    objective: 'Dê ao cão um ponto claro de pausa e organização.', prerequisites: ["b9-t2"], nextPossible: ["b9-t4"], tags: ["treino"],
+    objective: 'Dê ao cão um ponto claro de pausa e organização.', prerequisites: ["b9-t2"], nextPossible: ["b9-t4"],
+    tags: ["enriquecimento"],
+    problemTags: ["destruicao", "falta_de_foco"],
+    objectiveTags: ["energia_mental", "foco"],
+    profileTags: ["alta_energia", "agitado", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Aponte o tapete ou caminha e incentive o cão a ir até lá.',
       'Recompense quando ele colocar as patas e depois quando permanecer.',
-      'Aos poucos, transforme isso em um comando funcional.',
+      'Aos quais, transforme isso em um comando funcional.',
       'Use em momentos calmos para criar associação positiva.',
     ]
   },
   'b9-t4': {
     id: 'b9-t4', name: 'Busca objeto', blockId: 'b9', level: 'avançado', duration: '12 min',
-    objective: 'Estimule foco, engajamento e retorno ao tutor.', prerequisites: ["b9-t3"], nextPossible: ["b9-t5"], tags: ["treino"],
+    objective: 'Estimule foco, engajamento e retorno ao tutor.', prerequisites: ["b9-t3"], nextPossible: ["b9-t5"],
+    tags: ["enriquecimento"],
+    problemTags: ["destruicao", "falta_de_foco"],
+    objectiveTags: ["energia_mental", "foco"],
+    profileTags: ["alta_energia", "agitado", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Escolha um brinquedo leve e interessante para o cão.',
       'Jogue a curta distância e incentive-o a pegar.',
       'Recompense quando ele retornar com o objeto ou se aproximar de você com ele.',
-      'Trabalhe aos poucos a entrega, sem transformar em disputa.',
+      'Trabalhe aos quais a entrega, sem transformar em disputa.',
     ]
   },
   'b9-t5': {
     id: 'b9-t5', name: 'Procura petisco', blockId: 'b9', level: 'avançado', duration: '10 min',
-    objective: 'Ative o faro e a concentração de forma prazerosa.', prerequisites: ["b9-t4"], nextPossible: ["b9-t6"], tags: ["treino"],
+    objective: 'Ative o faro e a concentração de forma prazerosa.', prerequisites: ["b9-t4"], nextPossible: ["b9-t6"],
+    tags: ["enriquecimento"],
+    problemTags: ["destruicao", "falta_de_foco"],
+    objectiveTags: ["energia_mental", "foco"],
+    profileTags: ["alta_energia", "agitado", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Mostre um petisco ao cão e esconda em um lugar fácil.',
       'Diga um sinal como "Procura!" e deixe-o buscar.',
       'Recompense a exploração calma e o sucesso na busca.',
-      'Aumente a dificuldade aos poucos, sempre mantendo a brincadeira divertida.',
+      'Aumente a dificuldade aos quais, sempre mantendo a brincadeira divertida.',
     ]
   },
   'b9-t6': {
     id: 'b9-t6', name: 'Encadeamento de comandos básicos', blockId: 'b9', level: 'avançado', duration: '12 min',
-    objective: 'Una comportamentos conhecidos em uma sequência mais fluida.', prerequisites: ["b9-t5"], nextPossible: [], tags: ["treino"],
+    objective: 'Una comportamentos conhecidos em uma sequência mais fluida.', prerequisites: ["b9-t5"], nextPossible: [],
+    tags: ["enriquecimento"],
+    problemTags: ["destruicao", "falta_de_foco"],
+    objectiveTags: ["energia_mental", "foco"],
+    profileTags: ["alta_energia", "agitado", "adulto"],
+    levelTag: 'avancado',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Escolha dois comandos que o cão já conheça bem, como "Senta" e "Fica".',

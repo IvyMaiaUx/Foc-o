@@ -9,6 +9,30 @@ import { TrainingRepository } from "@/src/repositories/TrainingRepository";
 import { EvolutionRepository } from "@/src/repositories/EvolutionRepository";
 import { AdaptivePlanMotor } from "@/src/motors/AdaptivePlanMotor";
 import { DogProfile } from "@/src/types";
+import { AnalyticsRepository } from "@/src/repositories/AnalyticsRepository";
+
+function foodTypeFromDiet(diet?: string): 'dry' | 'wet' | 'natural' | 'mixed' {
+  const normalized = String(diet || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  if (normalized.includes('umida')) return 'wet';
+  if (normalized.includes('natural')) return 'natural';
+  if (normalized.includes('mista')) return 'mixed';
+  return 'dry';
+}
+
+function parseMealsPerDay(value?: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  const parsed = Number.parseInt(String(value || '').replace(/\D/g, ''), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 2;
+}
+
+function parsePortionGrams(value?: unknown): number | undefined {
+  const parsed = Number.parseFloat(String(value || '').replace(',', '.'));
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
 
 export function Analyzing() {
   const navigate = useNavigate();
@@ -34,7 +58,9 @@ export function Analyzing() {
         const {
           dogData,
           routine,
+          hasOutdoorArea,
           walksPerDay,
+          walkDuration,
           livesWithPeople,
           livesWithAnimals,
           animalRelationship,
@@ -45,8 +71,24 @@ export function Analyzing() {
           behaviors,
           base,
           goals,
+          goalNotes,
           knownCommands,
         } = stateData;
+        const nutritionFoodType = foodTypeFromDiet(health?.diet);
+        const portionGrams = parsePortionGrams(health?.foodQuantity);
+        const nutrition = health?.diet ? {
+          foodType: nutritionFoodType,
+          foodBrand: health?.foodBrand || "",
+          foodLine: health?.foodLine || "",
+          foodPhase: health?.lifeStage || dogData?.lifeStage || "",
+          foodVersion: health?.foodVersion || "",
+          mealsPerDay: parseMealsPerDay(health?.mealsPerDay),
+          ...(portionGrams ? { portionGrams } : {}),
+          ...(!health?.foodBrand && nutritionFoodType !== 'natural'
+            ? { fallbackReason: 'Ração não informada no onboarding' }
+            : {}),
+          matchConfidence: health?.foodBrand && health?.foodLine ? 0.95 : 0.45,
+        } : undefined;
 
         // 1. Build Dog Profile Object
         const fullDogProfile: Partial<DogProfile> = {
@@ -55,6 +97,8 @@ export function Analyzing() {
           photoUrl: dogData?.photoUrl || "",
           age: dogData?.age || "0",
           weight: dogData?.weight || "0",
+          gender: dogData?.gender || "",
+          lifeStage: health?.lifeStage || dogData?.lifeStage || "",
           routine: routine ? [routine] : [],
           walksPerDay: walksPerDay || "",
           livesWithPeople,
@@ -67,12 +111,40 @@ export function Analyzing() {
           trainingBase: base || "beginner",
           knownCommands: knownCommands || [],
           goals: goals || [],
+          goalNotes: goalNotes || "",
           diet: health?.diet || "",
           foodBrand: health?.foodBrand || "",
+          foodLine: health?.foodLine || "",
+          foodVersion: health?.foodVersion || "",
+          foodQuantity: health?.foodQuantity || "",
           mealsPerDay: health?.mealsPerDay || "",
+          ...(nutrition ? { nutrition } : {}),
           lastVaccine: health?.lastVaccine || "",
           nextCheckup: health?.nextCheckup || "",
           observations: health?.observations || "",
+          hasOutdoorArea,
+          hasYard: hasOutdoorArea,
+          housingType: routine || "",
+          walkDuration: walkDuration || "",
+          walkDurationMinutes: Number.parseInt(String(walkDuration || "").replace(/\D/g, ""), 10) || undefined,
+          walkFrequency: walksPerDay === "Não passeia"
+            ? 0
+            : walksPerDay === "1 vez"
+              ? 1
+              : walksPerDay === "2 vezes"
+                ? 2
+                : walksPerDay === "3+ vezes"
+                  ? 3
+                  : undefined,
+          peopleCount: livesWithPeople || "",
+          dailyRoutine: routine || "",
+          personality: personalityTraits || [],
+          behavior: {
+            anxiety: behaviors?.includes("separation_anxiety") || false,
+            destruction: behaviors?.includes("destructive") || false,
+            barking: behaviors?.includes("barking") || false,
+            pullingLeash: behaviors?.includes("pulling") || false,
+          },
         };
 
         // Execute everything in a single atomic batch
@@ -113,11 +185,23 @@ export function Analyzing() {
         batch.update(userRef, {
           onboardingComplete: true,
           updatedAt: now,
+          whatsappEnabled: true,
+          whatsappPhone: dogData?.whatsappPhone || "",
+          whatsappPreferredTime: "18:00",
+          whatsappNotificationTypes: {
+            weeklyReport: true,
+            trainingReminder: true,
+            inactivity: true,
+            trialAndBilling: true,
+          },
+          whatsappOptInAt: now,
+          whatsappStatus: dogData?.whatsappPhone ? 'active' : 'disabled'
         });
 
         // Commit transaction
         try {
           await batch.commit();
+          AnalyticsRepository.logEvent('onboarding_completed');
         } catch (e: any) {
           throw new Error("Transaction error: " + e.message);
         }

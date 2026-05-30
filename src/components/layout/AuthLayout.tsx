@@ -1,7 +1,8 @@
 import React from 'react';
-import { ArrowLeft, PawPrint } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { Wordmark } from '@/src/components/branding/Wordmark';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -12,16 +13,23 @@ interface AuthLayoutProps {
   topImage?: string;
 }
 
-export function AuthLayout({ children, showBackButton = true, title, subtitle, step, topImage }: AuthLayoutProps) {
+export function AuthLayout({
+  children,
+  showBackButton = true,
+  title,
+  subtitle,
+  step,
+  topImage,
+}: AuthLayoutProps) {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans relative selection:bg-[#055A43]/20">
       {topImage && (
         <div className="absolute top-0 left-0 right-0 h-[30vh] md:h-[40vh] w-full overflow-hidden pointer-events-none">
-          <img 
-            src={topImage} 
-            alt="Fundo" 
+          <img
+            src={topImage}
+            alt="Fundo"
             className="w-full h-full object-cover opacity-60 mix-blend-multiply"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white" />
@@ -31,7 +39,7 @@ export function AuthLayout({ children, showBackButton = true, title, subtitle, s
       <header className="px-6 py-5 flex items-center justify-between sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="w-12 flex items-center justify-start">
           {showBackButton && (
-            <button 
+            <button
               onClick={() => navigate(-1)}
               className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full text-[#055A43] hover:bg-[#055A43]/5 transition-colors"
             >
@@ -39,18 +47,15 @@ export function AuthLayout({ children, showBackButton = true, title, subtitle, s
             </button>
           )}
         </div>
-        
-        <div className="flex items-center gap-2">
-          <PawPrint className="w-5 h-5 text-[#055A43]" strokeWidth={2} />
-          <span className="font-serif text-[#055A43] text-xl font-bold tracking-wide">Focão</span>
-        </div>
+
+        <Wordmark width={108} />
 
         <div className="w-12" />
       </header>
 
       <main className="flex-1 px-6 pb-12 pt-8 flex flex-col mx-auto w-full max-w-md relative z-10">
         {(step || title || subtitle) && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
@@ -74,7 +79,7 @@ export function AuthLayout({ children, showBackButton = true, title, subtitle, s
           </motion.div>
         )}
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}

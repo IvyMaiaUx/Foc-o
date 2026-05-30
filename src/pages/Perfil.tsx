@@ -2,12 +2,115 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '@/src/lib/firebase';
-import { doc, getDoc, collection, getDocs, limit, query, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, limit, query, onSnapshot, deleteDoc, writeBatch } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { Settings, ShieldPlus, ChevronRight, HelpCircle, LogOut, Utensils, Syringe, Crown, CalendarClock, Bell } from 'lucide-react';
+import { Settings, ShieldPlus, ChevronRight, HelpCircle, LogOut, Utensils, Syringe, Crown, CalendarClock, Bell, AlertTriangle, FileText } from 'lucide-react';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { getSubscriptionPlan, getSubscriptionStatus, hasPremiumAccess } from '@/src/types';
 import { DogRepository } from '@/src/repositories/DogRepository';
+import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
+
+const valueOrFallback = (value: any) => {
+  if (value === undefined || value === null || value === '') return 'Não informado';
+  return value;
+};
+
+const yesNo = (value: any) => {
+  if (value === undefined || value === null || value === '') return 'Não informado';
+  if (typeof value === 'boolean') return value ? 'Sim' : 'Não';
+  const normalized = String(value).trim().toLowerCase();
+  if (['sim', 'yes', 'true', '1'].includes(normalized)) return 'Sim';
+  if (['não', 'nao', 'no', 'false', '0'].includes(normalized)) return 'Não';
+  return value;
+};
+
+const withUnit = (value: any, unit: string) => {
+  if (value === undefined || value === null || value === '') return '';
+  const text = String(value).trim();
+  if (/[a-zA-ZÀ-ÿ]/.test(text)) return text;
+  return text.toLowerCase().includes(unit.toLowerCase()) ? text : `${text} ${unit}`;
+};
+
+const firstRoutine = (dog: any) => {
+  if (dog?.housingType) return dog.housingType;
+  return Array.isArray(dog?.routine) ? dog.routine[0] : dog?.routine;
+};
+
+const housingLabel = (value?: string) => {
+  const map: Record<string, string> = {
+    apartment: 'Apartamento',
+    house: 'Casa',
+  };
+  return value ? map[value] || value : 'Não informado';
+};
+
+const levelLabel = (value?: string) => {
+  const map: Record<string, string> = {
+    low: 'Baixo',
+    medium: 'Médio',
+    high: 'Alto',
+    beginner: 'Iniciante',
+    intermediate: 'Intermediário',
+    advanced: 'Avançado',
+  };
+  return value ? map[value] || value : 'Não informado';
+};
+
+const behaviorLabel = (value: string) => {
+  const map: Record<string, string> = {
+    separation_anxiety: 'Ansiedade de separação',
+    destructive: 'Comportamento destrutivo',
+    barking: 'Latidos excessivos',
+    pulling: 'Puxa muito no passeio',
+    none: 'Nenhum problema grave',
+  };
+  return map[value] || value.replace(/_/g, ' ');
+};
+
+const behaviorIssues = (dog: any) => {
+  if (Array.isArray(dog?.behaviorIssues) && dog.behaviorIssues.length > 0) {
+    return dog.behaviorIssues.map(behaviorLabel).join(', ');
+  }
+
+  const behaviorMap: Record<string, string> = {
+    anxiety: 'Ansiedade',
+    barking: 'Latidos excessivos',
+    reactivity: 'Reatividade',
+    destruction: 'Destruição',
+    aggression: 'Agressividade',
+    peeWrongPlace: 'Xixi fora do lugar',
+    fear: 'Medo ou insegurança',
+    pullingLeash: 'Puxa a guia',
+    hyperactivity: 'Hiperatividade',
+  };
+
+  const marked = Object.entries(dog?.behavior || {})
+    .filter(([, value]) => Boolean(value))
+    .map(([key]) => behaviorMap[key] || key);
+
+  return marked.join(', ');
+};
+
+const rewardLabel = (value?: string) => {
+  const map: Record<string, string> = {
+    treats: 'Petiscos',
+    toys: 'Brinquedos',
+    praise: 'Elogios e carinho',
+    play: 'Bolinha / brincadeiras',
+    food: 'Comida em geral',
+    unknown: 'Ainda não sei',
+  };
+  return value ? map[value] || value : 'Não informado';
+};
+
+function ProfileField({ label, value }: { label: string; value: any }) {
+  return (
+    <div className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-4 py-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#5C615D]/55 mb-1">{label}</p>
+      <p className="text-[13px] font-medium text-[#506352] leading-snug">{valueOrFallback(value)}</p>
+    </div>
+  );
+}
 
 export function Perfil() {
   const navigate = useNavigate();
@@ -66,8 +169,12 @@ export function Perfil() {
     if (status === 'past_due') {
       return { text: 'Pagamento pendente', color: 'bg-red-400/20 text-red-600 border-red-400/30' };
     }
+
+    if (status === 'canceled') {
+      return { text: 'Cancelado', color: 'bg-[#5C615D]/10 text-[#5C615D] border-[#5C615D]/20' };
+    }
     
-    if (plan === 'premium') return { text: 'Premium', color: 'bg-emerald-400/20 text-emerald-600 border-emerald-400/30' };
+    if (plan === 'premium' && hasPremiumAccess(userProfile)) return { text: 'Premium', color: 'bg-emerald-400/20 text-emerald-600 border-emerald-400/30' };
     
     if (plan === 'trial') {
       const trialEndsAt = userProfile?.subscription?.trialEndsAt ?? userProfile?.trialEndsAt;
@@ -82,13 +189,153 @@ export function Perfil() {
 
   const planBadge = getSubscriptionDisplay();
 
+  const [isExporting, setIsExporting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleExportData = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+    setIsExporting(true);
+    try {
+      // 1. Fetch main docs
+      const [userSnap, dogSnap, planSnap, evolSnap] = await Promise.all([
+        getDoc(doc(db, 'users', user.uid)),
+        getDoc(doc(db, 'users', user.uid, 'dog', 'profile')),
+        getDoc(doc(db, 'users', user.uid, 'plan', 'current')),
+        getDoc(doc(db, 'users', user.uid, 'evolution', 'summary'))
+      ]);
+
+      // 2. Fetch collections
+      const [checkinsSnap, logsSnap, vaccinesSnap, customEventsSnap, customEventCompsSnap] = await Promise.all([
+        getDocs(collection(db, 'users', user.uid, 'checkins')),
+        getDocs(collection(db, 'users', user.uid, 'trainingLogs')),
+        getDocs(collection(db, 'users', user.uid, 'vaccines')),
+        getDocs(collection(db, 'users', user.uid, 'customEvents')),
+        getDocs(collection(db, 'users', user.uid, 'customEventCompletions'))
+      ]);
+
+      // 3. Fetch support thread and messages
+      const supportThreadSnap = await getDoc(doc(db, 'supportThreads', user.uid));
+      let supportMessages: any[] = [];
+      if (supportThreadSnap.exists()) {
+        const msgsSnap = await getDocs(collection(db, 'supportThreads', user.uid, 'messages'));
+        supportMessages = msgsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      }
+
+      // 4. Assemble payload
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        userProfile: userSnap.exists() ? userSnap.data() : null,
+        dogProfile: dogSnap.exists() ? dogSnap.data() : null,
+        currentPlan: planSnap.exists() ? planSnap.data() : null,
+        evolutionSummary: evolSnap.exists() ? evolSnap.data() : null,
+        checkins: checkinsSnap.docs.map(d => d.data()),
+        trainingLogs: logsSnap.docs.map(d => d.data()),
+        vaccines: vaccinesSnap.docs.map(d => d.data()),
+        customEvents: customEventsSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+        customEventCompletions: customEventCompsSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+        support: supportThreadSnap.exists() ? {
+          thread: supportThreadSnap.data(),
+          messages: supportMessages
+        } : null
+      };
+
+      // 5. Trigger download
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `focao-dados-${user.uid}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    } catch (err) {
+      console.error("Erro ao exportar dados:", err);
+      alert("Ocorreu um erro ao exportar seus dados. Tente novamente.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const confirmFirst = window.confirm(
+      "Tem certeza absoluta de que deseja excluir sua conta e TODOS os seus dados do Focão permanentemente? Esta ação é irreversível."
+    );
+    if (!confirmFirst) return;
+
+    const confirmSecond = window.confirm(
+      "Para confirmar e cumprir a LGPD, o Focão irá deletar seu histórico de treinos, check-ins, vacinas, perfil do cão e cadastro. Clique em OK para confirmar a exclusão imediata."
+    );
+    if (!confirmSecond) return;
+
+    setIsDeleting(true);
+    try {
+      // 1. Delete Firestore user subcollections
+      const collectionsToDelete = [
+        'checkins',
+        'trainingLogs',
+        'vaccines',
+        'customEvents',
+        'customEventCompletions',
+        'notifications'
+      ];
+
+      for (const colName of collectionsToDelete) {
+        const snap = await getDocs(collection(db, 'users', user.uid, colName));
+        for (const docSnap of snap.docs) {
+          await deleteDoc(doc(db, 'users', user.uid, colName, docSnap.id));
+        }
+      }
+
+      // 2. Delete plan, dog and evolution profiles
+      await deleteDoc(doc(db, 'users', user.uid, 'dog', 'profile'));
+      await deleteDoc(doc(db, 'users', user.uid, 'plan', 'current'));
+      await deleteDoc(doc(db, 'users', user.uid, 'evolution', 'summary'));
+
+      // 3. Delete user root doc
+      await deleteDoc(doc(db, 'users', user.uid));
+
+      // 4. Delete support thread messages & support thread doc
+      const supportMsgsSnap = await getDocs(collection(db, 'supportThreads', user.uid, 'messages'));
+      for (const msgSnap of supportMsgsSnap.docs) {
+        await deleteDoc(doc(db, 'supportThreads', user.uid, 'messages', msgSnap.id));
+      }
+      await deleteDoc(doc(db, 'supportThreads', user.uid));
+
+      // Log premium_cancelled if they were premium
+      const wasPremium = hasPremiumAccess(userProfile);
+      if (wasPremium) {
+        await AnalyticsRepository.logEvent('premium_cancelled', { reason: 'account_deletion' });
+      }
+
+      // 5. Delete Firebase Auth User
+      await user.delete();
+
+      alert("Sua conta e todos os seus dados foram excluídos com sucesso em conformidade com a LGPD.");
+      navigate('/');
+    } catch (err: any) {
+      console.error("Erro ao excluir conta:", err);
+      if (err?.code === 'auth/requires-recent-login') {
+        alert(
+          "Por motivos de segurança, você precisa fazer login novamente antes de excluir sua conta. Por favor, encerre a sessão, faça login de novo e repita o processo."
+        );
+      } else {
+        alert(`Ocorreu um erro ao excluir sua conta: ${err.message || err}`);
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const handleSignOut = async () => {
     await signOut(auth);
     navigate('/');
   };
 
   return (
-    <div className="flex-1 bg-[#FAFAFA] font-sans pb-32 overflow-y-auto">
+    <div className="flex-1 bg-[#FAFAFA] font-sans pb-32">
       {/* Header Profile Area */}
       <header className="px-6 pt-16 pb-12 bg-white border-b border-[#055A43]/5 flex flex-col items-center">
         {loading ? (
@@ -99,18 +346,20 @@ export function Perfil() {
           </>
         ) : (
           <>
-            <div className="relative w-24 h-24 rounded-[2rem] overflow-hidden shadow-xl shadow-[#055A43]/10 mb-4 border border-[#055A43]/10 bg-[#055A43] flex items-center justify-center">
-              {dogData?.photoUrl ? (
-                <img 
-                  src={dogData.photoUrl} 
-                  alt="Dog Profile" 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="font-serif text-white text-[40px] opacity-90">
-                  {dogData?.name?.charAt(0).toUpperCase() || 'C'}
-                </span>
-              )}
+            <div className="relative w-24 h-24 rounded-[2rem] shadow-xl shadow-[#055A43]/10 mb-4 border border-[#055A43]/10 bg-[#055A43] flex items-center justify-center">
+              <span className="absolute inset-0 rounded-[2rem] overflow-hidden flex items-center justify-center">
+                {dogData?.photoUrl ? (
+                  <img
+                    src={dogData.photoUrl}
+                    alt="Dog Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="font-serif text-white text-[40px] opacity-90">
+                    {dogData?.name?.charAt(0).toUpperCase() || 'C'}
+                  </span>
+                )}
+              </span>
             </div>
             <h1 className="font-serif text-[28px] text-[#055A43] tracking-tight mb-1">
               {dogData ? dogData.name : 'Seu cão'}
@@ -132,6 +381,7 @@ export function Perfil() {
       </header>
 
       <main className="px-6 py-8 flex flex-col gap-8">
+
         
         {/* Desenvolvimento & Treinos */}
         <section>
@@ -139,6 +389,22 @@ export function Perfil() {
             Desenvolvimento
           </h3>
           <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col">
+            <button 
+              onClick={() => navigate('/sos')}
+              className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#055A43]/5 flex items-center justify-center text-[#055A43]">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-[#506352] text-sm">Treinos SOS</p>
+                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Protocolos rápidos para crise</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#506352]/40" />
+            </button>
+            <div className="h-px w-[85%] bg-gray-100 self-end" />
             <button 
               onClick={() => navigate('/historico')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
@@ -157,7 +423,7 @@ export function Perfil() {
           </div>
         </section>
 
-        {/* Saude & Rotina */}
+        {/* Saúde & Rotina */}
         <section>
           <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
             Saúde & Rotina
@@ -289,6 +555,56 @@ export function Perfil() {
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-[#055A43]/40" />
+            </button>
+          </div>
+        </section>
+
+        {/* Privacidade (LGPD) */}
+        <section>
+          <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
+            Privacidade & LGPD
+          </h3>
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col gap-1">
+            <button 
+              onClick={handleExportData}
+              disabled={isExporting}
+              className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors text-left"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#055A43]/5 flex items-center justify-center text-[#055A43]">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="font-medium text-[#506352] text-sm">Exportar Meus Dados</p>
+                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Baixar meus dados estruturados em JSON</p>
+                </div>
+              </div>
+              {isExporting ? (
+                <div className="w-4 h-4 border-2 border-[#055A43]/30 border-t-[#055A43] rounded-full animate-spin" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-[#506352]/40" />
+              )}
+            </button>
+            <div className="h-px w-[85%] bg-gray-100 self-end" />
+            <button 
+              onClick={handleDeleteAccount}
+              disabled={isDeleting}
+              className="flex items-center justify-between p-4 px-3 active:bg-red-50/50 rounded-xl transition-colors text-left"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="font-medium text-red-600 text-sm">Excluir Minha Conta</p>
+                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Excluir permanentemente todos os meus dados (LGPD)</p>
+                </div>
+              </div>
+              {isDeleting ? (
+                <div className="w-4 h-4 border-2 border-red-300 border-t-red-600 rounded-full animate-spin" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-red-300" />
+              )}
             </button>
           </div>
         </section>

@@ -1,5 +1,5 @@
 import { db } from '@/src/lib/firebase';
-import { doc, setDoc, collection, query, where, getDocs, limit, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 
 export class NotificationRepository {
   static async scheduleCheckupReminders(userId: string, dogName: string, nextCheckupDate: string): Promise<void> {
@@ -14,14 +14,12 @@ export class NotificationRepository {
     
     await setDoc(doc(notifsRef, notifId), {
       title: 'Lembrete de Check-up',
-      body: `O check-up veterinário do ${dogName} está chegando (marcado para ${dueDate.toLocaleDateString('pt-BR')}).`,
+      body: `O check-up veterinário de ${dogName} está chegando (marcado para ${dueDate.toLocaleDateString('pt-BR')}).`,
       notifyAt: notifyAt.toISOString(),
       dueDate: nextCheckupDate,
       read: false,
       createdAt: Date.now()
     });
-        
-    console.log("Check-up reminder scheduled for:", notifyAt);
   }
 
   static async scheduleVaccineReminders(userId: string, dogName: string, vaccineName: string, nextDoseDate: string): Promise<void> {
@@ -38,14 +36,12 @@ export class NotificationRepository {
     
     await setDoc(doc(notifsRef, notifId), {
       title: 'Lembrete de Vacina',
-      body: `A vacina ${vaccineName} do ${dogName} precisa ser aplicada em breve (vence em ${dueDate.toLocaleDateString()}).`,
+      body: `A vacina ${vaccineName} de ${dogName} precisa ser aplicada em breve (vence em ${dueDate.toLocaleDateString()}).`,
       notifyAt: notifyAt.toISOString(),
       dueDate: nextDoseDate,
       read: false,
       createdAt: Date.now()
     });
-        
-    console.log("Reminders scheduled for:", vaccineName, "at", notifyAt);
   }
 
   static async getActiveNotifications(userId: string): Promise<any[]> {
@@ -63,5 +59,14 @@ export class NotificationRepository {
 
   static async markAsRead(notifId: string, userId: string): Promise<void> {
     await updateDoc(doc(db, 'users', userId, 'notifications', notifId), { read: true });
+  }
+
+  static async markAllAsRead(userId: string): Promise<void> {
+    const activeNotifications = await NotificationRepository.getActiveNotifications(userId);
+    await Promise.all(
+      activeNotifications.map((notification) =>
+        updateDoc(doc(db, 'users', userId, 'notifications', notification.id), { read: true })
+      )
+    );
   }
 }

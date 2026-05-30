@@ -8,6 +8,7 @@ export interface EvolutionSummary {
   averageBehaviorScore: number;
   lastTrainedAt: number | null;
   lastCheckinAt: number | null;
+  reportsViewed?: number;
 }
 
 export class EvolutionRepository {
@@ -18,9 +19,22 @@ export class EvolutionRepository {
       activeDays: 0,
       averageBehaviorScore: 0,
       lastTrainedAt: null,
-      lastCheckinAt: null
+      lastCheckinAt: null,
+      reportsViewed: 0
     };
     await setDoc(doc(db, 'users', userId, 'evolution', 'summary'), summary);
+  }
+
+  static async incrementReportsViewed(userId: string): Promise<void> {
+    const summaryRef = doc(db, 'users', userId, 'evolution', 'summary');
+    const snap = await getDoc(summaryRef);
+    if (!snap.exists()) {
+      // If summary doesn't exist yet, initialize it
+      await EvolutionRepository.initializeSummary(userId);
+    }
+    await updateDoc(summaryRef, {
+      reportsViewed: increment(1)
+    });
   }
 
   static async getSummary(userId: string): Promise<EvolutionSummary | null> {

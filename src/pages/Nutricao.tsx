@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Info, Utensils, Droplets, ArrowRight, X, Loader2, Save, ChevronDown } from 'lucide-react';
-import { auth, db } from '@/src/lib/firebase';
-import { doc, getDoc, collection, getDocs, limit, query, updateDoc } from 'firebase/firestore';
+import { auth } from '@/src/lib/firebase';
 import { NutritionMotor } from '@/src/motors/NutritionMotor';
 import { DogProfile } from '@/src/types';
 import { BottomSheetSelect } from '@/src/components/ui/BottomSheetSelect';
@@ -12,9 +11,39 @@ import { Button } from '@/src/components/ui/Button';
 import { PremiumGate } from '@/src/components/ui/PremiumGate';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { DogRepository } from '@/src/repositories/DogRepository';
-import { DOG_FOOD_BRANDS, DOG_FOOD_LINES, getDogFoodLifeStage, getDogFoodLinesByBrand } from '@/src/lib/dogFoodOptions';
+import { DOG_FOOD_OPTIONS } from '@/src/lib/dogFoodOptions';
+import {
+  getBrandsFromOptions,
+  getLifeStageFromOptions,
+  getLinesByBrandFromOptions,
+  getLinesFromOptions,
+  NutritionFormulaRepository,
+} from '@/src/repositories/NutritionFormulaRepository';
 
 const COMMON_VERSIONS = ['Raças Pequenas', 'Raças Médias', 'Raças Grandes', 'Castrados', 'Grãos Mini'];
+
+function foodTypeFromDiet(diet?: string): 'dry' | 'wet' | 'natural' | 'mixed' {
+  const normalized = String(diet || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  if (normalized.includes('umida')) return 'wet';
+  if (normalized.includes('natural')) return 'natural';
+  if (normalized.includes('mista')) return 'mixed';
+  return 'dry';
+}
+
+function parseMealsPerDay(value?: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  const parsed = Number.parseInt(String(value || '').replace(/\D/g, ''), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 2;
+}
+
+function parsePortionGrams(value?: string): number | undefined {
+  const parsed = Number.parseFloat(String(value || '').replace(',', '.'));
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
 
 export function Nutricao() {
   const navigate = useNavigate();
@@ -30,6 +59,7 @@ export function Nutricao() {
   const [lifeStage, setLifeStage] = useState('Adulto');
   const [version, setVersion] = useState('');
   const [quantity, setQuantity] = useState('');
+  const [foodOptions, setFoodOptions] = useState(DOG_FOOD_OPTIONS);
 
   if (!isPremium) return <PremiumGate featureName="Nutrição inteligente" />;
 
@@ -37,9 +67,24 @@ export function Nutricao() {
   const [isBrandSheetOpen, setIsBrandSheetOpen] = useState(false);
   const [isLineSheetOpen, setIsLineSheetOpen] = useState(false);
   const [isVersionSheetOpen, setIsVersionSheetOpen] = useState(false);
-  const brandLineOptions = brand && DOG_FOOD_BRANDS.includes(brand)
-    ? getDogFoodLinesByBrand(brand)
-    : DOG_FOOD_LINES;
+  const foodBrands = useMemo(() => getBrandsFromOptions(foodOptions), [foodOptions]);
+  const foodLines = useMemo(() => getLinesFromOptions(foodOptions), [foodOptions]);
+  const brandLineOptions = useMemo(
+    () => (brand && foodBrands.includes(brand) ? getLinesByBrandFromOptions(foodOptions, brand) : foodLines),
+    [brand, foodBrands, foodLines, foodOptions]
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    NutritionFormulaRepository.getFoodOptions().then((options) => {
+      if (isMounted) setFoodOptions(options);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -71,13 +116,26 @@ export function Nutricao() {
       const user = auth.currentUser;
       if (!user || !dogData?.id) return;
       setIsSaving(true);
+      const portionGrams = parsePortionGrams(quantity);
+      const nextNutrition = {
+        ...(dogData.nutrition || {}),
+        foodType: foodTypeFromDiet(dogData.diet),
+        foodBrand: brand,
+        foodLine: line,
+        foodPhase: lifeStage,
+        foodVersion: version,
+        mealsPerDay: dogData.nutrition?.mealsPerDay || parseMealsPerDay(dogData.mealsPerDay),
+        ...(portionGrams ? { portionGrams } : {}),
+        matchConfidence: brand && line ? 0.95 : 0.45,
+      };
 
       await DogRepository.saveDogProfile(user.uid, {
         foodBrand: brand,
         foodLine: line,
         lifeStage: lifeStage,
         foodVersion: version,
-        foodQuantity: quantity
+        foodQuantity: quantity,
+        nutrition: nextNutrition,
       });
 
       setDogData({
@@ -86,7 +144,8 @@ export function Nutricao() {
         foodLine: line,
         lifeStage: lifeStage,
         foodVersion: version,
-        foodQuantity: quantity
+        foodQuantity: quantity,
+        nutrition: nextNutrition,
       });
 
       setIsModalOpen(false);
@@ -149,7 +208,7 @@ export function Nutricao() {
               </div>
               <div className="text-right">
                 {foodInfo.fallsback ? (
-                  <span className="bg-white/10 text-white border border-white/20 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Referência</span>
+                  <span className="bg-white/10 text-white border border-white/20 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Recomendado</span>
                 ) : foodInfo.meta.confidence === 'high' ? (
                   <span className="bg-[#4ADE80]/20 text-[#4ADE80] border border-[#4ADE80]/30 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Alta Precisão</span>
                 ) : foodInfo.meta.confidence === 'medium' ? (
@@ -190,9 +249,7 @@ export function Nutricao() {
                 <Info className="w-5 h-5 text-white/60 shrink-0 mt-0.5" />
                 <p className="text-[11px] text-white/60 leading-relaxed font-light">
                   {dogData?.foodBrand ? (
-                    foodInfo.fallsback 
-                      ? `A fórmula exata ainda não está na base. Usamos uma estimativa referencial segura para um cão adulto de ${foodInfo.meta.weightUsed || '-'} kg.`
-                      : `Essa recomendação foi calculada com base no peso informado (${foodInfo.meta.weightUsed} kg), nível de energia (${foodInfo.meta.activityLevel}) e fórmula cadastrada (${foodInfo.meta.formulaName}).`
+                    `Essa recomendação foi calculada com base no peso informado (${foodInfo.meta.weightUsed} kg), nível de energia (${foodInfo.meta.activityLevel}) e alimentação cadastrada.`
                   ) : (
                     'Configure a alimentação atual para receber uma recomendação mais precisa.'
                   )}
@@ -275,7 +332,7 @@ export function Nutricao() {
                         <ChevronDown className="w-5 h-5" />
                       </div>
                     </button>
-                    {!DOG_FOOD_BRANDS.includes(brand) && brand ? (
+                    {!foodBrands.includes(brand) && brand ? (
                       <motion.input 
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -401,7 +458,7 @@ export function Nutricao() {
         <BottomSheetSelect 
           isOpen={isBrandSheetOpen}
           onClose={() => setIsBrandSheetOpen(false)}
-          options={[...DOG_FOOD_BRANDS, 'Outra']}
+          options={[...foodBrands, 'Outra']}
           value={brand}
           onSelect={(val) => {
             setBrand(val);
@@ -418,7 +475,7 @@ export function Nutricao() {
           value={line}
           onSelect={(val) => {
             setLine(val);
-            const detectedLifeStage = getDogFoodLifeStage(brand, val);
+            const detectedLifeStage = getLifeStageFromOptions(foodOptions, brand, val);
             if (detectedLifeStage) setLifeStage(detectedLifeStage);
           }}
           title="Selecione a Linha"

@@ -29,19 +29,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
-      if (user) {
-        let profile = await UserRepository.getUserProfile(user.uid);
-        if (!hasPremiumAccess(profile)) {
-          const claimed = await PremiumClaimRepository.claimForUser(user);
-          if (claimed) {
+      try {
+        if (user) {
+          let profile = await UserRepository.getUserProfile(user.uid);
+          if (!profile && user.email) {
+            await UserRepository.createUserProfile(
+              user.uid,
+              user.email.trim().toLowerCase(),
+              user.displayName || user.email.split('@')[0] || 'Tutor'
+            );
             profile = await UserRepository.getUserProfile(user.uid);
           }
+
+          if (!hasPremiumAccess(profile)) {
+            const claimed = await PremiumClaimRepository.claimForUser(user);
+            if (claimed) {
+              profile = await UserRepository.getUserProfile(user.uid);
+            }
+          }
+          setUserProfile(profile);
+        } else {
+          setUserProfile(null);
         }
-        setUserProfile(profile);
-      } else {
+      } catch (error) {
+        console.error('[AuthContext] failed to load user state', error);
         setUserProfile(null);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return unsubscribe;
@@ -49,7 +64,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshProfile = async () => {
     if (auth.currentUser) {
-      setUserProfile(await UserRepository.getUserProfile(auth.currentUser.uid));
+      try {
+        let profile = await UserRepository.getUserProfile(auth.currentUser.uid);
+        if (!profile && auth.currentUser.email) {
+          await UserRepository.createUserProfile(
+            auth.currentUser.uid,
+            auth.currentUser.email.trim().toLowerCase(),
+            auth.currentUser.displayName || auth.currentUser.email.split('@')[0] || 'Tutor'
+          );
+          profile = await UserRepository.getUserProfile(auth.currentUser.uid);
+        }
+        if (!hasPremiumAccess(profile)) {
+          const claimed = await PremiumClaimRepository.claimForUser(auth.currentUser);
+          if (claimed) {
+            profile = await UserRepository.getUserProfile(auth.currentUser.uid);
+          }
+        }
+        setUserProfile(profile);
+      } catch (error) {
+        console.error('[AuthContext] failed to refresh profile', error);
+      }
     }
   };
 

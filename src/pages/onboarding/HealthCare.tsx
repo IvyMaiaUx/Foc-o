@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { auth } from '@/src/lib/firebase';
 import { NotificationRepository } from '@/src/repositories/NotificationRepository';
@@ -7,7 +7,15 @@ import { Input } from '@/src/components/ui/Input';
 import { Button } from '@/src/components/ui/Button';
 import { ShieldPlus, ChevronDown } from 'lucide-react';
 import { BottomSheetSelect } from '@/src/components/ui/BottomSheetSelect';
-import { DOG_FOOD_BRANDS, DOG_FOOD_LINES, getDogFoodLifeStage, getDogFoodLinesByBrand } from '@/src/lib/dogFoodOptions';
+import { DOG_FOOD_OPTIONS } from '@/src/lib/dogFoodOptions';
+import {
+  getBrandsFromOptions,
+  getLifeStageFromOptions,
+  getLinesByBrandFromOptions,
+  getLinesFromOptions,
+  NutritionFormulaRepository,
+} from '@/src/repositories/NutritionFormulaRepository';
+import { DOG_WEIGHT_MAX_KG, sanitizeDecimalInput } from '@/src/lib/dogFieldValidation';
 
 export function HealthCare() {
   const navigate = useNavigate();
@@ -19,7 +27,7 @@ export function HealthCare() {
     diet: '', 
     foodBrand: '',
     foodLine: '',
-    lifeStage: '',
+    lifeStage: ['Nao sei', 'Não sei'].includes(location.state?.dogData?.lifeStage) ? '' : location.state?.dogData?.lifeStage || '',
     foodVersion: '',
     mealsPerDay: '',
     foodQuantity: '',
@@ -34,6 +42,7 @@ export function HealthCare() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
   const [isLineModalOpen, setIsLineModalOpen] = useState(false);
+  const [foodOptions, setFoodOptions] = useState(DOG_FOOD_OPTIONS);
 
   const diets = ['Ração seca', 'Ração úmida', 'Alimentação natural', 'Mista'];
   const foodVersions = ['Padrão', 'Castrado', 'Light', 'Sensível', 'Outra versão'];
@@ -44,9 +53,27 @@ export function HealthCare() {
   const isNatural = formData.diet === 'Alimentação natural';
   const isMista = formData.diet === 'Mista';
 
-  const brandLineOptions = formData.foodBrand && DOG_FOOD_BRANDS.includes(formData.foodBrand)
-    ? getDogFoodLinesByBrand(formData.foodBrand)
-    : DOG_FOOD_LINES;
+  useEffect(() => {
+    let isMounted = true;
+
+    NutritionFormulaRepository.getFoodOptions().then((options) => {
+      if (isMounted) setFoodOptions(options);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const foodBrands = useMemo(() => getBrandsFromOptions(foodOptions), [foodOptions]);
+  const foodLines = useMemo(() => getLinesFromOptions(foodOptions), [foodOptions]);
+  const brandLineOptions = useMemo(
+    () =>
+      formData.foodBrand && foodBrands.includes(formData.foodBrand)
+        ? getLinesByBrandFromOptions(foodOptions, formData.foodBrand)
+        : foodLines,
+    [foodBrands, foodLines, foodOptions, formData.foodBrand]
+  );
 
   const handleNext = async () => {
     if (!formData.diet) {
@@ -59,6 +86,12 @@ export function HealthCare() {
     }
     if (!formData.weight) {
       setError('Por favor, informe o peso atual.');
+      return;
+    }
+
+    const numericWeight = Number(formData.weight);
+    if (!Number.isFinite(numericWeight) || numericWeight <= 0 || numericWeight > DOG_WEIGHT_MAX_KG) {
+      setError(`Informe um peso entre 0.1 e ${DOG_WEIGHT_MAX_KG} kg.`);
       return;
     }
     
@@ -285,10 +318,12 @@ export function HealthCare() {
                <Input 
                 label="Peso atual" 
                 placeholder="00.0"
-                type="number"
+                type="text"
+                inputMode="decimal"
+                maxLength={5}
                 suffix="kg"
                 value={formData.weight}
-                onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, weight: sanitizeDecimalInput(e.target.value, DOG_WEIGHT_MAX_KG) }))}
               />
 
               <Input 
@@ -349,7 +384,7 @@ export function HealthCare() {
       <BottomSheetSelect 
         isOpen={isBrandModalOpen}
         onClose={() => setIsBrandModalOpen(false)}
-        options={[...DOG_FOOD_BRANDS, 'Outra']}
+        options={[...foodBrands, 'Outra']}
         value={formData.foodBrand}
         onSelect={(val) => setFormData(prev => ({ ...prev, foodBrand: val, foodLine: '' }))}
         title="Selecione a Marca"
@@ -361,7 +396,7 @@ export function HealthCare() {
         options={[...brandLineOptions, 'Outra']}
         value={formData.foodLine}
         onSelect={(val) => {
-          const detectedLifeStage = getDogFoodLifeStage(formData.foodBrand, val);
+          const detectedLifeStage = getLifeStageFromOptions(foodOptions, formData.foodBrand, val);
           setFormData(prev => ({
             ...prev,
             foodLine: val,

@@ -8,6 +8,8 @@ import { CurrentPlan, TrainingTask } from '@/src/types';
 import { TrainingRepository } from '@/src/repositories/TrainingRepository';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { TRAINING_TEMPLATES } from '@/src/lib/trainingTemplates';
+import { sanitizeText } from '@/src/lib/textSanitizer';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 
 const translateLevel = (level: string) => {
@@ -21,7 +23,9 @@ const translateLevel = (level: string) => {
 
 export function Plano() {
   const navigate = useNavigate();
+  const { isPremium } = useAuth();
   const [dogName, setDogName] = useState<string>('seu cão');
+  const [dogGender, setDogGender] = useState<string>('male');
   const [isLoading, setIsLoading] = useState(true);
   const [isSkipping, setIsSkipping] = useState(false);
   const [plan, setPlan] = useState<CurrentPlan | null>(null);
@@ -36,6 +40,7 @@ export function Plano() {
       const dogProfile = await DogRepository.getDogProfile(user.uid);
       if (dogProfile) {
         setDogName(dogProfile.name || 'seu cão');
+        setDogGender(dogProfile.gender || 'male');
         setKnownCommands(dogProfile.knownCommands || []);
         setTrainingBase(dogProfile.trainingBase || 'beginner');
       }
@@ -56,6 +61,11 @@ export function Plano() {
   }, []);
 
   const handleSkipTo = async (targetIndex: number) => {
+    if (!isPremium && targetIndex >= 3) {
+      navigate('/assinatura');
+      return;
+    }
+
     setIsSkipping(true);
     try {
       const user = auth.currentUser;
@@ -101,7 +111,7 @@ export function Plano() {
   }, {} as Record<string, TrainingTask[]>);
   
   const currentModule = currentTask?.module || '1';
-  const currentModuleName = currentTask?.moduleName || 'Em breve';
+  const currentModuleName = sanitizeText(currentTask?.moduleName) || 'Em breve';
 
   return (
     <div className="flex-1 bg-[#FAFAFA] font-sans pb-24">
@@ -116,7 +126,7 @@ export function Plano() {
             Trilha de Evolução Personalizada
           </p>
           <h1 className="font-serif text-[32px] text-[#055A43] tracking-tight leading-tight">
-            Plano do <br />
+            Plano {dogGender === 'female' ? 'da' : 'do'} <br />
             <span className="italic">{dogName}</span>
           </h1>
           <button 
@@ -175,9 +185,9 @@ export function Plano() {
                   <span className="text-[#055A43] text-[10px] font-bold uppercase tracking-widest bg-[#055A43]/10 px-3 py-1.5 rounded-full">{currentTask.duration}</span>
                 </div>
 
-                <h3 className="font-serif text-[22px] text-[#055A43] tracking-tight mb-2">{currentTask.title}</h3>
+                <h3 className="font-serif text-[22px] text-[#055A43] tracking-tight mb-2">{sanitizeText(currentTask.title)}</h3>
                 <p className="text-[#5C615D] text-[13px] font-light leading-relaxed mb-6 line-clamp-2">
-                  {TRAINING_TEMPLATES[currentTask.id]?.objective || currentTask.description}
+                  {sanitizeText(TRAINING_TEMPLATES[currentTask.id]?.objective || currentTask.description)}
                 </p>
 
                 <button className="w-full bg-[#055A43] text-white h-12 rounded-xl font-medium text-sm flex items-center justify-between px-5 transition-transform active:scale-[0.98] shadow-md shadow-[#055A43]/20 hover:bg-[#044735]">
@@ -196,19 +206,28 @@ export function Plano() {
                     {Object.entries(upcomingModulesMap).map(([modName, modTasks], modIndex) => (
                       <div key={modName} className="mb-2">
                         <h4 className="text-[11px] font-bold text-[#055A43] uppercase tracking-wider mb-3 pl-2 opacity-80">
-                          {modName}
+                          {sanitizeText(modName)}
                         </h4>
                         <div className="flex flex-col gap-3">
                           {(modTasks as TrainingTask[]).map((t, i) => {
                             const taskGlobalIndex = tasks.findIndex(x => x.id === t.id);
+                            const isLocked = !isPremium && taskGlobalIndex >= 3;
                             return (
                               <button 
                                 key={t.id} 
                                 onClick={() => handleSkipTo(taskGlobalIndex)}
-                                className="w-full text-left bg-white border border-[#055A43]/10 hover:border-[#055A43]/30 rounded-[1.5rem] p-5 flex items-center gap-4 transition-colors group"
+                                className={`w-full text-left bg-white border rounded-[1.5rem] p-5 flex items-center gap-4 transition-colors group ${
+                                  isLocked
+                                    ? 'border-[#055A43]/5 opacity-75'
+                                    : 'border-[#055A43]/10 hover:border-[#055A43]/30'
+                                }`}
                               >
                                 <div className="w-10 h-10 rounded-full bg-[#FAFAFA] border border-[#055A43]/10 flex items-center justify-center shrink-0 group-hover:bg-[#055A43]/5">
-                                  <ChevronRight className="w-5 h-5 text-[#5C615D]/60" />
+                                  {isLocked ? (
+                                    <Lock className="w-4 h-4 text-[#5C615D]/60" />
+                                  ) : (
+                                    <ChevronRight className="w-5 h-5 text-[#5C615D]/60" />
+                                  )}
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex justify-between items-center mb-1">
@@ -217,7 +236,7 @@ export function Plano() {
                                     </span>
                                     <span className="text-[10px] text-[#5C615D]/60 uppercase tracking-widest">{t.duration}</span>
                                   </div>
-                                  <h4 className="font-serif text-[17px] text-[#506352]">{t.title}</h4>
+                                  <h4 className="font-serif text-[17px] text-[#506352]">{sanitizeText(t.title)}</h4>
                                 </div>
                               </button>
                             );
@@ -239,19 +258,28 @@ export function Plano() {
                     {Object.entries(pastModulesMap).map(([modName, modTasks]) => (
                       <div key={modName} className="mb-2 opacity-80">
                         <h4 className="text-[11px] font-bold text-[#055A43] uppercase tracking-wider mb-3 pl-2 opacity-80">
-                          {modName}
+                          {sanitizeText(modName)}
                         </h4>
                         <div className="flex flex-col gap-3">
                           {(modTasks as TrainingTask[]).map((t) => {
                             const taskGlobalIndex = tasks.findIndex(x => x.id === t.id);
+                            const isLocked = !isPremium && taskGlobalIndex >= 3;
                             return (
                               <button 
                                 key={t.id} 
                                 onClick={() => handleSkipTo(taskGlobalIndex)}
-                                className="w-full text-left bg-white border border-[#055A43]/10 hover:border-[#055A43]/30 rounded-[1.5rem] p-5 flex items-center gap-4 transition-colors group"
+                                className={`w-full text-left bg-white border rounded-[1.5rem] p-5 flex items-center gap-4 transition-colors group ${
+                                  isLocked
+                                    ? 'border-[#055A43]/5 opacity-75'
+                                    : 'border-[#055A43]/10 hover:border-[#055A43]/30'
+                                }`}
                               >
                                 <div className="w-10 h-10 rounded-full bg-[#E5F2ED] border border-[#055A43]/10 flex items-center justify-center shrink-0 group-hover:bg-[#055A43]/10">
-                                  <CheckCircle2 className="w-4 h-4 text-[#055A43]" />
+                                  {isLocked ? (
+                                    <Lock className="w-4 h-4 text-[#5C615D]/60" />
+                                  ) : (
+                                    <CheckCircle2 className="w-4 h-4 text-[#055A43]" />
+                                  )}
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex justify-between items-center mb-1">
@@ -260,7 +288,7 @@ export function Plano() {
                                     </span>
                                     <span className="text-[10px] text-[#5C615D]/60 uppercase tracking-widest">{t.duration}</span>
                                   </div>
-                                  <h4 className="font-serif text-[17px] text-[#506352]">{t.title}</h4>
+                                  <h4 className="font-serif text-[17px] text-[#506352]">{sanitizeText(t.title)}</h4>
                                 </div>
                               </button>
                             );

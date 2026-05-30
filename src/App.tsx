@@ -5,6 +5,8 @@ import { Welcome } from './pages/auth/Welcome';
 import { Register } from './pages/auth/Register';
 import { Login } from './pages/auth/Login';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
+import { Ativar } from './pages/auth/Ativar';
+import { EbookLanding } from './pages/EbookLanding';
 
 import { DogData } from './pages/onboarding/DogData';
 import { Routine } from './pages/onboarding/Routine';
@@ -26,6 +28,16 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+const APP_ADMIN_EMAILS = new Set(['focaosupport@gmail.com']);
+
+function RequireAppAdmin({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+  if (isLoading) return <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center"><div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" /></div>;
+  if (!user) return <Navigate to="/welcome" replace />;
+  if (!user.email || !APP_ADMIN_EMAILS.has(user.email.toLowerCase())) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
 import { Plano } from './pages/Plano';
 import { Checkin } from './pages/Checkin';
 import { Evolucao } from './pages/Evolucao';
@@ -38,12 +50,13 @@ import { Ajuda } from './pages/Ajuda';
 import { Agenda } from './pages/Agenda';
 import { HistoricoTreinos } from './pages/HistoricoTreinos';
 import { RelatorioSemanal } from './pages/RelatorioSemanal';
+import { RelatorioImpressao } from './pages/RelatorioImpressao';
 import { EditarPerfil } from './pages/EditarPerfil';
 import { Notificacoes } from './pages/Notificacoes';
 import { Suporte } from './pages/Suporte';
 import { Manutencao } from './pages/Manutencao';
+import { SosTreinos } from './pages/SosTreinos';
 import { DevTools } from './pages/DevTools';
-
 import { AdminNotificacoes } from './pages/admin/AdminNotificacoes';
 
 export default function App() {
@@ -58,9 +71,12 @@ export default function App() {
           ) : (
             <Routes>
               <Route path="/welcome" element={<Welcome />} />
+              <Route path="/ebook" element={<Navigate to="/ebook-comportamento-e-rotina" replace />} />
+              <Route path="/ebook-comportamento-e-rotina" element={<EbookLanding />} />
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/ativar" element={<Ativar />} />
               
               {/* Onboarding */}
               <Route path="/onboarding/dog-data" element={<RequireAuth><DogData /></RequireAuth>} />
@@ -86,17 +102,22 @@ export default function App() {
               <Route path="/nutricao" element={<RequireAuth><Nutricao /></RequireAuth>} />
               <Route path="/vacinas" element={<RequireAuth><Vacinas /></RequireAuth>} />
               <Route path="/agenda" element={<RequireAuth><Agenda /></RequireAuth>} />
+              <Route path="/sos" element={<RequireAuth><SosTreinos /></RequireAuth>} />
               <Route path="/historico" element={<RequireAuth><HistoricoTreinos /></RequireAuth>} />
               <Route path="/relatorio" element={<RequireAuth><RelatorioSemanal /></RequireAuth>} />
+              <Route path="/relatorio-impressao" element={<RequireAuth><RelatorioImpressao /></RequireAuth>} />
               <Route path="/assinatura" element={<RequireAuth><Assinatura /></RequireAuth>} />
               <Route path="/notificacoes" element={<RequireAuth><Notificacoes /></RequireAuth>} />
               <Route path="/ajuda" element={<RequireAuth><Ajuda /></RequireAuth>} />
               <Route path="/suporte" element={<RequireAuth><Suporte /></RequireAuth>} />
               <Route path="/editar-perfil" element={<RequireAuth><EditarPerfil /></RequireAuth>} />
               <Route path="/manutencao" element={<Manutencao />} />
-              <Route path="/dev-tools" element={<RequireAuth><DevTools /></RequireAuth>} />
-              <Route path="/admin/notificacoes" element={<RequireAuth><AdminNotificacoes /></RequireAuth>} />
-
+              
+              {/* Admin & Dev Tools */}
+              <Route path="/dev-tools" element={<RequireAppAdmin><DevTools /></RequireAppAdmin>} />
+              <Route path="/admin/notificacoes" element={<RequireAppAdmin><AdminNotificacoes /></RequireAppAdmin>} />
+              
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           )}
         </div>

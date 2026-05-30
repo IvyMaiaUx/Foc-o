@@ -44,6 +44,12 @@ function humanGoal(value?: string): string {
   return GOAL_LABELS[key] || value || 'rotina mais equilibrada';
 }
 
+/** Retorna o artigo definido e pronome correto com base no sexo do cão */
+function getPronoun(dog: { gender?: string } | null): { art: string; pronoun: string; adj: string } {
+  if (dog?.gender === 'female') return { art: 'a', pronoun: 'Ela', adj: 'pronta' };
+  return { art: 'o', pronoun: 'Ele', adj: 'pronto' };
+}
+
 export class TrainingReasonMotor {
   static explainTrainingChoice(
     dogProfile: DogProfile | null,
@@ -95,23 +101,26 @@ export class TrainingReasonMotor {
     }
 
     // Por que este treino
+    const { art, pronoun } = getPronoun(dogProfile);
+    const dogName = dogProfile?.name || 'seu cão';
+
     if (totalSessions <= 2) {
-      text = `Como o ${dogProfile?.name || 'seu cão'} está no início da jornada, este treino cria a base para uma convivência mais calma e conectada.`;
+      text = `Como ${art} ${dogName} está no início da jornada, este treino cria a base para uma convivência mais calma e conectada.`;
       if (dogProfile?.goals && dogProfile.goals.length > 0) {
-        text += ` Ele tambÃ©m conversa com a meta principal cadastrada: ${humanGoal(dogProfile.goals[0])}.`;
+        text += ` ${pronoun} também conversa com a meta principal cadastrada: ${humanGoal(dogProfile.goals[0])}.`;
       }
       confidence = 'medium';
     } else {
-      text = `Estamos personalizando a rotina com base nos últimos registros. Este passo é essencial para evoluir os comandos atuais do ${dogProfile?.name || 'seu cão'}.`;
+      text = `Estamos personalizando a rotina com base nos últimos registros. Este passo é essencial para evoluir os comandos atuais d${art} ${dogName}.`;
       confidence = 'high';
       
       const lastCheckin = recentCheckins.length > 0 ? recentCheckins[0] : null;
 
       if (lastCheckin) {
         if (lastCheckin.energia === 'high' || lastCheckin.energia === 'Agitado' || lastCheckin.energia === 'Agitado e sem foco') {
-          text = `Notamos que a energia do ${dogProfile?.name || 'seu cão'} estava alta nos últimos registros. Este treino vai ajudar a canalizar essa energia com foco.`;
+          text = `Notamos que a energia d${art} ${dogName} estava alta nos últimos registros. Este treino vai ajudar a canalizar essa energia com foco.`;
         } else if (lastCheckin.energia === 'Baixa' || lastCheckin.energia === 'Muito calmo') {
-          text = `Este treino respeita o ritmo do ${dogProfile?.name || 'seu cão'}, propondo estímulos de forma suave e cadenciada.`;
+          text = `Este treino respeita o ritmo d${art} ${dogName}, propondo estímulos de forma suave e cadenciada.`;
         }
       }
     }

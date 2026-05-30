@@ -28,6 +28,8 @@ export interface UserProfile {
     notificationsEnabled: boolean;
     trainingReminderTime: string; // e.g. "09:00"
     checkinReminderTime: string; // e.g. "20:00"
+    vaccineReminderTime?: string; // e.g. "09:00"
+    reportReminderTime?: string; // e.g. "10:00"
     reminders?: {
       training: boolean;
       checkin: boolean;
@@ -41,9 +43,22 @@ export interface UserProfile {
 
 export function hasPremiumAccess(profile: UserProfile | null): boolean {
   if (!profile) return false;
-  if (profile.subscription?.premiumAccess !== undefined) {
-    return profile.subscription.premiumAccess;
+
+  const subscription = profile.subscription;
+  if (subscription) {
+    const trialEndsAt = subscription.trialEndsAt ?? profile.trialEndsAt ?? 0;
+
+    if (subscription.status === 'trialing' || subscription.plan === 'trial') {
+      return Boolean(subscription.premiumAccess && trialEndsAt > Date.now());
+    }
+
+    if (subscription.status === 'active' || subscription.plan === 'premium') {
+      return subscription.premiumAccess !== false;
+    }
+
+    return false;
   }
+
   const tier = profile.subscriptionTier;
   const trialEnd = profile.trialEndsAt;
   if (tier === 'premium') return true;
@@ -68,16 +83,32 @@ export interface DogProfile {
   age: string;
   weight: string;
   photoUrl?: string;
+  gender?: 'male' | 'female' | string;
+  size?: 'small' | 'medium' | 'large' | 'giant' | string;
   
   routine: string[];
+  housingType?: string;
+  hasOutdoorArea?: boolean;
+  hasYard?: boolean;
   walksPerDay?: string;
+  walkFrequency?: number;
+  walkDuration?: string;
+  walkDurationMinutes?: number;
   livesWithPeople?: boolean;
+  peopleCount?: string;
   livesWithAnimals?: boolean;
   animalRelationship?: string;
+  dailyRoutine?: string;
   energyLevel: string;
   personalityTraits?: string[];
+  personality?: string[];
+  anxietyLevel?: string;
+  sociabilityLevel?: string;
+  independenceLevel?: string;
+  fearLevel?: string;
   rewardPreference?: string;
   behaviorIssues: string[];
+  behavior?: Record<string, boolean | undefined>;
   trainingBase: string; // 'beginner', 'intermediate', 'advanced'
   knownCommands: string[];
   goals: string[];
@@ -91,9 +122,24 @@ export interface DogProfile {
   naturalFoodDetails?: string;
   hasVetGuidance?: string;
   mealsPerDay?: string;
+  nutrition?: {
+    foodType?: 'dry' | 'wet' | 'natural' | 'mixed';
+    foodBrand?: string;
+    foodLine?: string;
+    foodPhase?: string;
+    foodVersion?: string;
+    mealsPerDay?: number;
+    portionGrams?: number;
+    fallbackReason?: string;
+    matchConfidence?: number;
+  };
   lastVaccine?: string;
   nextCheckup?: string;
   observations?: string;
+  health?: {
+    castrated?: boolean;
+    [key: string]: any;
+  };
   
   createdAt: number;
   updatedAt: number;
@@ -153,4 +199,15 @@ export interface SupportThread {
   lastMessageAt: number;
   unreadAdmin: boolean;
   unreadUser: boolean;
+}
+
+export interface CustomEvent {
+  id: string;
+  title: string;
+  time: string; // e.g. "08:30"
+  type: 'walk' | 'feed' | 'grooming' | 'vet' | 'meds' | 'other';
+  frequency: 'daily' | 'weekly' | 'once';
+  daysOfWeek?: number[]; // [0 = Sunday, 1 = Monday, etc.]
+  date?: string; // "YYYY-MM-DD"
+  createdAt: number;
 }

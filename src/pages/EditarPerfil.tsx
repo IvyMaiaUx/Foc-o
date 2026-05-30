@@ -1,20 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ChevronLeft, ChevronDown } from 'lucide-react';
+import { Camera, CheckCircle2, ChevronLeft, ChevronDown, Crown, ShieldPlus } from 'lucide-react';
 import { DogRepository } from '@/src/repositories/DogRepository';
-import { auth, db } from '@/src/lib/firebase';
-import { collection, getDocs, query, limit } from 'firebase/firestore';
+import { UserRepository } from '@/src/repositories/UserRepository';
+import { auth } from '@/src/lib/firebase';
 import { Input } from '@/src/components/ui/Input';
 import { Button } from '@/src/components/ui/Button';
 import { BottomSheetSelect } from '@/src/components/ui/BottomSheetSelect';
 import { COMMON_BREEDS } from '@/src/lib/breeds';
+import { useAuth } from '@/src/contexts/AuthContext';
+import { getSubscriptionPlan, getSubscriptionStatus, hasPremiumAccess } from '@/src/types';
+import {
+  DOG_LIFE_STAGE_OPTIONS,
+  DOG_NAME_MAX_LENGTH,
+  DOG_WEIGHT_MAX_KG,
+  getDogAgeOptions,
+  sanitizeDecimalInput,
+  sanitizeDogName,
+  validateDogBasics,
+} from '@/src/lib/dogFieldValidation';
 
 export function EditarPerfil() {
   const navigate = useNavigate();
+  const { userProfile, refreshProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [activeTab, setActiveTab] = useState<'basico'|'rotina'|'comportamento'|'saude'>('basico');
   const [isBreedModalOpen, setIsBreedModalOpen] = useState(false);
+  const [isLifeStageModalOpen, setIsLifeStageModalOpen] = useState(false);
+  const [isAgeModalOpen, setIsAgeModalOpen] = useState(false);
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
 
   const foodBrands = [
@@ -25,9 +39,11 @@ export function EditarPerfil() {
   const [formData, setFormData] = useState({
     name: '',
     breed: '',
+    lifeStage: '',
     age: '',
     weight: '',
     photoUrl: '',
+    gender: '',
     walksPerDay: '',
     livesWithPeople: false,
     livesWithAnimals: false,
@@ -44,13 +60,47 @@ export function EditarPerfil() {
   
   const [dogId, setDogId] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [savedMessage, setSavedMessage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [tutorNameInput, setTutorNameInput] = useState(userProfile?.name || auth.currentUser?.displayName || '');
+
+  const getSubscriptionDisplay = () => {
+    const plan = getSubscriptionPlan(userProfile);
+    const status = getSubscriptionStatus(userProfile);
+
+    if (status === 'past_due') {
+      return { text: 'Pagamento pendente', color: 'bg-red-400/20 text-red-600 border-red-400/30' };
+    }
+
+    if (status === 'canceled') {
+      return { text: 'Cancelado', color: 'bg-[#5C615D]/10 text-[#5C615D] border-[#5C615D]/20' };
+    }
+
+    if (plan === 'premium' && hasPremiumAccess(userProfile)) {
+      return { text: 'Premium', color: 'bg-emerald-400/20 text-emerald-600 border-emerald-400/30' };
+    }
+
+    if (plan === 'trial') {
+      const trialEndsAt = userProfile?.subscription?.trialEndsAt ?? userProfile?.trialEndsAt;
+      if (trialEndsAt && trialEndsAt > Date.now()) {
+        const daysLeft = Math.ceil((trialEndsAt - Date.now()) / (1000 * 60 * 60 * 24));
+        return { text: `Trial (${daysLeft} dias)`, color: 'bg-orange-400/20 text-orange-600 border-orange-400/30' };
+      }
+    }
+
+    return { text: 'Plano Grátis', color: 'bg-[#5C615D]/10 text-[#5C615D] border-[#5C615D]/20' };
+  };
+
+  const planBadge = getSubscriptionDisplay();
+  const isPremiumProfile = getSubscriptionPlan(userProfile) === 'premium' && hasPremiumAccess(userProfile);
+  const tutorName = userProfile?.name || auth.currentUser?.displayName || 'Tutor';
 
   useEffect(() => {
     const loadData = async () => {
       const user = auth.currentUser;
       if (!user) return;
+      setTutorNameInput(userProfile?.name || user.displayName || '');
       
       const dogProfile = await DogRepository.getDogProfile(user.uid);
       
@@ -59,9 +109,11 @@ export function EditarPerfil() {
         setFormData({
           name: dogProfile.name || '',
           breed: dogProfile.breed || '',
+          lifeStage: dogProfile.lifeStage || '',
           age: dogProfile.age || '',
           weight: dogProfile.weight || '',
           photoUrl: dogProfile.photoUrl || '',
+          gender: dogProfile.gender || '',
           walksPerDay: dogProfile.walksPerDay || '',
           livesWithPeople: dogProfile.livesWithPeople || false,
           livesWithAnimals: dogProfile.livesWithAnimals || false,
@@ -78,7 +130,7 @@ export function EditarPerfil() {
       }
     };
     loadData();
-  }, []);
+  }, [userProfile]);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -135,16 +187,37 @@ export function EditarPerfil() {
     const user = auth.currentUser;
     if (!user || !dogId) return;
 
-    setIsSaving(true);
     setError('');
+    setSavedMessage('');
+
+    const cleanTutorName = tutorNameInput.trim();
+    if (!cleanTutorName || cleanTutorName.length < 2) {
+      setError('Informe o nome do tutor.');
+      return;
+    }
+
+    if (!formData.lifeStage) {
+      setError('Selecione a fase da vida do cão.');
+      return;
+    }
+
+    const validationError = validateDogBasics(formData);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setIsSaving(true);
 
     try {
       await DogRepository.saveDogProfile(user.uid, {
         name: formData.name,
         breed: formData.breed,
+        lifeStage: formData.lifeStage,
         age: formData.age,
         weight: formData.weight,
         photoUrl: formData.photoUrl,
+        gender: formData.gender,
         walksPerDay: formData.walksPerDay,
         livesWithPeople: formData.livesWithPeople,
         livesWithAnimals: formData.livesWithAnimals,
@@ -158,7 +231,10 @@ export function EditarPerfil() {
         nextCheckup: formData.nextCheckup,
         observations: formData.observations
       });
-      navigate(-1);
+      await UserRepository.updateTutorName(user.uid, cleanTutorName);
+      await refreshProfile();
+      setSavedMessage('Alterações salvas com sucesso.');
+      setTimeout(() => navigate(-1), 900);
     } catch (err) {
       console.error('Erro ao salvar', err);
       setError('Erro ao salvar as informações.');
@@ -178,7 +254,7 @@ export function EditarPerfil() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col pb-safe">
-      <header className="px-6 pt-16 pb-4 bg-white border-b border-[#055A43]/5 flex items-center gap-4 sticky top-0 z-10">
+      <header className="px-6 pt-16 pb-4 bg-white flex items-center gap-4 sticky top-0 z-10">
         <button 
           onClick={() => navigate(-1)}
           className="w-10 h-10 rounded-full bg-[#FAFAFA] border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
@@ -195,7 +271,60 @@ export function EditarPerfil() {
         </div>
       </header>
 
-      <div className="px-6 pb-4 bg-white border-b border-[#055A43]/5">
+      <section className="px-6 pt-4 pb-10 bg-white border-b border-[#055A43]/5 flex flex-col items-center">
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handlePhotoUpload}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          className="relative w-24 h-24 rounded-[2rem] shadow-xl shadow-[#055A43]/10 mb-4 border border-[#055A43]/10 bg-[#055A43] flex items-center justify-center active:scale-[0.98] transition-all"
+          aria-label="Alterar foto do cão"
+        >
+          {isPremiumProfile && (
+            <span className="pointer-events-none absolute -inset-1 rounded-full border-[2.5px] border-[#D8C3A5] shadow-[inset_0_1px_0_rgba(255,255,255,0.45),0_2px_10px_rgba(216,195,165,0.18)]" />
+          )}
+          <span className="absolute inset-0 rounded-[2rem] overflow-hidden flex items-center justify-center">
+          {formData.photoUrl ? (
+            <img src={formData.photoUrl} alt="Foto do cão" className="w-full h-full object-cover" />
+          ) : isUploading ? (
+            <span className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <>
+              <span className="font-serif text-white text-[40px] opacity-90">
+                {formData.name?.charAt(0).toUpperCase() || 'C'}
+              </span>
+              <span className="absolute right-1.5 bottom-1.5 w-8 h-8 rounded-full bg-white text-[#055A43] shadow-md flex items-center justify-center">
+                <Camera className="w-4 h-4" />
+              </span>
+            </>
+          )}
+          </span>
+        </button>
+
+        <h2 className="font-serif text-[28px] text-[#055A43] tracking-tight leading-none mb-1 text-center">
+          {formData.name || 'Seu cão'}
+        </h2>
+        <p className="text-sm font-medium text-[#506352]/70 uppercase tracking-widest text-center">
+          Tutor(a): {tutorName.split(' ')[0] || 'Tutor'}
+        </p>
+
+        <button
+          type="button"
+          onClick={() => navigate('/assinatura')}
+          className={`mt-4 px-4 py-1.5 rounded-full flex items-center gap-2 border ${planBadge.color} active:scale-95 transition-transform`}
+        >
+          {getSubscriptionPlan(userProfile) === 'premium' ? <Crown className="w-4 h-4" /> : <ShieldPlus className="w-4 h-4" />}
+          <span className="text-[10px] font-medium tracking-widest uppercase">{planBadge.text}</span>
+        </button>
+      </section>
+
+      <div className="px-6 pt-4 pb-4 bg-white border-b border-[#055A43]/5">
         <div className="flex bg-[#FAFAFA] rounded-[1rem] p-1 border border-[#055A43]/5">
           <TabButton id="basico" label="Básico" />
           <TabButton id="rotina" label="Rotina" />
@@ -207,39 +336,49 @@ export function EditarPerfil() {
       <main className="flex-1 px-6 py-8 overflow-y-auto">
         {activeTab === 'basico' && (
           <div className="flex flex-col gap-6 animate-in slide-in-from-left-4 fade-in duration-300">
-            <div className="flex flex-col items-center justify-center mb-4">
-              <input 
-                type="file" 
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={handlePhotoUpload}
-                className="hidden" 
-              />
-              <button 
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className="relative w-32 h-32 rounded-full bg-[#055A43]/5 border-2 border-dashed border-[#055A43]/30 flex flex-col items-center justify-center text-[#055A43] overflow-hidden hover:bg-[#055A43]/10 transition-colors shadow-sm"
-              >
-                {formData.photoUrl ? (
-                  <img src={formData.photoUrl} alt="Cão" className="w-full h-full object-cover" />
-                ) : isUploading ? (
-                  <span className="w-8 h-8 border-2 border-[#055A43]/30 border-t-[#055A43] rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <Camera className="w-8 h-8 mb-1 opacity-60" />
-                    <span className="text-xs font-medium opacity-80 uppercase tracking-wider">Alterar</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <Input
+              label="Nome do tutor"
+              placeholder="Ex: Isabelle"
+              value={tutorNameInput}
+              maxLength={60}
+              onChange={(e) => setTutorNameInput(e.target.value)}
+            />
 
             <Input 
               label="Nome do cão" 
               placeholder="Ex: Bento"
               value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              maxLength={DOG_NAME_MAX_LENGTH}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: sanitizeDogName(e.target.value) }))}
             />
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[#5C615D] text-sm font-medium ml-1">Sexo</label>
+              <div className="flex gap-2">
+                <button 
+                  type="button" 
+                  onClick={() => setFormData(prev => ({ ...prev, gender: 'male' }))} 
+                  className={`flex-1 py-3.5 rounded-xl border text-sm font-medium transition-all ${
+                    formData.gender === 'male' 
+                      ? 'bg-[#055A43] text-white border-[#055A43]' 
+                      : 'bg-white text-[#506352] border-gray-200 hover:border-[#055A43]/30'
+                  }`}
+                >
+                  Macho
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => setFormData(prev => ({ ...prev, gender: 'female' }))} 
+                  className={`flex-1 py-3.5 rounded-xl border text-sm font-medium transition-all ${
+                    formData.gender === 'female' 
+                      ? 'bg-[#055A43] text-white border-[#055A43]' 
+                      : 'bg-white text-[#506352] border-gray-200 hover:border-[#055A43]/30'
+                  }`}
+                >
+                  Fêmea
+                </button>
+              </div>
+            </div>
             
             <div className="flex flex-col gap-1.5 w-full">
               <label className="text-[#5C615D] text-sm font-medium ml-1">Raça</label>
@@ -255,19 +394,43 @@ export function EditarPerfil() {
               </button>
             </div>
 
+            <div className="flex flex-col gap-1.5 w-full">
+              <label className="text-[#5C615D] text-sm font-medium ml-1">Fase da vida</label>
+              <button
+                type="button"
+                onClick={() => setIsLifeStageModalOpen(true)}
+                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative"
+              >
+                {formData.lifeStage || <span className="text-[#A0A4A1]">Selecione a fase</span>}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+                  <ChevronDown className="w-5 h-5" />
+                </div>
+              </button>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
-              <Input 
-                label="Idade" 
-                placeholder="Meses ou anos"
-                value={formData.age}
-                onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value }))}
-              />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#5C615D] text-sm font-medium ml-1">Idade aprox.</label>
+                <button
+                  type="button"
+                  onClick={() => setIsAgeModalOpen(true)}
+                  disabled={!formData.lifeStage}
+                  className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative disabled:opacity-60"
+                >
+                  {formData.age || <span className="text-[#A0A4A1]">Opcional</span>}
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+                    <ChevronDown className="w-5 h-5" />
+                  </div>
+                </button>
+              </div>
               <Input 
                 label="Peso (kg)" 
-                placeholder="Ex: 15"
-                type="number"
+                placeholder="Ex: 15.5"
+                type="text"
+                inputMode="decimal"
+                maxLength={5}
                 value={formData.weight}
-                onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, weight: sanitizeDecimalInput(e.target.value, DOG_WEIGHT_MAX_KG) }))}
               />
             </div>
           </div>
@@ -422,6 +585,12 @@ export function EditarPerfil() {
           </div>
         )}
 
+        {savedMessage && (
+          <p className="mt-6 flex items-center justify-center gap-2 text-sm font-medium text-[#055A43]">
+            <CheckCircle2 className="h-4 w-4" />
+            {savedMessage}
+          </p>
+        )}
         {error && <p className="text-red-500 text-sm ml-1 mt-6 text-center">{error}</p>}
       </main>
 
@@ -449,6 +618,24 @@ export function EditarPerfil() {
         onSelect={(val) => setFormData(prev => ({ ...prev, foodBrand: val }))}
         title="Selecione a Marca"
         placeholder="Buscar marca..."
+      />
+      <BottomSheetSelect
+        isOpen={isLifeStageModalOpen}
+        onClose={() => setIsLifeStageModalOpen(false)}
+        options={DOG_LIFE_STAGE_OPTIONS}
+        value={formData.lifeStage}
+        onSelect={(val) => setFormData(prev => ({ ...prev, lifeStage: val, age: '' }))}
+        title="Fase da vida"
+        placeholder="Buscar fase..."
+      />
+      <BottomSheetSelect
+        isOpen={isAgeModalOpen}
+        onClose={() => setIsAgeModalOpen(false)}
+        options={getDogAgeOptions(formData.lifeStage)}
+        value={formData.age}
+        onSelect={(val) => setFormData(prev => ({ ...prev, age: val }))}
+        title="Idade aproximada"
+        placeholder="Buscar idade..."
       />
     </div>
   );

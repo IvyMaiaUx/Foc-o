@@ -30,23 +30,34 @@ function extractEmailFromSession(session) {
   );
 }
 
-function claimPayload({ email, session, subscription }) {
-  const status = subscription?.status || 'active';
+function subscriptionAccess(subscription, fallbackStatus = 'active') {
+  const status = subscription?.status || fallbackStatus;
   const isTrialing = status === 'trialing';
   const isActive = status === 'active' || isTrialing;
-  const trialEndsAt = secondsToMs(subscription?.trial_end) || (isTrialing ? nowMs() + 7 * DAY_MS : undefined);
-  const currentPeriodEnd = secondsToMs(subscription?.current_period_end);
+
+  return {
+    status,
+    plan: isTrialing ? 'trial' : 'premium',
+    premiumAccess: isActive,
+    trialEndsAt: secondsToMs(subscription?.trial_end) || (isTrialing ? nowMs() + 7 * DAY_MS : undefined),
+    currentPeriodEnd: secondsToMs(subscription?.current_period_end),
+  };
+}
+
+function claimPayload({ email, session, subscription }) {
+  const access = subscriptionAccess(subscription);
 
   return {
     email,
-    plan: isTrialing ? 'trial' : 'premium',
-    status: isTrialing ? 'trialing' : isActive ? 'active' : status,
-    premiumAccess: isActive,
-    trialEndsAt: trialEndsAt || null,
-    currentPeriodEnd: currentPeriodEnd || null,
+    plan: access.plan,
+    status: access.status === 'trialing' ? 'trialing' : access.premiumAccess ? 'active' : access.status,
+    premiumAccess: access.premiumAccess,
+    trialEndsAt: access.trialEndsAt || null,
+    currentPeriodEnd: access.currentPeriodEnd || null,
     stripeCustomerId: typeof session.customer === 'string' ? session.customer : session.customer?.id || null,
     stripeSubscriptionId: typeof session.subscription === 'string' ? session.subscription : subscription?.id || null,
     stripeCheckoutSessionId: session.id,
+    cancelAtPeriodEnd: !!subscription?.cancel_at_period_end,
     source: 'stripe_email_claim',
     claimed: false,
     createdAt: nowMs(),
@@ -54,21 +65,74 @@ function claimPayload({ email, session, subscription }) {
   };
 }
 
+function subscriptionPayload({ email, customerId, subscription, fallbackStatus }) {
+  const access = subscriptionAccess(subscription, fallbackStatus);
+  const status = subscription?.status || 'active';
+
+  return {
+    email,
+    plan: access.plan,
+    status: fallbackStatus || status,
+    premiumAccess: access.premiumAccess,
+    trialEndsAt: access.trialEndsAt || null,
+    currentPeriodEnd: access.currentPeriodEnd || null,
+    stripeCustomerId: customerId || (typeof subscription?.customer === 'string' ? subscription.customer : subscription?.customer?.id) || null,
+    stripeSubscriptionId: subscription?.id || null,
+    stripeCheckoutSessionId: null,
+    cancelAtPeriodEnd: !!subscription?.cancel_at_period_end,
+    source: 'stripe_email_claim',
+    claimed: false,
+    createdAt: nowMs(),
+    updatedAt: nowMs(),
+  };
+}
+
+async function findUserByStripeIds(db, payload) {
+  if (payload.stripeSubscriptionId) {
+    const bySubscription = await db.collection('users')
+      .where('subscription.stripeSubscriptionId', '==', payload.stripeSubscriptionId)
+      .limit(1)
+      .get();
+    if (!bySubscription.empty) return bySubscription.docs[0];
+  }
+
+  if (payload.stripeCustomerId) {
+    const byCustomer = await db.collection('users')
+      .where('subscription.stripeCustomerId', '==', payload.stripeCustomerId)
+      .limit(1)
+      .get();
+    if (!byCustomer.empty) return byCustomer.docs[0];
+  }
+
+  if (payload.email) {
+    const byEmail = await db.collection('users')
+      .where('email', '==', payload.email)
+      .limit(1)
+      .get();
+    if (!byEmail.empty) return byEmail.docs[0];
+  }
+
+  return null;
+}
+
 async function upsertClaim(payload) {
   const db = getDb();
-  const key = emailKey(payload.email);
-  const claimRef = db.collection('premiumClaims').doc(key);
-  await claimRef.set(payload, { merge: true });
 
-  const usersSnap = await db.collection('users')
-    .where('email', '==', payload.email)
-    .limit(1)
-    .get();
+  const claimRef = payload.email
+    ? db.collection('premiumClaims').doc(emailKey(payload.email))
+    : null;
 
-  if (!usersSnap.empty) {
-    const userDoc = usersSnap.docs[0];
+  if (claimRef) {
+    await claimRef.set(payload, { merge: true });
+  }
+
+  const userDoc = await findUserByStripeIds(db, payload);
+
+  if (userDoc) {
+    const subscriptionTier = payload.premiumAccess ? payload.plan : 'free';
+
     await userDoc.ref.set({
-      subscriptionTier: payload.plan,
+      subscriptionTier,
       trialEndsAt: payload.trialEndsAt || 0,
       subscription: {
         plan: payload.plan,
@@ -78,19 +142,59 @@ async function upsertClaim(payload) {
         currentPeriodEnd: payload.currentPeriodEnd || null,
         stripeCustomerId: payload.stripeCustomerId || null,
         stripeSubscriptionId: payload.stripeSubscriptionId || null,
+        cancelAtPeriodEnd: !!payload.cancelAtPeriodEnd,
         accessSource: payload.source,
         updatedAt: nowMs(),
       },
       updatedAt: nowMs(),
     }, { merge: true });
 
-    await claimRef.set({
+    if (claimRef) {
+      await claimRef.set({
       claimed: true,
       claimedUid: userDoc.id,
       claimedAt: nowMs(),
       updatedAt: nowMs(),
-    }, { merge: true });
+      }, { merge: true });
+    }
   }
+}
+
+async function getCustomerEmail(stripe, customerId) {
+  if (!customerId) return '';
+  const customer = await stripe.customers.retrieve(customerId);
+  if (customer?.deleted) return '';
+  return normalizeEmail(customer.email);
+}
+
+async function handleSubscriptionEvent(stripe, subscription, fallbackStatus) {
+  const customerId = typeof subscription.customer === 'string'
+    ? subscription.customer
+    : subscription.customer?.id;
+  const email = await getCustomerEmail(stripe, customerId);
+  await upsertClaim(subscriptionPayload({ email, customerId, subscription, fallbackStatus }));
+}
+
+async function handleInvoicePaymentFailed(stripe, invoice) {
+  const subscriptionId = typeof invoice.subscription === 'string'
+    ? invoice.subscription
+    : invoice.subscription?.id;
+  const customerId = typeof invoice.customer === 'string'
+    ? invoice.customer
+    : invoice.customer?.id;
+  const email = normalizeEmail(invoice.customer_email) || await getCustomerEmail(stripe, customerId);
+
+  let subscription = null;
+  if (subscriptionId) {
+    subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  }
+
+  await upsertClaim(subscriptionPayload({
+    email,
+    customerId,
+    subscription: subscription || { id: subscriptionId, customer: customerId, status: 'past_due' },
+    fallbackStatus: 'past_due',
+  }));
 }
 
 export default async function stripeWebhook(req, res) {
@@ -128,6 +232,18 @@ export default async function stripeWebhook(req, res) {
       }
 
       await upsertClaim(claimPayload({ email, session, subscription }));
+    }
+
+    if (event.type === 'customer.subscription.updated') {
+      await handleSubscriptionEvent(stripe, event.data.object);
+    }
+
+    if (event.type === 'customer.subscription.deleted') {
+      await handleSubscriptionEvent(stripe, event.data.object, 'canceled');
+    }
+
+    if (event.type === 'invoice.payment_failed') {
+      await handleInvoicePaymentFailed(stripe, event.data.object);
     }
 
     res.status(200).json({ received: true });

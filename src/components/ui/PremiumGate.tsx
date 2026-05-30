@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
+import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
 
 interface PremiumGateProps {
   featureName: string;
@@ -8,6 +9,10 @@ interface PremiumGateProps {
 
 export function PremiumGate({ featureName }: PremiumGateProps) {
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    AnalyticsRepository.logEvent('premium_viewed', { feature: featureName });
+  }, [featureName]);
   return (
     <div className="min-h-screen bg-[#F9F9F8] font-sans flex flex-col items-center justify-center px-8 text-center">
       <div className="w-16 h-16 bg-[#055A43]/5 rounded-[1.5rem] flex items-center justify-center mb-6">

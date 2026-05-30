@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/src/lib/utils';
-import { motion, HTMLMotionProps } from 'motion/react';
+import { hapticLightTap } from '@/src/lib/haptic';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
@@ -9,7 +9,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', isLoading, children, ...props }, ref) => {
+  ({ className, variant = 'primary', size = 'md', isLoading, children, onClick, ...props }, ref) => {
     
     // Using rounded-full for the main CTA buttons to match Welcome screen and premium feel
     const baseStyles = "inline-flex items-center justify-center rounded-full font-semibold transition-all focus:outline-none disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]";
@@ -27,11 +27,19 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       lg: "h-16 px-10 text-lg"
     };
 
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      hapticLightTap();
+      if (onClick) {
+        onClick(e);
+      }
+    };
+
     return (
       <button
         ref={ref}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         disabled={isLoading || props.disabled}
+        onClick={handleClick}
         {...props}
       >
         {isLoading ? (

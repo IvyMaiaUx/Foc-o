@@ -1,5 +1,6 @@
 import { CheckinData } from '../repositories/CheckinRepository';
-import { TrainingSession } from '../types';
+import { TrainingSession, CustomEvent } from '../types';
+import { toLocalDateKey } from '../lib/dateKeys';
 
 export interface CheckinInsights {
   energyPattern: 'high' | 'low' | 'balanced' | 'unknown';
@@ -9,10 +10,15 @@ export interface CheckinInsights {
 }
 
 export class CheckinInsightsMotor {
-  static analyze(checkins: CheckinData[], trainingLogs: TrainingSession[]): CheckinInsights {
-    const hasEnoughData = checkins.length >= 3 && trainingLogs.length >= 2;
+  static analyze(
+    checkins: CheckinData[], 
+    trainingLogs: TrainingSession[],
+    customEvents: CustomEvent[] = [],
+    completionsHistory: Record<string, Record<string, boolean>> = {}
+  ): CheckinInsights {
+    const hasEnoughData = checkins.length >= 3;
 
-    if (!hasEnoughData) {
+    if (checkins.length === 0) {
       return {
         energyPattern: 'unknown',
         behaviorAfterTraining: 'unknown',
@@ -34,9 +40,7 @@ export class CheckinInsightsMotor {
     }
 
     let energyPattern: 'high' | 'low' | 'balanced' | 'unknown' = 'balanced';
-    if (checkins.length === 0) {
-      energyPattern = 'unknown';
-    } else if (highCount > checkins.length / 2) {
+    if (highCount > checkins.length / 2) {
       energyPattern = 'high';
     } else if (lowCount > checkins.length / 2) {
       energyPattern = 'low';
@@ -50,7 +54,7 @@ export class CheckinInsightsMotor {
     for (const log of trainingLogs) {
       if (log.feedback === 'failed') continue;
 
-      const dateStr = new Date(log.completedAt).toISOString().split('T')[0];
+      const dateStr = toLocalDateKey(log.completedAt);
       const matchCheckin = checkins.find(c => c.date === dateStr);
 
       if (matchCheckin) {
@@ -75,14 +79,134 @@ export class CheckinInsightsMotor {
       behaviorAfterTraining = 'same';
     }
 
-    // 3. Insight Text
+    // 3. Analyze Custom Events correlation (Routine Insights)
+    let uncompletedWalkCorrelation = false;
+    let regularFeedChecked = false;
+    let medsMissed = false;
+
+    const walkEvents = customEvents.filter(e => e.type === 'walk');
+    const feedEvents = customEvents.filter(e => e.type === 'feed');
+    const medsEvents = customEvents.filter(e => e.type === 'meds');
+
+    let walkedCheckinMissedCount = 0;
+
+    for (const c of checkins) {
+      if (!c.date) continue;
+      
+      const checkinDate = new Date(c.date + 'T00:00:00');
+      const dayOfWeek = checkinDate.getDay();
+
+      const walkScheduledToday = walkEvents.some(event => {
+        if (event.frequency === 'daily') return true;
+        if (event.frequency === 'weekly') return event.daysOfWeek?.includes(dayOfWeek) ?? false;
+        if (event.frequency === 'once') return event.date === c.date;
+        return false;
+      });
+
+      if (walkScheduledToday) {
+        const completedIdsForDay = completionsHistory[c.date] || {};
+        const walkEventsToday = walkEvents.filter(event => {
+          if (event.frequency === 'daily') return true;
+          if (event.frequency === 'weekly') return event.daysOfWeek?.includes(dayOfWeek) ?? false;
+          if (event.frequency === 'once') return event.date === c.date;
+          return false;
+        });
+
+        const anyWalkCompleted = walkEventsToday.some(event => completedIdsForDay[event.id] === true);
+        
+        if (!anyWalkCompleted && c.energia === 'Agitado e sem foco') {
+          walkedCheckinMissedCount++;
+        }
+      }
+    }
+
+    if (walkedCheckinMissedCount > 0) {
+      uncompletedWalkCorrelation = true;
+    }
+
+    // Check if any medication event was missed
+    for (const c of checkins) {
+      if (!c.date) continue;
+      const checkinDate = new Date(c.date + 'T00:00:00');
+      const dayOfWeek = checkinDate.getDay();
+
+      const medScheduledToday = medsEvents.some(event => {
+        if (event.frequency === 'daily') return true;
+        if (event.frequency === 'weekly') return event.daysOfWeek?.includes(dayOfWeek) ?? false;
+        if (event.frequency === 'once') return event.date === c.date;
+        return false;
+      });
+
+      if (medScheduledToday) {
+        const completedIdsForDay = completionsHistory[c.date] || {};
+        const medEventsToday = medsEvents.filter(event => {
+          if (event.frequency === 'daily') return true;
+          if (event.frequency === 'weekly') return event.daysOfWeek?.includes(dayOfWeek) ?? false;
+          if (event.frequency === 'once') return event.date === c.date;
+          return false;
+        });
+
+        const allMedsCompleted = medEventsToday.every(event => completedIdsForDay[event.id] === true);
+        if (!allMedsCompleted) {
+          medsMissed = true;
+        }
+      }
+    }
+
+    // Check if feeding was done regularly
+    if (feedEvents.length > 0) {
+      let completedFeedCount = 0;
+      let feedDaysScheduled = 0;
+
+      for (const c of checkins) {
+        if (!c.date) continue;
+        const checkinDate = new Date(c.date + 'T00:00:00');
+        const dayOfWeek = checkinDate.getDay();
+
+        const feedScheduledToday = feedEvents.some(event => {
+          if (event.frequency === 'daily') return true;
+          if (event.frequency === 'weekly') return event.daysOfWeek?.includes(dayOfWeek) ?? false;
+          if (event.frequency === 'once') return event.date === c.date;
+          return false;
+        });
+
+        if (feedScheduledToday) {
+          feedDaysScheduled++;
+          const completedIdsForDay = completionsHistory[c.date] || {};
+          const feedEventsToday = feedEvents.filter(event => {
+            if (event.frequency === 'daily') return true;
+            if (event.frequency === 'weekly') return event.daysOfWeek?.includes(dayOfWeek) ?? false;
+            if (event.frequency === 'once') return event.date === c.date;
+            return false;
+          });
+
+          const allFeedCompleted = feedEventsToday.every(event => completedIdsForDay[event.id] === true);
+          if (allFeedCompleted) {
+            completedFeedCount++;
+          }
+        }
+      }
+
+      if (feedDaysScheduled > 0 && completedFeedCount === feedDaysScheduled) {
+        regularFeedChecked = true;
+      }
+    }
+
+    // 4. Generate Insight Text
     let insightText = 'Continue registrando para refinar as recomendações do plano.';
-    if (behaviorAfterTraining === 'better') {
+
+    if (uncompletedWalkCorrelation) {
+      insightText = 'Nos dias em que os passeios agendados não foram marcados como concluídos, seu cão tendeu a apresentar energia mais alta e falta de foco. Priorize os passeios da agenda.';
+    } else if (medsMissed) {
+      insightText = 'Notamos que algumas doses de remédios agendadas não foram concluídas. Lembre-se de manter os horários da medicação em dia para o bem-estar físico do seu cão.';
+    } else if (behaviorAfterTraining === 'better') {
       insightText = 'Nos dias em que vocês treinaram, o comportamento de seu cão melhorou. A consistência está funcionando.';
     } else if (behaviorAfterTraining === 'worse' && energyPattern === 'high') {
       insightText = 'Seu cão demonstra energia alta nos dias de treino. Sessões mais curtas e frequentes podem funcionar melhor.';
     } else if (behaviorAfterTraining === 'worse') {
       insightText = 'Alguns dias após o treino registraram mais agitação. Considere ajustar o horário ou a intensidade.';
+    } else if (regularFeedChecked) {
+      insightText = 'A consistência na marcação das refeições mostra uma rotina alimentar exemplar. Isso ajuda a estabilizar os níveis de energia ao longo do dia.';
     } else if (energyPattern === 'high') {
       insightText = 'Seu cão tem demonstrado energia elevada com frequência. Treinos de foco e autocontrole ajudam a canalizar isso.';
     } else if (energyPattern === 'low') {

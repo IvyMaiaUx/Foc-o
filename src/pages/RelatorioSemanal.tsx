@@ -7,28 +7,44 @@ import { EvolutionRepository } from '@/src/repositories/EvolutionRepository';
 import { TrainingRepository } from '@/src/repositories/TrainingRepository';
 import { CheckinRepository } from '@/src/repositories/CheckinRepository';
 import { DogRepository } from '@/src/repositories/DogRepository';
+import { UserRepository } from '@/src/repositories/UserRepository';
 import { WeeklyReportMotor, WeeklyActivity } from '@/src/motors/WeeklyReportMotor';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { PremiumGate } from '@/src/components/ui/PremiumGate';
+import { CheckinInsightsMotor, CheckinInsights } from '@/src/motors/CheckinInsightsMotor';
+import { CustomEventRepository } from '@/src/repositories/CustomEventRepository';
+import { EvolutionInsightsMotor, EvolutionInsights } from '@/src/motors/EvolutionInsightsMotor';
+import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
 
 export function RelatorioSemanal() {
   const navigate = useNavigate();
   const { isPremium } = useAuth();
   const [dogName, setDogName] = useState('Seu cão');
+  const [dogGender, setDogGender] = useState('male');
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState<WeeklyActivity | null>(null);
-
-  if (!isPremium) return <PremiumGate featureName="Relatório Semanal" />;
+  const [checkinInsights, setCheckinInsights] = useState<CheckinInsights | null>(null);
+  const [evolutionInsights, setEvolutionInsights] = useState<EvolutionInsights | null>(null);
+  const [showWhatsappModal, setShowWhatsappModal] = useState(false);
+  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
+      if (!isPremium) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const user = auth.currentUser;
         if (user) {
           const stats = await EvolutionRepository.getSummary(user.uid);
           
           const dog = await DogRepository.getDogProfile(user.uid);
-          if (dog) setDogName(dog.name);
+          if (dog) {
+            setDogName(dog.name);
+            setDogGender(dog.gender || 'male');
+          }
 
           // Get last 7 days data
           const checkins = await CheckinRepository.getRecentCheckins(user.uid, 7);
@@ -39,6 +55,47 @@ export function RelatorioSemanal() {
 
           const generatedReport = WeeklyReportMotor.generateReport(stats, checkins, recentLogs);
           setReport(generatedReport);
+          AnalyticsRepository.logEvent('report_viewed', {
+            maturityLevel: generatedReport?.maturityLevel || 'empty',
+            totalTrainings: generatedReport?.totalTrainings || 0,
+            totalCheckins: generatedReport?.totalCheckins || 0
+          });
+          setEvolutionInsights(EvolutionInsightsMotor.generateInsights(stats, checkins, recentLogs));
+
+          // Fetch custom events and completions history for routine insights
+          const [events, ...compsResults] = await Promise.all([
+            CustomEventRepository.getEvents(user.uid),
+            ...checkins.map(async (c) => {
+              if (!c.date) return { date: '', data: {} };
+              const comps = await CustomEventRepository.getCompletions(user.uid, c.date);
+              return { date: c.date, data: comps };
+            })
+          ]);
+
+          const completionsHistory: Record<string, Record<string, boolean>> = {};
+          compsResults.forEach(r => {
+            if (r.date) {
+              completionsHistory[r.date] = r.data;
+            }
+          });
+
+          const insights = CheckinInsightsMotor.analyze(checkins, logs, events, completionsHistory);
+          setCheckinInsights(insights);
+
+          if (generatedReport && generatedReport.maturityLevel !== 'empty') {
+            await EvolutionRepository.incrementReportsViewed(user.uid);
+
+            const profile = await UserRepository.getUserProfile(user.uid);
+            const isWhatsappEnabled = profile?.whatsappEnabled ?? false;
+            setWhatsappEnabled(isWhatsappEnabled);
+
+            const promptDismissed = localStorage.getItem('focao_whatsapp_prompt_dismissed');
+            if (!isWhatsappEnabled && !promptDismissed) {
+              setTimeout(() => {
+                setShowWhatsappModal(true);
+              }, 800);
+            }
+          }
         }
       } catch (err) {
         console.error("Error loading week report data", err);
@@ -47,25 +104,38 @@ export function RelatorioSemanal() {
       }
     };
     loadData();
-  }, []);
+  }, [isPremium]);
+
+  if (!isPremium) return <PremiumGate featureName="Relatório Semanal" />;
 
   return (
     <div className="min-h-screen bg-[#F9F9F8] font-sans flex flex-col relative selection:bg-[#055A43]/20">
-      <header className="px-6 pt-16 pb-6 bg-[#F9F9F8] border-b border-[#055A43]/5 flex items-center gap-4 sticky top-0 z-10">
-        <button 
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-white border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <p className="text-[10px] font-medium text-[#506352] tracking-[0.15em] uppercase mb-0.5">
-            Análise Comportamental
-          </p>
-          <h1 className="font-serif text-[24px] text-[#055A43] tracking-tight leading-none">
-            Relatório Semanal
-          </h1>
+      <header className="px-6 pt-16 pb-6 bg-[#F9F9F8] border-b border-[#055A43]/5 flex items-center justify-between sticky top-0 z-10">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-full bg-white border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <p className="text-[10px] font-medium text-[#506352] tracking-[0.15em] uppercase mb-0.5">
+              Análise Comportamental
+            </p>
+            <h1 className="font-serif text-[24px] text-[#055A43] tracking-tight leading-none">
+              Relatório Semanal
+            </h1>
+          </div>
         </div>
+
+        {report && report.maturityLevel !== 'empty' && (
+          <button
+            onClick={() => navigate('/relatorio-impressao')}
+            className="flex items-center gap-1.5 rounded-full bg-[#055A43] text-white px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider shadow-sm active:scale-[0.98] transition-all hover:bg-[#044c38]"
+          >
+            <FileText className="w-3.5 h-3.5" /> PDF
+          </button>
+        )}
       </header>
 
       {loading ? (
@@ -91,9 +161,12 @@ export function RelatorioSemanal() {
                  </div>
               </div>
               <p className="text-[#5C615D] text-[16px] font-light leading-relaxed max-w-[280px]">
-                {report.maturityLevel === 'empty' 
-                  ? `Precisamos de mais alguns dias de atividade para montar o relatório do ${dogName}.` 
-                  : `Um olhar detalhado sobre o desenvolvimento do ${dogName}.`}
+                {(() => {
+                  const art = dogGender === 'female' ? 'da' : 'do';
+                  return report.maturityLevel === 'empty' 
+                    ? `Precisamos de mais alguns dias de atividade para montar o relatório ${art} ${dogName}.` 
+                    : `Um olhar detalhado sobre o desenvolvimento ${art} ${dogName}.`;
+                })()}
               </p>
             </div>
 
@@ -145,6 +218,70 @@ export function RelatorioSemanal() {
                   </div>
                 </div>
 
+                {evolutionInsights?.smartReading && (
+                  <div className="bg-white rounded-[2rem] p-6 border border-[#055A43]/10 shadow-[0_8px_30px_rgb(0,0,0,0.03)] mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="w-4 h-4 text-[#055A43]" />
+                      <p className="text-[11px] font-bold text-[#055A43] uppercase tracking-[0.15em]">
+                        Resumo inteligente
+                      </p>
+                    </div>
+                    <p className="font-serif text-[24px] text-gray-900 leading-snug mb-3">
+                      {evolutionInsights.smartReading.headline}
+                    </p>
+                    <p className="text-[#5C615D] font-light text-[14px] leading-relaxed mb-5">
+                      {evolutionInsights.smartReading.body}
+                    </p>
+                    <div className="grid gap-2 mb-5">
+                      {evolutionInsights.smartReading.evidence.map((item) => (
+                        <div key={item} className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-4 py-3">
+                          <p className="text-[12px] font-semibold text-[#506352]">{item}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-2xl bg-[#055A43]/[0.04] border border-[#055A43]/10 px-4 py-3">
+                      <p className="text-[12px] font-semibold text-[#055A43] leading-relaxed">
+                        {evolutionInsights.smartReading.recommendation}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {evolutionInsights?.achievements && evolutionInsights.achievements.length > 0 && (
+                  <div className="mb-8">
+                    <h3 className="font-bold text-[#506352] text-[11px] tracking-[0.15em] uppercase mb-4 pl-1">
+                      Conquistas da jornada
+                    </h3>
+                    <div className="flex flex-col gap-3">
+                      {evolutionInsights.achievements.slice(0, 3).map((achievement, index) => (
+                        <div
+                          key={achievement.id}
+                          className={`bg-white rounded-[1.5rem] p-5 border shadow-[0_8px_24px_rgba(0,0,0,0.03)] flex gap-4 items-start ${
+                            index === 0 ? 'border-[#D8C3A5]/70' : 'border-[#055A43]/10'
+                          }`}
+                        >
+                          <div className={`w-11 h-11 rounded-full flex items-center justify-center border shrink-0 ${
+                            index === 0
+                              ? 'bg-[#F3EDE3]/70 border-[#D8C3A5]/80'
+                              : 'bg-[#FAFAFA] border-[#055A43]/10'
+                          }`}>
+                            <Star className={`w-5 h-5 ${index === 0 ? 'text-[#8B7357]' : 'text-[#055A43]/60'}`} />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#506352]/70 mb-1">
+                              {achievement.context}
+                            </p>
+                            <p className="font-serif text-[#055A43] text-lg leading-tight">{achievement.title}</p>
+                            <p className="text-[#5C615D] text-[13px] font-light leading-relaxed">
+                              {achievement.description}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="pl-1">
                   <h3 className="font-bold text-[#506352] text-[11px] tracking-[0.15em] uppercase mb-5">Análise Comportamental</h3>
                   
@@ -162,6 +299,20 @@ export function RelatorioSemanal() {
                         </div>
                         <p className="text-[#5C615D] font-light text-[14px] leading-relaxed">
                           {report.predominantMood ? `Humor predominante: ${report.predominantMood}.` : 'Registros variados na semana.'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {checkinInsights?.hasEnoughData && (
+                    <div className="bg-white rounded-[2rem] p-6 border border-[#055A43]/10 shadow-[0_8px_30px_rgb(0,0,0,0.03)] mb-4 flex gap-5 items-start transition-colors hover:border-[#055A43]/20">
+                      <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center shrink-0">
+                        <Sparkles className="w-6 h-6 text-amber-500" />
+                      </div>
+                      <div className="pt-1 w-full">
+                        <p className="font-bold text-gray-900 text-[15px] mb-1">Padrões de Rotina</p>
+                        <p className="text-[#5C615D] font-light text-[14px] leading-relaxed">
+                          {checkinInsights.insightText}
                         </p>
                       </div>
                     </div>
@@ -229,8 +380,55 @@ export function RelatorioSemanal() {
           </motion.div>
         </main>
       )}
+
+      {/* Handlers and WhatsApp modal */}
+      {showWhatsappModal && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm p-4">
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="w-full max-w-md bg-white rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 pb-8 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] border border-[#055A43]/10"
+          >
+            <div className="flex flex-col items-center text-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-emerald-50 border border-[#25D366]/20 flex items-center justify-center text-3xl shadow-sm">
+                📊
+              </div>
+              <div>
+                <h3 className="font-serif text-2xl text-[#055A43] tracking-tight">
+                  Gostou do seu relatório?
+                </h3>
+                <p className="text-[14px] text-[#5C615D] mt-2 leading-relaxed font-light">
+                  Receba automaticamente as análises de evolução, dicas e lembretes semanais direto no seu WhatsApp!
+                </p>
+              </div>
+              
+              <div className="w-full flex flex-col gap-2.5 mt-4">
+                <button
+                  onClick={() => {
+                    localStorage.setItem('focao_whatsapp_prompt_dismissed', 'true');
+                    setShowWhatsappModal(false);
+                    navigate('/notificacoes');
+                  }}
+                  className="w-full bg-[#055A43] hover:bg-[#075E54] text-white py-3.5 px-6 rounded-2xl font-semibold text-sm transition-all shadow-[0_4px_12px_rgba(5,90,67,0.15)] active:scale-[0.98] cursor-pointer"
+                >
+                  Conectar WhatsApp
+                </button>
+                <button
+                  onClick={() => {
+                    localStorage.setItem('focao_whatsapp_prompt_dismissed', 'true');
+                    setShowWhatsappModal(false);
+                  }}
+                  className="w-full bg-transparent hover:bg-gray-50 text-[#5C615D] py-3 px-6 rounded-2xl text-xs font-medium transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  Agora não
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
-
-

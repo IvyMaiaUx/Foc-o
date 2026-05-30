@@ -74,7 +74,7 @@ export class AgendaMotor {
     if (nutritionIsPending) {
        nutritionText = 'Configuração pendente';
     } else if (nutritionIsFallback) {
-       nutritionText = `${nutritionInfo.daily}g estimativa (fallback)`;
+       nutritionText = 'Plano alimentar configurado';
     }
 
     // Vaccines

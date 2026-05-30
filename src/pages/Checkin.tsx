@@ -7,6 +7,8 @@ import { CheckinRepository } from '@/src/repositories/CheckinRepository';
 import { EvolutionRepository } from '@/src/repositories/EvolutionRepository';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { haptics } from '@/src/lib/haptics';
+import { toLocalDateKey } from '@/src/lib/dateKeys';
+import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
 import confetti from 'canvas-confetti';
 
 export function Checkin() {
@@ -15,6 +17,7 @@ export function Checkin() {
   const [isSaving, setIsSaving] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [dogName, setDogName] = useState('seu cão');
+  const [dogGender, setDogGender] = useState('male');
   
   const [data, setData] = useState({
     energia: '',
@@ -27,7 +30,10 @@ export function Checkin() {
       const user = auth.currentUser;
       if (user) {
         const dog = await DogRepository.getDogProfile(user.uid);
-        if (dog && dog.name) setDogName(dog.name);
+        if (dog) {
+          if (dog.name) setDogName(dog.name);
+          setDogGender(dog.gender || 'male');
+        }
       }
     };
     loadDog();
@@ -51,9 +57,10 @@ export function Checkin() {
     try {
       const user = auth.currentUser;
       if (user) {
-        const dateStr = new Date().toISOString().split('T')[0];
+        const dateStr = toLocalDateKey();
         await CheckinRepository.saveCheckin(user.uid, dateStr, data);
         await EvolutionRepository.updateFromCheckin(user.uid);
+        AnalyticsRepository.logEvent('checkin_created', data);
       }
     } catch (err) {
       console.error("Erro ao salvar check-in", err);
@@ -211,7 +218,7 @@ export function Checkin() {
 
       <div className="px-6 mt-6">
         <span className="text-[10px] font-medium text-[#055A43] tracking-widest uppercase mb-1 block">Check-in de hoje</span>
-        <h1 className="font-serif text-[28px] text-[#055A43] leading-none mb-6">Como foi o dia <br/>do {dogName}?</h1>
+        <h1 className="font-serif text-[28px] text-[#055A43] leading-none mb-6">Como foi o dia <br/>{dogGender === 'female' ? 'da' : 'do'} {dogName}?</h1>
         
         {/* Progress Bar */}
         <div className="flex items-center justify-between mb-2">

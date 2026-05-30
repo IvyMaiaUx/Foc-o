@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Send, Users, Activity, Bell, ShieldAlert, CheckCircle2, Calendar, Target } from 'lucide-react';
 import { db } from '@/src/lib/firebase';
 import { collection, addDoc, getDocs, doc, setDoc } from 'firebase/firestore';
+import { polishNotificationText } from '@/src/lib/notificationCopy';
 
 export function AdminNotificacoes() {
   const navigate = useNavigate();
@@ -93,9 +94,11 @@ export function AdminNotificacoes() {
     setSending(true);
     try {
       const isSchedule = scheduleType === 'schedule';
+      const polishedTitle = polishNotificationText(title.trim());
+      const polishedBody = polishNotificationText(body.trim());
       const notificationRecord = {
-        title,
-        body,
+        title: polishedTitle,
+        body: polishedBody,
         segment,
         destination,
         status: isSchedule ? 'scheduled' : 'sent',

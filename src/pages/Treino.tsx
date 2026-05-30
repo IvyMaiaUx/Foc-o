@@ -15,6 +15,8 @@ import { TrainingReasonMotor, TrainingReason } from '@/src/motors/TrainingReason
 import { haptics } from '@/src/lib/haptics';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { PremiumGate } from '@/src/components/ui/PremiumGate';
+import { sanitizeText } from '@/src/lib/textSanitizer';
+import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
 
 export function Treino() {
   const navigate = useNavigate();
@@ -49,6 +51,16 @@ export function Treino() {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
+  };
+
+  const handleToggleTimer = () => {
+    if (!timerRunning && timeElapsed === 0 && activeTask) {
+      AnalyticsRepository.logEvent('training_started', {
+        trainingId: activeTask.id,
+        title: activeTask.title
+      });
+    }
+    setTimerRunning(!timerRunning);
   };
 
   useEffect(() => {
@@ -118,10 +130,19 @@ export function Treino() {
       if (user && activeTask) {
         // Save completion record
         const elapsedMinutes = Math.max(1, Math.ceil(timeElapsed / 60)); // at least 1 minute
+        const duration = timeElapsed > 0 ? elapsedMinutes : (parseInt(activeTask.duration) || 15);
         await TrainingRepository.logTraining(user.uid, {
           trainingId: activeTask.id,
+          title: sanitizeText(activeTask.title),
+          durationMinutes: duration,
+          feedback: score
+        });
+
+        // Track event
+        AnalyticsRepository.logEvent('training_completed', {
+          trainingId: activeTask.id,
           title: activeTask.title,
-          durationMinutes: timeElapsed > 0 ? elapsedMinutes : (parseInt(activeTask.duration) || 15),
+          durationMinutes: duration,
           feedback: score
         });
 
@@ -194,7 +215,7 @@ export function Treino() {
 
            <div className="flex flex-col gap-3 w-full">
              {[
-               { id: 'easy', label: 'Fácil', desc: 'Ele tirou de letra' },
+               { id: 'easy', label: 'Fácil', desc: dogProfile?.gender === 'female' ? 'Ela tirou de letra' : 'Ele tirou de letra' },
                { id: 'medium', label: 'Médio', desc: 'Exigiu um pouco de foco' },
                { id: 'hard', label: 'Difícil', desc: 'Precisamos praticar mais' },
                { id: 'failed', label: 'Não concluí', desc: 'Paramos no meio' },
@@ -278,11 +299,14 @@ export function Treino() {
             transition={{ delay: 0.5 }}
             className="text-white/80 max-w-[280px] mx-auto font-light leading-relaxed mb-12"
           >
-            {isFailed 
-              ? `Respeitar o limite do ${dogName} também é cuidado. Vocês podem retomar quando estiverem prontos.`
-              : isHard 
-              ? `Nem todo dia precisa ser perfeito. Respeitar o ritmo do ${dogName} também faz parte da evolução.`
-              : "Excelente trabalho. A consistência de hoje se transforma nos resultados de amanhã."}
+            {(() => {
+              const art = dogProfile?.gender === 'female' ? 'da' : 'do';
+              return isFailed 
+                ? `Respeitar o limite ${art} ${dogName} também é cuidado. Vocês podem retomar quando estiverem prontos.`
+                : isHard 
+                ? `Nem todo dia precisa ser perfeito. Respeitar o ritmo ${art} ${dogName} também faz parte da evolução.`
+                : "Excelente trabalho. A consistência de hoje se transforma nos resultados de amanhã.";
+            })()}
           </motion.p>
 
           <motion.button 
@@ -316,7 +340,12 @@ export function Treino() {
     );
   }
 
-  if (!isPremium && plan && plan.currentTaskIndex >= 3) {
+  const activeTaskIndex = plan?.tasks.findIndex((task) => task.id === activeTask.id) ?? -1;
+  const isPremiumTrainingLocked = !isPremium && (
+    (plan?.currentTaskIndex ?? 0) >= 3 || activeTaskIndex >= 3
+  );
+
+  if (isPremiumTrainingLocked) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col">
         <header className="px-6 pt-safe-top mt-6 pb-6 flex items-start justify-between z-10 relative">
@@ -362,11 +391,22 @@ export function Treino() {
           </span>
         </div>
 
+        {plan?.hybridPlan?.some(
+          (p: any) => p.trainingId === activeTask.id && p.priority === 'high' && p.manualOverride === true
+        ) && (
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 mb-6 flex items-center gap-3">
+            <span className="text-amber-600 text-lg">✨</span>
+            <span className="text-[#055A43] text-sm font-medium">
+              Treino priorizado para a fase atual do seu cão.
+            </span>
+          </div>
+        )}
+
         <h1 className="font-serif text-[32px] leading-[1.1] tracking-tight text-[#055A43] mb-4">
-          {activeTask.title}
+          {sanitizeText(activeTask.title)}
         </h1>
         <p className="text-[#5C615D] text-[15px] font-light leading-relaxed mb-6">
-          {TRAINING_TEMPLATES[activeTask.id]?.objective || activeTask.description}
+          {sanitizeText(TRAINING_TEMPLATES[activeTask.id]?.objective || activeTask.description)}
         </p>
 
         {/* Intelligence Reason Card */}
@@ -379,20 +419,20 @@ export function Treino() {
              <div className="flex items-center gap-2">
                <Lightbulb className="w-5 h-5 text-[#055A43]" />
                <span className="font-semibold text-[13px] uppercase tracking-widest text-[#055A43] pt-0.5">
-                 {trainingReason.reasonTitle}
+                 {sanitizeText(trainingReason.reasonTitle)}
                </span>
              </div>
              <p className="text-sm text-[#506352] leading-relaxed font-medium">
-               {trainingReason.reasonText}
+               {sanitizeText(trainingReason.reasonText)}
              </p>
              <div className="flex flex-col gap-2 mt-2">
                <div className="flex items-center justify-between border-t border-[#055A43]/5 pt-3 mt-1">
                   <span className="text-[12px] uppercase tracking-wider text-[#5C615D]/80 font-semibold">Fase</span>
-                  <span className="text-[#055A43] font-medium text-[13px]">{trainingReason.phase}</span>
+                  <span className="text-[#055A43] font-medium text-[13px]">{sanitizeText(trainingReason.phase)}</span>
                </div>
                <div className="flex items-center justify-between border-t border-[#055A43]/5 pt-3">
                   <span className="text-[12px] uppercase tracking-wider text-[#5C615D]/80 font-semibold">Foco Atual</span>
-                  <span className="text-[#055A43] font-medium text-[13px]">{trainingReason.focus}</span>
+                  <span className="text-[#055A43] font-medium text-[13px]">{sanitizeText(trainingReason.focus)}</span>
                </div>
              </div>
           </motion.div>
@@ -406,7 +446,7 @@ export function Treino() {
             <span className="font-semibold text-[#055A43] text-sm uppercase tracking-wider">Antes de começar</span>
           </div>
           <p className="text-[#506352] text-sm leading-relaxed font-light">
-            {(TRAINING_TEMPLATES[activeTask.id] as any)?.beforeStart || "Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável."}
+            {sanitizeText((TRAINING_TEMPLATES[activeTask.id] as any)?.beforeStart || "Use reforço positivo, faça sessões curtas e escolha um ambiente calmo. Avance apenas quando o cão estiver confortável.")}
           </p>
         </div>
 
@@ -428,7 +468,7 @@ export function Treino() {
                   {index + 1}
                 </div>
                 <p className="text-[#5C615D] text-[15px] leading-relaxed pt-1">
-                  {step}
+                  {sanitizeText(step)}
                 </p>
               </motion.div>
             ))}
@@ -441,7 +481,7 @@ export function Treino() {
             {formatTime(timeElapsed)}
           </div>
           <button 
-            onClick={() => setTimerRunning(!timerRunning)}
+            onClick={handleToggleTimer}
             className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg transform transition-transform active:scale-95 border-4 border-white ${timerRunning ? 'bg-[#506352] text-white' : 'bg-[#055A43] text-white animate-pulse shadow-[#055A43]/20'}`}
           >
             {timerRunning ? (

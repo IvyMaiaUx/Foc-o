@@ -2,6 +2,7 @@ import { DogProfile, TrainingTask, CurrentPlan } from '../types';
 import { generateTrainingPlan } from '@/src/lib/adaptivePlanMotor';
 import { TRAINING_TEMPLATES } from '@/src/lib/trainingTemplates';
 import { BLOCKS } from '@/src/lib/trainingTree';
+import { sanitizeText } from '@/src/lib/textSanitizer';
 
 export class AdaptivePlanMotor {
   static generatePlan(dogProfile: DogProfile, trainingLogs?: any[]): CurrentPlan {
@@ -21,12 +22,12 @@ export class AdaptivePlanMotor {
       const b = BLOCKS[t.blockId];
       return {
         id: t.id,
-        title: t.name,
+        title: sanitizeText(t.name),
         duration: t.duration,
         module: b.id.replace('b', ''),
-        moduleName: b.name,
-        description: t.objective,
-        steps: t.steps
+        moduleName: sanitizeText(b.name),
+        description: sanitizeText(t.objective),
+        steps: t.steps.map(sanitizeText)
       };
     });
 
@@ -34,7 +35,7 @@ export class AdaptivePlanMotor {
       tasks,
       currentTaskIndex: 0,
       generatedAt: Date.now(),
-      focus,
+      focus: sanitizeText(focus),
     };
   }
 }

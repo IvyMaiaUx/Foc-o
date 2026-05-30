@@ -44,6 +44,8 @@ export class HomeMotor {
     todayStart.setHours(0, 0, 0, 0);
 
     const hasCheckedInToday = !!checkinToday;
+    const art = dogProfile?.gender === 'female' ? 'da' : 'do';
+    const pronoun = dogProfile?.gender === 'female' ? 'dela' : 'dele';
     
     // Check if training completed today (and not failed)
     const logsToday = trainingLogs.filter(log => log.completedAt >= todayStart.getTime());
@@ -129,13 +131,13 @@ export class HomeMotor {
     if (isPremiumLocked) {
        heroCta = 'Assinar Premium';
        mainInsight = 'Sua jornada no Focão está pausada. Desbloqueie o acesso para continuar acompanhando a evolução inteligente do seu cão.';
-       emotionalMessage = 'Acompanhar a rotina dele é o primeiro passo para o comportamento ideal.';
+       emotionalMessage = `Acompanhar a rotina ${pronoun} é o primeiro passo para o comportamento ideal.`;
        primaryCTA = 'Ver Planos';
        secondaryCTA = 'Continuar Free';
     } else if (isNewUser) {
        heroTitle = 'Primeiro passo do plano';
        heroSubtitle = 'Ative sua primeira sessão de treinamento.';
-       mainInsight = `A jornada do ${dogProfile?.name || 'seu cão'} começa pelos primeiros registros. Comece pelo treino de hoje ou registre o primeiro check-in.`;
+       mainInsight = `A jornada de ${dogProfile?.name || 'seu cão'} começa pelos primeiros registros. Comece pelo treino de hoje ou registre o primeiro check-in.`;
        emotionalMessage = 'Cada pequeno registro hoje molda as recomendações de amanhã.';
        primaryCTA = 'Começar treino';
        secondaryCTA = 'Fazer check-in';
@@ -144,12 +146,12 @@ export class HomeMotor {
        heroSubtitle = 'Hoje vocês deram mais um passo. Amanhã seguimos com a próxima etapa.';
        heroCta = 'Ver evolução';
        if (!hasCheckedInToday) {
-         mainInsight = `O treino do ${dogProfile?.name || 'seu cão'} já foi feito hoje. Como está o comportamento dele agora?`;
+         mainInsight = `O treino ${art} ${dogProfile?.name || 'seu cão'} já foi feito hoje. Como está o comportamento ${pronoun} agora?`;
          emotionalMessage = 'Entender o reflexo do treino na rotina é o que cria a verdadeira consistência.';
          primaryCTA = 'Fazer check-in';
          secondaryCTA = 'Ver evolução';
        } else {
-         mainInsight = `Dia completo! Vocês treinaram e acompanharam a rotina do ${dogProfile?.name || 'seu cão'} com sucesso.`;
+         mainInsight = `Dia completo! Vocês treinaram e acompanharam a rotina ${art} ${dogProfile?.name || 'seu cão'} com sucesso.`;
          emotionalMessage = 'Dia após dia, o comportamento que você espera toma forma.';
          primaryCTA = 'Ver relatório';
          secondaryCTA = 'Explorar dicas';
@@ -162,7 +164,7 @@ export class HomeMotor {
           primaryCTA = 'Ver histórico';
           secondaryCTA = 'Revisar nutrição';
        } else {
-          mainInsight = `Hoje o objetivo do ${dogProfile?.name || 'seu cão'} é ${objectiveText}.`;
+          mainInsight = `Hoje o objetivo ${art} ${dogProfile?.name || 'seu cão'} é ${objectiveText}.`;
           emotionalMessage = 'Consistência é mais importante do que intensidade. Alguns minutos hoje já fazem a diferença.';
           primaryCTA = 'Começar treino';
           secondaryCTA = 'Fazer check-in';

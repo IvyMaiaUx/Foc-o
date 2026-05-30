@@ -1,0 +1,199 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isTempAdmin() {
+      return signedIn()
+        && request.auth.token.email in [
+          'focaosupport@gmail.com'
+        ];
+    }
+
+    function hasOnlyFreeSubscriptionOnCreate() {
+      return (!('subscriptionTier' in request.resource.data) || request.resource.data.subscriptionTier == 'free')
+        && (!('trialEndsAt' in request.resource.data) || request.resource.data.trialEndsAt == 0)
+        && (!('subscription' in request.resource.data) || (
+          request.resource.data.subscription.plan == 'free'
+          && request.resource.data.subscription.status == 'inactive'
+          && request.resource.data.subscription.premiumAccess == false
+        ));
+    }
+
+    function isWritingProtectedUserFields() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny([
+        'subscription',
+        'subscriptionTier',
+        'trialEndsAt',
+        'stripeCustomerId',
+        'stripeSubscriptionId',
+        'role',
+        'admin',
+        'isAdmin'
+      ]);
+    }
+
+    // Usuários podem ler/escrever em toda a sua árvore,
+    // EXCETO o nó subscription (protegido contra escrita direta do client).
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isTempAdmin();
+      allow create: if isOwner(uid) && hasOnlyFreeSubscriptionOnCreate();
+      allow update: if isOwner(uid) && !isWritingProtectedUserFields();
+      allow delete: if isTempAdmin();
+    }
+
+    match /users/{uid}/dog/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/dogs/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/plan/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/evolution/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/checkins/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/dailyCheckins/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/trainingLogs/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/trainingSessions/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/sessions/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/trainingHistory/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/completedTrainings/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/vaccines/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/notifications/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/customEvents/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /users/{uid}/customEventCompletions/{document=**} {
+      allow read, write: if isOwner(uid) || isTempAdmin();
+    }
+
+    match /adminSettings/{document=**} {
+      allow read, write: if isTempAdmin();
+    }
+
+    match /adminAuditLogs/{logId} {
+      allow read, create: if isTempAdmin();
+      allow update, delete: if false;
+    }
+
+    match /cancellations/{cancellationId} {
+      allow read: if isTempAdmin();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isTempAdmin();
+    }
+
+    function isValidMarketingLeadCreate() {
+      return request.resource.data.keys().hasOnly([
+          'name',
+          'email',
+          'whatsapp',
+          'source',
+          'status',
+          'createdAt',
+          'updatedAt',
+          'page',
+          'userAgent'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.email is string
+        && request.resource.data.email.size() >= 5
+        && request.resource.data.email.size() <= 120
+        && (!('whatsapp' in request.resource.data) || (
+          request.resource.data.whatsapp is string
+          && request.resource.data.whatsapp.size() <= 32
+        ))
+        && (!('page' in request.resource.data) || (
+          request.resource.data.page is string
+          && request.resource.data.page.size() <= 120
+        ))
+        && (!('userAgent' in request.resource.data) || (
+          request.resource.data.userAgent is string
+          && request.resource.data.userAgent.size() <= 180
+        ))
+        && request.resource.data.source in ['ebook', 'landing_ebook']
+        && request.resource.data.status == 'new'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /marketingLeads/{leadId} {
+      allow create: if isValidMarketingLeadCreate();
+      allow read, update, delete: if isTempAdmin();
+    }
+
+    match /supportThreads/{document=**} {
+      allow read, write: if isTempAdmin();
+    }
+
+    match /supportThreads/{uid} {
+      allow read, create, update: if isOwner(uid) || isTempAdmin();
+      allow delete: if isTempAdmin();
+    }
+
+    match /supportThreads/{uid}/messages/{messageId} {
+      allow read: if isOwner(uid) || isTempAdmin();
+      allow create: if isTempAdmin() || (isOwner(uid) && request.resource.data.sender == 'user');
+      allow update, delete: if isTempAdmin();
+    }
+
+    match /notifications/{notifId} {
+      allow read: if isTempAdmin() || (signedIn() && (
+        resource.data.type == 'global' ||
+        resource.data.targetUid == request.auth.uid
+      ));
+      allow write: if isTempAdmin();
+    }
+
+    match /nutritionFormulas/{document=**} {
+      allow read: if signedIn();
+      allow write: if isTempAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

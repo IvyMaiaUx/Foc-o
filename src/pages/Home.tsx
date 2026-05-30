@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { toLocalDateKey } from '@/src/lib/dateKeys';
+import { hapticLightTap } from '@/src/lib/haptic';
 import { auth, db } from '@/src/lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import { Play, CheckCircle2, Flame, Utensils, Bell, FileText, ChevronRight, Sparkles, Activity, X, Lock, Calendar, Syringe } from 'lucide-react';
@@ -19,10 +21,19 @@ import { NotificationRepository } from '@/src/repositories/NotificationRepositor
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAuth } from '@/src/contexts/AuthContext';
+import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
 
 export function Home() {
   const navigate = useNavigate();
   const { isPremium } = useAuth();
+  
+  useEffect(() => {
+    const sessionKey = 'focao_session_started_logged';
+    if (!sessionStorage.getItem(sessionKey)) {
+      AnalyticsRepository.logEvent('session_started');
+      sessionStorage.setItem(sessionKey, 'true');
+    }
+  }, []);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userName, setUserName] = useState<string>('Tutor');
   const [dogProfile, setDogProfile] = useState<DogProfile | null>(null);
@@ -46,14 +57,12 @@ export function Home() {
         if (!user) return;
 
         const profile = await UserRepository.getUserProfile(user.uid);
-        if (profile) {
-          if (profile.onboardingComplete === false) {
-             navigate('/onboarding/dog-data');
-             return;
-          }
-          setUserProfile(profile);
-          setUserName(profile.name || 'Tutor');
+        if (!profile || profile.onboardingComplete === false) {
+           navigate('/onboarding/dog-data');
+           return;
         }
+        setUserProfile(profile);
+        setUserName(profile.name || 'Tutor');
 
         const todayStr = new Date().toISOString().split('T')[0];
         const [dog, plan, evol, todayCheckin, logs, vaccines, recentCheckins, activeNotifs] = await Promise.all([
@@ -192,6 +201,36 @@ export function Home() {
           )}
         </AnimatePresence>
 
+        {/* WhatsApp Connection Banner */}
+        {userProfile?.whatsappEnabled !== true && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-emerald-50/70 border border-[#25D366]/30 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(37,211,102,0.03)] flex gap-4 items-start"
+          >
+            <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center shrink-0 shadow-[0_4px_12px_rgba(37,211,102,0.3)] text-lg">
+              📱
+            </div>
+            <div className="flex-1 flex flex-col gap-1.5">
+              <h3 className="font-semibold text-sm text-[#075E54]">
+                WhatsApp do Focão
+              </h3>
+              <p className="text-[13px] text-[#5C615D] leading-relaxed">
+                Receba lembretes de treino, avisos de inatividade e relatórios semanais direto no seu WhatsApp.
+              </p>
+              <button
+                onClick={() => {
+                  hapticLightTap();
+                  navigate('/notificacoes');
+                }}
+                className="mt-2 self-start bg-[#055A43] hover:bg-[#075E54] text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
+              >
+                Conectar WhatsApp
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {/* Resumo Inteligente */}
         <motion.section
           initial={{ opacity: 0, y: 15 }}
@@ -250,8 +289,9 @@ export function Home() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className={`relative rounded-[2.5rem] p-7 overflow-hidden shadow-[0_20px_40px_-15px_rgb(5,90,67,0.5)] cursor-pointer group bg-[#055A43]`}
             onClick={() => {
+               hapticLightTap();
                if (homeState?.isPremiumLocked) {
-                 navigate('/plano-assinatura');
+                 navigate('/assinatura');
                  return;
                }
                homeState?.hasCompletedTrainingToday ? navigate('/evolucao') : navigate('/treino')
@@ -317,7 +357,7 @@ export function Home() {
         >
           {/* Check-in */}
           <button 
-            onClick={() => navigate('/checkin')}
+            onClick={() => { hapticLightTap(); navigate('/checkin'); }}
             className={`group relative overflow-hidden flex flex-col p-6 rounded-[2rem] border shadow-[0_8px_20px_rgb(0,0,0,0.02)] items-start text-left gap-5 transition-all duration-300 hover:-translate-y-1 ${homeState?.hasCheckedInToday ? 'bg-[#055A43]/[0.02] border-[#055A43]/20 hover:border-[#055A43]/40' : (homeState?.priorityAction === 'checkin' ? 'bg-[#055A43]/10 border-[#055A43]/30' : 'bg-white border-[#055A43]/10 hover:border-[#055A43]/30')}`}
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -336,7 +376,7 @@ export function Home() {
 
           {/* Nutrição */}
           <button 
-            onClick={() => navigate('/nutricao')}
+            onClick={() => { hapticLightTap(); navigate('/nutricao'); }}
             className={`group relative overflow-hidden flex flex-col p-6 rounded-[2rem] border shadow-[0_8px_20px_rgb(0,0,0,0.02)] items-start text-left gap-5 hover:-translate-y-1 transition-all duration-300 ${homeState?.nutritionIsPending && homeState?.priorityAction === 'nutrition' ? 'bg-[#506352]/10 border-[#506352]/30' : 'bg-white border-[#055A43]/10 hover:border-[#506352]/30'}`}
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -357,13 +397,33 @@ export function Home() {
 
         </motion.section>
 
+        {/* Treinos SOS */}
+        <motion.section
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.28 }}
+          className="bg-[#055A43] text-white rounded-[2rem] p-6 shadow-[0_14px_30px_rgba(5,90,67,0.18)] flex items-center justify-between cursor-pointer group transition-all duration-300"
+          onClick={() => { hapticLightTap(); navigate('/sos'); }}
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white border border-white/10">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-[15px] font-bold mb-0.5">Treinos SOS</h4>
+              <p className="text-[13px] font-medium text-white/70">Ajuda rápida para crise</p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
+        </motion.section>
+
         {/* Agenda Mini Card */}
         <motion.section 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_20px_rgb(0,0,0,0.02)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
-          onClick={() => navigate('/agenda')}
+          onClick={() => { hapticLightTap(); navigate('/agenda'); }}
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 group-hover:text-[#055A43] group-hover:bg-[#055A43]/5 transition-colors">
@@ -383,7 +443,7 @@ export function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35 }}
           className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_20px_rgb(0,0,0,0.02)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
-          onClick={() => navigate('/evolucao')}
+          onClick={() => { hapticLightTap(); navigate('/evolucao'); }}
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 group-hover:text-[#055A43] group-hover:bg-[#055A43]/5 transition-colors">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { auth, db } from '@/src/lib/firebase';
 import { doc, setDoc, deleteDoc, collection, getDocs, writeBatch } from 'firebase/firestore';
+import { toLocalDateKey } from '@/src/lib/dateKeys';
 
 export function DevTools() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export function DevTools() {
       for (let i = 1; i <= 5; i++) {
         const d = new Date();
         d.setDate(today.getDate() - i);
-        const dateStr = d.toISOString().split('T')[0];
+        const dateStr = toLocalDateKey(d);
 
         const checkinRef = doc(db, 'users', user.uid, 'checkins', dateStr);
         batch.set(checkinRef, {

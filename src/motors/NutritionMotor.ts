@@ -41,20 +41,12 @@ export class NutritionMotor {
   }
 
   static findFormula(dog: DogProfile) {
-    console.log("NutritionMotor: Buscando fórmula para:", {
-      brand: dog.foodBrand,
-      line: dog.foodLine,
-      lifeStage: dog.lifeStage,
-      version: dog.foodVersion
-    });
-
     const dBrand = normalizeStr(dog.foodBrand);
     const dLine = normalizeStr(dog.foodLine);
     const dStage = normalizeStr(dog.lifeStage);
     const dVersion = normalizeStr(dog.foodVersion);
 
     if (!dBrand) {
-      console.log("NutritionMotor: Sem marca definida, caindo para fallback.");
       return { match: undefined, confidence: 'low' as const };
     }
 
@@ -119,7 +111,6 @@ export class NutritionMotor {
     }
 
     if (matches.length === 0) {
-      console.log("NutritionMotor: Nenhum match encontrado, usando fallback.");
       return { match: undefined, confidence: 'low' as const };
     }
 
@@ -141,8 +132,6 @@ export class NutritionMotor {
       confidence = 'medium';
     }
 
-    console.log(`NutritionMotor: Match encontrado! Score: ${best.score}, Confiança: ${confidence}. Fórmula: ${best.formula.id}`);
-    
     return { match: best.formula, confidence };
   }
 
