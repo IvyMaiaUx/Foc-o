@@ -105,19 +105,37 @@ export default async function cancelSubscription(req, res) {
       }
 
       const stripe = new Stripe(secretKey);
-      // We set cancel_at_period_end to true so they keep access until the end of the paid period
-      await stripe.subscriptions.update(stripeSubscriptionId, {
-        cancel_at_period_end: true,
-      });
+      
+      if (req.body.cancelImmediately) {
+        // Cancel subscription immediately in Stripe
+        await stripe.subscriptions.cancel(stripeSubscriptionId);
 
-      // Update the user document locally as well
-      await userDoc.ref.set({
-        subscription: {
-          cancelAtPeriodEnd: true,
-          status: 'canceling',
+        // Reset local subscription info immediately
+        await userDoc.ref.set({
+          subscriptionTier: 'free',
+          subscription: {
+            plan: 'free',
+            premiumAccess: false,
+            status: 'canceled',
+            updatedAt: Date.now(),
+          },
           updatedAt: Date.now(),
-        }
-      }, { merge: true });
+        }, { merge: true });
+      } else {
+        // We set cancel_at_period_end to true so they keep access until the end of the paid period
+        await stripe.subscriptions.update(stripeSubscriptionId, {
+          cancel_at_period_end: true,
+        });
+
+        // Update the user document locally as well
+        await userDoc.ref.set({
+          subscription: {
+            cancelAtPeriodEnd: true,
+            status: 'canceling',
+            updatedAt: Date.now(),
+          }
+        }, { merge: true });
+      }
     } else {
       // If they don't have a Stripe subscription (manual/trial/free), we cancel their access immediately
       await userDoc.ref.set({

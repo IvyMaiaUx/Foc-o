@@ -272,6 +272,31 @@ export function Perfil() {
 
     setIsDeleting(true);
     try {
+      // 0. Cancel Stripe subscription immediately if they have an active one
+      const stripeSubscriptionId = userProfile?.subscription?.stripeSubscriptionId;
+      if (stripeSubscriptionId) {
+        try {
+          const token = await user.getIdToken();
+          const response = await fetch('https://foc-o.vercel.app/api/cancel-subscription', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              reason: 'account_deletion',
+              feedback: 'LGPD Account Deletion Request',
+              cancelImmediately: true
+            })
+          });
+          if (!response.ok) {
+            console.warn('Failed to automatically cancel Stripe subscription during account deletion');
+          }
+        } catch (apiErr) {
+          console.error('Error calling cancel-subscription API during account deletion:', apiErr);
+        }
+      }
+
       // 1. Delete Firestore user subcollections
       const collectionsToDelete = [
         'checkins',
