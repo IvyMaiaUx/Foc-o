@@ -187,6 +187,11 @@ service cloud.firestore {
       allow write: if isTempAdmin();
     }
 
+    match /analytics_events/{eventId} {
+      allow create: if true;
+      allow read, update, delete: if isTempAdmin();
+    }
+
     match /nutritionFormulas/{document=**} {
       allow read: if signedIn();
       allow write: if isTempAdmin();

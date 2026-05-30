@@ -4,7 +4,7 @@ import { toLocalDateKey } from '@/src/lib/dateKeys';
 import { hapticLightTap } from '@/src/lib/haptic';
 import { auth, db } from '@/src/lib/firebase';
 import { useNavigate } from 'react-router-dom';
-import { Play, CheckCircle2, Flame, Utensils, Bell, FileText, ChevronRight, Sparkles, Activity, X, Lock, Calendar, Syringe } from 'lucide-react';
+import { Play, CheckCircle2, Flame, Utensils, Bell, FileText, ChevronRight, Sparkles, Activity, X, Lock, Calendar, Syringe, AlertTriangle } from 'lucide-react';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { UserRepository } from '@/src/repositories/UserRepository';
 import { TrainingRepository } from '@/src/repositories/TrainingRepository';

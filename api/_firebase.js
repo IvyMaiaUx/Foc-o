@@ -14,6 +14,14 @@ export function getAdminApp() {
   });
 }
 
+// Auto-initialize default app if configuration is available,
+// to avoid "default app does not exist" errors in serverless entrypoints
+try {
+  getAdminApp();
+} catch (e) {
+  console.warn('[Firebase Admin] Auto-initialization skipped or failed:', e.message);
+}
+
 export function getDb() {
   const databaseId = process.env.FIRESTORE_DATABASE_ID || 'ai-studio-ececf2d5-e671-43f3-8f2c-ce258672a8e7';
   return getFirestore(getAdminApp(), databaseId);
