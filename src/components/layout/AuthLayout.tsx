@@ -1,12 +1,14 @@
-import React from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Wordmark } from '@/src/components/branding/Wordmark';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/src/lib/firebase';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
   showBackButton?: boolean;
+  showLogoutButton?: boolean;
   title?: string;
   subtitle?: string;
   step?: string;
@@ -16,12 +18,24 @@ interface AuthLayoutProps {
 export function AuthLayout({
   children,
   showBackButton = true,
+  showLogoutButton = false,
   title,
   subtitle,
   step,
   topImage,
 }: AuthLayoutProps) {
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const confirmed = window.confirm('Deseja realmente sair da sua conta?');
+    if (!confirmed) return;
+    try {
+      await signOut(auth);
+      navigate('/welcome');
+    } catch (error) {
+      console.error('Erro ao sair:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans relative selection:bg-[#055A43]/20">
@@ -36,7 +50,7 @@ export function AuthLayout({
         </div>
       )}
 
-      <header className="px-6 py-5 flex items-center justify-between sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <header className="px-6 py-3.5 flex items-center justify-between sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="w-12 flex items-center justify-start">
           {showBackButton && (
             <button
@@ -48,9 +62,19 @@ export function AuthLayout({
           )}
         </div>
 
-        <Wordmark width={108} />
+        <Wordmark width={68} />
 
-        <div className="w-12" />
+        <div className="w-12 flex items-center justify-end">
+          {showLogoutButton && (
+            <button
+              onClick={handleLogout}
+              className="w-10 h-10 flex items-center justify-center -mr-2 rounded-full text-[#5F2620] hover:bg-[#5F2620]/5 transition-colors"
+              title="Encerrar sessão"
+            >
+              <LogOut className="w-5 h-5" strokeWidth={1.5} />
+            </button>
+          )}
+        </div>
       </header>
 
       <main className="flex-1 px-6 pb-12 pt-8 flex flex-col mx-auto w-full max-w-md relative z-10">

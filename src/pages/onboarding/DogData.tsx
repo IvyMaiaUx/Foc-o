@@ -134,6 +134,7 @@ export function DogData() {
       title="Quem é o seu melhor amigo?" 
       subtitle="Vamos conhecê-lo para criar o plano perfeito."
       step="ETAPA 1 DE 7"
+      showLogoutButton={true}
     >
       <div className="flex flex-col gap-6 flex-1">
         <div className="flex flex-col items-center justify-center mb-2">
