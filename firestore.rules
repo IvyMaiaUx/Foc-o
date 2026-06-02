@@ -29,10 +29,7 @@ service cloud.firestore {
     }
 
     function isConfiguredAdmin() {
-      return signedIn()
-        && hasAdminConfig()
-        && ('authorizedEmails' in adminConfig())
-        && normalizedEmail() in adminConfig().authorizedEmails;
+      return signedIn() && request.auth.token.admin == true;
     }
 
     function isAdmin() {
@@ -40,10 +37,7 @@ service cloud.firestore {
     }
 
     function isConfiguredSuperAdmin() {
-      return signedIn()
-        && hasAdminConfig()
-        && ('superAdminEmails' in adminConfig())
-        && normalizedEmail() in adminConfig().superAdminEmails;
+      return signedIn() && request.auth.token.superAdmin == true;
     }
 
     function isSuperAdmin() {
@@ -67,6 +61,17 @@ service cloud.firestore {
         'trialEndsAt',
         'stripeCustomerId',
         'stripeSubscriptionId',
+        'uid',
+        'email',
+        'createdAt',
+        'referralCode',
+        'referredBy',
+        'referredById',
+        'referralRewardsDays',
+        'validReferrals',
+        'referralsLimitReached',
+        'premiumBonusDays',
+        'premiumBonusExpiresAt',
         'role',
         'admin',
         'isAdmin'
@@ -94,6 +99,11 @@ service cloud.firestore {
 
     match /users/{uid}/evolution/{document=**} {
       allow read, write: if isOwner(uid) || isAdmin();
+    }
+
+    match /users/{uid}/adminReports/{document=**} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if isAdmin();
     }
 
     match /users/{uid}/checkins/{document=**} {
@@ -150,9 +160,42 @@ service cloud.firestore {
       allow write: if isSuperAdmin();
     }
 
+    function isValidAnalyticsEventCreate(eventId) {
+      return signedIn()
+        && eventId.size() <= 160
+        && request.resource.data.keys().hasOnly([
+          'id',
+          'userId',
+          'event',
+          'timestamp',
+          'metadata'
+        ])
+        && request.resource.data.id == eventId
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.event in [
+          'session_started',
+          'onboarding_started',
+          'onboarding_completed',
+          'training_started',
+          'training_completed',
+          'checkin_created',
+          'report_viewed',
+          'premium_viewed',
+          'premium_clicked',
+          'premium_subscribed',
+          'premium_cancelled'
+        ]
+        && request.resource.data.timestamp is number
+        && (!('metadata' in request.resource.data) || request.resource.data.metadata is map);
+    }
+
     match /analytics_events/{eventId} {
-      allow create: if true;
+      allow create: if isValidAnalyticsEventCreate(eventId);
       allow read, update, delete: if isAdmin();
+    }
+
+    match /whatsapp_notifications/{notificationId} {
+      allow read, write: if isAdmin();
     }
 
     match /adminAuditLogs/{logId} {
@@ -162,7 +205,7 @@ service cloud.firestore {
 
     match /cancellations/{cancellationId} {
       allow read: if isAdmin();
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow create: if isAdmin();
       allow update, delete: if isAdmin();
     }
 
@@ -205,6 +248,11 @@ service cloud.firestore {
     match /marketingLeads/{leadId} {
       allow create: if isValidMarketingLeadCreate();
       allow read, update, delete: if isAdmin();
+    }
+
+    match /referrals/{referralId} {
+      allow read: if signedIn() && (resource.data.referrerUid == request.auth.uid || resource.data.referredUid == request.auth.uid || isAdmin());
+      allow write: if false;
     }
 
     match /supportThreads/{document=**} {

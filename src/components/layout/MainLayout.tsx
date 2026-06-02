@@ -54,7 +54,7 @@ export function MainLayout() {
       </AnimatePresence>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[1.5rem] shadow-[0_-4px_24px_rgba(5,90,67,0.08)] px-5 py-2 pb-safe z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[1.5rem] shadow-[0_-4px_24px_rgba(5,90,67,0.08)] px-5 py-2 pb-safe z-50 isolate">
         <div className="flex items-center justify-between max-w-md mx-auto">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));

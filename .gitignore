@@ -25,3 +25,9 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Firebase keys and secrets
+serviceAccountKey.json
+*.key
+credentials.json
+

@@ -1,0 +1,62 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ─────────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        request.auth.token.email == 'focaosupport@gmail.com'
+      );
+    }
+
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*')
+        && request.resource.size < 5 * 1024 * 1024; // 5MB max
+    }
+
+    // ─────────────────────────────────────────────
+    // Fotos dos cães — só o dono ou admin
+    // ─────────────────────────────────────────────
+    match /dogs/{userId}/{fileName} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update: if isOwner(userId) && isValidImage();
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // ─────────────────────────────────────────────
+    // Anexos de suporte — user envia, admin lê
+    // ─────────────────────────────────────────────
+    match /support/{userId}/{fileName} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && request.resource.size < 10 * 1024 * 1024;
+      allow delete: if isAdmin();
+    }
+
+    // ─────────────────────────────────────────────
+    // Assets públicos (imagens do app, ícones etc)
+    // ─────────────────────────────────────────────
+    match /public/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ─────────────────────────────────────────────
+    // Bloquear todo o resto
+    // ─────────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

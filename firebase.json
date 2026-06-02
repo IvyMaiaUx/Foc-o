@@ -3,6 +3,9 @@
     "database": "ai-studio-ececf2d5-e671-43f3-8f2c-ce258672a8e7",
     "rules": "firestore.rules"
   },
+  "storage": {
+    "rules": "storage.rules"
+  },
   "hosting": {
     "site": "focao",
     "public": "dist",

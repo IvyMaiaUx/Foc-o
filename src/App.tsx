@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Welcome } from './pages/auth/Welcome';
 import { Register } from './pages/auth/Register';
 import { Login } from './pages/auth/Login';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
+import { ResetPassword } from './pages/auth/ResetPassword';
 import { Ativar } from './pages/auth/Ativar';
 import { EbookLanding } from './pages/EbookLanding';
 
@@ -58,9 +59,23 @@ import { Manutencao } from './pages/Manutencao';
 import { SosTreinos } from './pages/SosTreinos';
 import { DevTools } from './pages/DevTools';
 import { AdminNotificacoes } from './pages/admin/AdminNotificacoes';
+import { IndiqueGanhe } from './pages/IndiqueGanhe';
+import { PoliticaPrivacidade } from './pages/PoliticaPrivacidade';
+
+
+import { LgpdBanner } from './components/LgpdBanner';
+
 
 export default function App() {
   const isMaintenance = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      localStorage.setItem('focao_referred_by', ref);
+    }
+  }, []);
 
   return (
     <AuthProvider>
@@ -69,56 +84,67 @@ export default function App() {
           {isMaintenance ? (
             <Manutencao />
           ) : (
-            <Routes>
-              <Route path="/welcome" element={<Welcome />} />
-              <Route path="/ebook" element={<Navigate to="/ebook-comportamento-e-rotina" replace />} />
-              <Route path="/ebook-comportamento-e-rotina" element={<EbookLanding />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/ativar" element={<Ativar />} />
-              
-              {/* Onboarding */}
-              <Route path="/onboarding/dog-data" element={<RequireAuth><DogData /></RequireAuth>} />
-              <Route path="/onboarding/routine" element={<RequireAuth><Routine /></RequireAuth>} />
-              <Route path="/onboarding/health-care" element={<RequireAuth><HealthCare /></RequireAuth>} />
-              <Route path="/onboarding/personality" element={<RequireAuth><Personality /></RequireAuth>} />
-              <Route path="/onboarding/behavior" element={<RequireAuth><Behavior /></RequireAuth>} />
-              <Route path="/onboarding/training-base" element={<RequireAuth><TrainingBase /></RequireAuth>} />
-              <Route path="/onboarding/goals" element={<RequireAuth><Goals /></RequireAuth>} />
-              <Route path="/onboarding/analyzing" element={<RequireAuth><Analyzing /></RequireAuth>} />
-              <Route path="/treino/:id?" element={<RequireAuth><Treino /></RequireAuth>} />
+            <>
+              <Routes>
+                <Route path="/welcome" element={<Welcome />} />
+                <Route path="/ebook" element={<Navigate to="/ebook-comportamento-e-rotina" replace />} />
+                <Route path="/ebook-comportamento-e-rotina" element={<EbookLanding />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/redefinir-senha" element={<ResetPassword />} />
+                <Route path="/ativar" element={<Ativar />} />
+                <Route path="/privacidade" element={<PoliticaPrivacidade />} />
 
-              {/* Core App */}
-              <Route element={<RequireAuth><MainLayout /></RequireAuth>}>
-                <Route path="/" element={<Home />} />
-                <Route path="/plano" element={<Plano />} />
-                <Route path="/checkin" element={<Checkin />} />
-                <Route path="/evolucao" element={<Evolucao />} />
-                <Route path="/perfil" element={<Perfil />} />
-              </Route>
+                
+                {/* Onboarding */}
+                <Route path="/onboarding/dog-data" element={<RequireAuth><DogData /></RequireAuth>} />
+                <Route path="/onboarding/routine" element={<RequireAuth><Routine /></RequireAuth>} />
+                <Route path="/onboarding/health-care" element={<RequireAuth><HealthCare /></RequireAuth>} />
+                <Route path="/onboarding/personality" element={<RequireAuth><Personality /></RequireAuth>} />
+                <Route path="/onboarding/behavior" element={<RequireAuth><Behavior /></RequireAuth>} />
+                <Route path="/onboarding/training-base" element={<RequireAuth><TrainingBase /></RequireAuth>} />
+                <Route path="/onboarding/goals" element={<RequireAuth><Goals /></RequireAuth>} />
+                <Route path="/onboarding/analyzing" element={<RequireAuth><Analyzing /></RequireAuth>} />
+                <Route path="/treino/:id?" element={<RequireAuth><Treino /></RequireAuth>} />
 
-              {/* Secondary Modules */}
-              <Route path="/nutricao" element={<RequireAuth><Nutricao /></RequireAuth>} />
-              <Route path="/vacinas" element={<RequireAuth><Vacinas /></RequireAuth>} />
-              <Route path="/agenda" element={<RequireAuth><Agenda /></RequireAuth>} />
-              <Route path="/sos" element={<RequireAuth><SosTreinos /></RequireAuth>} />
-              <Route path="/historico" element={<RequireAuth><HistoricoTreinos /></RequireAuth>} />
-              <Route path="/relatorio" element={<RequireAuth><RelatorioSemanal /></RequireAuth>} />
-              <Route path="/relatorio-impressao" element={<RequireAuth><RelatorioImpressao /></RequireAuth>} />
-              <Route path="/assinatura" element={<RequireAuth><Assinatura /></RequireAuth>} />
-              <Route path="/notificacoes" element={<RequireAuth><Notificacoes /></RequireAuth>} />
-              <Route path="/ajuda" element={<RequireAuth><Ajuda /></RequireAuth>} />
-              <Route path="/suporte" element={<RequireAuth><Suporte /></RequireAuth>} />
-              <Route path="/editar-perfil" element={<RequireAuth><EditarPerfil /></RequireAuth>} />
-              <Route path="/manutencao" element={<Manutencao />} />
-              
-              {/* Admin & Dev Tools */}
-              <Route path="/dev-tools" element={<RequireAppAdmin><DevTools /></RequireAppAdmin>} />
-              <Route path="/admin/notificacoes" element={<RequireAppAdmin><AdminNotificacoes /></RequireAppAdmin>} />
-              
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+                {/* Core App */}
+                <Route element={<RequireAuth><MainLayout /></RequireAuth>}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/plano" element={<Plano />} />
+                  <Route path="/checkin" element={<Checkin />} />
+                  <Route path="/evolucao" element={<Evolucao />} />
+                  <Route path="/perfil" element={<Perfil />} />
+                </Route>
+
+                {/* Secondary Modules */}
+                <Route path="/nutricao" element={<RequireAuth><Nutricao /></RequireAuth>} />
+                <Route path="/vacinas" element={<RequireAuth><Vacinas /></RequireAuth>} />
+                <Route path="/agenda" element={<RequireAuth><Agenda /></RequireAuth>} />
+                <Route path="/sos" element={<RequireAuth><SosTreinos /></RequireAuth>} />
+                <Route path="/historico" element={<RequireAuth><HistoricoTreinos /></RequireAuth>} />
+                <Route path="/relatorio" element={<RequireAuth><RelatorioSemanal /></RequireAuth>} />
+                <Route path="/relatorio-impressao" element={<RequireAuth><RelatorioImpressao /></RequireAuth>} />
+                <Route path="/assinatura" element={<RequireAuth><Assinatura /></RequireAuth>} />
+                <Route path="/notificacoes" element={<RequireAuth><Notificacoes /></RequireAuth>} />
+                <Route path="/ajuda" element={<RequireAuth><Ajuda /></RequireAuth>} />
+                <Route path="/suporte" element={<RequireAuth><Suporte /></RequireAuth>} />
+                <Route path="/editar-perfil" element={<RequireAuth><EditarPerfil /></RequireAuth>} />
+                <Route path="/indique" element={<RequireAuth><IndiqueGanhe /></RequireAuth>} />
+                <Route path="/manutencao" element={<Manutencao />} />
+                
+                {/* Admin & Dev Tools */}
+                {import.meta.env.DEV && (
+                  <>
+                    <Route path="/dev-tools" element={<RequireAppAdmin><DevTools /></RequireAppAdmin>} />
+                    <Route path="/admin/notificacoes" element={<RequireAppAdmin><AdminNotificacoes /></RequireAppAdmin>} />
+                  </>
+                )}
+                
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+              <LgpdBanner />
+            </>
           )}
         </div>
       </Router>
