@@ -31,3 +31,15 @@ serviceAccountKey.json
 *.key
 credentials.json
 
+# Env files (qualquer .env*, não só *.local)
+.env
+.env.*
+
+# Service accounts do Firebase Admin (qualquer nome)
+*firebase-adminsdk*.json
+*-service-account*.json
+*serviceaccount*.json
+
+# Scripts temporários de investigação
+scratch/
+
