@@ -24,8 +24,8 @@ function whatsappProvider() {
 }
 
 function zapResponderToken() {
-  // NÃƒO cair para WHATSAPP_ACCESS_TOKEN: esse Ã© o token da Meta Cloud API e
-  // enviÃ¡-lo ao ZapResponder sÃ³ gera "Please authenticate.".
+  // NÃO cair para WHATSAPP_ACCESS_TOKEN: esse é o token da Meta Cloud API e
+  // enviá-lo ao ZapResponder só gera "Please authenticate.".
   return process.env.ZAPRESPONDER_API_KEY || process.env.ZAPRESPONDER_API_TOKEN || process.env.ZAPRESPONDER_TOKEN || '';
 }
 
@@ -70,7 +70,7 @@ function tokenDiagnostics(token) {
 function messageFromNotification({ type, dogName, payload, variables, user }) {
   const params = normalizeVariables(variables);
   const tutorName = payload?.nome_tutor || payload?.tutorName || user?.name || user?.displayName || user?.fullName || user?.email?.split('@')?.[0] || 'tutor';
-  const name = payload?.nome_cao || dogName || payload?.dogName || params[0] || 'seu cÃ£o';
+  const name = payload?.nome_cao || dogName || payload?.dogName || params[0] || 'seu cão';
   const appUrl = process.env.APP_PUBLIC_URL || 'https://focao.web.app';
   const trainingTitle = payload?.titulo_treino || payload?.trainingTitle || params[1] || 'Treino do dia';
   const vaccineName = payload?.nome_vacina || payload?.vaccineName || params[1] || payload?.vaccineNames || 'vacina';
@@ -87,23 +87,23 @@ function messageFromNotification({ type, dogName, payload, variables, user }) {
   if (payload?.message) return String(payload.message);
 
   const messages = {
-    agenda_day: `Agenda de hoje do ${name}: ${payload?.agendaSummary || 'treino, check-in e rotina em dia'}. Veja os detalhes no FocÃ£o: ${appUrl}/agenda`,
-    training_reminder: `Bom dia, ${tutorName}! ðŸ¾ O ${name} estÃ¡ pronto para o treino de hoje?\n\nSeu treino "${trainingTitle}" estÃ¡ esperando por vocÃªs no FocÃ£o. Vamos manter a consistÃªncia e ver a evoluÃ§Ã£o!\n\nClique aqui para iniciar: ${trainLink}`,
-    checkin_reminder: `Como foi o dia do ${name}? FaÃ§a um check-in rÃ¡pido para manter as recomendaÃ§Ãµes do FocÃ£o mais precisas: ${appUrl}/checkin`,
-    vaccine_reminder: `Alerta de SaÃºde para o ${name}! ðŸ’‰\n\nLembrete: A vacina "${vaccineName}" do ${name} estÃ¡ agendada para ${vaccineDate} (em ${daysUntil} dias).\n\nNÃ£o se esqueÃ§a de verificar os detalhes no seu app FocÃ£o para garantir que ele esteja sempre protegido!\nðŸ‘‰ ${vaccineLink}`,
-    weekly_report: `Boas notÃ­cias, ${tutorName}! ðŸ“Š O relatÃ³rio semanal de evoluÃ§Ã£o do ${name} estÃ¡ pronto!\n\nEsta semana, vocÃªs completaram ${weeklyTrainings} treinos e o ${name} teve um Ã³timo desempenho. Continue assim!\n\nVeja todos os detalhes e os prÃ³ximos passos no seu app FocÃ£o:\nðŸ‘‰ ${weeklyReportLink}`,
-    inactivity_3d: `Sentimos falta dos registros do ${name}. Um check-in rÃ¡pido ajuda o FocÃ£o a entender melhor a rotina: ${appUrl}/checkin`,
-    trial_ending: `Seu teste do FocÃ£o estÃ¡ chegando ao fim. Confira sua assinatura: ${appUrl}/assinatura`,
-    payment_failed: `NÃ£o conseguimos confirmar o pagamento do FocÃ£o. Atualize a assinatura para manter o acesso: ${appUrl}/assinatura`,
-    renewal_success: `Assinatura do FocÃ£o renovada com sucesso. O acesso premium continua ativo.`,
-    premium_activated: `OlÃ¡ ${tutorName}! ðŸŽ‰ Sua assinatura Premium do FocÃ£o foi ativada com sucesso! Prepare-se para uma jornada incrÃ­vel com o ${name}.\n\nAgora vocÃª tem acesso total a:\nâœ… Treinos guiados e personalizados\nâœ… RelatÃ³rios de evoluÃ§Ã£o detalhados\nâœ… Lembretes proativos de treino e vacina\n\nSeu plano inicial jÃ¡ estÃ¡ te esperando no app. Vamos comeÃ§ar a transformar a rotina do ${name}?\nðŸ‘‰ ${appUrl}`,
-    referral_reward: `Sua recompensa de indicaÃ§Ã£o no FocÃ£o foi liberada.`,
-    monthly_report: `ParabÃ©ns pela dedicaÃ§Ã£o, ${tutorName}! ðŸ† Seu relatÃ³rio mensal de evoluÃ§Ã£o do ${name} chegou!\n\nNo Ãºltimo mÃªs, vocÃªs alcanÃ§aram marcos incrÃ­veis, com ${totalTrainings} treinos${evolutionScore ? ` e um aumento de ${evolutionScore}% no score de evoluÃ§Ã£o` : ''}. Ã‰ a harmonia que vocÃª sempre quis!\n\nConfira a anÃ¡lise completa e planeje o prÃ³ximo mÃªs no app FocÃ£o:\nðŸ‘‰ ${monthlyReportLink}`,
-    welcome: `Bem-vinda ao FocÃ£o. O plano do ${name} jÃ¡ pode ser acompanhado pelo app: ${appUrl}`,
-    test: `Mensagem de teste do FocÃ£o para ${name}.`,
+    agenda_day: `Agenda de hoje do ${name}: ${payload?.agendaSummary || 'treino, check-in e rotina em dia'}. Veja os detalhes no Focão: ${appUrl}/agenda`,
+    training_reminder: `Bom dia, ${tutorName}! 🐾 O ${name} está pronto para o treino de hoje?\n\nSeu treino "${trainingTitle}" está esperando por vocês no Focão. Vamos manter a consistência e ver a evolução!\n\nClique aqui para iniciar: ${trainLink}`,
+    checkin_reminder: `Como foi o dia do ${name}? Faça um check-in rápido para manter as recomendações do Focão mais precisas: ${appUrl}/checkin`,
+    vaccine_reminder: `Alerta de Saúde para o ${name}! 💉\n\nLembrete: A vacina "${vaccineName}" do ${name} está agendada para ${vaccineDate} (em ${daysUntil} dias).\n\nNão se esqueça de verificar os detalhes no seu app Focão para garantir que ele esteja sempre protegido!\n👉 ${vaccineLink}`,
+    weekly_report: `Boas notícias, ${tutorName}! 📊 O relatório semanal de evolução do ${name} está pronto!\n\nEsta semana, vocês completaram ${weeklyTrainings} treinos e o ${name} teve um ótimo desempenho. Continue assim!\n\nVeja todos os detalhes e os próximos passos no seu app Focão:\n👉 ${weeklyReportLink}`,
+    inactivity_3d: `Oi, ${tutorName}! 💛\nO ${name} precisa da sua constância para evoluir.\n\nPercebemos que faz alguns dias desde o último acesso no Focão. Retomar agora pode fazer toda a diferença no comportamento e na rotina de vocês.\n\nSeu próximo passo já está te esperando no app:\n👉 ${appUrl}`,
+    trial_ending: `Seu teste do Focão está chegando ao fim. Confira sua assinatura: ${appUrl}/assinatura`,
+    payment_failed: `Não conseguimos confirmar o pagamento do Focão. Atualize a assinatura para manter o acesso: ${appUrl}/assinatura`,
+    renewal_success: `Assinatura do Focão renovada com sucesso. O acesso premium continua ativo.`,
+    premium_activated: `Olá ${tutorName}! 🎉 Sua assinatura Premium do Focão foi ativada com sucesso! Prepare-se para uma jornada incrível com o ${name}.\n\nAgora você tem acesso total a:\n✅ Treinos guiados e personalizados\n✅ Relatórios de evolução detalhados\n✅ Lembretes proativos de treino e vacina\n\nSeu plano inicial já está te esperando no app. Vamos começar a transformar a rotina do ${name}?\n👉 ${appUrl}`,
+    referral_reward: `Sua recompensa de indicação no Focão foi liberada.`,
+    monthly_report: `Parabéns pela dedicação, ${tutorName}! 🏆 Seu relatório mensal de evolução do ${name} chegou!\n\nNo último mês, vocês alcançaram marcos incríveis, com ${totalTrainings} treinos${evolutionScore ? ` e um aumento de ${evolutionScore}% no score de evolução` : ''}. É a harmonia que você sempre quis!\n\nConfira a análise completa e planeje o próximo mês no app Focão:\n👉 ${monthlyReportLink}`,
+    welcome: `Bem-vinda ao Focão. O plano do ${name} já pode ser acompanhado pelo app: ${appUrl}`,
+    test: `Mensagem de teste do Focão para ${name}.`,
   };
 
-  return messages[type] || `VocÃª tem uma nova atualizaÃ§Ã£o do FocÃ£o sobre ${name}: ${appUrl}`;
+  return messages[type] || `Você tem uma nova atualização do Focão sobre ${name}: ${appUrl}`;
 }
 
 function saoPauloDateKey(value = Date.now()) {
@@ -281,9 +281,9 @@ async function zapResponderFetch(path, { method = 'GET', token, body } = {}) {
   return { response, data };
 }
 
-// ObtÃ©m um Token Api fresco via login (e-mail/senha) + GET /api/token.
-// SÃ³ Ã© usado se ZAPRESPONDER_EMAIL e ZAPRESPONDER_PASSWORD estiverem configurados.
-// MantÃ©m a integraÃ§Ã£o funcionando mesmo quando o token estÃ¡tico expira.
+// Obtém um Token Api fresco via login (e-mail/senha) + GET /api/token.
+// Só é usado se ZAPRESPONDER_EMAIL e ZAPRESPONDER_PASSWORD estiverem configurados.
+// Mantém a integração funcionando mesmo quando o token estático expira.
 async function mintZapResponderToken() {
   const email = process.env.ZAPRESPONDER_EMAIL;
   const password = process.env.ZAPRESPONDER_PASSWORD;
@@ -291,7 +291,7 @@ async function mintZapResponderToken() {
 
   const login = await zapResponderFetch('/auth/login', { method: 'POST', body: { email, password } });
   if (!login.response.ok) {
-    throw new Error(`ZapResponder login falhou (${login.response.status}): ${login.data?.message || login.data?.error || 'credenciais invÃ¡lidas'}`);
+    throw new Error(`ZapResponder login falhou (${login.response.status}): ${login.data?.message || login.data?.error || 'credenciais inválidas'}`);
   }
   const loginToken =
     login.data?.tokens?.access?.token ||
@@ -335,19 +335,19 @@ async function findConnectedZapResponderDepartment(token) {
 export async function sendZapResponderMessage({ to, message }) {
   let departmentId = cleanAuthToken(process.env.ZAPRESPONDER_DEPARTMENT_ID);
   if (!departmentId) {
-    throw new Error('ZAPRESPONDER_DEPARTMENT_ID nÃ£o estÃ¡ configurado.');
+    throw new Error('ZAPRESPONDER_DEPARTMENT_ID não está configurado.');
   }
 
   let token = cleanAuthToken(zapResponderToken());
   const hasCredentials = !!(process.env.ZAPRESPONDER_EMAIL && process.env.ZAPRESPONDER_PASSWORD);
 
-  // Sem token estÃ¡tico, ou token expirado: tenta gerar um novo via credenciais.
+  // Sem token estático, ou token expirado: tenta gerar um novo via credenciais.
   if (!token || isJwtExpired(token)) {
     const minted = await mintZapResponderToken();
     if (minted) token = minted;
   }
   if (!token) {
-    throw new Error('ZAPRESPONDER_API_KEY nÃ£o estÃ¡ configurado (e nÃ£o hÃ¡ ZAPRESPONDER_EMAIL/ZAPRESPONDER_PASSWORD para gerar um token).');
+    throw new Error('ZAPRESPONDER_API_KEY não está configurado (e não há ZAPRESPONDER_EMAIL/ZAPRESPONDER_PASSWORD para gerar um token).');
   }
 
   const messageBody = { type: 'text', number: normalizePhone(to), message };
@@ -370,7 +370,7 @@ export async function sendZapResponderMessage({ to, message }) {
       }));
     }
   }
-  // 401 com credenciais disponÃ­veis: renova o token uma vez e tenta de novo.
+  // 401 com credenciais disponíveis: renova o token uma vez e tenta de novo.
   if (response.status === 401 && hasCredentials) {
     const minted = await mintZapResponderToken();
     if (minted && minted !== token) {
@@ -397,7 +397,7 @@ export async function sendZapResponderMessage({ to, message }) {
       };
       throw new Error(
         `ZapResponder authentication failed: ${detail}. ` +
-        `Confira se ZAPRESPONDER_API_KEY Ã© o "Token api" atual (GET /api/token) e nÃ£o estÃ¡ expirado. ` +
+        `Confira se ZAPRESPONDER_API_KEY é o "Token api" atual (GET /api/token) e não está expirado. ` +
         `diag=${JSON.stringify(diag)}`
       );
     }
@@ -442,7 +442,7 @@ export async function enqueueAndSendWhatsappNotification(params) {
     payload: { ...payload, skipReason: skipCheck.reason || null },
     scheduledFor,
     sentAt: null,
-    error: skipCheck.skip ? `NotificaÃ§Ã£o ignorada: ${skipCheck.reason}` : null,
+    error: skipCheck.skip ? `Notificação ignorada: ${skipCheck.reason}` : null,
     createdAt: now,
     updatedAt: now,
   };
