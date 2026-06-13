@@ -4,7 +4,7 @@ import { toLocalDateKey } from '@/src/lib/dateKeys';
 import { hapticLightTap } from '@/src/lib/haptic';
 import { auth, db } from '@/src/lib/firebase';
 import { useNavigate } from 'react-router-dom';
-import { Play, CheckCircle2, Flame, Utensils, Bell, FileText, ChevronRight, Sparkles, Activity, X, Lock, Calendar, Syringe, AlertTriangle } from 'lucide-react';
+import { Play, CheckCircle2, Flame, Utensils, Bell, FileText, ChevronRight, Sparkles, Activity, X, Lock, Calendar, Syringe, AlertTriangle, MessageSquareText } from 'lucide-react';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { UserRepository } from '@/src/repositories/UserRepository';
 import { TrainingRepository } from '@/src/repositories/TrainingRepository';
@@ -22,10 +22,13 @@ import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
+import { isBetaEnvironment } from '@/src/lib/beta';
+import { isPlanUpgradeEligible } from '@/src/lib/planUpgrade';
 
 export function Home() {
   const navigate = useNavigate();
   const { isPremium } = useAuth();
+  const isBeta = isBetaEnvironment();
   
   useEffect(() => {
     const sessionKey = 'focao_session_started_logged';
@@ -45,9 +48,44 @@ export function Home() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [checkinInsights, setCheckinInsights] = useState<CheckinInsights | null>(null);
+  const [promoNotification, setPromoNotification] = useState<any | null>(null);
+  const [recentCheckinDays, setRecentCheckinDays] = useState(0);
+  const [showBetaFeedbackPrompt, setShowBetaFeedbackPrompt] = useState(false);
+
+  const [planBannerDismissed, setPlanBannerDismissed] = useState(
+    () => localStorage.getItem('focao_plan_upgrade_dismissed') === 'true'
+  );
+  const showPlanUpgradeBanner = !planBannerDismissed && isPlanUpgradeEligible(dogProfile, currentPlan);
 
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
+  };
+
+  useEffect(() => {
+    if (!isBeta) return;
+    if (localStorage.getItem('focao_beta_feedback_dismissed') === 'true') return;
+
+    const nextUses = Number(localStorage.getItem('focao_beta_home_uses') || '0') + 1;
+    localStorage.setItem('focao_beta_home_uses', String(nextUses));
+
+    if (nextUses >= 2) {
+      const timer = window.setTimeout(() => setShowBetaFeedbackPrompt(true), 1200);
+      return () => window.clearTimeout(timer);
+    }
+  }, [isBeta]);
+
+  const closeBetaFeedbackPrompt = () => {
+    localStorage.setItem('focao_beta_feedback_dismissed', 'true');
+    setShowBetaFeedbackPrompt(false);
+  };
+
+  const sendQuickBetaFeedback = (label: string) => {
+    closeBetaFeedbackPrompt();
+    navigate('/suporte', {
+      state: {
+        betaPrompt: `[Feedback beta] Minha experiência até agora está: ${label}. O que mais me ajudou foi: `,
+      },
+    });
   };
 
   useEffect(() => {
@@ -58,7 +96,7 @@ export function Home() {
 
         const profile = await UserRepository.getUserProfile(user.uid);
         if (!profile || profile.onboardingComplete === false) {
-           navigate('/onboarding/dog-data');
+           navigate('/onboarding/intro');
            return;
         }
         setUserProfile(profile);
@@ -79,6 +117,7 @@ export function Home() {
         setDogProfile(dog);
         setCurrentPlan(plan);
         setEvolution(evol);
+        setRecentCheckinDays(new Set(recentCheckins.map((checkin) => checkin.date).filter(Boolean)).size);
         
         const state = HomeMotor.calculateState(profile, dog, plan, evol, logs, todayCheckin, vaccines);
         setHomeState(state);
@@ -98,6 +137,33 @@ export function Home() {
           link: n.link
         }));
         setNotifications(mappedNotifs);
+
+        const referralNotif = activeNotifs.find((n: any) =>
+          n.type === 'referral_reward_indicator' || n.type === 'referral_reward_referee'
+        );
+        if (referralNotif) {
+          setPromoNotification(referralNotif);
+
+          if ('Notification' in window && Notification.permission === 'granted') {
+            try {
+              if (referralNotif.type === 'referral_reward_indicator') {
+                const friendName = referralNotif.friendName || 'Seu amigo';
+                new Notification('🎁 Recompensa liberada!', {
+                  body: `${friendName} ativou o Premium e você ganhou +7 dias de acesso Premium.`,
+                  icon: '/icon-192.png',
+                });
+              } else if (referralNotif.type === 'referral_reward_referee') {
+                const referrerName = referralNotif.referrerName || 'Tutor';
+                new Notification('🎉 Obrigado por apoiar o Focão!', {
+                  body: `Sua assinatura foi ativada com sucesso. Além disso, ${referrerName} (que te convidou) acabou de receber +7 dias Premium graças à sua indicação. 🐶💛`,
+                  icon: '/icon-192.png',
+                });
+              }
+            } catch (err) {
+              console.warn('Native notification simulation failed:', err);
+            }
+          }
+        }
 
       } catch (err) {
         console.error("Erro ao carregar dados", err);
@@ -123,11 +189,13 @@ export function Home() {
   // Calculate nutrition info
   const nutritionDaily = NutritionMotor.calculateFood(dogProfile).daily;
 
-  const showReportReady = (homeState?.hasCompletedTrainingToday || false) && (evolution?.totalSessions ?? 0) >= 7;
+  const showReportReady = (homeState?.hasCompletedTrainingToday || false)
+    && (evolution?.totalSessions ?? 0) >= 7
+    && recentCheckinDays >= 3;
 
   return (
     <div className="flex-1 bg-[#F9F9F8] font-sans pb-24 overflow-x-hidden selection:bg-[#055A43]/20">
-      <main className="flex flex-col gap-8 pt-10 px-6 max-w-lg mx-auto w-full">
+      <main className="flex flex-col gap-6 pt-8 px-5 max-w-lg mx-auto w-full">
         
         {/* Header - Minimal & Elegant */}
         <motion.header 
@@ -182,6 +250,33 @@ export function Home() {
           </div>
         </motion.header>
 
+        {isBeta && (
+          <motion.section
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="rounded-[1.5rem] border border-[#055A43]/10 bg-white p-5 shadow-[0_8px_24px_rgba(5,90,67,0.06)]"
+          >
+            <div className="mb-3 flex items-center gap-2 text-[#055A43]">
+              <Sparkles className="h-4 w-4" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em]">Beta Focão</p>
+            </div>
+            <h2 className="font-serif text-[24px] leading-tight text-[#055A43]">
+              Você está no Beta do Focão
+            </h2>
+            <p className="mt-2 text-[13px] leading-relaxed text-[#5C615D]">
+              Use o app normalmente e, quando puder, nos envie seu feedback. Isso vai ajudar a construir a versão oficial.
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate('/beta')}
+              className="mt-4 rounded-full bg-[#055A43] px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white"
+            >
+              Enviar feedback
+            </button>
+          </motion.section>
+        )}
+
         {/* Priority Alert banner if any */}
         <AnimatePresence>
           {homeState?.priorityAlert && (
@@ -231,18 +326,55 @@ export function Home() {
           </motion.div>
         )}
 
+        {/* Plan Upgrade Banner */}
+        {showPlanUpgradeBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white border border-[#055A43]/20 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(5,90,67,0.05)] flex gap-4 items-start"
+          >
+            <div className="flex-1 flex flex-col gap-1.5">
+              <h3 className="font-semibold text-sm text-[#055A43]">Deixe seu plano mais inteligente</h3>
+              <p className="text-[13px] text-[#5C615D] leading-relaxed">
+                Responda mais algumas perguntas e recalculamos seu plano com base no perfil do seu cão.
+                Seus treinos já concluídos são mantidos.
+              </p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={() => {
+                    hapticLightTap();
+                    navigate('/onboarding/personality', { state: { mode: 'updatePlan', dogData: dogProfile } });
+                  }}
+                  className="bg-[#055A43] text-white text-xs font-semibold px-4 py-2 rounded-xl active:scale-95 cursor-pointer"
+                >
+                  Recalcular plano
+                </button>
+                <button
+                  onClick={() => {
+                    localStorage.setItem('focao_plan_upgrade_dismissed', 'true');
+                    setPlanBannerDismissed(true);
+                  }}
+                  className="text-[#5C615D] text-xs font-medium px-3 py-2"
+                >
+                  Agora não
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Resumo Inteligente */}
         <motion.section
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.05 }}
-          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.03)]"
+          className="bg-white border border-[#055A43]/10 rounded-[1.75rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.03)]"
         >
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-4 h-4 text-[#055A43]" />
             <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#055A43]">Leitura de Hoje</h3>
           </div>
-          <p className="font-serif text-2xl text-gray-900 leading-snug mb-3">
+          <p className="font-serif text-xl text-gray-900 leading-snug mb-2">
             {homeState?.mainInsight}
           </p>
           <p className="text-[14px] text-[#5C615D] leading-relaxed">
@@ -287,7 +419,7 @@ export function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className={`relative rounded-[2.5rem] p-7 overflow-hidden shadow-[0_20px_40px_-15px_rgb(5,90,67,0.5)] cursor-pointer group bg-[#055A43]`}
+            className={`relative rounded-[2rem] p-6 overflow-hidden shadow-[0_20px_40px_-15px_rgb(5,90,67,0.5)] cursor-pointer group bg-[#055A43]`}
             onClick={() => {
                hapticLightTap();
                if (homeState?.isPremiumLocked) {
@@ -301,7 +433,7 @@ export function Home() {
             <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 transition-transform duration-700 group-hover:scale-110 bg-emerald-400/20`} />
             <div className={`absolute bottom-0 left-0 w-48 h-48 rounded-full blur-2xl translate-y-1/4 -translate-x-1/4 bg-teal-600/30`} />
             
-            <div className="relative z-10 flex flex-col text-white h-[260px]">
+            <div className="relative z-10 flex flex-col text-white h-[208px]">
               <div className="flex justify-between items-center mb-auto pt-1">
                 <span className={`text-[10px] font-bold tracking-[0.15em] uppercase border px-4 py-1.5 rounded-full backdrop-blur-md text-emerald-100/90 border-emerald-100/20 bg-black/10`}>
                   {homeState?.hasCompletedTrainingToday ? 'Concluído' : 'Treino do Dia'}
@@ -316,8 +448,8 @@ export function Home() {
                 )}
               </div>
               
-              <div className="mt-auto mb-6">
-                <h3 className="font-serif text-[34px] tracking-tight leading-[1.05] mb-4 text-white drop-shadow-sm">
+              <div className="mt-auto mb-4">
+                <h3 className="font-serif text-[28px] tracking-tight leading-[1.05] mb-3 text-white drop-shadow-sm">
                   {homeState?.heroTitle}
                 </h3>
                 <p className={`text-emerald-50/80 text-[16px] font-light leading-snug line-clamp-2 max-w-[90%]`}>
@@ -326,7 +458,7 @@ export function Home() {
               </div>
 
               <div className="flex items-center gap-4">
-                <div className={`w-[3.5rem] h-[3.5rem] rounded-full bg-white text-[#055A43] flex items-center justify-center shadow-[0_8px_20px_rgb(0,0,0,0.15)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_12px_25px_rgb(0,0,0,0.2)]`}>
+                <div className={`w-12 h-12 rounded-full bg-white text-[#055A43] flex items-center justify-center shadow-[0_8px_20px_rgb(0,0,0,0.15)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_12px_25px_rgb(0,0,0,0.2)]`}>
                   {homeState?.isPremiumLocked ? <Lock className="w-5 h-5 ml-0" /> : (homeState?.hasCompletedTrainingToday ? <Activity className="w-5 h-5 ml-0" /> : <Play className="w-5 h-5 ml-1" fill="currentColor" />)}
                 </div>
                 <span className="text-sm font-semibold tracking-wide text-white drop-shadow-sm">{homeState?.heroCta}</span>
@@ -338,9 +470,9 @@ export function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex flex-col items-center justify-center bg-white border border-[#055A43]/10 rounded-[2.5rem] p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.03)]"
+            className="flex flex-col items-center justify-center bg-white border border-[#055A43]/10 rounded-[2rem] p-6 text-center shadow-[0_8px_30px_rgb(0,0,0,0.03)]"
           >
-            <div className="w-16 h-16 bg-[#055A43]/5 text-[#055A43] rounded-full flex items-center justify-center mb-6">
+            <div className="w-14 h-14 bg-[#055A43]/5 text-[#055A43] rounded-full flex items-center justify-center mb-4">
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <h3 className="font-serif text-2xl text-[#055A43] mb-3">Tudo concluído!</h3>
@@ -353,12 +485,12 @@ export function Home() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-2 gap-4"
+          className="grid grid-cols-2 gap-3"
         >
           {/* Check-in */}
           <button 
             onClick={() => { hapticLightTap(); navigate('/checkin'); }}
-            className={`group relative overflow-hidden flex flex-col p-6 rounded-[2rem] border shadow-[0_8px_20px_rgb(0,0,0,0.02)] items-start text-left gap-5 transition-all duration-300 hover:-translate-y-1 ${homeState?.hasCheckedInToday ? 'bg-[#055A43]/[0.02] border-[#055A43]/20 hover:border-[#055A43]/40' : (homeState?.priorityAction === 'checkin' ? 'bg-[#055A43]/10 border-[#055A43]/30' : 'bg-white border-[#055A43]/10 hover:border-[#055A43]/30')}`}
+            className={`group relative overflow-hidden flex flex-col p-5 rounded-[2rem] border shadow-[0_8px_20px_rgb(0,0,0,0.02)] items-start text-left gap-4 transition-all duration-300 hover:-translate-y-1 ${homeState?.hasCheckedInToday ? 'bg-[#055A43]/[0.02] border-[#055A43]/20 hover:border-[#055A43]/40' : (homeState?.priorityAction === 'checkin' ? 'bg-[#055A43]/10 border-[#055A43]/30' : 'bg-white border-[#055A43]/10 hover:border-[#055A43]/30')}`}
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <CheckCircle2 className="w-16 h-16 text-[#055A43] -mr-4 -mt-4" />
@@ -377,7 +509,7 @@ export function Home() {
           {/* Nutrição */}
           <button 
             onClick={() => { hapticLightTap(); navigate('/nutricao'); }}
-            className={`group relative overflow-hidden flex flex-col p-6 rounded-[2rem] border shadow-[0_8px_20px_rgb(0,0,0,0.02)] items-start text-left gap-5 hover:-translate-y-1 transition-all duration-300 ${homeState?.nutritionIsPending && homeState?.priorityAction === 'nutrition' ? 'bg-[#506352]/10 border-[#506352]/30' : 'bg-white border-[#055A43]/10 hover:border-[#506352]/30'}`}
+            className={`group relative overflow-hidden flex flex-col p-5 rounded-[2rem] border shadow-[0_8px_20px_rgb(0,0,0,0.02)] items-start text-left gap-4 hover:-translate-y-1 transition-all duration-300 ${homeState?.nutritionIsPending && homeState?.priorityAction === 'nutrition' ? 'bg-[#506352]/10 border-[#506352]/30' : 'bg-white border-[#055A43]/10 hover:border-[#506352]/30'}`}
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Utensils className="w-16 h-16 text-[#506352] -mr-4 -mt-4" />
@@ -402,7 +534,7 @@ export function Home() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.28 }}
-          className="bg-[#055A43] text-white rounded-[2rem] p-6 shadow-[0_14px_30px_rgba(5,90,67,0.18)] flex items-center justify-between cursor-pointer group transition-all duration-300"
+          className="bg-[#055A43] text-white rounded-[2rem] p-5 shadow-[0_14px_30px_rgba(5,90,67,0.18)] flex items-center justify-between cursor-pointer group transition-all duration-300"
           onClick={() => { hapticLightTap(); navigate('/sos'); }}
         >
           <div className="flex items-center gap-4">
@@ -422,7 +554,7 @@ export function Home() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_20px_rgb(0,0,0,0.02)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
+          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-5 shadow-[0_8px_20px_rgb(0,0,0,0.02)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
           onClick={() => { hapticLightTap(); navigate('/agenda'); }}
         >
           <div className="flex items-center gap-4">
@@ -442,7 +574,7 @@ export function Home() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35 }}
-          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_20px_rgb(0,0,0,0.02)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
+          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-5 shadow-[0_8px_20px_rgb(0,0,0,0.02)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
           onClick={() => { hapticLightTap(); navigate('/evolucao'); }}
         >
           <div className="flex items-center gap-4">
@@ -463,7 +595,7 @@ export function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_20px_rgb(0,0,0,0.02)]"
+            className="bg-white border border-[#055A43]/10 rounded-[2rem] p-5 shadow-[0_8px_20px_rgb(0,0,0,0.02)]"
           >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#055A43]/5 rounded-full flex items-center justify-center shrink-0">
@@ -483,8 +615,7 @@ export function Home() {
       <AnimatePresence>
         {showNotifications && (
           <>
-            <motion.div 
-              initial={{ opacity: 0 }}
+            <motion.div initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={toggleNotifications}
@@ -556,6 +687,107 @@ export function Home() {
                     ))}
                   </div>
                 )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Promo Notification Modal */}
+      <AnimatePresence>
+        {promoNotification && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={async () => {
+                const user = auth.currentUser;
+                if (user) {
+                  await NotificationRepository.markAsRead(promoNotification.id, user.uid);
+                }
+                setPromoNotification(null);
+              }}
+              className="fixed inset-0 bg-black/45 backdrop-blur-sm z-[80]"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className="fixed inset-x-4 top-1/2 -translate-y-1/2 max-w-sm mx-auto bg-white rounded-[2rem] border border-[#055A43]/10 p-6 z-[90] shadow-2xl flex flex-col items-center text-center"
+            >
+              <div className="w-16 h-16 bg-[#055A43]/5 rounded-full flex items-center justify-center mb-5 text-3xl">
+                {promoNotification.type === 'referral_reward_indicator' ? '🎁' : '🎉'}
+              </div>
+              <h3 className="font-serif text-2xl text-[#055A43] mb-3 leading-tight font-bold">
+                {promoNotification.title}
+              </h3>
+              <p className="text-[#5C615D] text-sm font-light leading-relaxed mb-6">
+                {promoNotification.body}
+              </p>
+              <button
+                onClick={async () => {
+                  const user = auth.currentUser;
+                  if (user) {
+                    await NotificationRepository.markAsRead(promoNotification.id, user.uid);
+                  }
+                  setPromoNotification(null);
+                }}
+                className="w-full bg-[#055A43] hover:bg-[#044735] text-white h-12 rounded-xl font-semibold shadow-md active:scale-95 transition-all text-xs uppercase tracking-wider cursor-pointer"
+              >
+                Entendido
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showBetaFeedbackPrompt && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeBetaFeedbackPrompt}
+              className="fixed inset-0 z-[95] bg-black/45 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 18 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 18 }}
+              transition={{ type: 'spring', damping: 26, stiffness: 330 }}
+              className="fixed inset-x-4 top-1/2 z-[100] mx-auto flex max-w-sm -translate-y-1/2 flex-col rounded-[2rem] border border-[#055A43]/10 bg-white p-6 text-center shadow-2xl"
+            >
+              <button
+                type="button"
+                onClick={closeBetaFeedbackPrompt}
+                className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#F7F6F3] text-[#5C615D]"
+                aria-label="Fechar feedback"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#055A43]/10 text-[#055A43]">
+                <MessageSquareText className="h-6 w-6" />
+              </div>
+              <h3 className="font-serif text-2xl leading-tight text-[#055A43]">
+                Como está sendo sua experiência?
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-[#5C615D]">
+                Seu feedback é essencial para evoluirmos o app.
+              </p>
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                {['Muito boa', 'Boa', 'Pode melhorar', 'Tive dificuldades'].map((label) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => sendQuickBetaFeedback(label)}
+                    className="rounded-2xl border border-[#055A43]/10 bg-[#FAFAFA] px-3 py-3 text-xs font-bold text-[#055A43]"
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
             </motion.div>
           </>
