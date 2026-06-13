@@ -53,7 +53,7 @@ export function Personality() {
     <AuthLayout 
       title="Energia e personalidade" 
       subtitle={`Agora vamos entender melhor como o ${dogName} se comporta no dia a dia. Essas informações ajudam o app a ajustar os treinos, a rotina e a forma ideal de conduzir cada etapa.`}
-      step="ETAPA 4 DE 7"
+      step="ETAPA 3 DE 6"
     >
       <div className="flex flex-col gap-8 flex-1">
         
