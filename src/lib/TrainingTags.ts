@@ -1,9 +1,13 @@
 import { DogProfile, TrainingTask } from '../types';
 
 export type TrainingCategoryTag = 'foco' | 'conexao' | 'obediencia_basica' | 'autocontrole' | 'passeio' | 'socializacao' | 'ansiedade_separacao' | 'higiene_necessidades' | 'manejo' | 'enriquecimento';
-export type TrainingProblemTag = 'puxa_na_guia' | 'latidos' | 'destruicao' | 'mordidas' | 'xixi_fora_lugar' | 'ansiedade_separacao' | 'reatividade' | 'medo' | 'pula_em_pessoas' | 'falta_de_foco';
+export const TRAINING_PROBLEM_TAGS = [
+  'puxa_na_guia', 'latidos', 'destruicao', 'mordidas', 'xixi_fora_lugar',
+  'ansiedade_separacao', 'reatividade', 'medo', 'pula_em_pessoas', 'falta_de_foco',
+] as const;
+export type TrainingProblemTag = typeof TRAINING_PROBLEM_TAGS[number];
 export type TrainingObjectiveTag = 'obediencia' | 'foco' | 'calma' | 'independencia' | 'passeio' | 'socializacao' | 'rotina' | 'energia_mental' | 'convivencia';
-export type DogProfileTag = 'filhote' | 'adulto' | 'senior' | 'pequeno_porte' | 'medio_porte' | 'grande_porte' | 'apartamento' | 'casa' | 'alta_energia' | 'media_energia' | 'baixa_energia' | 'medroso' | 'agitado' | 'calmo' | 'sociavel' | 'reativo';
+export type DogProfileTag = 'filhote' | 'adulto' | 'senior' | 'pequeno_porte' | 'medio_porte' | 'grande_porte' | 'apartamento' | 'casa' | 'alta_energia' | 'media_energia' | 'baixa_energia' | 'medroso' | 'agitado' | 'calmo' | 'sociavel' | 'reativo' | 'iniciante' | 'intermediario' | 'avancado';
 export type TrainingStatusTag = 'novo' | 'em_andamento' | 'dominado' | 'travado' | 'reforco';
 
 export type TrainingTag = TrainingCategoryTag | TrainingProblemTag | TrainingObjectiveTag | DogProfileTag | TrainingStatusTag;
@@ -21,9 +25,9 @@ export function generateDogTagsFromOnboarding(onboardingData: DogProfile): DogPr
 
   // Nível / Base
   const base = onboardingData.trainingBase || 'beginner';
-  if (base === 'advanced') tags.push('avancado' as any);
-  else if (base === 'intermediate') tags.push('intermediario' as any);
-  else tags.push('iniciante' as any);
+  if (base === 'advanced') tags.push('avancado');
+  else if (base === 'intermediate') tags.push('intermediario');
+  else tags.push('iniciante');
 
   // Idade
   const ageStr = String(onboardingData.age || '').toLowerCase();

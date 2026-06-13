@@ -37,6 +37,7 @@ describe('IntelligentPlanMotor.generatePlan', () => {
   it('exclui treinos de comandos já dominados', () => {
     const plan = IntelligentPlanMotor.generatePlan(profile({ knownCommands: ['Senta'], trainingBase: 'intermediate' }));
     expect(plan.tasks.some(t => t.id === 'b2-t1')).toBe(false);
+    expect(plan.tasks.some(t => t.id === 'b2-t2')).toBe(true);
   });
 
   it('front-loada o treino do problema (puxa-guia => bloco b4 na primeira metade)', () => {

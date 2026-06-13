@@ -6,6 +6,7 @@ import {
   recommendTrainingsForDog,
   generateDogTagsFromOnboarding,
   TrainingRecommendationScore,
+  TRAINING_PROBLEM_TAGS,
 } from '@/src/lib/TrainingTags';
 import { knownCommandTrainingIds } from '@/src/lib/knownCommandTrainings';
 
@@ -15,22 +16,11 @@ const CORE_BLOCK_IDS = ['b1', 'b2'];
 const RELEVANCE_FLOOR = 1; // treino não-fundamento precisa de score >= 1 (casar algo) para entrar
 const TEMPLATE_LEVEL_RANK: Record<string, number> = { iniciante: 0, intermediario: 1, avancado: 2 };
 
-// Vocabulário de tags de problema (espelha TrainingProblemTag em TrainingTags.ts).
-const PROBLEM_TAGS = new Set<string>([
-  'puxa_na_guia',
-  'latidos',
-  'destruicao',
-  'mordidas',
-  'xixi_fora_lugar',
-  'ansiedade_separacao',
-  'reatividade',
-  'medo',
-  'pula_em_pessoas',
-  'falta_de_foco',
-]);
+// Vocabulário de tags de problema (fonte única em TrainingTags.ts).
+const PROBLEM_TAGS = new Set<string>(TRAINING_PROBLEM_TAGS);
 
-// Boost de ordenação para o treino que ataca o problema do cão: garante que ele
-// vá para a primeira metade do plano (front-load), mesmo acima do nível nominal.
+// Boost de ordenação para o treino que ataca o problema do cão: deve exceder o
+// score orgânico máximo (~40) para garantir o front-load, mesmo acima do nível.
 const PROBLEM_ORDER_BOOST = 1000;
 
 function dogLevelRank(trainingBase?: string): number {
