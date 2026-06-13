@@ -3,16 +3,22 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthLayout } from '@/src/components/layout/AuthLayout';
 import { Button } from '@/src/components/ui/Button';
 import { Battery, BatteryMedium, BatteryFull, Bone, Car, Heart, Circle, Utensils, CircleHelp } from 'lucide-react';
+import { auth } from '@/src/lib/firebase';
+import { PlanRegenerationService } from '@/src/services/PlanRegenerationService';
 
 export function Personality() {
   const navigate = useNavigate();
   const location = useLocation();
   const stateData = location.state || {};
   const dogName = stateData.dogData?.name || 'seu cão';
+  const isUpdateMode = stateData.mode === 'updatePlan';
+  const existing = stateData.dogData || {};
 
-  const [energyLevel, setEnergyLevel] = useState('');
-  const [personalityTraits, setPersonalityTraits] = useState<string[]>([]);
-  const [rewardPreference, setRewardPreference] = useState('');
+  const [energyLevel, setEnergyLevel] = useState(isUpdateMode ? (existing.energyLevel || '') : '');
+  const [personalityTraits, setPersonalityTraits] = useState<string[]>(
+    isUpdateMode ? (existing.personalityTraits || existing.personality || []) : []
+  );
+  const [rewardPreference, setRewardPreference] = useState(isUpdateMode ? (existing.rewardPreference || '') : '');
 
   const energyOptions = [
     { id: 'low', title: 'Baixo', icon: Battery },
@@ -42,10 +48,34 @@ export function Personality() {
     );
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!energyLevel || personalityTraits.length === 0 || !rewardPreference) return;
-    navigate('/onboarding/behavior', { 
-      state: { ...stateData, energyLevel, personalityTraits, rewardPreference } 
+
+    if (isUpdateMode) {
+      const ok = window.confirm(
+        'Vamos gerar um novo plano com base no seu perfil. Seus treinos já concluídos serão mantidos.'
+      );
+      if (!ok) return;
+      const user = auth.currentUser;
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+      try {
+        await PlanRegenerationService.regenerate(user.uid, {
+          energyLevel,
+          personalityTraits,
+          rewardPreference,
+        });
+        navigate('/plano', { state: { planRecalculated: true } });
+      } catch (err) {
+        window.alert('Não foi possível recalcular seu plano agora. Tente novamente em instantes.');
+      }
+      return;
+    }
+
+    navigate('/onboarding/behavior', {
+      state: { ...stateData, energyLevel, personalityTraits, rewardPreference },
     });
   };
 
