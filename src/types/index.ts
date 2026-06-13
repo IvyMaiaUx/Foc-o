@@ -24,6 +24,14 @@ export interface UserProfile {
   subscriptionTier?: string;
   trialEndsAt?: number;
   onboardingComplete: boolean;
+  referralCode?: string;
+  referredBy?: string | null;
+  referredById?: string;
+  referralRewardsDays?: number;
+  validReferrals?: number;
+  referralsLimitReached?: boolean;
+  premiumBonusDays?: number;
+  premiumBonusExpiresAt?: number;
   settings?: {
     notificationsEnabled: boolean;
     trainingReminderTime: string; // e.g. "09:00"
@@ -37,12 +45,30 @@ export interface UserProfile {
       report: boolean;
     };
   };
+  whatsappEnabled?: boolean;
+  whatsappPhone?: string;
+  whatsappStatus?: 'active' | 'disabled' | 'missing_phone' | 'failed' | string;
+  lastSeenAt?: number;
+  lastActivityAt?: number;
+  whatsappNotificationTypes?: {
+    welcome?: boolean;
+    agendaDay?: boolean;
+    weeklyReport: boolean;
+    trainingReminder: boolean;
+    achievements?: boolean;
+    inactivity: boolean;
+    trialAndBilling: boolean;
+  };
   createdAt: number;
   updatedAt: number;
 }
 
 export function hasPremiumAccess(profile: UserProfile | null): boolean {
   if (!profile) return false;
+
+  if (profile.premiumBonusExpiresAt && profile.premiumBonusExpiresAt > Date.now()) {
+    return true;
+  }
 
   const subscription = profile.subscription;
   if (subscription) {
@@ -52,7 +78,7 @@ export function hasPremiumAccess(profile: UserProfile | null): boolean {
       return Boolean(subscription.premiumAccess && trialEndsAt > Date.now());
     }
 
-    if (subscription.status === 'active' || subscription.plan === 'premium') {
+    if (subscription.status === 'active') {
       return subscription.premiumAccess !== false;
     }
 
@@ -68,6 +94,9 @@ export function hasPremiumAccess(profile: UserProfile | null): boolean {
 
 export function getSubscriptionPlan(profile: UserProfile | null): SubscriptionPlan {
   if (!profile) return 'free';
+  if (profile.premiumBonusExpiresAt && profile.premiumBonusExpiresAt > Date.now()) {
+    return 'premium';
+  }
   return profile.subscription?.plan ?? (profile.subscriptionTier as SubscriptionPlan) ?? 'free';
 }
 
@@ -112,6 +141,7 @@ export interface DogProfile {
   trainingBase: string; // 'beginner', 'intermediate', 'advanced'
   knownCommands: string[];
   goals: string[];
+  goalNotes?: string;
   
   diet?: string;
   foodBrand?: string;
@@ -153,6 +183,8 @@ export interface TrainingTask {
   moduleName: string;
   description: string;
   steps: string[];
+  reason?: string;
+  priority?: 'alta' | 'normal' | 'baixa';
 }
 
 export interface CurrentPlan {
@@ -168,6 +200,7 @@ export interface TrainingSession {
   title: string;
   durationMinutes: number;
   feedback: 'easy' | 'medium' | 'hard' | 'failed';
+  isReview?: boolean;
   completedAt: number;
 }
 
