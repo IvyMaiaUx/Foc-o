@@ -30,9 +30,12 @@ function dogLevelRank(trainingBase?: string): number {
 }
 
 export class IntelligentPlanMotor {
-  static generatePlan(dogProfile: DogProfile): CurrentPlan {
+  static generatePlan(dogProfile: DogProfile, completedTrainingIds: string[] = []): CurrentPlan {
     const templates = Object.values(TRAINING_TEMPLATES) as Template[];
-    const masteredIds = knownCommandTrainingIds(dogProfile.knownCommands || []);
+    const masteredIds = new Set<string>([
+      ...knownCommandTrainingIds(dogProfile.knownCommands || []),
+      ...completedTrainingIds,
+    ]);
 
     // Tags de problema do cão (ex.: 'pulling' => 'puxa_na_guia').
     const dogProblemTags = new Set(
@@ -97,6 +100,7 @@ export class IntelligentPlanMotor {
       currentTaskIndex: 0,
       generatedAt: Date.now(),
       focus: sanitizeText(IntelligentPlanMotor.deriveFocus(dogProfile)),
+      engine: 'intelligent',
     };
   }
 

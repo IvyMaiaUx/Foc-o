@@ -70,4 +70,14 @@ describe('IntelligentPlanMotor.generatePlan', () => {
     expect(blocks.has('b1')).toBe(true);
     expect(blocks.has('b2')).toBe(true);
   });
+
+  it('carimba o plano com engine intelligent', () => {
+    const plan = IntelligentPlanMotor.generatePlan(profile());
+    expect(plan.engine).toBe('intelligent');
+  });
+
+  it('exclui os treinos concluídos passados como argumento', () => {
+    const plan = IntelligentPlanMotor.generatePlan(profile({ trainingBase: 'intermediate' }), ['b2-t2']);
+    expect(plan.tasks.some(t => t.id === 'b2-t2')).toBe(false);
+  });
 });

@@ -191,7 +191,8 @@ export interface CurrentPlan {
   tasks: TrainingTask[];
   currentTaskIndex: number;
   generatedAt: number;
-  focus: string; 
+  focus: string;
+  engine?: 'intelligent';
 }
 
 export interface TrainingSession {
