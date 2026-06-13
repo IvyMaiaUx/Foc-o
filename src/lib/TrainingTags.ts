@@ -21,6 +21,9 @@ export function generateDogTagsFromOnboarding(onboardingData: DogProfile): DogPr
 
   // Nível / Base
   const base = onboardingData.trainingBase || 'beginner';
+  if (base === 'advanced') tags.push('avancado' as any);
+  else if (base === 'intermediate') tags.push('intermediario' as any);
+  else tags.push('iniciante' as any);
 
   // Idade
   const ageStr = String(onboardingData.age || '').toLowerCase();
@@ -79,6 +82,7 @@ export function generateDogTagsFromOnboarding(onboardingData: DogProfile): DogPr
     if (norm.includes('fear') || norm.includes('medo')) tags.push('medo' as any);
     if (norm.includes('jump') || norm.includes('pula')) tags.push('pula_em_pessoas' as any);
     if (norm.includes('focus') || norm.includes('foco')) tags.push('falta_de_foco' as any);
+    if (norm.includes('agita')) tags.push('agitado');
     if (norm.includes('potty') || norm.includes('xixi')) tags.push('xixi_fora_lugar' as any);
   });
 
