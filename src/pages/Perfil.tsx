@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '@/src/lib/firebase';
-import { doc, getDoc, collection, getDocs, limit, query, onSnapshot, deleteDoc, writeBatch } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { Settings, ShieldPlus, ChevronRight, HelpCircle, LogOut, Utensils, Syringe, Crown, CalendarClock, Bell, AlertTriangle, FileText } from 'lucide-react';
+import { Settings, ShieldPlus, ChevronRight, HelpCircle, LogOut, Utensils, Syringe, Crown, CalendarClock, Bell, AlertTriangle, FileText, Sparkles } from 'lucide-react';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { getSubscriptionPlan, getSubscriptionStatus, hasPremiumAccess } from '@/src/types';
 import { DogRepository } from '@/src/repositories/DogRepository';
-import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
+import { TrainingRepository } from '@/src/repositories/TrainingRepository';
+import { isPlanUpgradeEligible } from '@/src/lib/planUpgrade';
+import { CurrentPlan } from '@/src/types';
+import { isBetaEnvironment } from '@/src/lib/beta';
 
 const valueOrFallback = (value: any) => {
   if (value === undefined || value === null || value === '') return 'Não informado';
@@ -114,10 +117,12 @@ function ProfileField({ label, value }: { label: string; value: any }) {
 
 export function Perfil() {
   const navigate = useNavigate();
+  const isBeta = isBetaEnvironment();
   const { userProfile, isPremium } = useAuth();
   
   const [userName, setUserName] = useState('');
   const [dogData, setDogData] = useState<any>(null);
+  const [currentPlan, setCurrentPlan] = useState<CurrentPlan | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [hasUnreadSupport, setHasUnreadSupport] = useState(false);
@@ -141,6 +146,9 @@ export function Perfil() {
         if (dogProfile) {
           setDogData(dogProfile);
         }
+
+        const plan = await TrainingRepository.getCurrentPlan(user.uid);
+        setCurrentPlan(plan);
       } catch (error) {
         console.error("Error fetching profile", error);
       } finally {
@@ -188,6 +196,8 @@ export function Perfil() {
   };
 
   const planBadge = getSubscriptionDisplay();
+
+  const canRecalcular = isPlanUpgradeEligible(dogData, currentPlan);
 
   const [isExporting, setIsExporting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -272,71 +282,20 @@ export function Perfil() {
 
     setIsDeleting(true);
     try {
-      // 0. Cancel Stripe subscription immediately if they have an active one
-      const stripeSubscriptionId = userProfile?.subscription?.stripeSubscriptionId;
-      if (stripeSubscriptionId) {
-        try {
-          const token = await user.getIdToken();
-          const response = await fetch('https://foc-o.vercel.app/api/cancel-subscription', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              reason: 'account_deletion',
-              feedback: 'LGPD Account Deletion Request',
-              cancelImmediately: true
-            })
-          });
-          if (!response.ok) {
-            console.warn('Failed to automatically cancel Stripe subscription during account deletion');
-          }
-        } catch (apiErr) {
-          console.error('Error calling cancel-subscription API during account deletion:', apiErr);
+      const token = await user.getIdToken();
+      const response = await fetch('https://foc-o.vercel.app/api/delete-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         }
+      });
+
+      if (!response.ok) {
+        throw new Error('Não foi possível concluir a exclusão. Tente novamente em alguns minutos.');
       }
 
-      // 1. Delete Firestore user subcollections
-      const collectionsToDelete = [
-        'checkins',
-        'trainingLogs',
-        'vaccines',
-        'customEvents',
-        'customEventCompletions',
-        'notifications'
-      ];
-
-      for (const colName of collectionsToDelete) {
-        const snap = await getDocs(collection(db, 'users', user.uid, colName));
-        for (const docSnap of snap.docs) {
-          await deleteDoc(doc(db, 'users', user.uid, colName, docSnap.id));
-        }
-      }
-
-      // 2. Delete plan, dog and evolution profiles
-      await deleteDoc(doc(db, 'users', user.uid, 'dog', 'profile'));
-      await deleteDoc(doc(db, 'users', user.uid, 'plan', 'current'));
-      await deleteDoc(doc(db, 'users', user.uid, 'evolution', 'summary'));
-
-      // 3. Delete user root doc
-      await deleteDoc(doc(db, 'users', user.uid));
-
-      // 4. Delete support thread messages & support thread doc
-      const supportMsgsSnap = await getDocs(collection(db, 'supportThreads', user.uid, 'messages'));
-      for (const msgSnap of supportMsgsSnap.docs) {
-        await deleteDoc(doc(db, 'supportThreads', user.uid, 'messages', msgSnap.id));
-      }
-      await deleteDoc(doc(db, 'supportThreads', user.uid));
-
-      // Log premium_cancelled if they were premium
-      const wasPremium = hasPremiumAccess(userProfile);
-      if (wasPremium) {
-        await AnalyticsRepository.logEvent('premium_cancelled', { reason: 'account_deletion' });
-      }
-
-      // 5. Delete Firebase Auth User
-      await user.delete();
+      await signOut(auth).catch(() => undefined);
 
       alert("Sua conta e todos os seus dados foram excluídos com sucesso em conformidade com a LGPD.");
       navigate('/');
@@ -397,11 +356,11 @@ export function Perfil() {
 
         {/* Subscription Badge */}
         <button 
-          onClick={() => navigate('/assinatura')}
+          onClick={() => navigate(isBeta ? '/beta' : '/assinatura')}
           className={`mt-4 px-4 py-1.5 rounded-full flex items-center gap-2 border ${planBadge.color} active:scale-95 transition-transform`}
         >
-          {getSubscriptionPlan(userProfile) === 'premium' ? <Crown className="w-4 h-4" /> : <ShieldPlus className="w-4 h-4" />}
-          <span className="text-[10px] font-medium tracking-widest uppercase">{planBadge.text}</span>
+          {isBeta ? <ShieldPlus className="w-4 h-4" /> : getSubscriptionPlan(userProfile) === 'premium' ? <Crown className="w-4 h-4" /> : <ShieldPlus className="w-4 h-4" />}
+          <span className="text-[10px] font-medium tracking-widest uppercase">{isBeta ? 'Beta gratuito' : planBadge.text}</span>
         </button>
       </header>
 
@@ -414,7 +373,7 @@ export function Perfil() {
             Desenvolvimento
           </h3>
           <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col">
-            <button 
+            <button
               onClick={() => navigate('/sos')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
             >
@@ -430,7 +389,7 @@ export function Perfil() {
               <ChevronRight className="w-4 h-4 text-[#506352]/40" />
             </button>
             <div className="h-px w-[85%] bg-gray-100 self-end" />
-            <button 
+            <button
               onClick={() => navigate('/historico')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
             >
@@ -445,6 +404,26 @@ export function Perfil() {
               </div>
               <ChevronRight className="w-4 h-4 text-[#506352]/40" />
             </button>
+            {canRecalcular && (
+              <>
+                <div className="h-px w-[85%] bg-gray-100 self-end" />
+                <button
+                  onClick={() => navigate('/onboarding/personality', { state: { mode: 'updatePlan', dogData: dogData } })}
+                  className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[#055A43]/5 flex items-center justify-center text-[#055A43]">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium text-[#506352] text-sm">Recalcular meu plano</p>
+                      <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Gerar plano personalizado inteligente</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-[#506352]/40" />
+                </button>
+              </>
+            )}
           </div>
         </section>
 
@@ -454,7 +433,7 @@ export function Perfil() {
             Saúde & Rotina
           </h3>
           <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col">
-            <button 
+            <button
               onClick={() => navigate('/nutricao')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
             >
@@ -481,6 +460,38 @@ export function Perfil() {
                 <div className="text-left">
                   <p className="font-medium text-[#506352] text-sm">Carteira de Vacinação</p>
                   <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Próximas doses e histórico</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#506352]/40" />
+            </button>
+          </div>
+        </section>
+
+        {/* Indicações */}
+        <section>
+          <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
+            Promoções
+          </h3>
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col">
+            <button onClick={() => navigate('/indique')}
+              className="flex items-center justify-between p-4 px-3 active:bg-emerald-50/50 rounded-xl transition-colors text-left"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#055A43]/10 flex items-center justify-center text-[#055A43] text-lg font-bold">
+                  🎁
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-[#506352] text-sm">Indique e Ganhe</p>
+                    {userProfile && userProfile.validReferrals > 0 && (
+                      <span className="text-[9px] font-bold bg-[#055A43]/5 text-[#055A43] border border-[#055A43]/15 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                        {userProfile.validReferrals === 1 && '🥉 Embaixador'}
+                        {userProfile.validReferrals === 2 && '🥈 Tutor Influente'}
+                        {userProfile.validReferrals >= 3 && '🥇 Embaixador Gold'}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Ganhe 7 dias Premium com seus amigos</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-[#506352]/40" />
@@ -525,7 +536,7 @@ export function Perfil() {
             </button>
             <div className="h-px w-[85%] bg-gray-100 self-end" />
             <button 
-              onClick={() => navigate('/assinatura')}
+              onClick={() => navigate(isBeta ? '/beta' : '/assinatura')}
               className="flex items-center justify-between p-4 active:bg-[#055A43]/5 rounded-xl transition-colors bg-[#055A43]/[0.03] border border-[#055A43]/10 mx-1 my-1"
             >
               <div className="flex items-center gap-4">
@@ -533,8 +544,8 @@ export function Perfil() {
                   <Crown className="w-5 h-5" />
                 </div>
                 <div className="text-left">
-                  <p className="font-medium text-[#055A43] text-sm">Seu plano</p>
-                  <p className="text-[#055A43]/70 text-[11px] font-light mt-0.5">Status da assinatura e acesso</p>
+                  <p className="font-medium text-[#055A43] text-sm">{isBeta ? 'Beta Focão' : 'Seu plano'}</p>
+                  <p className="text-[#055A43]/70 text-[11px] font-light mt-0.5">{isBeta ? 'Feedback, bugs e sugestões' : 'Status da assinatura e acesso'}</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-[#055A43]/40" />
