@@ -64,9 +64,10 @@ export class IntelligentPlanMotor {
       if (masteredIds.has(t.id)) return false;
       const isCore = CORE_BLOCK_IDS.includes(t.blockId);
       const isProblem = targetsProblem(t);
-      // Treinos do problema do cão entram mesmo acima do nível nominal — é o foco.
-      const above = (TEMPLATE_LEVEL_RANK[t.levelTag] ?? 0) > dogRank;
-      if (above && !isCore && !isProblem) return false;
+      // Núcleo e treinos do problema podem ir até 1 nível acima do cão (foco), nunca mais.
+      const levelRank = TEMPLATE_LEVEL_RANK[t.levelTag] ?? 0;
+      const maxLevel = dogRank + (isCore || isProblem ? 1 : 0);
+      if (levelRank > maxLevel) return false;
       const score = scoreById.get(t.id)?.score ?? 0;
       if (!isCore && !isProblem && score < RELEVANCE_FLOOR) return false;
       return true;

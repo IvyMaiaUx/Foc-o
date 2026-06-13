@@ -29,6 +29,11 @@ describe('IntelligentPlanMotor.generatePlan', () => {
     expect(plan.tasks.every(t => levelOf(t.id) !== 'avancado')).toBe(true);
   });
 
+  it('cão iniciante não recebe treino avancado nem para o seu problema', () => {
+    const plan = IntelligentPlanMotor.generatePlan(profile({ behaviorIssues: ['pulling', 'destructive'], trainingBase: 'beginner' }));
+    expect(plan.tasks.every(t => levelOf(t.id) !== 'avancado')).toBe(true);
+  });
+
   it('exclui treinos de comandos já dominados', () => {
     const plan = IntelligentPlanMotor.generatePlan(profile({ knownCommands: ['Senta'], trainingBase: 'intermediate' }));
     expect(plan.tasks.some(t => t.id === 'b2-t1')).toBe(false);
