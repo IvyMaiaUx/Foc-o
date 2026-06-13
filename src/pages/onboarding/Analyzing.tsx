@@ -7,7 +7,7 @@ import { DogRepository } from "@/src/repositories/DogRepository";
 import { UserRepository } from "@/src/repositories/UserRepository";
 import { TrainingRepository } from "@/src/repositories/TrainingRepository";
 import { EvolutionRepository } from "@/src/repositories/EvolutionRepository";
-import { AdaptivePlanMotor } from "@/src/motors/AdaptivePlanMotor";
+import { IntelligentPlanMotor } from "@/src/motors/IntelligentPlanMotor";
 import { DogProfile } from "@/src/types";
 import { AnalyticsRepository } from "@/src/repositories/AnalyticsRepository";
 
@@ -107,7 +107,7 @@ export function Analyzing() {
           energyLevel: energyLevel || "medium",
           personalityTraits: personalityTraits || [],
           rewardPreference: rewardPreference || "",
-          behaviorIssues: behaviors || [],
+          behaviorIssues: (behaviors || []).filter((behavior: string) => behavior !== 'none'),
           trainingBase: base || "beginner",
           knownCommands: knownCommands || [],
           goals: goals || [],
@@ -118,6 +118,8 @@ export function Analyzing() {
           foodVersion: health?.foodVersion || "",
           foodQuantity: health?.foodQuantity || "",
           mealsPerDay: health?.mealsPerDay || "",
+          naturalFoodDetails: health?.naturalFoodDetails || "",
+          hasVetGuidance: health?.hasVetGuidance || "",
           ...(nutrition ? { nutrition } : {}),
           lastVaccine: health?.lastVaccine || "",
           nextCheckup: health?.nextCheckup || "",
@@ -144,6 +146,8 @@ export function Analyzing() {
             destruction: behaviors?.includes("destructive") || false,
             barking: behaviors?.includes("barking") || false,
             pullingLeash: behaviors?.includes("pulling") || false,
+            lackFocus: behaviors?.includes("lack_focus") || false,
+            agitation: behaviors?.includes("agitation") || false,
           },
         };
 
@@ -162,7 +166,7 @@ export function Analyzing() {
 
         // 2. Generate Plan
         // Use the generated dog profile directly to avoid an extra read
-        const generatedPlan = AdaptivePlanMotor.generatePlan({
+        const generatedPlan = IntelligentPlanMotor.generatePlan({
           id: "profile",
           ...finalDogProfile,
         } as DogProfile);
@@ -182,26 +186,49 @@ export function Analyzing() {
 
         // 4. Mark Onboarding Complete
         const userRef = doc(db, "users", user.uid);
-        batch.update(userRef, {
+        const userUpdate: Record<string, any> = {
           onboardingComplete: true,
           updatedAt: now,
-          whatsappEnabled: true,
-          whatsappPhone: dogData?.whatsappPhone || "",
-          whatsappPreferredTime: "18:00",
           whatsappNotificationTypes: {
             weeklyReport: true,
             trainingReminder: true,
             inactivity: true,
             trialAndBilling: true,
           },
-          whatsappOptInAt: now,
-          whatsappStatus: dogData?.whatsappPhone ? 'active' : 'disabled'
-        });
+        };
+
+        if (dogData?.whatsappPhone) {
+          userUpdate.whatsappEnabled = true;
+          userUpdate.whatsappPhone = dogData.whatsappPhone;
+          userUpdate.whatsappOptInAt = now;
+          userUpdate.whatsappStatus = 'active';
+        }
+
+        batch.update(userRef, userUpdate);
 
         // Commit transaction
         try {
           await batch.commit();
           AnalyticsRepository.logEvent('onboarding_completed');
+
+          // Process referral if user was referred by someone
+          try {
+            const token = await user.getIdToken();
+            const response = await fetch('https://foc-o.vercel.app/api/process-referral', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            if (response.ok) {
+              await response.json();
+            } else {
+              console.warn('[Referral] API responded with error status:', response.status);
+            }
+          } catch (refErr) {
+            console.error('[Referral] Error calling process-referral API:', refErr);
+          }
         } catch (e: any) {
           throw new Error("Transaction error: " + e.message);
         }
@@ -269,7 +296,7 @@ export function Analyzing() {
 
         <h1 className="font-serif text-3xl mb-3">Analisando o perfil</h1>
         <p className="text-white/80">
-          Cruzando raça, energia e objetivos para criar o plano perfeito para o{" "}
+          Cruzando rotina, dificuldade e objetivos para criar o plano inicial do{" "}
           {stateData?.dogData?.name || "seu cão"}...
         </p>
       </div>
