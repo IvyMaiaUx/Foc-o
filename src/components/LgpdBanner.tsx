@@ -45,85 +45,70 @@ export function LgpdBanner() {
       aria-live="polite"
       style={{
         position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
+        bottom: '12px',
+        left: '12px',
+        right: '12px',
+        maxWidth: '560px',
+        margin: '0 auto',
         zIndex: 9999,
-        padding: '16px 20px',
+        padding: '12px 14px',
         background: '#0a2e22',
-        borderTop: '1px solid rgba(255,255,255,0.08)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: '14px',
+        boxShadow: '0 8px 30px rgba(0,0,0,0.25)',
         display: 'flex',
-        flexDirection: 'column',
+        alignItems: 'center',
         gap: '12px',
+        flexWrap: 'wrap',
       }}
     >
-      {/* Texto */}
       <p style={{
         margin: 0,
-        fontSize: '13px',
-        lineHeight: '1.6',
+        flex: '1 1 220px',
+        fontSize: '12.5px',
+        lineHeight: 1.45,
         color: 'rgba(255,255,255,0.75)',
       }}>
-        Usamos cookies <strong>essenciais</strong> para manter sua conta segura (sempre ativos) e,
-        com seu consentimento, cookies de <strong>marketing</strong> (Meta/Facebook e nosso pixel)
-        para medir e melhorar os anúncios. Você pode recusar os de marketing sem afetar o uso do app.
-        Saiba mais na{' '}
-        <Link
-          to="/privacidade"
-          style={{ color: '#6ee7b7', textDecoration: 'underline' }}
-        >
-          Política de Privacidade
+        Cookies essenciais e, com seu consentimento, de <strong>marketing</strong> (Meta) para medir anúncios.{' '}
+        <Link to="/privacidade" style={{ color: '#6ee7b7', textDecoration: 'underline' }}>
+          Política
         </Link>
         .
       </p>
 
-      {/* Botões */}
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-        <button
-          onClick={() => save(true)}
-          style={{
-            padding: '8px 20px',
-            borderRadius: '8px',
-            border: 'none',
-            background: '#055A43',
-            color: '#fff',
-            fontSize: '13px',
-            fontWeight: 500,
-            cursor: 'pointer',
-          }}
-        >
-          Aceitar todos
-        </button>
+      <div style={{ display: 'flex', gap: '8px' }}>
         <button
           onClick={() => save(false)}
           style={{
-            padding: '8px 20px',
+            padding: '7px 14px',
             borderRadius: '8px',
             border: '1px solid rgba(255,255,255,0.15)',
             background: 'transparent',
             color: 'rgba(255,255,255,0.8)',
-            fontSize: '13px',
+            fontSize: '12.5px',
             fontWeight: 500,
             cursor: 'pointer',
+            whiteSpace: 'nowrap',
           }}
         >
-          Recusar marketing
+          Recusar
         </button>
-        <Link
-          to="/privacidade"
+        <button
+          onClick={() => save(true)}
           style={{
-            padding: '8px 16px',
+            padding: '7px 16px',
             borderRadius: '8px',
-            border: '1px solid rgba(255,255,255,0.15)',
-            color: 'rgba(255,255,255,0.65)',
-            fontSize: '13px',
-            textDecoration: 'none',
-            display: 'inline-flex',
-            alignItems: 'center',
+            border: 'none',
+            background: '#055A43',
+            color: '#fff',
+            fontSize: '12.5px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
           }}
         >
-          Saber mais
-        </Link>
+          Aceitar
+        </button>
       </div>
     </div>
   );

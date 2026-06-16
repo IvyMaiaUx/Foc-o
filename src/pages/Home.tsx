@@ -185,7 +185,7 @@ export function Home() {
 
   const activeTask = currentPlan?.tasks[currentPlan?.currentTaskIndex || 0];
   const dogName = dogProfile?.name || 'Seu cão';
-  const streak = evolution?.streak || 0;
+  const streak = EvolutionRepository.liveStreak(evolution);
   // Calculate nutrition info
   const nutritionDaily = NutritionMotor.calculateFood(dogProfile).daily;
 
@@ -362,25 +362,6 @@ export function Home() {
             </div>
           </motion.div>
         )}
-
-        {/* Resumo Inteligente */}
-        <motion.section
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.05 }}
-          className="bg-white border border-[#055A43]/10 rounded-[1.75rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.03)]"
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="w-4 h-4 text-[#055A43]" />
-            <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#055A43]">Leitura de Hoje</h3>
-          </div>
-          <p className="font-serif text-xl text-gray-900 leading-snug mb-2">
-            {homeState?.mainInsight}
-          </p>
-          <p className="text-[14px] text-[#5C615D] leading-relaxed">
-            {homeState?.emotionalMessage}
-          </p>
-        </motion.section>
 
         {/* Dynamic Notification (Report) */}
         <AnimatePresence>

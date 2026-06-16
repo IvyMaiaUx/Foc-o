@@ -56,6 +56,29 @@ export class EvolutionRepository {
   }
 
   /**
+   * Sequência "viva" para EXIBIÇÃO: o streak gravado só vale se a última atividade
+   * foi hoje ou ontem. Sem isto, a tela mostra o número antigo (ex.: "5 dias seguidos")
+   * mesmo depois do usuário sumir e quebrar a sequência — o reset só acontece na
+   * próxima atividade. Aqui zeramos no momento da leitura.
+   */
+  static liveStreak(summary: EvolutionSummary | null, today: string = toLocalDateKey()): number {
+    const stored = summary?.streak || 0;
+    if (stored <= 0) return 0;
+
+    let lastKey = summary?.lastActivityDate || null;
+    if (!lastKey) {
+      // Migração: deriva do estado antigo (maior entre check-in/treino).
+      const lastMs = Math.max(summary?.lastCheckinAt || 0, summary?.lastTrainedAt || 0);
+      if (lastMs > 0) lastKey = toLocalDateKey(lastMs);
+    }
+    if (!lastKey) return 0;
+
+    const diff = daysBetweenKeys(lastKey, today);
+    // Viva só se a última atividade foi hoje (0) ou ontem (1).
+    return diff <= 1 ? stored : 0;
+  }
+
+  /**
    * Registra uma atividade (treino OU check-in) e atualiza a sequência por DIA LOCAL.
    * - Mesmo dia: não mexe na sequência nem em activeDays.
    * - Dia seguinte: +1 na sequência.

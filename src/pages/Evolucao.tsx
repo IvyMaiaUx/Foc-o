@@ -138,9 +138,9 @@ export function Evolucao() {
                <div className="w-10 h-10 rounded-full bg-[#5F2620]/5 flex items-center justify-center text-[#5F2620] mb-3">
                  <Flame className="w-5 h-5" />
                </div>
-               <p className="font-serif text-2xl text-[#5F2620] leading-none mb-1">{(insights?.isEmpty ? 0 : summary?.streak) || 0}</p>
+               <p className="font-serif text-2xl text-[#5F2620] leading-none mb-1">{(insights?.isEmpty ? 0 : EvolutionRepository.liveStreak(summary)) || 0}</p>
                <p className="text-[10px] font-medium text-[#5C615D]/60 uppercase tracking-widest">
-                 {((insights?.isEmpty ? 0 : summary?.streak) || 0) === 1 ? 'Dia seguido' : 'Dias seguidos'}
+                 {((insights?.isEmpty ? 0 : EvolutionRepository.liveStreak(summary)) || 0) === 1 ? 'Dia seguido' : 'Dias seguidos'}
                </p>
              </motion.div>
           </div>
