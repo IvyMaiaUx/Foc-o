@@ -3,20 +3,37 @@ import { Link } from 'react-router-dom';
 
 const STORAGE_KEY = 'lgpd_consent';
 
+declare global {
+  interface Window {
+    __loadFocaoTrackers?: () => void;
+  }
+}
+
 export function LgpdBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem(STORAGE_KEY);
-    if (!consent) setVisible(true);
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const consent = raw ? JSON.parse(raw) : null;
+      // Mostra se nunca respondeu OU se o consentimento é do formato antigo (sem o campo marketing).
+      if (!consent || typeof consent.marketing !== 'boolean') setVisible(true);
+    } catch {
+      setVisible(true);
+    }
   }, []);
 
-  function accept() {
+  function save(marketing: boolean) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       accepted: true,
+      marketing,
       date: new Date().toISOString(),
     }));
     setVisible(false);
+    // Só dispara os trackers de marketing se o usuário consentiu.
+    if (marketing && typeof window !== 'undefined' && window.__loadFocaoTrackers) {
+      window.__loadFocaoTrackers();
+    }
   }
 
   if (!visible) return null;
@@ -47,8 +64,10 @@ export function LgpdBanner() {
         lineHeight: '1.6',
         color: 'rgba(255,255,255,0.75)',
       }}>
-        Usamos cookies e dados necessários para personalizar o treino do seu cão e manter sua conta segura.
-        Ao continuar, você concorda com nossa{' '}
+        Usamos cookies <strong>essenciais</strong> para manter sua conta segura (sempre ativos) e,
+        com seu consentimento, cookies de <strong>marketing</strong> (Meta/Facebook e nosso pixel)
+        para medir e melhorar os anúncios. Você pode recusar os de marketing sem afetar o uso do app.
+        Saiba mais na{' '}
         <Link
           to="/privacidade"
           style={{ color: '#6ee7b7', textDecoration: 'underline' }}
@@ -61,7 +80,7 @@ export function LgpdBanner() {
       {/* Botões */}
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         <button
-          onClick={accept}
+          onClick={() => save(true)}
           style={{
             padding: '8px 20px',
             borderRadius: '8px',
@@ -73,7 +92,22 @@ export function LgpdBanner() {
             cursor: 'pointer',
           }}
         >
-          Entendi e aceito
+          Aceitar todos
+        </button>
+        <button
+          onClick={() => save(false)}
+          style={{
+            padding: '8px 20px',
+            borderRadius: '8px',
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: 'transparent',
+            color: 'rgba(255,255,255,0.8)',
+            fontSize: '13px',
+            fontWeight: 500,
+            cursor: 'pointer',
+          }}
+        >
+          Recusar marketing
         </button>
         <Link
           to="/privacidade"

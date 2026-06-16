@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { Check, X, ArrowRight, HeartPulse, Battery, Sparkles } from 'lucide-react';
+import { Check, X, ArrowRight, HeartPulse, Battery, Sparkles, MapPin } from 'lucide-react';
 import { auth } from '@/src/lib/firebase';
-import { CheckinRepository } from '@/src/repositories/CheckinRepository';
+import { CheckinRepository, type CheckinData, type CheckinIncident, type CheckinTrigger } from '@/src/repositories/CheckinRepository';
 import { EvolutionRepository } from '@/src/repositories/EvolutionRepository';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { haptics } from '@/src/lib/haptics';
@@ -16,13 +16,19 @@ export function Checkin() {
   const [step, setStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [dogName, setDogName] = useState('seu cão');
   const [dogGender, setDogGender] = useState('male');
   
-  const [data, setData] = useState({
+  const [data, setData] = useState<CheckinData>({
     energia: '',
     alimentacao: '',
-    comportamento: ''
+    comportamento: '',
+    context: {
+      incidents: [],
+      triggers: [],
+      notes: ''
+    }
   });
 
   useEffect(() => {
@@ -39,12 +45,53 @@ export function Checkin() {
     loadDog();
   }, []);
 
-  const updateData = (field: keyof typeof data, value: string) => {
+  const updateData = (field: 'energia' | 'alimentacao' | 'comportamento', value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
   };
 
+  const updateContext = (field: keyof NonNullable<CheckinData['context']>, value: unknown) => {
+    setData(prev => ({
+      ...prev,
+      context: {
+        ...prev.context,
+        [field]: value
+      }
+    }));
+  };
+
+  const toggleIncident = (incident: CheckinIncident) => {
+    const incidents = data.context?.incidents ?? [];
+    updateContext(
+      'incidents',
+      incidents.includes(incident)
+        ? incidents.filter(item => item !== incident)
+        : [...incidents, incident]
+    );
+  };
+
+  const toggleTrigger = (trigger: CheckinTrigger) => {
+    const triggers = data.context?.triggers ?? [];
+    updateContext(
+      'triggers',
+      triggers.includes(trigger)
+        ? triggers.filter(item => item !== trigger)
+        : [...triggers, trigger]
+    );
+  };
+
+  const setWalked = (walked: boolean | undefined) => {
+    setData(prev => ({
+      ...prev,
+      context: {
+        ...prev.context,
+        walked,
+        ...(walked === true ? {} : { walkDurationMinutes: undefined, environment: undefined })
+      }
+    }));
+  };
+
   const handleNext = () => {
-    if (step < 3) {
+    if (step < 4) {
       haptics.light();
       setStep(step + 1);
     } else {
@@ -54,24 +101,43 @@ export function Checkin() {
 
   const handleComplete = async () => {
     setIsSaving(true);
+    setSaveError(false);
     try {
       const user = auth.currentUser;
-      if (user) {
-        const dateStr = toLocalDateKey();
-        await CheckinRepository.saveCheckin(user.uid, dateStr, data);
-        await EvolutionRepository.updateFromCheckin(user.uid);
-        AnalyticsRepository.logEvent('checkin_created', data);
+      if (!user) throw new Error('Usuário não autenticado');
+
+      const dateStr = toLocalDateKey();
+      // O save de fato — se isto falhar, NÃO mostramos sucesso.
+      await CheckinRepository.saveCheckin(user.uid, dateStr, data);
+      await EvolutionRepository.updateFromCheckin(user.uid, dateStr);
+      AnalyticsRepository.logEvent('checkin_created', data);
+
+      // Referral é best-effort: não bloqueia nem invalida o check-in.
+      try {
+        const token = await user.getIdToken();
+        await fetch('https://foc-o.vercel.app/api/process-referral', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      } catch (refErr) {
+        console.warn('[Referral] Failed to trigger checkin referral evaluation:', refErr);
       }
-    } catch (err) {
-      console.error("Erro ao salvar check-in", err);
-    } finally {
-      setIsSaving(false);
+
+      // Sucesso confirmado → comemora.
       haptics.success();
       confetti({ particleCount: 60, spread: 55, origin: { y: 0.7 }, colors: ['#055A43', '#506352', '#E5F2ED'] });
       setTimeout(() => {
         confetti({ particleCount: 30, spread: 70, origin: { y: 0.6 }, colors: ['#055A43', '#fbf9f5'] });
       }, 200);
       setIsCompleted(true);
+    } catch (err) {
+      console.error("Erro ao salvar check-in", err);
+      setSaveError(true);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -193,6 +259,196 @@ export function Checkin() {
             </div>
           </motion.div>
         );
+      case 4: {
+        const incidents = data.context?.incidents ?? [];
+        const triggers = data.context?.triggers ?? [];
+        const incidentOptions: Array<{ value: CheckinIncident; label: string }> = [
+          { value: 'leash_pulling', label: 'Puxou a guia' },
+          { value: 'excessive_barking', label: 'Latiu em excesso' },
+          { value: 'reactivity', label: 'Reagiu a estímulos' },
+          { value: 'destruction', label: 'Destruiu objetos' },
+          { value: 'exit_agitation', label: 'Agitação na saída' },
+          { value: 'pee_wrong_place', label: 'Xixi fora do lugar' },
+          { value: 'biting', label: 'Mordeu durante brincadeira' },
+        ];
+        const triggerOptions: Array<{ value: CheckinTrigger; label: string }> = [
+          { value: 'doorbell', label: 'Campainha' },
+          { value: 'visitors', label: 'Visitas' },
+          { value: 'dogs_nearby', label: 'Outros cães' },
+          { value: 'street_noise', label: 'Barulho da rua' },
+          { value: 'being_alone', label: 'Ficou sozinho' },
+          { value: 'leaving_home', label: 'Hora de sair' },
+          { value: 'routine_change', label: 'Mudança na rotina' },
+          { value: 'unknown', label: 'Não identifiquei' },
+        ];
+
+        return (
+          <motion.div key="4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+            <div className="w-12 h-12 bg-[#055A43]/10 rounded-full flex items-center justify-center mb-6">
+              <MapPin className="w-6 h-6 text-[#055A43]" />
+            </div>
+            <h2 className="font-serif text-3xl text-[#055A43] mb-2 tracking-tight">Contexto do dia</h2>
+            <p className="text-[#5C615D] text-[15px] font-light mb-6">
+              Opcional. Esses detalhes tornam as recomendações mais precisas.
+            </p>
+
+            <div className="space-y-6">
+              <section>
+                <p className="text-[10px] font-semibold text-[#506352] tracking-widest uppercase mb-3">Teve passeio hoje?</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: 'Sim', value: true },
+                    { label: 'Não', value: false },
+                    { label: 'Não informar', value: undefined },
+                  ].map(option => (
+                    <button
+                      type="button"
+                      key={option.label}
+                      onClick={() => setWalked(option.value)}
+                      className={`min-h-11 rounded-xl border px-2 text-xs transition-all ${
+                        data.context?.walked === option.value
+                          ? 'border-[#055A43] bg-[#055A43]/5 text-[#055A43] font-semibold'
+                          : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              {data.context?.walked === true && (
+                <section className="space-y-4">
+                  <div>
+                    <p className="text-[10px] font-semibold text-[#506352] tracking-widest uppercase mb-3">Duração aproximada</p>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[10, 20, 30, 45].map(minutes => (
+                        <button
+                          type="button"
+                          key={minutes}
+                          onClick={() => updateContext('walkDurationMinutes', minutes)}
+                          className={`min-h-11 rounded-xl border px-2 text-xs transition-all ${
+                            data.context?.walkDurationMinutes === minutes
+                              ? 'border-[#055A43] bg-[#055A43]/5 text-[#055A43] font-semibold'
+                              : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                          }`}
+                        >
+                          {minutes} min
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold text-[#506352] tracking-widest uppercase mb-3">Onde aconteceu?</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: 'calm_street', label: 'Rua tranquila' },
+                        { value: 'busy_street', label: 'Rua movimentada' },
+                        { value: 'dogs_nearby', label: 'Perto de cães' },
+                        { value: 'new_environment', label: 'Lugar novo' },
+                      ].map(option => (
+                        <button
+                          type="button"
+                          key={option.value}
+                          onClick={() => updateContext('environment', option.value)}
+                          className={`rounded-full border px-3 py-2 text-xs transition-all ${
+                            data.context?.environment === option.value
+                              ? 'border-[#055A43] bg-[#055A43] text-white'
+                              : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              <section>
+                <p className="text-[10px] font-semibold text-[#506352] tracking-widest uppercase mb-3">Aconteceu algo relevante?</p>
+                <div className="flex flex-wrap gap-2">
+                  {incidentOptions.map(option => (
+                    <button
+                      type="button"
+                      key={option.value}
+                      onClick={() => toggleIncident(option.value)}
+                      className={`rounded-full border px-3 py-2 text-xs transition-all ${
+                        incidents.includes(option.value)
+                          ? 'border-[#055A43] bg-[#055A43] text-white'
+                          : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              {incidents.length > 0 && (
+                <>
+                  <section>
+                    <p className="text-[10px] font-semibold text-[#506352] tracking-widest uppercase mb-3">O que pode ter provocado?</p>
+                    <div className="flex flex-wrap gap-2">
+                      {triggerOptions.map(option => (
+                        <button
+                          type="button"
+                          key={option.value}
+                          onClick={() => toggleTrigger(option.value)}
+                          className={`rounded-full border px-3 py-2 text-xs transition-all ${
+                            triggers.includes(option.value)
+                              ? 'border-[#055A43] bg-[#055A43] text-white'
+                              : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                  <section>
+                    <p className="text-[10px] font-semibold text-[#506352] tracking-widest uppercase mb-3">Intensidade percebida</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { label: 'Leve', value: 1 as const },
+                        { label: 'Moderada', value: 2 as const },
+                        { label: 'Alta', value: 3 as const },
+                      ].map(option => (
+                        <button
+                          type="button"
+                          key={option.value}
+                          onClick={() => updateContext('intensity', option.value)}
+                          className={`min-h-11 rounded-xl border px-2 text-xs transition-all ${
+                            data.context?.intensity === option.value
+                              ? 'border-[#055A43] bg-[#055A43]/5 text-[#055A43] font-semibold'
+                              : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                </>
+              )}
+
+              <section>
+                <label className="text-[10px] font-semibold text-[#506352] tracking-widest uppercase mb-3 block" htmlFor="checkin-notes">
+                  Observação rápida
+                </label>
+                <textarea
+                  id="checkin-notes"
+                  value={data.context?.notes ?? ''}
+                  onChange={(event) => updateContext('notes', event.target.value.slice(0, 180))}
+                  placeholder="Ex.: ficou mais calmo depois do passeio."
+                  rows={3}
+                  className="w-full resize-none rounded-2xl border border-[#055A43]/10 bg-white p-4 text-sm text-[#5C615D] outline-none transition focus:border-[#055A43]/40"
+                />
+              </section>
+            </div>
+          </motion.div>
+        );
+      }
     }
   };
 
@@ -200,6 +456,7 @@ export function Checkin() {
     if (step === 1) return data.energia !== '';
     if (step === 2) return data.alimentacao !== '';
     if (step === 3) return data.comportamento !== '';
+    if (step === 4) return true;
     return false;
   };
 
@@ -222,13 +479,13 @@ export function Checkin() {
         
         {/* Progress Bar */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-medium text-[#506352] uppercase tracking-widest">Passo {step} de 3</span>
+          <span className="text-[11px] font-medium text-[#506352] uppercase tracking-widest">Passo {step} de 4</span>
         </div>
         <div className="w-full bg-[#055A43]/10 h-[6px] rounded-full overflow-hidden">
           <motion.div 
             className="h-full bg-[#055A43]"
-            initial={{ width: `${(step - 1) * 33.3}%` }}
-            animate={{ width: `${step * 33.3}%` }}
+            initial={{ width: `${(step - 1) * 25}%` }}
+            animate={{ width: `${step * 25}%` }}
             transition={{ duration: 0.3 }}
           />
         </div>
@@ -242,6 +499,11 @@ export function Checkin() {
 
       {/* Footer */}
       <div className="fixed bottom-[80px] left-0 right-0 p-6 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA] to-transparent z-40 pointer-events-none">
+        {saveError && (
+          <p className="mb-3 text-center text-[13px] text-[#B42318] pointer-events-auto">
+            Não foi possível salvar seu check-in. Verifique a conexão e tente de novo.
+          </p>
+        )}
         <button
           onClick={handleNext}
           disabled={!isCurrentStepValid() || isSaving}
@@ -251,8 +513,8 @@ export function Checkin() {
              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
-              <span>{step === 3 ? 'Finalizar Check-in' : 'Continuar'}</span>
-              {step !== 3 && <ArrowRight className="w-5 h-5" />}
+              <span>{step === 4 ? 'Finalizar Check-in' : 'Continuar'}</span>
+              {step !== 4 && <ArrowRight className="w-5 h-5" />}
             </>
           )}
         </button>

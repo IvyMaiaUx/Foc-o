@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=5" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=5" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=5" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=5" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#055A43" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -15,6 +15,39 @@
     <meta name="apple-mobile-web-app-title" content="Focão" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Focão</title>
+    <!-- LGPD: trackers de marketing (Meta Pixel + pixel próprio) só carregam após
+         consentimento. Não dispara nada até o usuário aceitar no banner. -->
+    <script>
+      (function () {
+        window.__focaoConsent = function () {
+          try { return JSON.parse(localStorage.getItem('lgpd_consent') || 'null'); }
+          catch (e) { return null; }
+        };
+        window.__loadFocaoTrackers = function () {
+          if (window.__focaoTrackersLoaded) return;
+          var c = window.__focaoConsent();
+          if (!c || c.marketing !== true) return; // sem consentimento de marketing → não carrega
+          window.__focaoTrackersLoaded = true;
+          // Meta Pixel
+          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', '1623631332266427');
+          fbq('track', 'PageView');
+          // Pixel próprio (FCT)
+          var p = document.createElement('script');
+          p.src = 'https://track-up.vercel.app/pixel.js';
+          p.setAttribute('data-pixel', 'FCT-6A28F5');
+          p.setAttribute('data-endpoint', 'https://track-up.vercel.app/api/track');
+          p.async = true;
+          document.head.appendChild(p);
+        };
+        // Quem já consentiu marketing em visita anterior: carrega imediatamente.
+        window.__loadFocaoTrackers();
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

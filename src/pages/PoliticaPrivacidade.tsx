@@ -32,7 +32,7 @@ export function PoliticaPrivacidade() {
           {' '}(o "Controlador"), com sede no Brasil.
         </p>
         <p>
-          Contato: <a href="mailto:privacidade@focao.app" style={{ color: '#055A43' }}>privacidade@focao.app</a>
+          Contato: <a href="mailto:contato@focaoapp.com.br" style={{ color: '#055A43' }}>contato@focaoapp.com.br</a>
         </p>
       </Section>
 
@@ -43,6 +43,7 @@ export function PoliticaPrivacidade() {
           ['Logs de treino', 'Exercícios realizados, datas, progresso', 'Gerar evolução semanal e insights'],
           ['Dados de pagamento', 'Processados pelo Stripe (não armazenamos cartão)', 'Ativar assinatura premium'],
           ['Dados técnicos', 'IP, tipo de dispositivo, logs de erro', 'Segurança e melhoria do serviço'],
+          ['Dados de navegação (marketing)', 'Páginas vistas, origem do clique (utm, fbclid, gclid), identificadores de pixel', 'Medir e otimizar anúncios — só com seu consentimento'],
         ]} />
         <p style={{ marginTop: '12px', fontSize: '13px', color: '#666' }}>
           Não coletamos dados sensíveis (saúde, biometria, localização precisa).
@@ -66,11 +67,18 @@ export function PoliticaPrivacidade() {
         <Table rows={[
           ['Google Firebase', 'Autenticação, banco de dados, hospedagem', 'firestore.google.com'],
           ['Stripe', 'Processamento de pagamentos', 'stripe.com/privacy'],
-          ['Google Analytics (opcional)', 'Métricas de uso do app', 'policies.google.com/privacy'],
+          ['Meta (Facebook/Instagram)', 'Pixel e Conversions API para medição de anúncios (somente com consentimento de marketing; e-mail enviado com hash SHA-256)', 'facebook.com/privacy/policy'],
+          ['Supabase', 'Armazenamento de eventos de navegação e conversões (rastreamento próprio)', 'supabase.com/privacy'],
         ]} headers={['Serviço', 'Finalidade', 'Política']} />
         <p style={{ marginTop: '12px', fontSize: '13px', color: '#666' }}>
           Todos os parceiros operam sob suas próprias políticas de privacidade e
           contratos de proteção de dados compatíveis com a LGPD/GDPR.
+        </p>
+        <p style={{ marginTop: '12px', fontSize: '13px', color: '#666' }}>
+          <strong>Transferência internacional:</strong> alguns parceiros (Meta, Stripe, Google)
+          processam dados em servidores fora do Brasil, principalmente nos Estados Unidos.
+          Essas transferências ocorrem com base nas salvaguardas previstas no art. 33 da LGPD
+          (cláusulas contratuais e políticas de proteção dos próprios fornecedores).
         </p>
       </Section>
 
@@ -87,7 +95,7 @@ export function PoliticaPrivacidade() {
         <p style={{ marginTop: '12px' }}>
           Para exercer qualquer direito, acesse <strong>Configurações → Minha conta → Excluir conta</strong> no app,
           ou envie um e-mail para{' '}
-          <a href="mailto:privacidade@focao.app" style={{ color: '#055A43' }}>privacidade@focao.app</a>.
+          <a href="mailto:contato@focaoapp.com.br" style={{ color: '#055A43' }}>contato@focaoapp.com.br</a>.
           Respondemos em até 15 dias úteis.
         </p>
       </Section>
@@ -109,10 +117,18 @@ export function PoliticaPrivacidade() {
         </p>
       </Section>
 
-      <Section title="8. Cookies">
+      <Section title="8. Cookies e tecnologias de rastreamento">
         <p>
-          Usamos cookies estritamente necessários para manter sua sessão autenticada.
-          Não utilizamos cookies de rastreamento publicitário de terceiros.
+          Usamos duas categorias de cookies e armazenamento local (localStorage):
+        </p>
+        <Table rows={[
+          ['Essenciais', 'Sessão autenticada e segurança da conta', 'Sempre ativos (não exigem consentimento)'],
+          ['Marketing', 'Meta Pixel (_fbp, _fbc) e nosso pixel próprio (FCT) para medir e otimizar anúncios', 'Só após seu consentimento; pode recusar'],
+        ]} headers={['Categoria', 'Uso', 'Base']} />
+        <p style={{ marginTop: '12px' }}>
+          Os cookies de marketing <strong>só são ativados depois que você aceita</strong> no
+          banner de consentimento. Você pode recusá-los sem prejuízo ao uso do app, e revogar
+          o consentimento a qualquer momento limpando os dados do site no navegador.
         </p>
       </Section>
 
@@ -126,7 +142,7 @@ export function PoliticaPrivacidade() {
       <Section title="10. Contato e DPO">
         <p>
           Encarregado de Proteção de Dados (DPO):{' '}
-          <a href="mailto:privacidade@focao.app" style={{ color: '#055A43' }}>privacidade@focao.app</a>
+          <a href="mailto:contato@focaoapp.com.br" style={{ color: '#055A43' }}>contato@focaoapp.com.br</a>
         </p>
         <p>
           Também é possível registrar reclamações junto à Autoridade Nacional de
