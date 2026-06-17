@@ -4,6 +4,8 @@ import { admin, getDb } from './_firebase.js';
 function setCors(req, res) {
   const allowedOrigins = new Set([
     'https://focao.web.app',
+    'https://focao-beta.web.app',
+    'https://focaoadm.web.app',
     'https://foc-o.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173',
@@ -127,9 +129,14 @@ export default async function cancelSubscription(req, res) {
           cancel_at_period_end: true,
         });
 
-        // Update the user document locally as well
+        // Update the user document locally as well.
+        // Mantém premiumAccess/plan explicitamente: o usuário pagou e conserva
+        // o acesso até o fim do período; a revogação real vem do webhook
+        // customer.subscription.deleted no fim do período.
         await userDoc.ref.set({
           subscription: {
+            plan: 'premium',
+            premiumAccess: true,
             cancelAtPeriodEnd: true,
             status: 'canceling',
             updatedAt: Date.now(),
@@ -153,6 +160,6 @@ export default async function cancelSubscription(req, res) {
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('[cancel-subscription] failed', error);
-    res.status(500).json({ error: 'Internal error: ' + error.message });
+    res.status(500).json({ error: 'Internal error' });
   }
 }
