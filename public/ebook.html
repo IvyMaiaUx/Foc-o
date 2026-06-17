@@ -27,13 +27,31 @@
       return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'').slice(0,180);
     }catch(e){return'';}
   }
+  /* Kirvano lê utm_* da URL do checkout → monta a query a partir do fct_attr (first-touch) + URL atual */
+  function kirvanoUtm(){
+    try{
+      var a={};try{a=JSON.parse(localStorage.getItem('fct_attr')||'{}');}catch(e){}
+      var p=new URLSearchParams(location.search);
+      function pick(k){return a[k]||p.get(k)||'';}
+      var q=new URLSearchParams();
+      var s=pick('utm_source'),m=pick('utm_medium'),c=pick('utm_campaign'),ct=pick('utm_content'),t=pick('utm_term');
+      var fb=a.fbclid||p.get('fbclid')||'';
+      if(s)q.set('utm_source',s);if(m)q.set('utm_medium',m);if(c)q.set('utm_campaign',c);
+      if(ct)q.set('utm_content',ct);if(t)q.set('utm_term',t);if(fb)q.set('fbclid',String(fb).slice(0,120));
+      return q.toString();
+    }catch(e){return'';}
+  }
   document.addEventListener('click',function(ev){
     var a=ev.target.closest?ev.target.closest('a[href]'):null;if(!a)return;
     var h=a.getAttribute('href')||'';
-    var isStripe=/buy\.stripe\.com/.test(h),isFunnel=/focao\.web\.app/.test(h);
-    if(!isStripe&&!isFunnel)return;
-    if(location.search&&h.indexOf('utm_')<0){h=h+(h.indexOf('?')>=0?'&':'?')+location.search.substring(1);}
-    if(isStripe&&h.indexOf('client_reference_id=')<0){var r=fctRef();if(r)h=h+(h.indexOf('?')>=0?'&':'?')+'client_reference_id='+r;}
+    var isStripe=/buy\.stripe\.com/.test(h),isKirvano=/pay\.kirvano\.com/.test(h),isFunnel=/focao\.web\.app/.test(h);
+    if(!isStripe&&!isKirvano&&!isFunnel)return;
+    if(isKirvano){
+      if(h.indexOf('utm_')<0){var ku=kirvanoUtm();if(ku)h=h+(h.indexOf('?')>=0?'&':'?')+ku;}
+    }else{
+      if(location.search&&h.indexOf('utm_')<0){h=h+(h.indexOf('?')>=0?'&':'?')+location.search.substring(1);}
+      if(isStripe&&h.indexOf('client_reference_id=')<0){var r=fctRef();if(r)h=h+(h.indexOf('?')>=0?'&':'?')+'client_reference_id='+r;}
+    }
     a.setAttribute('href',h);
   },true);
 })();
@@ -387,7 +405,7 @@
         <span class="was">R$ 97</span>
         <span class="now">R$ 37,90 <small>à vista</small></span>
       </div>
-      <a class="btn lg" href="https://buy.stripe.com/aFa7sNdwp5Vi4p3c7nbo403"><span>Quero começar agora</span></a>
+      <a class="btn lg" href="https://pay.kirvano.com/5228bc69-7597-4feb-b540-9871a9058e32"><span>Quero começar agora</span></a>
       <div class="access"><svg><use href="#device"/></svg> Leia no celular, tablet ou computador</div>
     </div>
   </div>
