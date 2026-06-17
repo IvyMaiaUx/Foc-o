@@ -56,6 +56,10 @@
     ],
     "rewrites": [
       {
+        "source": "/ansiedade",
+        "destination": "/quiz-ansiedade.html"
+      },
+      {
         "source": "/quiz-ansiedade",
         "destination": "/quiz-ansiedade.html"
       },
