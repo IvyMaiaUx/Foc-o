@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+<title>O método completo — Focão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Spline+Sans+Mono:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+<!-- Funil/UTM tracking (mesmo pixel do app) -->
+<script src="/consent.js"></script>
+<script>
+/* Funil: encaminha utm_* adiante E anexa client_reference_id (atribuição da venda) nos links Stripe */
+(function(){
+  function fctRef(){
+    try{
+      var a=JSON.parse(localStorage.getItem('fct_attr')||'{}'),v=localStorage.getItem('fct_vid')||'';
+      var q=new URLSearchParams();
+      if(a.utm_source)q.set('s',a.utm_source);if(a.utm_medium)q.set('m',a.utm_medium);
+      if(a.utm_campaign)q.set('c',a.utm_campaign);if(a.utm_content)q.set('ct',a.utm_content);
+      if(a.utm_term)q.set('t',a.utm_term);if(a.fbclid)q.set('fb',String(a.fbclid).slice(0,90));if(v)q.set('v',v);
+      var s=q.toString();if(!s)return'';
+      return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'').slice(0,180);
+    }catch(e){return'';}
+  }
+  document.addEventListener('click',function(ev){
+    var a=ev.target.closest?ev.target.closest('a[href]'):null;if(!a)return;
+    var h=a.getAttribute('href')||'';
+    var isStripe=/buy\.stripe\.com/.test(h),isFunnel=/focao\.web\.app/.test(h);
+    if(!isStripe&&!isFunnel)return;
+    if(location.search&&h.indexOf('utm_')<0){h=h+(h.indexOf('?')>=0?'&':'?')+location.search.substring(1);}
+    if(isStripe&&h.indexOf('client_reference_id=')<0){var r=fctRef();if(r)h=h+(h.indexOf('?')>=0?'&':'?')+'client_reference_id='+r;}
+    a.setAttribute('href',h);
+  },true);
+})();
+</script>
+<style>
+  :root{--paper:#F4F2EB;--card:#FBFAF5;--ink:#13231C;--ink-soft:#5a655c;--rule:#cfc8b6;--emerald:#0B6E57;--emerald-deep:#0a5945;--mint:#78E0B2;--gold:#9c7c3a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Newsreader',Georgia,serif;background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 22px 80px;text-align:center;}
+  .kicker{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:inline-flex;align-items:center;gap:9px;margin-bottom:18px;}
+  .kicker svg{width:13px;height:13px;}
+  .kicker svg path{fill:var(--mint);}
+  h1.hook{font-family:'Playfair Display';font-weight:600;font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.12;letter-spacing:-.01em;margin:0 auto 14px;max-width:20ch;}
+  .sub{font-family:'Newsreader';font-style:italic;font-size:1.1rem;color:var(--ink-soft);max-width:40ch;margin:0 auto 28px;}
+  .video{position:relative;width:100%;aspect-ratio:16/9;background:#0a1714;border-radius:14px;overflow:hidden;border:1px solid var(--rule);box-shadow:0 20px 60px -28px rgba(5,40,30,.6);}
+  .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .video .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:rgba(244,242,235,.78);font-family:'Spline Sans Mono';font-size:.85rem;letter-spacing:.04em;}
+  .video .ph b{font-size:1.4rem;}
+  .video .ph small{color:rgba(244,242,235,.45);font-size:.72rem;}
+  .offer{margin-top:30px;animation:rise .5s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+  .offer-card{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:30px 26px;max-width:520px;margin:0 auto;}
+  .offer-card .lbl{font-family:'Spline Sans Mono';font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--emerald);margin-bottom:12px;}
+  .offer-card h2{font-family:'Playfair Display';font-weight:600;font-size:1.5rem;line-height:1.15;margin-bottom:14px;}
+  .price{display:flex;align-items:baseline;gap:12px;justify-content:center;margin:16px 0 4px;}
+  .price .was{font-family:'Spline Sans Mono';color:var(--ink-soft);text-decoration:line-through;font-size:1rem;}
+  .price .now{font-family:'Playfair Display';font-weight:600;font-size:2.8rem;line-height:1;color:var(--emerald-deep);}
+  .price .now small{font-size:.95rem;font-family:'Spline Sans Mono';color:var(--ink-soft);}
+  .btn{display:inline-block;font-family:'Spline Sans Mono';font-weight:500;font-size:1rem;letter-spacing:.02em;background:var(--emerald);color:var(--paper);text-decoration:none;padding:17px 38px;border-radius:999px;margin-top:18px;transition:transform .15s,background .2s;}
+  .btn:hover{background:var(--emerald-deep);transform:translateY(-2px);}
+  .guar{margin-top:14px;font-family:'Spline Sans Mono';font-size:.74rem;letter-spacing:.04em;color:var(--ink-soft);}
+  .wait{margin-top:22px;font-family:'Spline Sans Mono';font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);opacity:.85;}
+  .foot{margin-top:46px;font-family:'Spline Sans Mono';font-size:.74rem;color:var(--ink-soft);}
+  .foot a{color:var(--emerald);}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:26px;"><a href="https://focao.web.app/welcome" style="display:inline-flex;flex-direction:column;align-items:center;text-decoration:none;line-height:.82;"><span style="font-family:'Lora',Georgia,serif;font-weight:400;font-size:24px;letter-spacing:.22em;color:#055A43;padding-left:.22em;">FOCÃO</span><span style="height:1px;width:78%;background:linear-gradient(to right,transparent,rgba(11,106,81,.75),transparent);margin-top:7px;display:block;"></span></a></div>
+    <div class="kicker"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg> Seu diagnóstico — próximo passo</div>
+    <h1 class="hook">Por que seu cão entra em pânico quando você sai — e como reverter sem grito.</h1>
+    <p class="sub">Assista ao vídeo até o fim: em poucos minutos você entende a causa real e o passo a passo pra resolver em casa.</p>
+
+    <div class="video" id="video"></div>
+
+    <div class="wait" id="wait">⏳ Assista o vídeo — sua oferta libera em instantes</div>
+
+    <div class="offer" id="offer" hidden>
+      <div class="offer-card">
+        <div class="lbl">A oferta de hoje</div>
+        <h2>O método completo — “A Volta Pra Casa Sem Estresse”</h2>
+        <div class="price">
+          <span class="was">R$ 97</span>
+          <span class="now">R$ 37,90<small> à vista</small></span>
+        </div>
+        <a class="btn" href="https://buy.stripe.com/aFa7sNdwp5Vi4p3c7nbo403">Quero o método agora →</a>
+        <div class="guar">7 dias de garantia · acesso imediato e vitalício</div>
+      </div>
+    </div>
+
+    <div class="foot">Focão — Rotina, treinos e evolução para cães<br><a href="https://focao.web.app/welcome">focao.web.app</a></div>
+  </div>
+
+<script>
+  /* ===== CONFIG — edite só estas 2 linhas ===== */
+  // Cole o embed do vídeo: um <iframe ...></iframe> (YouTube/Vimeo/Wistia) OU <video src="...mp4" controls></video>
+  var VIDEO_EMBED = "";
+  // Em quantos segundos a oferta aparece (case com o momento da OFERTA no vídeo, ex: 240 = 4min). Sem vídeo, aparece logo.
+  var CTA_DELAY_SECONDS = VIDEO_EMBED ? 180 : 4;
+  /* ============================================ */
+
+  var vid = document.getElementById('video');
+  if (VIDEO_EMBED) {
+    vid.innerHTML = VIDEO_EMBED;
+  } else {
+    vid.innerHTML = '<div class="ph"><b>▶</b> o vídeo da mini VSL entra aqui<small>cole o embed em VIDEO_EMBED (topo do script)</small></div>';
+  }
+  setTimeout(function () {
+    var o = document.getElementById('offer'); var w = document.getElementById('wait');
+    if (o) o.hidden = false;
+    if (w) w.style.display = 'none';
+  }, Math.max(0, CTA_DELAY_SECONDS) * 1000);
+</script>
+</body>
+</html>

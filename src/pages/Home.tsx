@@ -564,7 +564,7 @@ export function Home() {
             </div>
             <div>
               <h4 className="text-[15px] font-bold text-gray-900 mb-0.5">Evolução Geral</h4>
-              <p className="text-[13px] font-medium text-[#5C615D]">{evolution?.totalSessions || 0} treinos concluídos</p>
+              <p className="text-[13px] font-medium text-[#5C615D]">{evolution?.totalSessions || 0} treinos realizados</p>
             </div>
           </div>
           <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#055A43] transition-colors" />

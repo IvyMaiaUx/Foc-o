@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+<title>A Volta Pra Casa Sem Estresse — Focão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+<!-- Funil/UTM tracking (mesmo pixel do app) -->
+<script src="/consent.js"></script>
+<script>
+/* Funil: encaminha utm_* adiante E anexa client_reference_id (atribuição da venda) nos links Stripe */
+(function(){
+  function fctRef(){
+    try{
+      var a=JSON.parse(localStorage.getItem('fct_attr')||'{}'),v=localStorage.getItem('fct_vid')||'';
+      var q=new URLSearchParams();
+      if(a.utm_source)q.set('s',a.utm_source);if(a.utm_medium)q.set('m',a.utm_medium);
+      if(a.utm_campaign)q.set('c',a.utm_campaign);if(a.utm_content)q.set('ct',a.utm_content);
+      if(a.utm_term)q.set('t',a.utm_term);if(a.fbclid)q.set('fb',String(a.fbclid).slice(0,90));if(v)q.set('v',v);
+      var s=q.toString();if(!s)return'';
+      return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'').slice(0,180);
+    }catch(e){return'';}
+  }
+  document.addEventListener('click',function(ev){
+    var a=ev.target.closest?ev.target.closest('a[href]'):null;if(!a)return;
+    var h=a.getAttribute('href')||'';
+    var isStripe=/buy\.stripe\.com/.test(h),isFunnel=/focao\.web\.app/.test(h);
+    if(!isStripe&&!isFunnel)return;
+    if(location.search&&h.indexOf('utm_')<0){h=h+(h.indexOf('?')>=0?'&':'?')+location.search.substring(1);}
+    if(isStripe&&h.indexOf('client_reference_id=')<0){var r=fctRef();if(r)h=h+(h.indexOf('?')>=0?'&':'?')+'client_reference_id='+r;}
+    a.setAttribute('href',h);
+  },true);
+})();
+</script>
+<style>
+  :root{
+    --bg:#F2F0E9;--card:#FAFCFB;--card-2:#FBFAF6;--panel:#EAE7DD;
+    --ink:#14211B;--ink-2:#1B2A22;--soft:#3E463F;--soft-2:#525A50;--muted:#6E756B;
+    --green:#0E5A43;--green-d:#0A4534;--green-dd:#06301f;
+    --sage:#5DA585;--sage-2:#A7CBB6;--mint:#E7F0EA;
+    --line:#E3DFD3;--line-2:#D7D2C4;
+    --ease:cubic-bezier(.2,.7,.2,1);
+    --maxw:1080px;--col:660px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--ink-2);font-family:'Manrope',sans-serif;font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;}
+  ::selection{background:var(--green);color:#fff;}
+  p{margin:0 0 1.1em;}
+  strong{font-weight:700;color:var(--green);}
+  .serif{font-family:'Fraunces',Georgia,serif;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px;}
+  .col{max-width:var(--col);margin:0 auto;}
+
+  /* keyframes */
+  @keyframes fcup{from{transform:translateY(16px);opacity:0;}to{transform:none;opacity:1;}}
+  @keyframes fcbreathe{0%,100%{transform:scale(1);opacity:.55;}50%{transform:scale(1.14);opacity:1;}}
+  @keyframes fcsheen{0%{transform:translateX(-130%) skewX(-18deg);}60%,100%{transform:translateX(330%) skewX(-18deg);}}
+
+  /* pill label */
+  .label{display:inline-flex;align-items:center;gap:9px;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green);background:var(--mint);border:1px solid #D2E4D8;padding:7px 15px;border-radius:999px;}
+  .label .dot{width:7px;height:7px;border-radius:50%;background:var(--sage);animation:fcbreathe 3.2s ease-in-out infinite;}
+  .label.gold{color:#8a6a2c;background:#F3ECDC;border-color:#E6D9BC;}
+  .label.gold .dot{background:#C9A24B;}
+
+  /* buttons */
+  .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--green);color:#fff;font-family:'Manrope';font-weight:700;font-size:1rem;letter-spacing:.005em;text-decoration:none;border:none;cursor:pointer;
+    padding:17px 32px;border-radius:14px;transition:transform .2s var(--ease),background .2s,box-shadow .2s;overflow:hidden;box-shadow:0 10px 26px -12px rgba(14,90,67,.55);}
+  .btn>span{position:relative;z-index:1;}
+  .btn::after{content:"";position:absolute;top:0;left:0;width:42%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.32),transparent);transform:translateX(-130%) skewX(-18deg);}
+  .btn:hover{transform:translateY(-2px);background:var(--green-d);box-shadow:0 16px 34px -12px rgba(14,90,67,.6);}
+  .btn:hover::after{animation:fcsheen .9s var(--ease);}
+  .btn.lg{padding:20px 40px;font-size:1.06rem;border-radius:16px;}
+  .btn.ghost{background:transparent;color:var(--green);border:1.5px solid var(--sage-2);box-shadow:none;padding:10px 20px;font-size:.86rem;}
+  .btn.ghost:hover{background:var(--green);color:#fff;border-color:var(--green);}
+
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* header */
+  .mast{position:sticky;top:0;z-index:40;background:rgba(242,240,233,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
+  .mast-in{max-width:var(--maxw);margin:0 auto;padding:13px 26px;display:flex;align-items:center;justify-content:space-between;}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Fraunces';font-weight:600;font-size:1.3rem;color:var(--ink);letter-spacing:-.01em;text-decoration:none;}
+  .logo .mark{width:30px;height:30px;border-radius:9px;background:var(--green);display:grid;place-items:center;flex:none;}
+  .logo .mark svg{width:18px;height:18px;}
+
+  /* HERO */
+  .hero{padding:62px 0 50px;text-align:center;}
+  .hero .label{margin-bottom:26px;}
+  .hero h1{font-family:'Fraunces';font-weight:600;font-size:clamp(2.5rem,7vw,4.6rem);line-height:1.03;letter-spacing:-.018em;margin:0 auto 20px;max-width:15ch;color:var(--ink);}
+  .hero h1 .it{font-style:italic;font-weight:500;color:var(--green);}
+  .hero .stand{font-size:1.16rem;color:var(--soft);max-width:38ch;margin:0 auto 34px;line-height:1.55;}
+  .hero .cta{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;}
+  .hero .note{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;color:var(--soft-2);}
+  .hero .note svg{width:15px;height:15px;}
+  .trust{display:flex;gap:26px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:42px;padding-top:30px;border-top:1px solid var(--line);max-width:var(--col);margin-left:auto;margin-right:auto;}
+  .trust .t{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;color:var(--soft-2);}
+  .trust svg{width:17px;height:17px;color:var(--sage);flex:none;}
+
+  /* sections */
+  section{padding:62px 0;}
+  .kicker{margin-bottom:20px;}
+  h2.h{font-family:'Fraunces';font-weight:600;font-size:clamp(1.9rem,4.2vw,2.8rem);line-height:1.08;letter-spacing:-.015em;margin:0 0 22px;color:var(--ink);}
+  h2.h .it{font-style:italic;font-weight:500;color:var(--green);}
+
+  /* lead */
+  .lead p{font-size:1.12rem;color:var(--soft);}
+  .lead p:first-of-type{font-size:1.18rem;color:var(--ink-2);}
+  .lead .urgent{font-style:italic;font-family:'Fraunces';color:var(--green);font-weight:500;}
+
+  /* callout card */
+  .callout{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px 30px;box-shadow:0 18px 40px -28px rgba(20,33,27,.35);}
+  .callout .label{margin-bottom:16px;}
+  .callout p{margin:0;font-family:'Fraunces';font-style:italic;font-weight:500;font-size:clamp(1.3rem,3vw,1.7rem);line-height:1.32;color:var(--ink);}
+
+  /* CAUSA — dark green */
+  .core{background:var(--green-dd);color:#fff;position:relative;overflow:hidden;}
+  .core::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 82% 8%,rgba(93,165,133,.28),transparent 60%),radial-gradient(50% 60% at 8% 100%,rgba(167,203,182,.14),transparent 60%);}
+  .core .wrap{position:relative;}
+  .core .label{color:#bfe6cf;background:rgba(93,165,133,.16);border-color:rgba(167,203,182,.3);}
+  .core .label .dot{background:var(--sage-2);}
+  .core h2.h{color:#fff;}
+  .core h2.h .it{color:var(--sage-2);}
+  .core p{color:rgba(255,255,255,.82);font-size:1.1rem;}
+  .core strong{color:#fff;font-weight:700;}
+  .core .quote{display:block;font-family:'Fraunces';font-style:italic;font-weight:500;color:var(--sage-2);font-size:1.18rem;margin-top:6px;}
+
+  /* MÉTODO — numbered steps */
+  .steps{display:grid;gap:14px;margin-top:30px;}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 26px;transition:transform .25s var(--ease),box-shadow .25s,border-color .25s;}
+  .step:hover{transform:translateY(-3px);box-shadow:0 18px 38px -26px rgba(20,33,27,.4);border-color:var(--sage-2);}
+  .step .no{font-family:'Fraunces';font-weight:600;font-size:2.1rem;line-height:1;color:var(--green);min-width:54px;height:54px;display:grid;place-items:center;background:var(--mint);border-radius:14px;flex:none;}
+  .step h3{font-family:'Fraunces';font-weight:600;font-size:1.24rem;margin:4px 0 6px;color:var(--ink);letter-spacing:-.01em;}
+  .step p{margin:0;color:var(--soft);font-size:1rem;}
+
+  /* contents checklist */
+  .contents{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:0;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+  .contents li{display:flex;gap:14px;align-items:flex-start;padding:17px 24px;border-bottom:1px solid var(--line);font-size:1.02rem;color:var(--soft);}
+  .contents li:last-child{border-bottom:none;}
+  .contents .ck{width:22px;height:22px;flex:none;border-radius:50%;background:var(--mint);display:grid;place-items:center;margin-top:1px;}
+  .contents .ck svg{width:13px;height:13px;color:var(--green);}
+  .contents b{font-weight:700;color:var(--ink);}
+  .incl-note{margin-top:22px;display:inline-flex;align-items:center;gap:10px;font-size:.8rem;font-weight:600;color:var(--soft-2);background:#F3ECDC;border:1px solid #E6D9BC;border-radius:12px;padding:12px 18px;}
+
+  /* who — two columns */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;}
+  .cols .c{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 24px;}
+  .cols .c.yes{border-color:#CDE3D5;}
+  .cols h3{display:flex;align-items:center;gap:9px;font-family:'Manrope';font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;margin:0 0 16px;}
+  .cols .yes h3{color:var(--green);}
+  .cols .no h3{color:var(--muted);}
+  .cols h3 .ic{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;}
+  .cols .yes .ic{background:var(--mint);}
+  .cols .no .ic{background:var(--panel);}
+  .cols h3 svg{width:12px;height:12px;}
+  .cols ul{list-style:none;margin:0;padding:0;}
+  .cols li{position:relative;padding:9px 0 9px 24px;font-size:.98rem;color:var(--soft);border-bottom:1px solid var(--line);}
+  .cols li:last-child{border-bottom:none;}
+  .cols li::before{position:absolute;left:0;top:9px;font-weight:800;}
+  .cols .yes li::before{content:"+";color:var(--green);}
+  .cols .no li::before{content:"–";color:var(--muted);}
+
+  /* OFFER */
+  .offer-sec{background:var(--panel);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);}
+  .offer{max-width:520px;margin:0 auto;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:40px 34px;box-shadow:0 30px 70px -40px rgba(20,33,27,.5);}
+  .offer .label{margin:0 auto 16px;}
+  .offer h2.h{margin-bottom:10px;}
+  .offer .sub{color:var(--soft);max-width:36ch;margin:0 auto 4px;font-size:1rem;}
+  .offer .incl{list-style:none;padding:0;margin:24px auto;max-width:340px;text-align:left;}
+  .offer .incl li{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line);font-size:1rem;color:var(--soft);}
+  .offer .incl li:last-child{border-bottom:none;}
+  .offer .incl .ck{width:21px;height:21px;flex:none;border-radius:50%;background:var(--mint);display:grid;place-items:center;}
+  .offer .incl .ck svg{width:12px;height:12px;color:var(--green);}
+  .price-row{display:flex;align-items:baseline;gap:14px;justify-content:center;margin:28px 0 4px;}
+  .price-row .was{color:var(--muted);text-decoration:line-through;font-size:1rem;font-weight:600;}
+  .price-row .now{font-family:'Fraunces';font-weight:600;font-size:3.2rem;line-height:1;color:var(--green);letter-spacing:-.01em;}
+  .price-row .now small{font-size:.95rem;font-family:'Manrope';font-weight:600;color:var(--soft-2);}
+  .offer .btn{margin-top:18px;width:100%;}
+  .offer .access{display:flex;align-items:center;justify-content:center;gap:8px;font-size:.8rem;font-weight:600;color:var(--soft-2);margin-top:16px;}
+  .offer .access svg{width:15px;height:15px;color:var(--sage);}
+
+  /* guarantee */
+  .guar{display:flex;gap:26px;align-items:center;max-width:var(--col);margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 30px;}
+  .stamp{width:96px;height:96px;flex:none;border-radius:50%;background:var(--mint);border:1.5px solid var(--sage-2);display:grid;place-items:center;text-align:center;}
+  .stamp b{font-family:'Fraunces';font-weight:600;font-size:1.9rem;color:var(--green);line-height:1;}
+  .stamp span{font-family:'Manrope';font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green-d);display:block;margin-top:2px;}
+  .guar h3{font-family:'Fraunces';font-weight:600;font-size:1.3rem;margin:0 0 6px;color:var(--ink);}
+  .guar p{margin:0;color:var(--soft);font-size:.98rem;}
+
+  /* faq */
+  .faq-wrap{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+  details{border-bottom:1px solid var(--line);}
+  details:last-child{border-bottom:none;}
+  summary{cursor:pointer;list-style:none;padding:20px 48px 20px 24px;font-family:'Manrope';font-weight:700;font-size:1.04rem;color:var(--ink);position:relative;transition:color .15s;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"";position:absolute;right:24px;top:24px;width:11px;height:11px;border-right:2px solid var(--sage);border-bottom:2px solid var(--sage);transform:rotate(45deg);transition:transform .25s var(--ease);}
+  details[open] summary::after{transform:rotate(-135deg);top:28px;}
+  details:hover summary{color:var(--green);}
+  details .ans{padding:0 24px 20px;color:var(--soft);font-size:.99rem;}
+
+  /* final */
+  .final{text-align:center;}
+  .final h2{max-width:18ch;margin-left:auto;margin-right:auto;}
+  .ps{max-width:var(--col);margin:30px auto 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 28px;text-align:left;color:var(--soft);font-size:.97rem;}
+  .ps b{color:var(--green);font-weight:700;}
+  .ps .tag{display:inline-flex;align-items:center;gap:7px;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:10px;}
+  .ps .tag .dot{width:7px;height:7px;border-radius:50%;background:var(--sage);}
+
+  footer{background:var(--green-dd);color:rgba(255,255,255,.5);text-align:center;padding:46px 26px 80px;}
+  footer .logo{justify-content:center;color:#fff;margin-bottom:14px;}
+  footer .logo .mark{background:rgba(255,255,255,.12);}
+  footer .fmono{font-size:.8rem;line-height:1.7;}
+  footer a{color:var(--sage-2);text-decoration:none;}
+
+  /* sticky buybar */
+  .buybar{position:fixed;left:0;right:0;bottom:0;z-index:45;background:rgba(6,48,31,.96);backdrop-filter:blur(10px);color:#fff;
+    padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;
+    transform:translateY(120%);transition:transform .4s var(--ease);border-top:1px solid rgba(167,203,182,.2);}
+  .buybar.show{transform:translateY(0);}
+  .buybar .bt{display:flex;flex-direction:column;gap:1px;min-width:0;}
+  .buybar .bt .t{font-family:'Fraunces';font-style:italic;font-size:1rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .buybar .bt .p{font-size:.74rem;font-weight:600;color:var(--sage-2);}
+  .buybar .btn{padding:12px 22px;font-size:.92rem;flex:none;box-shadow:none;background:var(--sage);color:var(--green-dd);}
+  .buybar .btn:hover{background:#6fb696;}
+
+  @media (max-width:720px){
+    body{font-size:16.5px;}
+    .cols{grid-template-columns:1fr;}
+    .step{grid-template-columns:auto 1fr;gap:16px;padding:20px;}
+    .guar{flex-direction:column;text-align:center;}
+    section{padding:50px 0;}
+    .offer{padding:32px 22px;}
+    .buybar .bt .t{font-size:.9rem;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;scroll-behavior:auto;}
+    .reveal{opacity:1!important;transform:none!important;transition:none!important;}
+    .btn::after{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="paw" viewBox="0 0 24 24"><path fill="#fff" d="M7.5 8.5c1 0 1.8-1.2 1.8-2.6S8.5 3.3 7.5 3.3 5.7 4.5 5.7 5.9 6.5 8.5 7.5 8.5Zm9 0c1 0 1.8-1.2 1.8-2.6s-.8-2.6-1.8-2.6-1.8 1.2-1.8 2.6.8 2.6 1.8 2.6Zm-13 4.3c1 0 1.7-1.1 1.7-2.4S4.5 8 3.5 8s-1.7 1.1-1.7 2.4.7 2.4 1.7 2.4Zm17 0c1 0 1.7-1.1 1.7-2.4S21.5 8 20.5 8s-1.7 1.1-1.7 2.4.7 2.4 1.7 2.4ZM12 11c-2.5 0-4.7 2.6-5.4 4.6-.5 1.4.4 2.7 1.9 2.7.9 0 1.9-.5 3.5-.5s2.6.5 3.5.5c1.5 0 2.4-1.3 1.9-2.7C16.7 13.6 14.5 11 12 11Z"/></symbol>
+  <symbol id="chk" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 6.5"/></symbol>
+  <symbol id="bolt" viewBox="0 0 24 24"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></symbol>
+  <symbol id="shield" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="device" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 21h8"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<header class="mast">
+  <div class="mast-in">
+    <a class="logo" href="https://focao.web.app/welcome" style="display:inline-flex;flex-direction:column;align-items:center;line-height:.82;gap:0;">
+      <span style="font-family:'Lora',Georgia,serif;font-weight:400;font-size:21px;letter-spacing:.22em;color:#055A43;padding-left:.22em;">FOCÃO</span>
+      <span style="height:1px;width:78%;background:linear-gradient(to right,transparent,rgba(11,106,81,.75),transparent);margin-top:6px;display:block;"></span>
+    </a>
+    <a class="btn ghost" href="#comprar">Adquirir</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="label reveal">Método Nº 01 — Ansiedade de Separação</div>
+    <h1 class="reveal">A volta pra casa <span class="it">sem estresse</span></h1>
+    <p class="stand reveal">O método para o seu cão ficar em paz na sua ausência — sem gritos, sem punição, sem coleira de choque.</p>
+    <div class="cta reveal">
+      <a class="btn lg" href="#comprar"><span>Quero a paz na minha ausência</span></a>
+      <span class="note"><svg><use href="#bolt"/></svg> Acesso imediato · garantia 7 dias</span>
+    </div>
+    <div class="trust reveal">
+      <span class="t"><svg><use href="#shield"/></svg> 7 dias de garantia</span>
+      <span class="t"><svg><use href="#bolt"/></svg> Acesso imediato</span>
+      <span class="t"><svg><use href="#device"/></svg> Celular, tablet ou PC</span>
+    </div>
+  </div>
+</section>
+
+<!-- LEAD / chaos -->
+<section style="padding-top:18px;">
+  <div class="wrap col lead">
+    <p class="reveal">Você pega a chave. O cão levanta. Começa a arfar, anda em círculos. Você fecha a porta — e o show começa: choro, latido, arranhão, vizinho reclamando, almofada destruída.</p>
+    <p class="reveal">Você volta pra casa, vê o estrago e sente aquela <span class="urgent">culpa que não passa.</span></p>
+    <p class="reveal"><strong>Deixa eu te dizer uma coisa: a culpa não é sua.</strong> Ninguém te ensinou a entender o que se passa na cabeça do seu cão. E muito do que parece carinho, na verdade, alimenta o problema.</p>
+  </div>
+</section>
+
+<!-- CALLOUT -->
+<section style="padding:30px 0;">
+  <div class="wrap col">
+    <div class="callout reveal">
+      <div class="label gold">O que você já tentou</div>
+      <p>TV ligada, coleira calmante, brinquedo caro, “deixar chorar até cansar”. Tudo falha pelo mesmo motivo: ataca o sintoma, nunca a causa.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CAUSA / core -->
+<section class="core">
+  <div class="wrap col">
+    <div class="label reveal">A causa real</div>
+    <h2 class="h reveal" style="margin-top:18px;">Não é teimosia.<br><span class="it">É medo de verdade.</span></h2>
+    <p class="reveal">A causa tem nome: <strong>hiperapego</strong>. Seu cão aprendeu que a sua ausência é uma ameaça — e entra em pânico de sobrevivência.</p>
+    <p class="reveal">Cada despedida dramática, cada festa exagerada na volta, <strong>reforça</strong> essa crença sem você perceber. <span class="quote">“Quando ele some, coisas ruins acontecem comigo.”</span></p>
+    <p class="reveal" style="margin-bottom:0;">O caminho não é forçar. É reconstruir a sensação de segurança, passo a passo, com previsibilidade e calma.</p>
+  </div>
+</section>
+
+<!-- MÉTODO -->
+<section>
+  <div class="wrap col">
+    <div class="kicker label reveal">O método, em quatro movimentos</div>
+    <h2 class="h reveal">Da chave na mão <span class="it">à calma total.</span></h2>
+    <div class="steps">
+      <div class="step reveal"><div class="no">01</div><div><h3>O diagnóstico</h3><p>Descubra se é ansiedade de verdade — ou tédio disfarçado. A maioria trata o problema errado e por isso nada funciona.</p></div></div>
+      <div class="step reveal"><div class="no">02</div><div><h3>A causa e o erro</h3><p>Entenda o hiperapego e o gesto carinhoso que alimenta o pânico — e como cortá-lo já na próxima saída.</p></div></div>
+      <div class="step reveal"><div class="no">03</div><div><h3>A técnica</h3><p>O protocolo de saídas graduais, segundo a segundo, para ensinar que “ele some e volta, está tudo bem”.</p></div></div>
+      <div class="step reveal"><div class="no">04</div><div><h3>A rotina</h3><p>Independência dentro de casa e a rotina anti-ansiedade que sustenta o resultado no longo prazo.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENTS -->
+<section style="background:var(--panel);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);">
+  <div class="wrap col">
+    <div class="kicker label reveal">Neste guia</div>
+    <h2 class="h reveal">O que você vai dominar</h2>
+    <ul class="contents reveal">
+      <li><span class="ck"><svg><use href="#chk"/></svg></span><span>Como <b>diagnosticar se é ansiedade de verdade</b> e parar de tratar o problema errado.</span></li>
+      <li><span class="ck"><svg><use href="#chk"/></svg></span><span>O <b>erro “carinhoso”</b> que alimenta o pânico — e como cortá-lo hoje.</span></li>
+      <li><span class="ck"><svg><use href="#chk"/></svg></span><span>A <b>causa real</b> explicada de forma simples: você vai finalmente entender seu cão.</span></li>
+      <li><span class="ck"><svg><use href="#chk"/></svg></span><span>O <b>protocolo de saídas graduais</b>, passo a passo.</span></li>
+      <li><span class="ck"><svg><use href="#chk"/></svg></span><span>Como acabar com o <b>cão sombra</b> e construir independência em casa.</span></li>
+      <li><span class="ck"><svg><use href="#chk"/></svg></span><span>A <b>rotina anti-ansiedade</b> que sustenta tudo no longo prazo.</span></li>
+    </ul>
+    <div class="incl-note reveal"><svg width="15" height="15" style="color:#8a6a2c"><use href="#bolt"/></svg> Inclui · Bônus 1: Plano dos primeiros 7 dias &nbsp;·&nbsp; Bônus 2: Perguntas que todo tutor faz</div>
+  </div>
+</section>
+
+<!-- WHO -->
+<section>
+  <div class="wrap col">
+    <div class="kicker label reveal">É pra você?</div>
+    <div class="cols reveal">
+      <div class="c yes">
+        <h3><span class="ic" style="color:var(--green)"><svg><use href="#chk"/></svg></span> É pra você se</h3>
+        <ul>
+          <li>Você ama seu cão, mas está exausto(a) com o estresse das saídas.</li>
+          <li>Quer um caminho prático, sem teoria interminável.</li>
+          <li>Se recusa a usar grito, castigo ou coleira de choque.</li>
+          <li>Topa ser constante por algumas semanas.</li>
+        </ul>
+      </div>
+      <div class="c no">
+        <h3><span class="ic" style="color:var(--muted)"><svg><use href="#x"/></svg></span> Não é pra você se</h3>
+        <ul>
+          <li>Procura uma solução mágica de um dia pro outro.</li>
+          <li>Não quer mudar pequenos hábitos do dia a dia.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFER -->
+<section class="offer-sec" id="comprar">
+  <div class="wrap">
+    <div class="offer reveal">
+      <div class="label">A oferta</div>
+      <h2 class="h">Quanto custa <span class="it">a sua paz?</span></h2>
+      <p class="sub">Uma consulta com adestrador particular pode custar centenas de reais — e várias sessões.</p>
+      <ul class="incl">
+        <li><span class="ck"><svg><use href="#chk"/></svg></span> E-book completo — 6 capítulos</li>
+        <li><span class="ck"><svg><use href="#chk"/></svg></span> Bônus: Plano dos primeiros 7 dias</li>
+        <li><span class="ck"><svg><use href="#chk"/></svg></span> Bônus: Perguntas que todo tutor faz</li>
+        <li><span class="ck"><svg><use href="#chk"/></svg></span> Acesso imediato e vitalício</li>
+      </ul>
+      <div class="price-row">
+        <span class="was">R$ 97</span>
+        <span class="now">R$ 37,90 <small>à vista</small></span>
+      </div>
+      <a class="btn lg" href="https://buy.stripe.com/aFa7sNdwp5Vi4p3c7nbo403"><span>Quero começar agora</span></a>
+      <div class="access"><svg><use href="#device"/></svg> Leia no celular, tablet ou computador</div>
+    </div>
+  </div>
+</section>
+
+<!-- GUARANTEE -->
+<section>
+  <div class="wrap">
+    <div class="guar reveal">
+      <div class="stamp"><div><b>7</b><span>dias</span></div></div>
+      <div>
+        <h3>Risco zero</h3>
+        <p>Aplique o método. Se em 7 dias sentir que não é pra você, é só pedir o reembolso — sem perguntas, sem burocracia. O risco é todo nosso.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="background:var(--panel);border-top:1px solid var(--line-2);">
+  <div class="wrap col">
+    <div class="kicker label reveal">Dúvidas</div>
+    <h2 class="h reveal">Perguntas frequentes</h2>
+    <div class="faq-wrap reveal">
+      <details><summary>Funciona com cão idoso ou só filhote?</summary><div class="ans">Qualquer idade. Em cães mais velhos pode levar um pouco mais de tempo, mas o método é o mesmo.</div></details>
+      <details><summary>Trabalho fora o dia todo. Consigo aplicar?</summary><div class="ans">Sim. O guia mostra como usar uma rede de apoio (creche, dog walker, familiar) durante a fase de construção, enquanto o tempo de tolerância do seu cão cresce.</div></details>
+      <details><summary>Quanto tempo até ver resultado?</summary><div class="ans">Pequenos sinais em 1 a 2 semanas. Mudança real em algumas semanas, conforme a intensidade e a sua constância.</div></details>
+      <details><summary>Preciso de adestrador mesmo assim?</summary><div class="ans">Casos leves e moderados costumam responder bem ao método sozinho. Em casos severos, o guia mostra o momento certo de buscar apoio.</div></details>
+      <details><summary>Como recebo o material?</summary><div class="ans">Acesso 100% digital e imediato, logo após a compra — o link de download chega no seu e-mail.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="final">
+  <div class="wrap col">
+    <h2 class="h reveal">Começa na próxima vez <span class="it">que você pegar a chave.</span></h2>
+    <p class="reveal" style="color:var(--soft);">Você não precisa conviver com a culpa, o estrago e o sofrimento do seu cão. Você precisa do caminho certo — e ele está aqui.</p>
+    <div class="reveal" style="margin-top:10px;"><a class="btn lg" href="#comprar"><span>Quero a paz na minha ausência</span></a></div>
+    <div class="ps reveal">
+      <span class="tag">P.S.</span><br>
+      Seu cão não está te punindo. É medo de verdade, e medo se desconstrói com método e calma. Você leva o passo a passo completo, o <b>Plano dos 7 Dias</b> e <b>7 dias de garantia</b> pra testar sem risco. O único custo de não agir é continuar vendo seu cão sofrer toda vez que você sai.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div style="display:inline-flex;flex-direction:column;align-items:center;line-height:.82;"><span style="font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:20px;letter-spacing:.14em;color:#F2F0E9;padding-left:.14em;">Focão</span><span style="height:1.5px;width:100%;background:rgba(242,240,233,.85);margin-top:3px;"></span></div>
+  <div class="fmono">Rotina, treinos e evolução para cães<br><a href="https://focao.web.app/welcome">focao.web.app</a></div>
+</footer>
+
+<div class="buybar" id="buybar">
+  <div class="bt">
+    <span class="t">A Volta Pra Casa Sem Estresse</span>
+    <span class="p">R$ 37,90 · 7 dias de garantia</span>
+  </div>
+  <a class="btn" href="#comprar"><span>Adquirir</span></a>
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce){
+    const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -7% 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  } else { document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in')); }
+
+  const hero=document.querySelector('.hero');
+  const bar=document.getElementById('buybar');
+  new IntersectionObserver(([e])=>{bar.classList.toggle('show',!e.isIntersecting);},{threshold:0}).observe(hero);
+</script>
+</body>
+</html>

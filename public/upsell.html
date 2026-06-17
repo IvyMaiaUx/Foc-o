@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+<title>Ative o Focão — oferta exclusiva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Spline+Sans+Mono:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+<!-- Funil/UTM tracking (mesmo pixel do app) -->
+<script src="/consent.js"></script>
+<script>
+/* Funil: encaminha utm_* adiante E anexa client_reference_id (atribuição da venda) nos links Stripe */
+(function(){
+  function fctRef(){
+    try{
+      var a=JSON.parse(localStorage.getItem('fct_attr')||'{}'),v=localStorage.getItem('fct_vid')||'';
+      var q=new URLSearchParams();
+      if(a.utm_source)q.set('s',a.utm_source);if(a.utm_medium)q.set('m',a.utm_medium);
+      if(a.utm_campaign)q.set('c',a.utm_campaign);if(a.utm_content)q.set('ct',a.utm_content);
+      if(a.utm_term)q.set('t',a.utm_term);if(a.fbclid)q.set('fb',String(a.fbclid).slice(0,90));if(v)q.set('v',v);
+      var s=q.toString();if(!s)return'';
+      return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'').slice(0,180);
+    }catch(e){return'';}
+  }
+  document.addEventListener('click',function(ev){
+    var a=ev.target.closest?ev.target.closest('a[href]'):null;if(!a)return;
+    var h=a.getAttribute('href')||'';
+    var isStripe=/buy\.stripe\.com/.test(h),isFunnel=/focao\.web\.app/.test(h);
+    if(!isStripe&&!isFunnel)return;
+    if(location.search&&h.indexOf('utm_')<0){h=h+(h.indexOf('?')>=0?'&':'?')+location.search.substring(1);}
+    if(isStripe&&h.indexOf('client_reference_id=')<0){var r=fctRef();if(r)h=h+(h.indexOf('?')>=0?'&':'?')+'client_reference_id='+r;}
+    a.setAttribute('href',h);
+  },true);
+})();
+</script>
+<style>
+  :root{
+    --paper:#F4F2EB;--paper-2:#EEEBE1;--card:#FBFAF5;
+    --ink:#12231C;--ink-soft:#5a655c;
+    --emerald:#055A43;--emerald-bright:#0B6E57;--emerald-deep:#063C31;--emerald-darkest:#031C18;
+    --mint:#78E0B2;--gold:#9c7c3a;--gold-pale:#D8C8A2;
+    --line:#d8d3c4;--rule:#c8c1ad;
+    --ease:cubic-bezier(.2,.7,.2,1);--col:680px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,serif;font-size:19px;line-height:1.58;-webkit-font-smoothing:antialiased;}
+  p{margin:0 0 1.05em;}
+  strong{font-weight:500;color:var(--emerald-deep);}
+  .disp{font-family:'Playfair Display',serif;}
+  .mono{font-family:'Spline Sans Mono',monospace;}
+  .wrap{max-width:var(--col);margin:0 auto;padding:0 26px;}
+  .accent-line{height:3px;background:linear-gradient(90deg,var(--emerald),var(--mint),var(--gold));}
+  .spk path{fill:var(--mint);}
+  @keyframes tw{0%,100%{opacity:1;transform:scale(1) rotate(0);}50%{opacity:.4;transform:scale(.78) rotate(22deg);}}
+
+  .label{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;display:inline-flex;align-items:center;gap:9px;}
+  .label .spk{width:13px;height:13px;}
+
+  .btn{position:relative;display:inline-block;background:var(--emerald);color:var(--paper);font-family:'Spline Sans Mono';font-weight:500;font-size:.9rem;letter-spacing:.04em;text-decoration:none;border:none;border-radius:2px;padding:17px 34px;cursor:pointer;overflow:hidden;transition:transform .18s var(--ease),background .18s;}
+  .btn::after{content:"";position:absolute;top:0;left:-120%;width:55%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-18deg);transition:left .6s var(--ease);}
+  .btn:hover{transform:translateY(-2px);background:var(--emerald-deep);}
+  .btn:hover::after{left:130%;}
+  .btn.lg{padding:19px 42px;font-size:.96rem;}
+  .btn.mint{background:var(--mint);color:var(--emerald-darkest);}
+  .btn.mint:hover{background:#8eeac1;}
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* masthead */
+  .mast{border-bottom:1px solid var(--rule);}
+  .mast-in{max-width:var(--col);margin:0 auto;padding:14px 26px;display:flex;align-items:center;justify-content:space-between;}
+  .mast-in img{height:20px;}
+  .mast-in .tag{font-family:'Spline Sans Mono';font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);}
+
+  section{padding:46px 0;}
+
+  /* progress */
+  .prog{max-width:440px;margin:8px auto 6px;}
+  .prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;}
+  .prog-top .lab{font-family:'Spline Sans Mono';font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);}
+  .prog-top .pct{font-family:'Playfair Display';font-weight:600;font-size:1.1rem;color:var(--emerald);}
+  .prog-track{height:6px;background:var(--rule);border-radius:99px;overflow:hidden;}
+  .prog-fill{height:100%;width:6%;background:linear-gradient(90deg,var(--emerald),var(--mint));border-radius:99px;transition:width 1.2s var(--ease);}
+  .prog-steps{display:flex;justify-content:space-between;gap:8px;margin-top:11px;font-family:'Spline Sans Mono';font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#a7a294;}
+  .prog-steps .done{color:var(--emerald);}
+  .prog-steps .cur{color:var(--emerald-deep);}
+
+  /* hero */
+  .uhero{text-align:center;padding:30px 0 6px;}
+  .uhero h1{font-family:'Playfair Display';font-weight:600;font-size:clamp(2rem,5.8vw,2.9rem);line-height:1.08;letter-spacing:-.01em;margin:14px 0 16px;}
+  .uhero h1 em{font-style:italic;font-weight:500;color:var(--emerald);}
+  .uhero .sub{font-family:'Newsreader';font-style:italic;font-size:1.18rem;color:var(--ink-soft);max-width:38ch;margin:0 auto;}
+
+  /* gap */
+  .lead p{font-size:1.08rem;}
+  .lead .big{font-family:'Playfair Display';font-style:italic;font-size:1.35rem;color:var(--emerald-deep);line-height:1.3;}
+
+  /* app card */
+  .appcard{border:1px solid var(--rule);background:var(--card);border-radius:3px;padding:34px;}
+  .appcard .head{text-align:center;margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--rule);}
+  .appcard .head .label{justify-content:center;margin-bottom:12px;}
+  .appcard .head img{height:26px;margin-bottom:8px;}
+  .appcard .head p{font-family:'Newsreader';font-style:italic;color:var(--ink-soft);font-size:1rem;max-width:34ch;margin:6px auto 0;}
+  .feats{display:grid;gap:0;}
+  .feat{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line);}
+  .feat:last-child{border-bottom:none;}
+  .feat .spk{width:15px;height:15px;flex:none;transform:translateY(5px);}
+  .feat b{font-weight:500;color:var(--emerald-deep);}
+  .feat span.d{display:block;font-size:.95rem;color:var(--ink-soft);}
+
+  /* compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);}
+  .cc{padding:24px 22px;}
+  .cc:first-child{border-right:1px solid var(--rule);}
+  .cc h4{font-family:'Spline Sans Mono';font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px;}
+  .cc.only h4{color:var(--gold);}
+  .cc.app h4{color:var(--emerald);}
+  .cc p{margin:0;font-size:.98rem;}
+
+  /* offer */
+  .offer{position:relative;background:var(--emerald-deep);color:var(--paper);border-radius:3px;padding:42px 34px;text-align:center;overflow:hidden;}
+  .offer::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 80% 5%,rgba(11,110,87,.55),transparent 60%),radial-gradient(50% 60% at 10% 100%,rgba(120,224,178,.12),transparent 60%);}
+  .offer>*{position:relative;}
+  .offer .tagline{font-family:'Spline Sans Mono';font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mint);margin-bottom:14px;}
+  .offer h2{font-family:'Playfair Display';font-weight:600;font-size:1.8rem;color:#fff;margin:0 0 14px;}
+  .offer .normal{font-family:'Spline Sans Mono';font-size:.82rem;letter-spacing:.04em;color:rgba(244,242,235,.7);margin-bottom:8px;}
+  .offer .deal{font-family:'Playfair Display';font-size:1.7rem;color:#fff;line-height:1.2;margin:4px auto;}
+  .offer .deal .hl{font-style:italic;color:var(--mint);}
+  .offer .cancel{font-family:'Newsreader';font-style:italic;font-size:.96rem;color:rgba(244,242,235,.78);margin:10px auto 24px;max-width:34ch;}
+  .decline{display:block;text-align:center;margin:22px auto 0;color:var(--ink-soft);font-family:'Spline Sans Mono';font-size:.78rem;text-decoration:underline;text-underline-offset:4px;}
+  .decline:hover{color:var(--emerald);}
+
+  .ps{max-width:var(--col);margin:36px auto 0;border-top:1px solid var(--rule);padding-top:22px;color:var(--ink-soft);font-size:.98rem;}
+  .ps .label{margin-bottom:10px;}
+  .ps b{color:var(--emerald-deep);font-weight:500;}
+
+  footer{text-align:center;padding:40px 26px;font-family:'Spline Sans Mono';font-size:.72rem;letter-spacing:.04em;color:var(--ink-soft);border-top:1px solid var(--rule);margin-top:20px;}
+
+  @media (max-width:560px){.compare{grid-template-columns:1fr;}.cc:first-child{border-right:none;border-bottom:1px solid var(--rule);}.appcard{padding:26px 22px;}section{padding:38px 0;}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;}.reveal{opacity:1!important;transform:none!important;transition:none!important;}.btn::after{display:none;}}
+</style>
+</head>
+<body>
+<div class="accent-line"></div>
+
+<svg width="0" height="0" style="position:absolute"><symbol id="spk" viewBox="0 0 24 24"><path d="M12 2c.8 4.2 2.8 6.2 7 7-4.2.8-6.2 2.8-7 7-.8-4.2-2.8-6.2-7-7 4.2-.8 6.2-2.8 7-7Z"/></symbol></svg>
+
+<header class="mast">
+  <div class="mast-in"><span style="display:inline-flex;flex-direction:column;align-items:center;line-height:.82;"><span style="font-family:'Lora',Georgia,serif;font-weight:400;font-size:20px;letter-spacing:.22em;color:#055A43;padding-left:.22em;">FOCÃO</span><span style="height:1px;width:78%;background:linear-gradient(to right,transparent,rgba(11,106,81,.75),transparent);margin-top:6px;display:block;"></span></span><span class="tag">Oferta exclusiva</span></div>
+</header>
+
+<!-- progress -->
+<section style="padding:24px 0 6px;">
+  <div class="wrap">
+    <div class="prog reveal">
+      <div class="prog-top"><span class="lab">Você está quase lá</span><span class="pct">90%</span></div>
+      <div class="prog-track"><div class="prog-fill"></div></div>
+      <div class="prog-steps"><span class="done">✓ E-book garantido</span><span class="cur">Oferta especial</span><span>Acesso liberado</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- hero -->
+<section class="uhero" style="padding-top:14px;">
+  <div class="wrap">
+    <div class="label reveal" style="justify-content:center;"><svg class="spk"><use href="#spk"/></svg> Espere — não feche esta página</div>
+    <h1 class="reveal">Seu acesso ainda <em>não está completo</em>.</h1>
+    <p class="sub reveal">Você acabou de garantir o método. Falta só a peça que faz ele virar resultado de verdade.</p>
+  </div>
+</section>
+
+<!-- gap -->
+<section style="padding-top:8px;">
+  <div class="wrap lead">
+    <p class="reveal">Deixa eu te fazer uma pergunta honesta: você sabe qual é o maior motivo de tutores <strong>falharem</strong>, mesmo com o método na mão?</p>
+    <p class="reveal">Não é falta de informação. É falta de <strong>constância</strong>.</p>
+    <p class="reveal">O e-book te diz exatamente o que fazer. Mas no dia a dia corrido, é fácil esquecer o protocolo, perder a conta do progresso e não saber se está indo pro caminho certo.</p>
+    <p class="reveal big">E se você tivesse um assistente que cuida disso por você, todos os dias?</p>
+  </div>
+</section>
+
+<!-- app card -->
+<section style="padding-top:0;">
+  <div class="wrap">
+    <div class="appcard reveal">
+      <div class="head">
+        <div class="label"><svg class="spk"><use href="#spk"/></svg> Conheça o app</div>
+        <span style="display:inline-flex;flex-direction:column;align-items:center;line-height:.82;margin:0 auto;"><span style="font-family:'Lora',Georgia,serif;font-weight:400;font-size:30px;letter-spacing:.22em;color:#055A43;padding-left:.22em;">FOCÃO</span><span style="height:1px;width:78%;background:linear-gradient(to right,transparent,rgba(11,106,81,.75),transparent);margin-top:7px;display:block;"></span></span>
+        <p>O app que transforma o método num plano personalizado e automático pro seu cão.</p>
+      </div>
+      <div class="feats">
+        <div class="feat"><svg class="spk"><use href="#spk"/></svg><div><b>Análise do perfil do seu cão</b><span class="d">Um plano sob medida pra ele, não genérico.</span></div></div>
+        <div class="feat"><svg class="spk"><use href="#spk"/></svg><div><b>Relatórios de progresso</b><span class="d">Veja a evolução, semana a semana.</span></div></div>
+        <div class="feat"><svg class="spk"><use href="#spk"/></svg><div><b>Lembretes inteligentes</b><span class="d">Nunca mais esqueça um passo do treino ou da rotina.</span></div></div>
+        <div class="feat"><svg class="spk"><use href="#spk"/></svg><div><b>Cadastro de vacinas</b><span class="d">A saúde do seu cão organizada num só lugar.</span></div></div>
+        <div class="feat"><svg class="spk"><use href="#spk"/></svg><div><b>Proporção ideal de ração</b><span class="d">Alimentação certa, sem chute.</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- compare -->
+<section style="padding-top:0;">
+  <div class="wrap">
+    <div class="compare reveal">
+      <div class="cc only"><h4>Só com o e-book</h4><p>Depende 100% da sua memória e disciplina, todos os dias.</p></div>
+      <div class="cc app"><h4>Com o Focão</h4><p>O plano é montado pra você, os lembretes chegam na hora e o progresso se acompanha sozinho.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- offer -->
+<section style="padding-top:0;">
+  <div class="wrap">
+    <div class="offer reveal">
+      <div class="tagline">Condição exclusiva — só nesta página</div>
+      <h2>Ative o Focão agora</h2>
+      <div class="normal">Assinatura Focão · R$ 67/mês</div>
+      <div class="deal">Hoje, seu <span class="hl">1º mês por R$ 47</span></div>
+      <div class="cancel">Depois, renova por R$ 67/mês · sem fidelidade, cancele quando quiser.</div>
+      <a class="btn lg mint" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402?prefilled_promo_code=premium47">SIM, quero o app Focão →</a>
+    </div>
+    <a class="decline" href="https://focao.web.app/obrigado">Não, prefiro tentar manter tudo no controle sozinho</a>
+
+    <div class="ps reveal">
+      <span class="label"><svg class="spk"><use href="#spk"/></svg> P.S.</span>
+      A virada do seu cão não acontece num dia. Acontece na repetição certa, dia após dia. O <b>Focão</b> existe pra garantir que você não largue no meio do caminho — que é justamente onde a maioria desiste.
+    </div>
+  </div>
+</section>
+
+<footer>Focão — Rotina, treinos e evolução para cães</footer>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce){
+    const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  } else { document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in')); }
+  const pf=document.querySelector('.prog-fill');
+  if(pf){ if(reduce){pf.style.transition='none';pf.style.width='90%';} else {setTimeout(()=>{pf.style.width='90%';},500);} }
+</script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+<title>Diagnóstico do seu cão — Focão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+<!-- Funil/UTM tracking (mesmo pixel do app) -->
+<script src="/consent.js"></script>
+<script>
+/* Encaminha utm_* (e demais params da URL) adiante no funil: quiz -> ebook */
+document.addEventListener('click',function(ev){
+  var a=ev.target.closest?ev.target.closest('a[href]'):null;if(!a)return;
+  var h=a.getAttribute('href')||'';
+  if(!location.search||h.indexOf('utm_')>=0)return;
+  if(!/buy\.stripe\.com|focao\.web\.app/.test(h))return;
+  a.setAttribute('href',h+(h.indexOf('?')>=0?'&':'?')+location.search.substring(1));
+},true);
+</script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:#F2F0E9;color:#1B2A22;font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  ::selection{background:#0E5A43;color:#fff;}
+  input{font-family:'Manrope',sans-serif;}
+  @keyframes fcup{from{transform:translateY(14px);opacity:0;}to{transform:none;opacity:1;}}
+  @keyframes fcdot{0%,100%{opacity:.25;transform:scale(.72);}50%{opacity:1;transform:scale(1);}}
+  @keyframes fcbreathe{0%,100%{transform:scale(1);opacity:.6;}50%{transform:scale(1.12);opacity:1;}}
+  @keyframes fcsheen{0%{transform:translateX(-130%) skewX(-18deg);}60%,100%{transform:translateX(330%) skewX(-18deg);}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;}}
+  .q-opt:hover{border-color:#A7CBB6 !important;background:#FAFCFB !important;}
+  .q-cta:hover{background:#0A4534 !important;transform:translateY(-2px);}
+  .q-next:hover{background:#0A4534 !important;}
+  .q-input:focus{border-color:#5DA585 !important;box-shadow:0 0 0 4px rgba(93,165,133,.16) !important;}
+  .q-back:hover{color:#0E5A43 !important;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+  "use strict";
+  var EBOOK_URL='https://focao.web.app/ebook';
+  var LM=['Analisando os gatilhos','Avaliando o nível de apego','Cruzando os sinais físicos','Montando seu diagnóstico'];
+  var QUESTIONS=[
+    { id:'q1', type:'single', text:'O que mais te incomoda quando você sai de casa?',
+      options:[{label:'Ele chora ou late sem parar',pts:2},{label:'Ele destrói móveis ou objetos',pts:2},{label:'Ele faz xixi ou cocô fora do lugar',pts:1},{label:'Ele fica apático, parado, "travado"',pts:2}]},
+    { id:'q2', type:'single', text:'Quando o comportamento começa?',
+      options:[{label:'Assim que pego a chave / me arrumo pra sair',pts:4},{label:'Logo depois que a porta fecha',pts:3},{label:'Só depois de um tempo sozinho',pts:1},{label:'Não sei dizer',pts:2}]},
+    { id:'q3', type:'single', text:'Seu cão te segue pela casa?',
+      options:[{label:'Pra todo lugar, o tempo todo',pts:4},{label:'Na maioria das vezes',pts:3},{label:'Às vezes',pts:1},{label:'Quase nunca',pts:0}]},
+    { id:'q4', type:'multi', text:'Você já notou algum destes sinais?', hint:'Marque todos que se aplicam.',
+      options:[{label:'Arfação, salivação excessiva ou tremor',pts:3},{label:'Tentativa de fuga ou de se machucar',pts:5,flag:'severe'},{label:'Latido agudo e contínuo',pts:2},{label:'Nenhum desses',pts:0,exclusive:true}]},
+    { id:'q5', type:'multi', text:'O que você já tentou?', hint:'Marque todos que se aplicam.',
+      options:[{label:'Deixar TV ou música ligada',pts:0},{label:'Coleira ou petisco calmante',pts:0},{label:'Comprar brinquedos',pts:0},{label:'Deixar chorar até cansar',pts:0},{label:'Nada ainda',pts:0,exclusive:true}]},
+    { id:'q6', type:'single', text:'Como você se sente ao sair de casa?',
+      options:[{label:'Culpado(a), com aperto no peito',pts:1},{label:'Preocupado(a) com o estrago',pts:1},{label:'Estressado(a) com vizinhos e barulho',pts:1},{label:'Sem paz — evito sair sempre que posso',pts:2}]},
+    { id:'q7', type:'single', text:'Se existisse um método passo a passo, sem punição, você aplicaria?',
+      options:[{label:'Sim, começo hoje mesmo',pts:0},{label:'Sim, se for simples de seguir',pts:0},{label:'Talvez',pts:0}]}
+  ];
+  var RESULTS={
+    leve:{badge:'Sinais leves',color:'#0E5A43',bg:'#E7F0EA',
+      title:'Seu cão dá sinais leves — atenção à causa certa.',
+      body:'<p style="margin:0 0 14px;font-size:16.5px;line-height:1.62;color:#3E463F;">Pelas suas respostas, seu cão ainda <strong style="font-weight:700;color:#0E5A43;">não</strong> apresenta um quadro intenso de ansiedade de separação.</p><p style="margin:0 0 14px;font-size:16.5px;line-height:1.62;color:#3E463F;">Parte do que você vê pode ser <strong style="font-weight:700;color:#0E5A43;">tédio ou falta de gasto de energia</strong> — não ansiedade. Tratar o problema errado é o erro nº 1 dos tutores.</p><p style="margin:0;font-size:16.5px;line-height:1.62;color:#3E463F;">Quanto mais cedo você age, mais fácil é resolver. O método começa exatamente por aí: mostra se é ansiedade ou tédio e o que fazer em cada caso.</p>'},
+    moderada:{badge:'Ansiedade moderada',color:'#B5612F',bg:'#F6E9E1',
+      title:'Seu cão apresenta ansiedade de separação moderada.',
+      body:'<p style="margin:0 0 14px;font-size:16.5px;line-height:1.62;color:#3E463F;">Há sinais claros de ansiedade quando você sai. Isso <strong style="font-weight:700;color:#0E5A43;">não é teimosia, nem birra</strong> — é medo de verdade, ligado a um apego que virou dependência.</p><p style="margin:0 0 14px;font-size:16.5px;line-height:1.62;color:#3E463F;">E pequenos hábitos seus, como a despedida carinhosa, podem estar <strong style="font-weight:700;color:#0E5A43;">reforçando o pânico</strong> sem você perceber.</p><p style="margin:0;font-size:16.5px;line-height:1.62;color:#3E463F;">Quadros moderados respondem muito bem a um método passo a passo, sem grito e sem punição.</p>'},
+    intensa:{badge:'Ansiedade intensa',color:'#B0432A',bg:'#F8E7E1',
+      title:'Seu cão apresenta ansiedade de separação intensa.',
+      body:'<p style="margin:0 0 14px;font-size:16.5px;line-height:1.62;color:#3E463F;">Suas respostas indicam um quadro sério: o gatilho aparece cedo e há sinais físicos de estresse real. Isso causa <strong style="font-weight:700;color:#0E5A43;">sofrimento genuíno</strong>, e cada saída sem método aprofunda o problema.</p><p style="margin:0 0 14px;font-size:16.5px;line-height:1.62;color:#3E463F;">Mas tem solução. <strong style="font-weight:700;color:#0E5A43;">Sem grito, sem punição, sem coleira de choque.</strong> O caminho é reconstruir, passo a passo, a sensação de segurança do seu cão.</p><p style="margin:0;font-size:16.5px;line-height:1.62;color:#3E463F;">O método te dá esse protocolo completo — e mostra o momento certo de buscar apoio.</p>'}
+  };
+
+  var state={screen:'intro',stepIndex:0,answers:{},loadingMsg:0,lead:{name:'',email:'',whats:''},errors:{}};
+  var app=document.getElementById('app');
+  var _iv,_to,_pick;
+
+  function computeResult(){
+    var s=0,sev=false;
+    QUESTIONS.forEach(function(q){
+      var a=state.answers[q.id];
+      if(q.type==='multi'){(a||[]).forEach(function(i){s+=q.options[i].pts;if(q.options[i].flag==='severe')sev=true;});}
+      else if(a!=null){s+=q.options[a].pts;}
+    });
+    if(sev||s>13)return 'intensa';
+    if(s>=7)return 'moderada';
+    return 'leve';
+  }
+
+  function start(){state.screen='question';state.stepIndex=0;render();}
+  function pick(i){
+    var q=QUESTIONS[state.stepIndex];
+    if(q.type==='multi'){
+      var sel=state.answers[q.id]?state.answers[q.id].slice():[];
+      var o=q.options[i];
+      if(o.exclusive){sel=sel.indexOf(i)>=0?[]:[i];}
+      else{sel=sel.filter(function(x){return !q.options[x].exclusive;});sel=sel.indexOf(i)>=0?sel.filter(function(x){return x!==i;}):sel.concat([i]);}
+      state.answers[q.id]=sel;render();
+    } else {
+      state.answers[q.id]=i;render();
+      clearTimeout(_pick);_pick=setTimeout(next,280);
+    }
+  }
+  function next(){
+    if(state.stepIndex<QUESTIONS.length-1){state.stepIndex++;render();}
+    else{goLoading();}
+  }
+  function back(){
+    if(state.stepIndex>0){state.stepIndex--;render();}
+    else{state.screen='intro';render();}
+  }
+  function goLoading(){
+    state.screen='loading';state.loadingMsg=0;render();
+    var i=0;clearInterval(_iv);clearTimeout(_to);
+    _iv=setInterval(function(){i++;if(LM[i]){state.loadingMsg=i;render();}},650);
+    _to=setTimeout(function(){clearInterval(_iv);state.screen='capture';render();},2700);
+  }
+  function readLead(){
+    var n=document.getElementById('lead-name'),e=document.getElementById('lead-email'),w=document.getElementById('lead-whats');
+    if(n)state.lead.name=n.value;if(e)state.lead.email=e.value;if(w)state.lead.whats=w.value;
+  }
+  function submitLead(){
+    readLead();
+    var name=(state.lead.name||'').trim(),email=(state.lead.email||'').trim();
+    var errors={};
+    if(name.length<2)errors.name=true;
+    if(!email||email.indexOf('@')<0)errors.email=true;
+    if(Object.keys(errors).length){state.errors=errors;render();return;}
+    var whats=(state.lead.whats||'').trim();
+    var profile=computeResult();
+    window.leadData={name:name,email:email,whats:whats,profile:profile,answers:state.answers};
+    sendLead(window.leadData);
+    try{if(window.fct&&window.fct.lead)window.fct.lead({source:'quiz_ansiedade',profile:profile});}catch(_){}
+    state.screen='result';render();
+  }
+  // Grava o lead direto na coleção marketingLeads do Firestore (admin focaoadm.web.app › /leads)
+  function sendLead(d){
+    try{
+      var PROJECT='gen-lang-client-0545403021';
+      var DB='ai-studio-ececf2d5-e671-43f3-8f2c-ce258672a8e7';
+      var KEY='AIzaSyDl_VPN4UPjJEztuhDvR04gLQVJUDau-oM';
+      var CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var id='';for(var i=0;i<20;i++)id+=CHARS[Math.floor(Math.random()*CHARS.length)];
+      var base='projects/'+PROJECT+'/databases/'+DB;
+      var body={writes:[{
+        update:{name:base+'/documents/marketingLeads/'+id,fields:{
+          name:{stringValue:(d.name||'').slice(0,80)},
+          email:{stringValue:(d.email||'').toLowerCase().slice(0,120)},
+          whatsapp:{stringValue:(d.whats||'').replace(/[^\d+]/g,'').slice(0,32)},
+          source:{stringValue:'presell_quiz'},
+          status:{stringValue:'new'},
+          page:{stringValue:location.pathname},
+          userAgent:{stringValue:navigator.userAgent.slice(0,160)},
+          quizProfile:{stringValue:(d.profile||'').slice(0,80)}
+        }},
+        updateTransforms:[
+          {fieldPath:'createdAt',setToServerValue:'REQUEST_TIME'},
+          {fieldPath:'updatedAt',setToServerValue:'REQUEST_TIME'}
+        ]
+      }]};
+      fetch('https://firestore.googleapis.com/v1/'+base+'/documents:commit?key='+KEY,{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+      }).catch(function(){});
+    }catch(_){}
+  }
+
+  window.Q={start:start,pick:pick,next:next,back:back,submit:submitLead};
+
+  /* ---------- screens ---------- */
+  function headerHtml(){
+    var t=QUESTIONS.length, sc=state.screen, pct=0;
+    if(sc==='question')pct=Math.round(((state.stepIndex+1)/t)*100);
+    else if(sc!=='intro')pct=100;
+    var right='Diagnóstico · 2 min';
+    if(sc==='question')right='Pergunta '+String(state.stepIndex+1).padStart(2,'0')+' de '+String(t).padStart(2,'0');
+    else if(sc==='loading'||sc==='capture')right='Quase lá';
+    else if(sc==='result')right='Seu diagnóstico';
+    return '<header style="position:sticky;top:0;z-index:20;width:100%;display:flex;justify-content:center;background:rgba(244,242,236,.82);backdrop-filter:blur(12px);border-bottom:1px solid rgba(20,33,27,.06);">'
+      +'<div style="width:100%;max-width:480px;padding:13px 22px 14px;">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">'
+      +'<div style="display:flex;align-items:center;">'
+      +'<span style="display:inline-flex;flex-direction:column;align-items:center;line-height:.82;">'
+      +'<span style="font-family:\'Lora\',Georgia,serif;font-weight:400;font-size:19px;letter-spacing:.22em;color:#055A43;padding-left:.22em;">FOCÃO</span>'
+      +'<span style="height:1px;width:78%;background:linear-gradient(to right,transparent,rgba(11,106,81,.75),transparent);margin-top:5px;"></span></span></div>'
+      +'<span style="font-size:11.5px;font-weight:600;letter-spacing:.04em;color:#6E756B;text-transform:uppercase;">'+right+'</span></div>'
+      +'<div style="margin-top:11px;height:6px;border-radius:999px;background:rgba(20,33,27,.07);overflow:hidden;"><div style="height:100%;width:'+pct+'%;border-radius:999px;background:linear-gradient(90deg,#5DA585,#0E5A43);transition:width .45s cubic-bezier(.2,.7,.2,1);"></div></div>'
+      +'</div></header>';
+  }
+
+  function introHtml(){
+    return '<section style="animation:fcup .5s cubic-bezier(.2,.7,.2,1);">'
+      +'<div style="position:relative;border-radius:24px;overflow:hidden;height:198px;background:linear-gradient(150deg,#10503C 0%,#0C3F30 100%);box-shadow:0 24px 50px -26px rgba(8,51,40,.6);">'
+      +'<div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 2px,transparent 2px 13px);"></div>'
+      +'<div style="position:absolute;top:-40px;right:-30px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(158,217,184,.32),transparent 70%);animation:fcbreathe 6s ease-in-out infinite;"></div>'
+      +'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;">'
+      +'<span style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(158,217,184,.85);">foto — seu cão tranquilo em casa</span>'
+      +'<div style="margin-top:14px;width:54px;height:54px;border-radius:50%;border:1.5px dashed rgba(158,217,184,.45);display:grid;place-items:center;"><span style="width:13px;height:13px;border-radius:50%;background:rgba(158,217,184,.7);"></span></div></div></div>'
+      +'<div style="display:inline-flex;align-items:center;gap:8px;margin-top:26px;padding:6px 13px;border-radius:999px;background:#E7F0EA;border:1px solid #D2E3D8;"><span style="font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0E5A43;">Diagnóstico comportamental</span></div>'
+      +'<h1 style="font-family:\'Fraunces\',Georgia,serif;font-weight:500;font-size:clamp(2rem,8vw,2.55rem);line-height:1.08;letter-spacing:-.01em;color:#14211B;margin:16px 0 0;">Por que seu cão sofre quando você sai de casa?</h1>'
+      +'<p style="font-size:17px;line-height:1.6;color:#525A50;margin:14px 0 0;max-width:36ch;">Responda 7 perguntas rápidas e receba um diagnóstico claro do comportamento do seu cão — e o próximo passo certo para resolver.</p>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;">'
+      + chip('2 minutos')+chip('Sem julgamento')+chip('Sem punição')+'</div>'
+      +'<button type="button" class="q-cta" onclick="Q.start()" style="position:relative;overflow:hidden;width:100%;margin-top:26px;background:#0E5A43;color:#fff;border:none;border-radius:16px;padding:19px 24px;font-family:\'Manrope\';font-size:17px;font-weight:700;letter-spacing:-.01em;cursor:pointer;box-shadow:0 16px 30px -14px rgba(14,90,67,.65);transition:transform .18s,background .18s;">'
+      +'<span style="position:absolute;top:0;left:0;width:35%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);animation:fcsheen 4.5s ease-in-out infinite;"></span>Iniciar o diagnóstico →</button>'
+      +'<div style="display:flex;align-items:center;gap:12px;margin-top:24px;padding-top:22px;border-top:1px solid rgba(20,33,27,.08);">'
+      +'<div style="width:42px;height:42px;border-radius:50%;flex:none;background:linear-gradient(150deg,#E7F0EA,#D2E3D8);border:1px solid #CFE0D4;display:grid;place-items:center;"><span style="font-family:ui-monospace,monospace;font-size:8px;color:#5DA585;letter-spacing:.04em;">foto</span></div>'
+      +'<div><div style="font-size:13.5px;font-weight:700;color:#1B2A22;">Método Focão</div><div style="font-size:12.5px;color:#6E756B;line-height:1.4;">Baseado em comportamento canino aplicado — sem grito, sem coleira de choque.</div></div></div>'
+      +'</section>';
+  }
+  function chip(t){return '<span style="display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:11px;background:#fff;border:1px solid #E7E3D9;font-size:13px;font-weight:600;color:#3E463F;"><span style="width:6px;height:6px;border-radius:50%;background:#5DA585;"></span>'+t+'</span>';}
+
+  function questionHtml(){
+    var t=QUESTIONS.length,q=QUESTIONS[state.stepIndex];
+    var sel=state.answers[q.id];if(sel==null)sel=q.type==='multi'?[]:null;
+    var opts='';
+    q.options.forEach(function(o,i){
+      var selected=q.type==='multi'?sel.indexOf(i)>=0:sel===i;
+      var base='display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;background:#FFFFFF;border:1.5px solid #E7E3D9;border-radius:16px;padding:17px 18px;transition:all .16s cubic-bezier(.2,.7,.2,1);box-shadow:0 1px 2px rgba(20,33,27,.03);';
+      if(selected)base='display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;background:#EEF5F0;border:1.5px solid #0E5A43;border-radius:16px;padding:17px 18px;transition:all .16s cubic-bezier(.2,.7,.2,1);box-shadow:0 8px 18px -10px rgba(14,90,67,.45);';
+      var ind=selected?'width:26px;height:26px;flex:none;border-radius:9px;border:1.5px solid #0E5A43;display:grid;place-items:center;transition:all .16s;background:#0E5A43;':'width:26px;height:26px;flex:none;border-radius:9px;border:1.5px solid #D7D2C5;display:grid;place-items:center;transition:all .16s;background:#fff;';
+      var chk='width:15px;height:15px;opacity:'+(selected?'1':'0')+';transition:opacity .16s;';
+      opts+='<button type="button" class="'+(selected?'':'q-opt')+'" onclick="Q.pick('+i+')" style="'+base+'"><span style="flex:1;font-size:15.5px;font-weight:600;color:#22332A;line-height:1.36;">'+o.label+'</span><span style="'+ind+'"><svg viewBox="0 0 24 24" fill="none" style="'+chk+'"><path d="M5 12l5 5L20 7" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button>';
+    });
+    var canCont=q.type==='multi'?(sel.length>0):true;
+    var nextBtn='';
+    if(q.type==='multi'){
+      nextBtn='<button type="button" class="q-next" onclick="Q.next()" style="background:#0E5A43;color:#fff;border:none;border-radius:13px;padding:13px 24px;font-family:\'Manrope\';font-size:15px;font-weight:700;cursor:'+(canCont?'pointer':'not-allowed')+';opacity:'+(canCont?'1':'.34')+';box-shadow:0 10px 22px -12px rgba(14,90,67,.6);transition:all .18s;pointer-events:'+(canCont?'auto':'none')+';">Continuar →</button>';
+    }
+    return '<section style="animation:fcup .35s cubic-bezier(.2,.7,.2,1);">'
+      +'<div style="display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5DA585;"><span style="font-variant-numeric:tabular-nums;color:#0E5A43;">'+String(state.stepIndex+1).padStart(2,'0')+'</span><span style="width:18px;height:1.5px;background:#CFE0D4;"></span><span>'+String(t).padStart(2,'0')+'</span></div>'
+      +'<h2 style="font-family:\'Manrope\';font-weight:800;font-size:clamp(1.5rem,6vw,1.85rem);line-height:1.18;letter-spacing:-.02em;color:#14211B;margin:13px 0 0;">'+q.text+'</h2>'
+      +(q.hint?'<p style="font-size:14.5px;color:#6E756B;margin:9px 0 0;">'+q.hint+'</p>':'')
+      +'<div style="display:grid;gap:10px;margin-top:22px;">'+opts+'</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:24px;"><button type="button" class="q-back" onclick="Q.back()" style="background:none;border:none;color:#6E756B;font-family:\'Manrope\';font-size:14px;font-weight:600;cursor:pointer;padding:10px 2px;">← Voltar</button>'+nextBtn+'</div>'
+      +'</section>';
+  }
+
+  function loadingHtml(){
+    return '<section style="animation:fcup .4s ease;text-align:center;padding-top:60px;">'
+      +'<div style="display:flex;gap:9px;justify-content:center;margin-bottom:30px;"><span style="width:11px;height:11px;border-radius:50%;background:#0E5A43;animation:fcdot 1.2s ease-in-out infinite;"></span><span style="width:11px;height:11px;border-radius:50%;background:#0E5A43;animation:fcdot 1.2s ease-in-out .2s infinite;"></span><span style="width:11px;height:11px;border-radius:50%;background:#0E5A43;animation:fcdot 1.2s ease-in-out .4s infinite;"></span></div>'
+      +'<h2 style="font-family:\'Fraunces\',serif;font-weight:500;font-size:1.7rem;color:#14211B;margin:0;">Analisando suas respostas</h2>'
+      +'<p style="font-size:14px;font-weight:600;letter-spacing:.02em;color:#5DA585;margin:14px 0 0;min-height:1.4em;">'+(LM[state.loadingMsg]||LM[0])+'…</p>'
+      +'<p style="font-size:13.5px;color:#9AA295;margin:34px auto 0;max-width:30ch;line-height:1.5;">Estamos cruzando os sinais que você marcou para montar um diagnóstico honesto.</p></section>';
+  }
+
+  function captureHtml(){
+    var ib='width:100%;background:#fff;border:1.5px solid #E7E3D9;border-radius:14px;padding:15px 16px;font-size:16px;color:#1B2A22;transition:border-color .15s,box-shadow .15s;outline:none;';
+    var er='width:100%;background:#FCF3F1;border:1.5px solid #C0492E;border-radius:14px;padding:15px 16px;font-size:16px;color:#1B2A22;outline:none;';
+    function field(label,extra,id,type,val,ph,ac){
+      return '<label style="display:block;"><span style="display:block;font-size:13px;font-weight:700;color:#3E463F;margin-bottom:7px;">'+label+extra+'</span><input class="q-input" type="'+type+'" id="'+id+'" value="'+val.replace(/"/g,'&quot;')+'" placeholder="'+ph+'" autocomplete="'+ac+'" style="'+(state.errors[id==='lead-name'?'name':id==='lead-email'?'email':'whats']?er:ib)+'"></label>';
+    }
+    return '<section style="animation:fcup .4s ease;">'
+      +'<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border-radius:999px;background:#E7F0EA;border:1px solid #D2E3D8;"><span style="font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0E5A43;">Diagnóstico pronto</span></div>'
+      +'<h2 style="font-family:\'Fraunces\',serif;font-weight:500;font-size:clamp(1.7rem,6.5vw,2.1rem);line-height:1.12;color:#14211B;margin:15px 0 0;">Seu resultado está pronto.</h2>'
+      +'<p style="font-size:16px;line-height:1.55;color:#525A50;margin:11px 0 0;max-width:34ch;">Para onde enviamos o diagnóstico e o seu primeiro passo prático?</p>'
+      +'<div style="margin-top:24px;display:grid;gap:14px;">'
+      + field('Seu nome','','lead-name','text',state.lead.name,'Como podemos te chamar','given-name')
+      + field('Seu melhor e-mail','','lead-email','email',state.lead.email,'voce@email.com','email')
+      + field('WhatsApp ',' <span style="font-weight:500;color:#9AA295;">(opcional)</span>','lead-whats','tel',state.lead.whats,'(00) 00000-0000','tel')
+      +'</div>'
+      +'<button type="button" class="q-cta" onclick="Q.submit()" style="width:100%;margin-top:20px;background:#0E5A43;color:#fff;border:none;border-radius:16px;padding:18px 24px;font-family:\'Manrope\';font-size:16.5px;font-weight:700;cursor:pointer;box-shadow:0 16px 30px -14px rgba(14,90,67,.6);transition:transform .18s,background .18s;">Ver meu resultado →</button>'
+      +'<div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:16px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.4 8.5-8 11-4.6-2.5-8-6-8-11V5l8-3z" stroke="#9AA295" stroke-width="1.8" stroke-linejoin="round"></path></svg><span style="font-size:12px;font-weight:600;letter-spacing:.02em;color:#9AA295;">Seus dados estão seguros · sem spam</span></div>'
+      +'</section>';
+  }
+
+  function resultHtml(){
+    var r=RESULTS[computeResult()];
+    var badge='display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:'+r.bg+';color:'+r.color+';font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;';
+    function testi(quote,who){return '<div style="display:flex;gap:13px;padding:16px;border-radius:16px;background:#fff;border:1px solid #E7E3D9;box-shadow:0 1px 2px rgba(20,33,27,.03);"><div style="width:40px;height:40px;border-radius:50%;flex:none;background:linear-gradient(150deg,#E7F0EA,#D2E3D8);border:1px solid #CFE0D4;display:grid;place-items:center;"><span style="font-family:ui-monospace,monospace;font-size:8px;color:#5DA585;">foto</span></div><div><p style="font-size:14.5px;line-height:1.5;color:#22332A;margin:0;">'+quote+'</p><div style="font-size:12.5px;font-weight:700;color:#6E756B;margin-top:7px;">'+who+'</div></div></div>';}
+    return '<section style="animation:fcup .45s cubic-bezier(.2,.7,.2,1);">'
+      +'<span style="'+badge+'">'+r.badge+'</span>'
+      +'<h2 style="font-family:\'Fraunces\',serif;font-weight:500;font-size:clamp(1.7rem,6vw,2.2rem);line-height:1.14;letter-spacing:-.01em;color:#14211B;margin:16px 0 0;">'+r.title+'</h2>'
+      +'<div style="margin-top:16px;">'+r.body+'</div>'
+      +'<div style="margin-top:22px;padding:18px 20px;border-radius:18px;background:#E9F1EB;border:1px solid #D2E3D8;"><div style="font-family:\'Fraunces\',serif;font-size:16.5px;font-weight:500;color:#0C3F30;line-height:1.45;">A culpa não é sua.</div><p style="font-size:14.5px;line-height:1.58;color:#3E5249;margin:7px 0 0;">Seu cão não age por teimosia — ele sente medo de verdade. E medo se trata com método e paciência, não com punição.</p></div>'
+      +'<div style="margin-top:26px;"><div style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9AA295;margin-bottom:12px;">Tutores que já aplicaram</div><div style="display:grid;gap:11px;">'
+      + testi('“Em duas semanas parei de voltar pra casa com medo do que ia encontrar. Ele finalmente descansa quando saio.”','Marina &amp; Théo')
+      + testi('“Eu achava que era birra. Era medo. O passo a passo, sem grito, mudou a nossa rotina.”','Rafael &amp; Nina')
+      +'</div></div>'
+      +'<a href="'+EBOOK_URL+'" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;width:100%;margin-top:24px;background:#0E5A43;color:#fff;border-radius:16px;padding:19px 24px;font-family:\'Manrope\';font-size:17px;font-weight:700;letter-spacing:-.01em;box-shadow:0 18px 34px -14px rgba(14,90,67,.66);transition:transform .18s,background .18s;" class="q-cta">Ver o método completo →</a>'
+      +'<div style="display:flex;align-items:center;gap:12px;margin-top:14px;padding:14px 16px;border-radius:14px;background:#fff;border:1px solid #E7E3D9;"><span style="width:38px;height:38px;border-radius:11px;flex:none;background:#E7F0EA;display:grid;place-items:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.4 8.5-8 11-4.6-2.5-8-6-8-11V5l8-3z" stroke="#0E5A43" stroke-width="1.8" stroke-linejoin="round"></path><path d="M8.5 12l2.4 2.4L15.8 9.5" stroke="#0E5A43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><div style="font-size:14px;font-weight:800;color:#14211B;">Garantia de 7 dias — risco zero</div><div style="font-size:12.5px;color:#6E756B;line-height:1.4;">Não gostou? Devolvemos 100%, sem perguntas.</div></div></div>'
+      +'</section>';
+  }
+
+  function render(){
+    var body;
+    if(state.screen==='intro')body=introHtml();
+    else if(state.screen==='question')body=questionHtml();
+    else if(state.screen==='loading')body=loadingHtml();
+    else if(state.screen==='capture')body=captureHtml();
+    else body=resultHtml();
+    app.innerHTML='<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;background:radial-gradient(120% 80% at 50% -10%,#F7F5EF 0%,#F2F0E9 46%,#ECEAE1 100%);">'
+      +headerHtml()
+      +'<main style="flex:1;width:100%;max-width:480px;padding:30px 22px 60px;">'+body+'</main></div>';
+  }
+  render();
+})();
+</script>
+</body>
+</html>
