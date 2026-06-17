@@ -1,15 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AppLaunchSplash } from './components/branding/AppLaunchSplash';
 import { Welcome } from './pages/auth/Welcome';
 import { Register } from './pages/auth/Register';
 import { Login } from './pages/auth/Login';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { ResetPassword } from './pages/auth/ResetPassword';
+import { EmailConfirmed } from './pages/auth/EmailConfirmed';
 import { Ativar } from './pages/auth/Ativar';
 import { EbookLanding } from './pages/EbookLanding';
+import { PresellFocao } from './pages/PresellFocao';
 
 import { DogData } from './pages/onboarding/DogData';
+import { OnboardingIntro } from './pages/onboarding/OnboardingIntro';
 import { Routine } from './pages/onboarding/Routine';
 import { HealthCare } from './pages/onboarding/HealthCare';
 import { Personality } from './pages/onboarding/Personality';
@@ -59,15 +63,19 @@ import { Manutencao } from './pages/Manutencao';
 import { SosTreinos } from './pages/SosTreinos';
 import { DevTools } from './pages/DevTools';
 import { AdminNotificacoes } from './pages/admin/AdminNotificacoes';
+import { AdminCheckins } from './pages/admin/AdminCheckins';
 import { IndiqueGanhe } from './pages/IndiqueGanhe';
 import { PoliticaPrivacidade } from './pages/PoliticaPrivacidade';
+import { BetaFocao } from './pages/BetaFocao';
 
 
 import { LgpdBanner } from './components/LgpdBanner';
+import { InstallPrompt } from './components/InstallPrompt';
 
 
 export default function App() {
   const isMaintenance = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
+  const [showLaunchSplash, setShowLaunchSplash] = useState(true);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -77,10 +85,19 @@ export default function App() {
     }
   }, []);
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setShowLaunchSplash(false);
+    }, 1650);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
   return (
     <AuthProvider>
       <Router>
         <div className="font-sans min-h-screen bg-[#FAFAFA] text-[#5C615D] selection:bg-[#055A43]/20">
+          <AppLaunchSplash visible={showLaunchSplash} />
           {isMaintenance ? (
             <Manutencao />
           ) : (
@@ -89,15 +106,20 @@ export default function App() {
                 <Route path="/welcome" element={<Welcome />} />
                 <Route path="/ebook" element={<Navigate to="/ebook-comportamento-e-rotina" replace />} />
                 <Route path="/ebook-comportamento-e-rotina" element={<EbookLanding />} />
+                <Route path="/presell" element={<PresellFocao />} />
+                <Route path="/rotina-cachorro" element={<PresellFocao />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/redefinir-senha" element={<ResetPassword />} />
+                <Route path="/email-confirmado" element={<EmailConfirmed />} />
                 <Route path="/ativar" element={<Ativar />} />
                 <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+                <Route path="/beta" element={<BetaFocao />} />
 
                 
                 {/* Onboarding */}
+                <Route path="/onboarding/intro" element={<RequireAuth><OnboardingIntro /></RequireAuth>} />
                 <Route path="/onboarding/dog-data" element={<RequireAuth><DogData /></RequireAuth>} />
                 <Route path="/onboarding/routine" element={<RequireAuth><Routine /></RequireAuth>} />
                 <Route path="/onboarding/health-care" element={<RequireAuth><HealthCare /></RequireAuth>} />
@@ -138,12 +160,14 @@ export default function App() {
                   <>
                     <Route path="/dev-tools" element={<RequireAppAdmin><DevTools /></RequireAppAdmin>} />
                     <Route path="/admin/notificacoes" element={<RequireAppAdmin><AdminNotificacoes /></RequireAppAdmin>} />
+                    <Route path="/admin/checkins" element={<RequireAppAdmin><AdminCheckins /></RequireAppAdmin>} />
                   </>
                 )}
                 
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               <LgpdBanner />
+              <InstallPrompt />
             </>
           )}
         </div>
