@@ -17,7 +17,10 @@ service firebase.storage {
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.admin == true ||
-        request.auth.token.email == 'focaosupport@gmail.com'
+        // Bootstrap admin exige e-mail VERIFICADO (alinhado ao firestore.rules),
+        // senão uma conta com e-mail não-verificado podia se passar por admin.
+        (request.auth.token.email == 'focaosupport@gmail.com'
+          && request.auth.token.email_verified == true)
       );
     }
 

@@ -101,14 +101,27 @@ export default async function sendWhatsappMessage(req, res) {
       return;
     }
 
+    // Não-admin não pode injetar texto LIVRE no seu canal de WhatsApp (anti-spoofing
+    // da sua identidade de remetente). Removemos `message` do payload/variables —
+    // sobra só o disparo por template, que é o uso legítimo do app.
+    const rawPayload = req.body?.payload || {};
+    const rawVariables = req.body?.variables || req.body?.payload || {};
+    const stripMessage = (obj) => {
+      if (!obj || typeof obj !== 'object') return {};
+      const { message, ...rest } = obj;
+      return rest;
+    };
+    const payload = isVerifiedAdmin ? rawPayload : stripMessage(rawPayload);
+    const variables = isVerifiedAdmin ? rawVariables : stripMessage(rawVariables);
+
     const result = await enqueueAndSendWhatsappNotification({
       userId: requestedUserId,
       dogId: req.body?.dogId || '',
       dogName: req.body?.dogName || '',
       type: req.body?.type || 'test',
       templateName: req.body?.templateName,
-      payload: req.body?.payload || {},
-      variables: req.body?.variables || req.body?.payload || {},
+      payload,
+      variables,
       scheduledFor: req.body?.scheduledFor || Date.now(),
     });
 
