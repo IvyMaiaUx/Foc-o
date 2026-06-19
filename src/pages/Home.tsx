@@ -482,7 +482,7 @@ export function Home() {
             <div className="relative">
               <p className="font-bold text-gray-900 text-[16px] mb-1">Check-in</p>
               <p className={`text-[13px] font-medium leading-tight ${homeState?.hasCheckedInToday ? 'text-[#055A43]' : 'text-[#5C615D]'}`}>
-                {homeState?.hasCheckedInToday ? "Registrado hoje" : "Pendente hoje"}
+                {homeState?.hasCheckedInToday ? "✓ Feito hoje · toque pra editar" : "Pendente hoje"}
               </p>
             </div>
           </button>
