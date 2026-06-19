@@ -1,5 +1,6 @@
 import { EvolutionSummary } from '../repositories/EvolutionRepository';
 import { CheckinData } from '../repositories/CheckinRepository';
+import { toLocalDateKey } from '../lib/dateKeys';
 
 export interface WeeklyChartPoint {
   label: string;
@@ -351,7 +352,7 @@ export class EvolutionInsightsMotor {
 
     trainingLogs.forEach((log) => {
       if (!log.completedAt) return;
-      dates.add(new Date(log.completedAt).toISOString().slice(0, 10));
+      dates.add(toLocalDateKey(new Date(log.completedAt)));
     });
 
     return dates.size;

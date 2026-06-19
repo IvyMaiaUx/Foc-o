@@ -102,7 +102,7 @@ export function Home() {
         setUserProfile(profile);
         setUserName(profile.name || 'Tutor');
 
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = toLocalDateKey();
         const [dog, plan, evol, todayCheckin, logs, vaccines, recentCheckins, activeNotifs] = await Promise.all([
           DogRepository.getDogProfile(user.uid),
           TrainingRepository.getCurrentPlan(user.uid),

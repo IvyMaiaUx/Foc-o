@@ -1,6 +1,7 @@
 import { CheckinData } from '../repositories/CheckinRepository';
 import { TrainingSession } from '../types';
 import { EvolutionSummary } from '../repositories/EvolutionRepository';
+import { toLocalDateKey } from '../lib/dateKeys';
 
 export interface WeeklyActivity {
   totalTrainings: number;
@@ -16,6 +17,18 @@ export interface WeeklyActivity {
   mainImprovement: string | null;
   attentionPoint: string | null;
   nextWeekSuggestion: string | null;
+  comparison: {
+    hasPreviousWeekData: boolean;
+    currentActiveDays: number;
+    previousActiveDays: number;
+    currentCheckins: number;
+    previousCheckins: number;
+    currentTrainings: number;
+    previousTrainings: number;
+    headline: string;
+    detail: string;
+  };
+  recurringPattern: string | null;
   maturityLevel: 'empty' | 'initial' | 'partial' | 'strong';
 }
 
@@ -23,7 +36,9 @@ export class WeeklyReportMotor {
   static generateReport(
     summary: EvolutionSummary | null,
     checkins: CheckinData[],
-    trainingLogs: TrainingSession[]
+    trainingLogs: TrainingSession[],
+    previousCheckins: CheckinData[] = [],
+    previousTrainingLogs: TrainingSession[] = []
   ): WeeklyActivity {
     const totalRecords = checkins.length + trainingLogs.length;
     
@@ -78,6 +93,7 @@ export class WeeklyReportMotor {
     });
 
     const activeDays = activityByDay.size;
+    const previousActiveDays = this.countActiveDays(previousCheckins, previousTrainingLogs);
     
     let weeklyActivityScore = 0;
     activityByDay.forEach(day => {
@@ -97,8 +113,13 @@ export class WeeklyReportMotor {
     const moodCounts = new Map<string, number>();
 
     checkins.forEach(c => {
+      const incidents = c.context?.incidents ?? [];
+
       // Behavior average
-      if (c.comportamento === 'Dia excelente, sem problemas' || c.comportamento === 'Passeio tranquilo') {
+      if (
+        incidents.length === 0 &&
+        (c.comportamento === 'Dia excelente, sem problemas' || c.comportamento === 'Passeio tranquilo')
+      ) {
         positiveBehaviors += 1;
       }
       
@@ -112,12 +133,13 @@ export class WeeklyReportMotor {
       }
 
       // Walks
-      if (c.comportamento === 'Passeio tranquilo') {
+      if (c.context?.walked === true || c.comportamento === 'Passeio tranquilo') {
         walkedDays += 1;
       }
 
       // Attention
       if (
+        incidents.length > 0 ||
         c.comportamento === 'Reagiu a outros cães' || 
         c.comportamento === 'Ansiedade ao ficar só' || 
         c.energia === 'Agitado e sem foco'
@@ -168,8 +190,14 @@ export class WeeklyReportMotor {
        }
 
        if (attentionDays >= 2) {
-          const reactiveCount = checkins.filter(c => c.comportamento === 'Reagiu a outros cães').length;
-          const anxietyCount = checkins.filter(c => c.comportamento === 'Ansiedade ao ficar só').length;
+          const reactiveCount = checkins.filter(c =>
+            c.comportamento === 'Reagiu a outros cães' || c.context?.incidents?.includes('reactivity')
+          ).length;
+          const anxietyCount = checkins.filter(c =>
+            c.comportamento === 'Ansiedade ao ficar só' || c.context?.incidents?.includes('exit_agitation')
+          ).length;
+          const pullingCount = checkins.filter(c => c.context?.incidents?.includes('leash_pulling')).length;
+          const destructionCount = checkins.filter(c => c.context?.incidents?.includes('destruction')).length;
           
           if (reactiveCount >= anxietyCount && reactiveCount > 0) {
              attentionPoint = 'Notamos maior sensibilidade e reação a estímulos externos durante os passeios.';
@@ -177,6 +205,12 @@ export class WeeklyReportMotor {
           } else if (anxietyCount > 0) {
              attentionPoint = 'Houve sinais de ansiedade ou agitação em momentos de separação.';
              nextWeekSuggestion = 'Introduza treinos curtos do comando "Fica" e prêmios para reforçar a independência.';
+          } else if (pullingCount > 0) {
+             attentionPoint = 'Os registros indicam dificuldade recorrente em manter um passeio mais calmo.';
+             nextWeekSuggestion = 'Reforce treinos curtos de atenção e condução antes de aumentar a duração dos passeios.';
+          } else if (destructionCount > 0) {
+             attentionPoint = 'Houve registros de destruição de objetos durante a semana.';
+             nextWeekSuggestion = 'Combine gasto mental curto com manejo do ambiente nos períodos de maior agitação.';
           } else {
              attentionPoint = 'Identificamos alguns picos de energia agitada e falta de foco.';
              nextWeekSuggestion = 'Considere adicionar pequenas sessões de gasto mental com brinquedos recheáveis.';
@@ -203,6 +237,31 @@ export class WeeklyReportMotor {
       }
     }
 
+    const previousTotalRecords = previousCheckins.length + previousTrainingLogs.length;
+    const hasPreviousWeekData = previousTotalRecords > 0;
+    const activityDelta = activeDays - previousActiveDays;
+    const comparison = {
+      hasPreviousWeekData,
+      currentActiveDays: activeDays,
+      previousActiveDays,
+      currentCheckins: totalCheckins,
+      previousCheckins: previousCheckins.length,
+      currentTrainings: totalTrainings,
+      previousTrainings: previousTrainingLogs.length,
+      headline: !hasPreviousWeekData
+        ? 'A comparação entre semanas começará com os próximos registros.'
+        : activityDelta > 0
+          ? 'A rotina ganhou mais presença nesta semana.'
+          : activityDelta < 0
+            ? 'A frequência de registros caiu em relação à semana anterior.'
+            : 'A frequência de acompanhamento se manteve estável.',
+      detail: !hasPreviousWeekData
+        ? 'Ainda não há registros suficientes da semana anterior para medir tendência com segurança.'
+        : `${activeDays} dia(s) ativos nesta semana e ${previousActiveDays} na semana anterior. Foram ${totalTrainings} treino(s) e ${totalCheckins} check-in(s) no período atual.`,
+    };
+
+    const recurringPattern = this.findRecurringPattern(checkins, previousCheckins);
+
     return {
       totalTrainings,
       totalCheckins,
@@ -217,7 +276,70 @@ export class WeeklyReportMotor {
       mainImprovement,
       attentionPoint,
       nextWeekSuggestion,
+      comparison,
+      recurringPattern,
       maturityLevel
     };
+  }
+
+  private static countActiveDays(checkins: CheckinData[], trainingLogs: TrainingSession[]): number {
+    const dates = new Set<string>();
+    checkins.forEach((checkin) => {
+      if (checkin.date) dates.add(checkin.date);
+    });
+    trainingLogs.forEach((log) => {
+      if (!log.completedAt) return;
+      dates.add(toLocalDateKey(new Date(log.completedAt)));
+    });
+    return dates.size;
+  }
+
+  private static findRecurringPattern(current: CheckinData[], previous: CheckinData[]): string | null {
+    const allCheckins = [...current, ...previous];
+    if (allCheckins.length < 4) return null;
+
+    const recurringTrigger = [
+      { value: 'doorbell', label: 'campainha' },
+      { value: 'visitors', label: 'chegada de visitas' },
+      { value: 'dogs_nearby', label: 'presença de outros cães' },
+      { value: 'street_noise', label: 'barulhos da rua' },
+      { value: 'being_alone', label: 'momentos em que ficou sozinho' },
+      { value: 'leaving_home', label: 'hora de sair de casa' },
+      { value: 'routine_change', label: 'mudanças na rotina' },
+    ]
+      .map((trigger) => ({
+        ...trigger,
+        count: allCheckins.filter((checkin) => checkin.context?.triggers?.includes(trigger.value as any)).length,
+      }))
+      .sort((a, b) => b.count - a.count)[0];
+
+    if (recurringTrigger?.count >= 2) {
+      return `O gatilho mais recorrente nos registros recentes foi ${recurringTrigger.label}. Observe se os episódios diminuem quando esse contexto é antecipado com mais previsibilidade.`;
+    }
+
+    const patterns = [
+      {
+        count: allCheckins.filter((checkin) => checkin.context?.incidents?.includes('leash_pulling')).length,
+        text: 'A dificuldade em manter um passeio calmo apareceu de forma recorrente. Vale priorizar exercícios curtos de atenção antes de sair.'
+      },
+      {
+        count: allCheckins.filter((checkin) => checkin.context?.incidents?.includes('excessive_barking')).length,
+        text: 'Os latidos excessivos apareceram em mais de um registro recente. Observe quais estímulos antecedem esses episódios.'
+      },
+      {
+        count: allCheckins.filter((checkin) => checkin.context?.incidents?.includes('reactivity')).length,
+        text: 'A reatividade a estímulos externos se repetiu nos registros recentes. Trabalhe distância segura e foco em ambientes mais simples.'
+      },
+      {
+        count: allCheckins.filter((checkin) => checkin.context?.incidents?.includes('destruction')).length,
+        text: 'A destruição de objetos apareceu de forma recorrente. Combine manejo do ambiente com atividades curtas de gasto mental.'
+      },
+      {
+        count: allCheckins.filter((checkin) => checkin.energia === 'Agitado e sem foco').length,
+        text: 'A energia elevada e a dificuldade de foco apareceram com frequência. Sessões mais curtas e previsíveis podem funcionar melhor.'
+      },
+    ].sort((a, b) => b.count - a.count);
+
+    return patterns[0].count >= 2 ? patterns[0].text : null;
   }
 }
