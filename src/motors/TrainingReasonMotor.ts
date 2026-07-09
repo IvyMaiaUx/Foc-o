@@ -101,7 +101,7 @@ const PROBLEM_FOCUS_LABEL: Record<string, string> = {
 };
 
 function countBehavior(checkins: CheckinData[], key: string): number {
-  return checkins.filter(c => c.behaviors && (c.behaviors as Record<string, boolean>)[key]).length;
+  return checkins.filter(c => c.behaviors && (c.behaviors as unknown as Record<string, boolean>)[key]).length;
 }
 
 export class TrainingReasonMotor {
