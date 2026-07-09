@@ -805,13 +805,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b8-t1': {
-    id: 'b8-t1', name: 'Aceitar toque em patas e orelhas', blockId: 'b8', level: 'avançado', duration: '8 min',
+    id: 'b8-t1', name: 'Aceitar toque em patas e orelhas', blockId: 'b8', level: 'iniciante', duration: '8 min',
     objective: 'Desenvolva tolerância ao cuidado com mais confiança.', prerequisites: [], nextPossible: ["b8-t2"],
     tags: ["manejo"],
     problemTags: ["medo", "reatividade"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["medroso", "filhote", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'iniciante',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Toque levemente uma região por vez, por pouco tempo.',
@@ -821,13 +821,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b8-t2': {
-    id: 'b8-t2', name: 'Escovação calma', blockId: 'b8', level: 'avançado', duration: '10 min',
+    id: 'b8-t2', name: 'Escovação calma', blockId: 'b8', level: 'iniciante', duration: '10 min',
     objective: 'Transforme o manejo em uma experiência mais leve.', prerequisites: ["b8-t1"], nextPossible: ["b8-t3"],
     tags: ["manejo"],
     problemTags: ["medo", "reatividade"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["medroso", "filhote", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'iniciante',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Mostre a escova e recompense o cão por se manter tranquilo.',
@@ -837,13 +837,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b8-t3': {
-    id: 'b8-t3', name: 'Coleira e guia sem estresse', blockId: 'b8', level: 'avançado', duration: '8 min',
+    id: 'b8-t3', name: 'Coleira e guia sem estresse', blockId: 'b8', level: 'iniciante', duration: '8 min',
     objective: 'Organize o início do passeio com mais equilíbrio.', prerequisites: ["b8-t2"], nextPossible: ["b8-t4"],
     tags: ["manejo"],
     problemTags: ["medo", "reatividade"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["medroso", "filhote", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'iniciante',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Apresente coleira e guia como objetos neutros ou positivos.',
@@ -853,13 +853,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b8-t4': {
-    id: 'b8-t4', name: 'Banho e toalha', blockId: 'b8', level: 'avançado', duration: '10 min',
+    id: 'b8-t4', name: 'Banho e toalha', blockId: 'b8', level: 'intermediario', duration: '10 min',
     objective: 'Construa cooperação nos momentos de cuidado físico.', prerequisites: ["b8-t3"], nextPossible: ["b8-t5"],
     tags: ["manejo"],
     problemTags: ["medo", "reatividade"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["medroso", "filhote", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'intermediario',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Introduza toalha, ambiente do banho e pequenos toques com água de forma leve.',
@@ -869,13 +869,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b8-t5': {
-    id: 'b8-t5', name: 'Entrar e sair do carro / caixa', blockId: 'b8', level: 'avançado', duration: '10 min',
+    id: 'b8-t5', name: 'Entrar e sair do carro / caixa', blockId: 'b8', level: 'intermediario', duration: '10 min',
     objective: 'Trabalhe deslocamentos com mais segurança e fluidez.', prerequisites: ["b8-t4"], nextPossible: ["b8-t6"],
     tags: ["manejo"],
     problemTags: ["medo", "reatividade"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["medroso", "filhote", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'intermediario',
     beforeStart: 'Apresente os estímulos físicos com muita leveza. Crie associações positivas a cada movimento e sem forçar.',
     steps: [
       'Apresente o espaço de forma aberta e segura, sem pressão.',
