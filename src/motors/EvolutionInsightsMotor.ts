@@ -23,6 +23,8 @@ export interface EvolutionSmartReading {
   recommendation: string;
   consistencyLabel: string;
   hasEnoughData: boolean;
+  /** Score 0-100 da evolução geral (antes calculado internamente, agora exposto). */
+  score: number;
 }
 
 export interface EvolutionAchievement {
@@ -77,6 +79,12 @@ export interface EvolutionInsights {
   skillProgress: SkillProgress[];
   emotionalTrends: EmotionalTrend[];
   timeline: TimelineEvent[];
+  /** Score 0-100 de evolução geral, exibido em destaque no topo. */
+  evolutionScore: number;
+  /** Variação do score da última semana vs a anterior (pode ser negativa). */
+  scoreDelta: number;
+  /** Rótulo qualitativo do score (ex.: "Excelente consistência"). */
+  scoreLabel: string;
 }
 
 const SKILL_LABELS: Record<string, string> = {
@@ -156,6 +164,19 @@ export class EvolutionInsightsMotor {
     const emotionalTrends = this.generateEmotionalTrends(checkins);
     const timeline = this.generateTimeline(checkins, trainingLogs, todayMidnight, oneDay, days);
 
+    // Variação do score: últimos 7 dias vs os 7 dias anteriores.
+    const thisWeekStart = todayMidnight - 6 * oneDay;
+    const prevWeekStart = todayMidnight - 13 * oneDay;
+    const checkinMs = (ck: CheckinData): number => {
+      const [y, m, d] = (ck.date || '').split('-').map(Number);
+      return y ? new Date(y, m - 1, d).getTime() : 0;
+    };
+    const thisWeekLogs = trainingLogs.filter((l) => l.completedAt && l.completedAt >= thisWeekStart);
+    const prevWeekLogs = trainingLogs.filter((l) => l.completedAt && l.completedAt >= prevWeekStart && l.completedAt < thisWeekStart);
+    const thisWeekCheckins = checkins.filter((c) => checkinMs(c) >= thisWeekStart);
+    const prevWeekCheckins = checkins.filter((c) => { const ms = checkinMs(c); return ms >= prevWeekStart && ms < thisWeekStart; });
+    const scoreDelta = this.weeklyScore(thisWeekCheckins, thisWeekLogs) - this.weeklyScore(prevWeekCheckins, prevWeekLogs);
+
     const base = {
       chartData,
       chartDayDetails,
@@ -167,6 +188,9 @@ export class EvolutionInsightsMotor {
       emotionalTrends,
       timeline,
       totalCheckins: checkins.length,
+      evolutionScore: smartReading.score,
+      scoreDelta,
+      scoreLabel: smartReading.consistencyLabel,
     };
 
     if (totalRecords === 0) {
@@ -504,6 +528,7 @@ export class EvolutionInsightsMotor {
           'Próximo foco: concluir o treino do dia e registrar o check-in para melhorar a precisão da leitura.',
         consistencyLabel,
         hasEnoughData: false,
+        score,
       };
     }
 
@@ -547,7 +572,30 @@ export class EvolutionInsightsMotor {
       recommendation,
       consistencyLabel,
       hasEnoughData,
+      score,
     };
+  }
+
+  /**
+   * Score 0-100 de uma janela de registros (sem o termo de sequência, que não é
+   * conceito semanal). Usado para calcular a variação "esta semana vs anterior".
+   */
+  private static weeklyScore(checkins: CheckinData[], trainingLogs: any[]): number {
+    const t = trainingLogs.length;
+    const c = checkins.length;
+    const activeDays = this.countActiveDays(checkins, trainingLogs);
+    const hard = trainingLogs.filter((l) => l.feedback === 'failed' || l.feedback === 'hard').length;
+    const behavior = checkins.filter((ck) => {
+      const b = `${ck.comportamento || ''}`.toLowerCase();
+      return (
+        b.includes('agitado') || b.includes('ansioso') || b.includes('destrutivo') ||
+        b.includes('latido') || b.includes('medo')
+      );
+    }).length;
+    return Math.max(
+      0,
+      Math.min(100, Math.round(Math.min(t, 5) * 10 + Math.min(c, 5) * 7 + Math.min(activeDays, 7) * 5 - hard * 5 - behavior * 3))
+    );
   }
 
   private static countActiveDays(checkins: CheckinData[], trainingLogs: any[]): number {

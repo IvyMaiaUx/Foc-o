@@ -48,6 +48,46 @@ export function Evolucao() {
       ) : (
         <main className="px-6 py-8 flex flex-col gap-6">
 
+          {/* Score de Evolução — destaque no topo */}
+          {insights && !insights.isEmpty && insights.smartReading.hasEnoughData && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
+              className="relative overflow-hidden rounded-[1.75rem] p-6 bg-gradient-to-br from-[#055A43] to-[#03392B] shadow-[0_10px_34px_rgba(3,28,24,0.22)]"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/55 mb-2">Evolução geral</p>
+                  <div className="flex items-end gap-1">
+                    <span className="font-serif text-[52px] leading-none text-white">{insights.evolutionScore}</span>
+                    <span className="font-serif text-[20px] text-white/45 mb-1.5">/100</span>
+                  </div>
+                </div>
+                {insights.scoreDelta !== 0 && (
+                  <div className={`flex items-center gap-1 rounded-full px-3 py-1.5 mt-1 ${insights.scoreDelta > 0 ? 'bg-emerald-400/15' : 'bg-amber-400/15'}`}>
+                    {insights.scoreDelta > 0
+                      ? <TrendingUp className="w-3.5 h-3.5 text-emerald-300" />
+                      : <TrendingDown className="w-3.5 h-3.5 text-amber-300" />
+                    }
+                    <span className={`text-[12px] font-semibold ${insights.scoreDelta > 0 ? 'text-emerald-300' : 'text-amber-200'}`}>
+                      {insights.scoreDelta > 0 ? '+' : ''}{insights.scoreDelta} esta semana
+                    </span>
+                  </div>
+                )}
+              </div>
+              <p className="text-[14px] text-white/85 font-medium mt-4">{insights.scoreLabel}</p>
+              <div className="mt-3 h-2 bg-white/15 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${insights.evolutionScore}%` }}
+                  transition={{ duration: 0.9, delay: 0.15, ease: 'easeOut' }}
+                  className="h-full bg-white/80 rounded-full"
+                />
+              </div>
+            </motion.div>
+          )}
+
           {/* Status row */}
           {insights && !insights.isEmpty && (
             <motion.div
