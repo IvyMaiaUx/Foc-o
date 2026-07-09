@@ -901,13 +901,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b9-t1': {
-    id: 'b9-t1', name: 'Toca', blockId: 'b9', level: 'avançado', duration: '8 min',
+    id: 'b9-t1', name: 'Toca', blockId: 'b9', level: 'iniciante', duration: '8 min',
     objective: 'Crie uma interação simples, útil e responsiva.', prerequisites: [], nextPossible: ["b9-t2"],
     tags: ["enriquecimento"],
     problemTags: ["destruicao", "falta_de_foco"],
     objectiveTags: ["energia_mental", "foco"],
     profileTags: ["alta_energia", "agitado", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'iniciante',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Apresente a mão aberta perto do focinho do cão.',
@@ -917,13 +917,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b9-t2': {
-    id: 'b9-t2', name: 'Gira', blockId: 'b9', level: 'avançado', duration: '8 min',
+    id: 'b9-t2', name: 'Gira', blockId: 'b9', level: 'iniciante', duration: '8 min',
     objective: 'Trabalhe leveza, atenção e coordenação.', prerequisites: ["b9-t1"], nextPossible: ["b9-t3"],
     tags: ["enriquecimento"],
     problemTags: ["destruicao", "falta_de_foco"],
     objectiveTags: ["energia_mental", "foco"],
     profileTags: ["alta_energia", "agitado", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'iniciante',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Use um petisco para guiar o cão em um pequeno círculo.',
@@ -933,13 +933,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b9-t3': {
-    id: 'b9-t3', name: 'Vai para a cama', blockId: 'b9', level: 'avançado', duration: '10 min',
+    id: 'b9-t3', name: 'Vai para a cama', blockId: 'b9', level: 'intermediario', duration: '10 min',
     objective: 'Dê ao cão um ponto claro de pausa e organização.', prerequisites: ["b9-t2"], nextPossible: ["b9-t4"],
     tags: ["enriquecimento"],
     problemTags: ["destruicao", "falta_de_foco"],
     objectiveTags: ["energia_mental", "foco"],
     profileTags: ["alta_energia", "agitado", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'intermediario',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Aponte o tapete ou caminha e incentive o cão a ir até lá.',
@@ -949,13 +949,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b9-t4': {
-    id: 'b9-t4', name: 'Busca objeto', blockId: 'b9', level: 'avançado', duration: '12 min',
+    id: 'b9-t4', name: 'Busca objeto', blockId: 'b9', level: 'intermediario', duration: '12 min',
     objective: 'Estimule foco, engajamento e retorno ao tutor.', prerequisites: ["b9-t3"], nextPossible: ["b9-t5"],
     tags: ["enriquecimento"],
     problemTags: ["destruicao", "falta_de_foco"],
     objectiveTags: ["energia_mental", "foco"],
     profileTags: ["alta_energia", "agitado", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'intermediario',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Escolha um brinquedo leve e interessante para o cão.',
@@ -965,13 +965,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b9-t5': {
-    id: 'b9-t5', name: 'Procura petisco', blockId: 'b9', level: 'avançado', duration: '10 min',
+    id: 'b9-t5', name: 'Procura petisco', blockId: 'b9', level: 'intermediario', duration: '10 min',
     objective: 'Ative o faro e a concentração de forma prazerosa.', prerequisites: ["b9-t4"], nextPossible: ["b9-t6"],
     tags: ["enriquecimento"],
     problemTags: ["destruicao", "falta_de_foco"],
     objectiveTags: ["energia_mental", "foco"],
     profileTags: ["alta_energia", "agitado", "adulto"],
-    levelTag: 'avancado',
+    levelTag: 'intermediario',
     beforeStart: 'Em cenários com mais distrações, o ritmo do cão e a clareza da sua comunicação são essenciais. Respeite os sinais de desconforto.',
     steps: [
       'Mostre um petisco ao cão e esconda em um lugar fácil.',
