@@ -16,6 +16,25 @@ export interface TrainingTemplate {
   steps: string[];
 }
 
+/**
+ * NÍVEL DO TREINO (`levelTag`) — CLASSIFICAÇÃO INTERNA.
+ * Não é exibida ao tutor: serve só para o IntelligentPlanMotor montar/ordenar o plano
+ * conforme o nível do cão (`dogProfile.trainingBase`). Regra do motor: um treino só
+ * entra no plano se `rank(levelTag) <= rank(nível do cão)`, com +1 de tolerância quando
+ * o treino é de núcleo (blocos b1/b2) ou ataca um problema declarado do cão.
+ * Ranks: iniciante = 0 · intermediario = 1 · avancado = 2.
+ *
+ * Critério para classificar cada treino:
+ * - iniciante    → FUNDAMENTO/BÁSICO. Qualquer cão (inclusive filhote/iniciante) pode
+ *                  começar sem pré-requisito de comportamento. Ex.: nome, senta, xixi no local.
+ * - intermediario→ Exige uma base mínima já assimilada; envolve distrações, generalização
+ *                  ou mais autocontrole. Ex.: passeio com distrações, socialização, rotina consistente.
+ * - avancado     → Refinamento, manejo delicado ou truques; pressupõe base sólida.
+ *                  Ex.: cooperação veterinária, escovação, encadear comandos.
+ *
+ * OBS.: o campo `level` (string) é apenas rótulo interno/legado; quem o motor lê é o
+ * `levelTag`. Ao editar um treino, mantenha os dois coerentes.
+ */
 export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   'b1-t1': {
     id: 'b1-t1', name: 'Nome e contato visual', blockId: 'b1', level: 'iniciante', duration: '10 min',
@@ -594,13 +613,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b7-t1': {
-    id: 'b7-t1', name: 'Acertar xixi/cocô no local', blockId: 'b7', level: 'avançado', duration: '12 min',
+    id: 'b7-t1', name: 'Acertar xixi/cocô no local', blockId: 'b7', level: 'iniciante', duration: '12 min',
     objective: 'Fortaleça acertos com consistência e clareza.', prerequisites: [], nextPossible: ["b7-t2"],
     tags: ["higiene_necessidades"],
     problemTags: ["xixi_fora_lugar"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["filhote", "apartamento"],
-    levelTag: 'avancado',
+    levelTag: 'iniciante',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Leve o cão ao local certo em horários de maior chance de acerto.',
@@ -610,13 +629,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b7-t2': {
-    id: 'b7-t2', name: 'Sinal pós-refeição', blockId: 'b7', level: 'avançado', duration: '10 min',
+    id: 'b7-t2', name: 'Sinal pós-refeição', blockId: 'b7', level: 'iniciante', duration: '10 min',
     objective: 'Use a rotina a favor do aprendizado.', prerequisites: ["b7-t1"], nextPossible: ["b7-t3"],
     tags: ["higiene_necessidades"],
     problemTags: ["xixi_fora_lugar"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["filhote", "apartamento"],
-    levelTag: 'avancado',
+    levelTag: 'iniciante',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Após a refeição, conduza o cão ao local de necessidade no tempo mais adequado para ele.',
@@ -626,13 +645,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b7-t3': {
-    id: 'b7-t3', name: 'Recompensa por acerto', blockId: 'b7', level: 'avançado', duration: '8 min',
+    id: 'b7-t3', name: 'Recompensa por acerto', blockId: 'b7', level: 'iniciante', duration: '8 min',
     objective: 'Associe o comportamento certo a uma resposta imediata.', prerequisites: ["b7-t2"], nextPossible: ["b7-t4"],
     tags: ["higiene_necessidades"],
     problemTags: ["xixi_fora_lugar"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["filhote", "apartamento"],
-    levelTag: 'avancado',
+    levelTag: 'iniciante',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Escolha uma recompensa simples e rápida para o momento do acerto.',
@@ -642,13 +661,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b7-t4': {
-    id: 'b7-t4', name: 'Rotina de saída', blockId: 'b7', level: 'avançado', duration: '10 min',
+    id: 'b7-t4', name: 'Rotina de saída', blockId: 'b7', level: 'iniciante', duration: '10 min',
     objective: 'Organize previsibilidade para facilitar o acerto.', prerequisites: ["b7-t3"], nextPossible: ["b7-t5"],
     tags: ["higiene_necessidades"],
     problemTags: ["xixi_fora_lugar"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["filhote", "apartamento"],
-    levelTag: 'avancado',
+    levelTag: 'iniciante',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Organize horários consistentes para levar o cão ao local adequado.',
@@ -658,13 +677,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b7-t5': {
-    id: 'b7-t5', name: 'Controle de acidentes', blockId: 'b7', level: 'avançado', duration: '8 min',
+    id: 'b7-t5', name: 'Controle de acidentes', blockId: 'b7', level: 'intermediario', duration: '8 min',
     objective: 'Corrija a rota com observação e ajustes leves.', prerequisites: ["b7-t4"], nextPossible: ["b7-t6"],
     tags: ["higiene_necessidades"],
     problemTags: ["xixi_fora_lugar"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["filhote", "apartamento"],
-    levelTag: 'avancado',
+    levelTag: 'intermediario',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Se houver acidente, limpe sem bronca e sem chamar atenção do cão para o erro.',
@@ -674,13 +693,13 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
     ]
   },
   'b7-t6': {
-    id: 'b7-t6', name: 'Generalização da rotina', blockId: 'b7', level: 'avançado', duration: '12 min',
+    id: 'b7-t6', name: 'Generalização da rotina', blockId: 'b7', level: 'intermediario', duration: '12 min',
     objective: 'Consolide o comportamento em diferentes momentos do dia.', prerequisites: ["b7-t5"], nextPossible: ["b7-t7"],
     tags: ["higiene_necessidades"],
     problemTags: ["xixi_fora_lugar"],
     objectiveTags: ["rotina", "convivencia"],
     profileTags: ["filhote", "apartamento"],
-    levelTag: 'avancado',
+    levelTag: 'intermediario',
     beforeStart: 'Paciência é fundamental. Foque em recompensar os acertos nos horários certos, sem dar broncas nos erros.',
     steps: [
       'Aplique a rotina de acerto em diferentes dias, horários e pequenas variações do ambiente.',
