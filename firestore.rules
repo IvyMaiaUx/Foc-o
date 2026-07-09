@@ -110,6 +110,10 @@ service cloud.firestore {
       allow read, write: if isOwner(uid) || isAdmin();
     }
 
+    match /users/{uid}/missions/{document=**} {
+      allow read, write: if isOwner(uid) || isAdmin();
+    }
+
     match /users/{uid}/dailyCheckins/{document=**} {
       allow read, write: if isOwner(uid) || isAdmin();
     }

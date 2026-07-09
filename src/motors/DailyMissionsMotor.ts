@@ -56,19 +56,30 @@ function toMs(completedAt: TrainingLogEntry['completedAt']): number | null {
   return null;
 }
 
-export class DailyMissionsMotor {
-  static completeMission(id: string, todayKey: string): void {
-    try {
-      localStorage.setItem(`focao_mission_${id}_${todayKey}`, 'done');
-    } catch {}
-  }
+export interface MissionSignals {
+  /** Houve passeio no check-in de hoje (context.walked === true). */
+  walkedToday?: boolean;
+  /** O treino do dia foi concluído (há trainingLog de hoje não-falho). */
+  trainingDoneToday?: boolean;
+}
 
-  static isMissionDone(id: string, todayKey: string): boolean {
-    try {
-      return localStorage.getItem(`focao_mission_${id}_${todayKey}`) === 'done';
-    } catch {
-      return false;
+export class DailyMissionsMotor {
+  /**
+   * Missões que são concluídas AUTOMATICAMENTE a partir de ações reais do dia,
+   * sem o usuário precisar tocar no card:
+   *  - `daily_walk`    → quando o check-in registra passeio (walkedToday)
+   *  - `daily_training`→ quando o treino do dia é concluído (trainingDoneToday)
+   *
+   * O resto das missões (prática extra: senta, recall, permanência...) continua
+   * sendo marcado manualmente e persistido no Firestore via MissionsRepository.
+   */
+  static autoCompletedIds(missions: DailyMission[], signals: MissionSignals): string[] {
+    const done: string[] = [];
+    for (const m of missions) {
+      if (signals.walkedToday && m.id === 'daily_walk') done.push(m.id);
+      if (signals.trainingDoneToday && m.id === 'daily_training') done.push(m.id);
     }
+    return done;
   }
 
   static detectGap(

@@ -11,7 +11,8 @@ import { TrainingRepository } from '@/src/repositories/TrainingRepository';
 import { EvolutionRepository } from '@/src/repositories/EvolutionRepository';
 import { DogProfile, CurrentPlan, TrainingTask, UserProfile } from '@/src/types';
 import { EvolutionSummary } from '@/src/repositories/EvolutionRepository';
-import { CheckinRepository } from '@/src/repositories/CheckinRepository';
+import { CheckinRepository, CheckinData } from '@/src/repositories/CheckinRepository';
+import { MissionsRepository } from '@/src/repositories/MissionsRepository';
 import { NutritionMotor } from '@/src/motors/NutritionMotor';
 import { TRAINING_TEMPLATES } from '@/src/lib/trainingTemplates';
 import { HomeMotor, HomeState } from '@/src/motors/HomeMotor';
@@ -53,6 +54,7 @@ export function Home() {
   const [recentCheckinDays, setRecentCheckinDays] = useState(0);
   const [showBetaFeedbackPrompt, setShowBetaFeedbackPrompt] = useState(false);
   const [completedMissions, setCompletedMissions] = useState<Set<string>>(new Set());
+  const [checkinToday, setCheckinToday] = useState<CheckinData | null>(null);
   const [gapDirective, setGapDirective] = useState<GapDirective | null>(null);
 
   const [planBannerDismissed, setPlanBannerDismissed] = useState(
@@ -106,7 +108,7 @@ export function Home() {
         setUserName(profile.name || 'Tutor');
 
         const todayStr = toLocalDateKey();
-        const [dog, plan, evol, todayCheckin, logs, vaccines, recentCheckins, activeNotifs] = await Promise.all([
+        const [dog, plan, evol, todayCheckin, logs, vaccines, recentCheckins, activeNotifs, completedMissionIds] = await Promise.all([
           DogRepository.getDogProfile(user.uid),
           TrainingRepository.getCurrentPlan(user.uid),
           EvolutionRepository.getSummary(user.uid),
@@ -114,12 +116,15 @@ export function Home() {
           TrainingRepository.getTrainingLogs(user.uid),
           VaccineRepository.getVaccines(user.uid),
           CheckinRepository.getRecentCheckins(user.uid, 7),
-          NotificationRepository.getActiveNotifications(user.uid)
+          NotificationRepository.getActiveNotifications(user.uid),
+          MissionsRepository.getCompletedIds(user.uid, todayStr)
         ]);
-        
+
         setDogProfile(dog);
         setCurrentPlan(plan);
         setEvolution(evol);
+        setCheckinToday(todayCheckin);
+        setCompletedMissions(new Set(completedMissionIds));
         setRecentCheckinDays(new Set(recentCheckins.map((checkin) => checkin.date).filter(Boolean)).size);
         
         const state = HomeMotor.calculateState(profile, dog, plan, evol, logs, todayCheckin, vaccines);
@@ -178,20 +183,6 @@ export function Home() {
     loadData();
   }, []);
 
-  // Initialize completed missions from localStorage after data loads
-  useEffect(() => {
-    if (isLoading) return;
-    const todayKey = toLocalDateKey();
-    const task = currentPlan?.tasks[currentPlan?.currentTaskIndex || 0] ?? null;
-    const missions = DailyMissionsMotor.generateMissions(dogProfile, task);
-    const done = new Set<string>();
-    missions.forEach(m => {
-      if (DailyMissionsMotor.isMissionDone(m.id, todayKey)) done.add(m.id);
-    });
-    setCompletedMissions(done);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
-
   if (isLoading) {
     return (
       <div className="flex-1 bg-[#FAFAFA] flex items-center justify-center">
@@ -204,10 +195,24 @@ export function Home() {
   const todayKey = toLocalDateKey();
   const dailyMissions = DailyMissionsMotor.generateMissions(dogProfile, activeTask ?? null);
 
+  // Conclusão AUTOMÁTICA a partir das ações reais do dia:
+  // passeio no check-in → daily_walk; treino do dia concluído → daily_training.
+  const walkedToday = checkinToday?.behaviors?.walked === true || checkinToday?.context?.walked === true;
+  const trainingDoneToday = homeState?.hasCompletedTrainingToday ?? false;
+  const autoCompletedMissions = new Set(
+    DailyMissionsMotor.autoCompletedIds(dailyMissions, { walkedToday, trainingDoneToday })
+  );
+  const isMissionDone = (id: string) => completedMissions.has(id) || autoCompletedMissions.has(id);
+
   const handleMissionTap = (id: string) => {
     hapticLightTap();
-    DailyMissionsMotor.completeMission(id, todayKey);
-    setCompletedMissions(prev => new Set([...prev, id]));
+    setCompletedMissions(prev => new Set(prev).add(id));
+    const user = auth.currentUser;
+    if (user) {
+      MissionsRepository.completeMission(user.uid, todayKey, id).catch((err) => {
+        console.warn('[Missions] Não foi possível salvar a missão concluída', err);
+      });
+    }
   };
 
   const dogName = dogProfile?.name || 'Seu cão';
@@ -536,7 +541,7 @@ export function Home() {
             </div>
             <div className="flex flex-col gap-1">
               {dailyMissions.map((mission) => {
-                const done = completedMissions.has(mission.id);
+                const done = isMissionDone(mission.id);
                 return (
                   <button
                     key={mission.id}
