@@ -87,15 +87,15 @@ export interface EvolutionInsights {
   scoreLabel: string;
 }
 
+// Rótulos das 7 tags canônicas de comportamento (evolução por habilidade).
 const SKILL_LABELS: Record<string, string> = {
-  obediencia: 'Obediência',
-  foco: 'Foco',
   calma: 'Calma',
-  passeio: 'Passeio',
-  socializacao: 'Socialização',
+  foco: 'Foco',
+  obediencia: 'Obediência',
+  social: 'Socialização',
   rotina: 'Rotina',
+  passeio: 'Passeio',
   convivencia: 'Convivência',
-  independencia: 'Independência',
 };
 
 export class EvolutionInsightsMotor {

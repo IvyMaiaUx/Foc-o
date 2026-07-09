@@ -81,7 +81,7 @@ const PROBLEM_TAG_REASONS: Record<string, ReasonBuilder> = {
     `Este treino desenvolve o foco e a atenção d${art} ${name} — habilidades que são a base para todos os outros comandos.`,
   medo: (name, art, _count, _total) =>
     `${name} apresenta algum nível de insegurança — este treino fortalece a confiança de forma gradual, sem pressão.`,
-  socializacao: (name, art, _count, _total) =>
+  social: (name, art, _count, _total) =>
     `Este treino melhora a sociabilidade d${art} ${name} com pessoas e outros animais, de forma segura e positiva.`,
 };
 
@@ -97,7 +97,7 @@ const PROBLEM_FOCUS_LABEL: Record<string, string> = {
   ansiedade: 'Segurança emocional',
   falta_de_foco: 'Foco e atenção',
   medo: 'Confiança e segurança',
-  socializacao: 'Socialização',
+  social: 'Socialização',
 };
 
 function countBehavior(checkins: CheckinData[], key: string): number {

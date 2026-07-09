@@ -6,7 +6,8 @@ export const TRAINING_PROBLEM_TAGS = [
   'ansiedade_separacao', 'reatividade', 'medo', 'pula_em_pessoas', 'falta_de_foco',
 ] as const;
 export type TrainingProblemTag = typeof TRAINING_PROBLEM_TAGS[number];
-export type TrainingObjectiveTag = 'obediencia' | 'foco' | 'calma' | 'independencia' | 'passeio' | 'socializacao' | 'rotina' | 'energia_mental' | 'convivencia';
+// Taxonomia canônica de COMPORTAMENTO (interna, usada pelo motor). 7 tags.
+export type TrainingObjectiveTag = 'calma' | 'foco' | 'obediencia' | 'social' | 'rotina' | 'passeio' | 'convivencia';
 export type DogProfileTag = 'filhote' | 'adulto' | 'senior' | 'pequeno_porte' | 'medio_porte' | 'grande_porte' | 'apartamento' | 'casa' | 'alta_energia' | 'media_energia' | 'baixa_energia' | 'medroso' | 'agitado' | 'calmo' | 'sociavel' | 'reativo' | 'iniciante' | 'intermediario' | 'avancado';
 export type TrainingStatusTag = 'novo' | 'em_andamento' | 'dominado' | 'travado' | 'reforco';
 
@@ -109,13 +110,13 @@ export function generateDogTagsFromOnboarding(onboardingData: DogProfile): DogPr
     if (norm.includes('behavior') || norm.includes('comporta')) tags.push('calma' as any);
     if (norm.includes('anxiety_alone')) {
       tags.push('ansiedade_separacao' as any);
-      tags.push('independencia' as any);
+      tags.push('calma' as any); // independencia foi fundida em calma
     } else if (norm.includes('anxiety') || norm.includes('ansied')) {
       tags.push('calma' as any);
     }
     if (norm.includes('bark') || norm.includes('latid')) tags.push('latidos' as any);
     if (norm.includes('destru') || norm.includes('destro')) tags.push('destruicao' as any);
-    if (norm.includes('sociali')) tags.push('socializacao' as any);
+    if (norm.includes('sociali')) tags.push('social' as any);
     if (norm.includes('trick') || norm.includes('comand')) tags.push('obediencia' as any);
     if (norm.includes('routin') || norm.includes('rotin')) tags.push('rotina' as any);
   });
@@ -214,6 +215,7 @@ const tagPortugueseLabels: Record<string, string> = {
   autocontrole: 'autocontrole',
   passeio: 'passeio tranquilo',
   socializacao: 'socialização',
+  social: 'socialização',
   ansiedade_separacao: 'ansiedade de separação',
   higiene_necessidades: 'higiene e necessidades',
   manejo: 'cuidados e manejo físico',
