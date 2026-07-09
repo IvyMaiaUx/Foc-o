@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, BellOff, CheckCircle2, ChevronLeft, Clock, Save } from 'lucide-react';
@@ -25,10 +25,12 @@ export function Notificacoes() {
   // WhatsApp states V1.2
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappPhone, setWhatsappPhone] = useState('');
-  const [whatsappPreferredTime, setWhatsappPreferredTime] = useState('18:00');
   const [whatsappTypes, setWhatsappTypes] = useState({
+    welcome: true,
+    agendaDay: false,
     weeklyReport: true,
     trainingReminder: true,
+    achievements: true,
     inactivity: true,
     trialAndBilling: true,
   });
@@ -64,11 +66,13 @@ export function Notificacoes() {
           // Load WhatsApp settings from user root
           setWhatsappEnabled(userData.whatsappEnabled ?? false);
           setWhatsappPhone(userData.whatsappPhone ?? '');
-          setWhatsappPreferredTime(userData.whatsappPreferredTime ?? '18:00');
           if (userData.whatsappNotificationTypes) {
             setWhatsappTypes({
+              welcome: userData.whatsappNotificationTypes.welcome ?? true,
+              agendaDay: userData.whatsappNotificationTypes.agendaDay ?? false,
               weeklyReport: userData.whatsappNotificationTypes.weeklyReport ?? true,
               trainingReminder: userData.whatsappNotificationTypes.trainingReminder ?? true,
+              achievements: userData.whatsappNotificationTypes.achievements ?? true,
               inactivity: userData.whatsappNotificationTypes.inactivity ?? true,
               trialAndBilling: userData.whatsappNotificationTypes.trialAndBilling ?? true,
             });
@@ -133,7 +137,6 @@ export function Notificacoes() {
         // WhatsApp V1.2 root fields
         whatsappEnabled,
         whatsappPhone,
-        whatsappPreferredTime,
         whatsappNotificationTypes: whatsappTypes,
         whatsappOptInAt: optInAt,
         whatsappOptOutAt: optOutAt,
@@ -179,7 +182,7 @@ export function Notificacoes() {
             <h2 className="text-[14px] font-medium text-[#055A43] tracking-wide uppercase">Lembretes no App</h2>
           </div>
 
-          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col gap-6">
+          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col gap-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-[#506352] text-[15px]">Ativar notificações push</p>
@@ -224,68 +227,6 @@ export function Notificacoes() {
           </div>
         </section>
 
-        {/* WhatsApp notifications section */}
-        <section>
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-8 h-8 rounded-full bg-[#055A43]/10 text-[#055A43] flex items-center justify-center">
-              <span className="text-sm">📱</span>
-            </div>
-            <h2 className="text-[14px] font-medium text-[#055A43] tracking-wide uppercase">Notificações por WhatsApp</h2>
-          </div>
-
-          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col gap-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-[#506352] text-[15px]">Ativar WhatsApp</p>
-                <p className="text-[#5C615D]/80 text-[13px] font-light mt-1 max-w-[220px]">
-                  Receba lembretes, dicas e relatórios no WhatsApp.
-                </p>
-              </div>
-              <button 
-                onClick={() => setWhatsappEnabled(!whatsappEnabled)} 
-                className={`w-12 h-6 rounded-full p-1 transition-colors ${whatsappEnabled ? 'bg-[#055A43]' : 'bg-gray-200'}`}
-              >
-                <motion.div className="w-4 h-4 rounded-full bg-white shadow-sm" animate={{ x: whatsappEnabled ? 24 : 0 }} transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
-              </button>
-            </div>
-
-            <AnimatePresence>
-              {whatsappEnabled && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden flex flex-col gap-4 pt-4 border-t border-[#055A43]/5"
-                >
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[#506352] text-xs font-semibold">Número de WhatsApp (com DDD)</label>
-                    <input
-                      type="tel"
-                      value={whatsappPhone}
-                      onChange={(e) => setWhatsappPhone(e.target.value)}
-                      placeholder="+55 (61) 99999-9999"
-                      className="bg-[#FAFAFA] border border-[#055A43]/10 text-[#055A43] rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-[#055A43] w-full"
-                    />
-                  </div>
-
-                  <TimeRow label="Horário preferido" value={whatsappPreferredTime} onChange={setWhatsappPreferredTime} />
-
-                  <div className="flex flex-col gap-4 pt-4 border-t border-[#055A43]/5 mt-2">
-                    <h3 className="text-[12px] uppercase tracking-wider text-[#055A43] font-semibold mb-1">Tipos de notificações</h3>
-                    <ReminderToggle label="Relatório semanal" active={whatsappTypes.weeklyReport} onClick={() => setWhatsappTypes((w) => ({ ...w, weeklyReport: !w.weeklyReport }))} />
-                    <ReminderToggle label="Lembretes de treino" active={whatsappTypes.trainingReminder} onClick={() => setWhatsappTypes((w) => ({ ...w, trainingReminder: !w.trainingReminder }))} />
-                    <ReminderToggle label="Avisos de inatividade" active={whatsappTypes.inactivity} onClick={() => setWhatsappTypes((w) => ({ ...w, inactivity: !w.inactivity }))} />
-                    <ReminderToggle label="Trial e assinatura" active={whatsappTypes.trialAndBilling} onClick={() => setWhatsappTypes((w) => ({ ...w, trialAndBilling: !w.trialAndBilling }))} />
-                  </div>
-
-                  <p className="text-[11px] text-gray-400 font-light leading-relaxed mt-2 p-3 bg-gray-50 rounded-xl">
-                    Ao ativar, você autoriza o Focão a enviar lembretes, relatórios e avisos importantes pelo WhatsApp. Você pode desativar quando quiser.
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </section>
 
         <button
           onClick={handleSave}

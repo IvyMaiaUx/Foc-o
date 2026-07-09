@@ -90,6 +90,15 @@ export function generateDogTagsFromOnboarding(onboardingData: DogProfile): DogPr
     if (norm.includes('potty') || norm.includes('xixi')) tags.push('xixi_fora_lugar' as any);
   });
 
+  // Frequência de passeio — boosted para treinos de passeio quando o cão anda pouco ou não anda
+  const walksPerDay = String(onboardingData.walksPerDay || '').toLowerCase();
+  if (walksPerDay === 'não passeia' || walksPerDay === '0' || walksPerDay === 'nao passeia') {
+    tags.push('passeio' as any); // precisa aprender a passear
+  }
+  if (walksPerDay === '3+ vezes' || walksPerDay.includes('3')) {
+    if (!tags.includes('alta_energia')) tags.push('alta_energia'); // cão muito ativo
+  }
+
   // Objetivos
   const goals = onboardingData.goals || [];
   goals.forEach((g: string) => {

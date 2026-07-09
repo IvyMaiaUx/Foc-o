@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -11,6 +11,9 @@
   --color-neutral-base: #5C615D;
   --color-background-offwhite: #FAFAFA;
   --color-surface-white: #FFFFFF;
+  --color-cream: #F7F3E8;
+  --color-gold: #B08D57;
+  --font-display: "Abril Fatface", ui-serif, Georgia, serif;
 }
 
 body {
@@ -18,4 +21,26 @@ body {
   color: var(--color-brand-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
 }
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@utility pt-safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@utility mb-safe {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility mt-safe {
+  margin-top: env(safe-area-inset-top, 0px);
+}
+

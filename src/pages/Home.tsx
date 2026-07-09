@@ -24,6 +24,7 @@ import { useAuth } from '@/src/contexts/AuthContext';
 import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
 import { isBetaEnvironment } from '@/src/lib/beta';
 import { isPlanUpgradeEligible } from '@/src/lib/planUpgrade';
+import { DailyMissionsMotor, DailyMission, GapDirective } from '@/src/motors/DailyMissionsMotor';
 
 export function Home() {
   const navigate = useNavigate();
@@ -51,6 +52,8 @@ export function Home() {
   const [promoNotification, setPromoNotification] = useState<any | null>(null);
   const [recentCheckinDays, setRecentCheckinDays] = useState(0);
   const [showBetaFeedbackPrompt, setShowBetaFeedbackPrompt] = useState(false);
+  const [completedMissions, setCompletedMissions] = useState<Set<string>>(new Set());
+  const [gapDirective, setGapDirective] = useState<GapDirective | null>(null);
 
   const [planBannerDismissed, setPlanBannerDismissed] = useState(
     () => localStorage.getItem('focao_plan_upgrade_dismissed') === 'true'
@@ -124,6 +127,7 @@ export function Home() {
 
         const insights = CheckinInsightsMotor.analyze(recentCheckins, logs);
         setCheckinInsights(insights);
+        setGapDirective(DailyMissionsMotor.detectGap(logs, dog));
 
         const mappedNotifs = activeNotifs.map(n => ({
           id: n.id,
@@ -171,9 +175,22 @@ export function Home() {
         setIsLoading(false);
       }
     };
-
     loadData();
-  }, [navigate]);
+  }, []);
+
+  // Initialize completed missions from localStorage after data loads
+  useEffect(() => {
+    if (isLoading) return;
+    const todayKey = toLocalDateKey();
+    const task = currentPlan?.tasks[currentPlan?.currentTaskIndex || 0] ?? null;
+    const missions = DailyMissionsMotor.generateMissions(dogProfile, task);
+    const done = new Set<string>();
+    missions.forEach(m => {
+      if (DailyMissionsMotor.isMissionDone(m.id, todayKey)) done.add(m.id);
+    });
+    setCompletedMissions(done);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
   if (isLoading) {
     return (
@@ -184,10 +201,25 @@ export function Home() {
   }
 
   const activeTask = currentPlan?.tasks[currentPlan?.currentTaskIndex || 0];
+  const todayKey = toLocalDateKey();
+  const dailyMissions = DailyMissionsMotor.generateMissions(dogProfile, activeTask ?? null);
+
+  const handleMissionTap = (id: string) => {
+    hapticLightTap();
+    DailyMissionsMotor.completeMission(id, todayKey);
+    setCompletedMissions(prev => new Set([...prev, id]));
+  };
+
   const dogName = dogProfile?.name || 'Seu cão';
+  const dogArticle = dogProfile?.gender === 'female' ? 'a' : 'o';
   const streak = EvolutionRepository.liveStreak(evolution);
   // Calculate nutrition info
   const nutritionDaily = NutritionMotor.calculateFood(dogProfile).daily;
+
+  // Plan progress (for the Evolução card)
+  const planTotalTasks = currentPlan?.tasks.length || 0;
+  const planDoneTasks = Math.min(currentPlan?.currentTaskIndex ?? 0, planTotalTasks);
+  const planProgressPct = planTotalTasks > 0 ? Math.round((planDoneTasks / planTotalTasks) * 100) : 0;
 
   const showReportReady = (homeState?.hasCompletedTrainingToday || false)
     && (evolution?.totalSessions ?? 0) >= 7
@@ -209,8 +241,17 @@ export function Home() {
               Olá, {userName?.split(' ')[0] || 'Tutor'}
             </p>
             <h1 className="font-serif text-[36px] text-[#055A43] tracking-tighter leading-none">
-              Resumo <br />
-              <span className="italic font-light text-[#506352]">de hoje</span>
+              {dogProfile?.name ? (
+                <>
+                  Como está <br />
+                  <span className="italic font-light text-[#506352]">{dogArticle} {dogName}?</span>
+                </>
+              ) : (
+                <>
+                  Resumo <br />
+                  <span className="italic font-light text-[#506352]">de hoje</span>
+                </>
+              )}
             </h1>
           </div>
           <div className="flex items-center gap-3">
@@ -461,8 +502,69 @@ export function Home() {
           </motion.section>
         )}
 
+        {/* Gap Directive */}
+        {gapDirective && (
+          <motion.section
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.13 }}
+            className="bg-amber-50 border border-amber-200/60 rounded-[2rem] p-5 shadow-[0_8px_24px_rgba(176,141,87,0.08)]"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-700/80 mb-2">
+              Hoje {dogName} precisa...
+            </p>
+            <p className="text-[15px] font-semibold text-amber-900 leading-snug mb-2">
+              Faz {gapDirective.daysSince} {gapDirective.daysSince === 1 ? 'dia' : 'dias'} sem praticar {gapDirective.skillLabel}
+            </p>
+            <p className="text-[13px] text-amber-800/70 leading-relaxed">
+              {gapDirective.suggestion}
+            </p>
+          </motion.section>
+        )}
+
+        {/* Daily Missions */}
+        {!isLoading && dailyMissions.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="bg-white rounded-[2rem] p-5 border border-[#055A43]/5 shadow-[0_8px_24px_rgba(3,28,24,0.06)]"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-4 h-4 text-[#055A43]" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#055A43]">Missões da semana</p>
+            </div>
+            <div className="flex flex-col gap-1">
+              {dailyMissions.map((mission) => {
+                const done = completedMissions.has(mission.id);
+                return (
+                  <button
+                    key={mission.id}
+                    onClick={() => !done && handleMissionTap(mission.id)}
+                    className={`flex items-start gap-3 text-left w-full rounded-2xl p-3 transition-all ${done ? '' : 'hover:bg-[#055A43]/5 active:bg-[#055A43]/8'}`}
+                  >
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200 ${done ? 'bg-[#055A43] border-[#055A43]' : 'border-[#055A43]/25'}`}>
+                      {done && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
+                    </div>
+                    <div className="flex-1">
+                      <p className={`text-[14px] font-medium leading-snug transition-all duration-200 ${done ? 'line-through text-[#5C615D]/40' : 'text-[#506352]'}`}>
+                        {mission.text}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] font-semibold text-[#055A43]/50 uppercase tracking-widest">{mission.when}</span>
+                        <span className="text-[9px] text-[#5C615D]/30">·</span>
+                        <span className="text-[10px] text-[#5C615D]/50">{mission.duration}</span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.section>
+        )}
+
         {/* Bento Grid Actions */}
-        <motion.section 
+        <motion.section
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -550,24 +652,62 @@ export function Home() {
           <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#055A43] transition-colors" />
         </motion.section>
 
-        {/* Evolução Mini Card */}
-        <motion.section 
+        {/* Evolução / Progresso */}
+        <motion.section
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35 }}
-          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-5 shadow-[0_8px_20px_rgb(0,0,0,0.02)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
+          className="relative overflow-hidden bg-gradient-to-br from-[#055A43]/[0.06] to-[#506352]/[0.03] border border-[#055A43]/10 rounded-[2rem] p-5 shadow-[0_8px_20px_rgb(0,0,0,0.02)] cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
           onClick={() => { hapticLightTap(); navigate('/evolucao'); }}
         >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 group-hover:text-[#055A43] group-hover:bg-[#055A43]/5 transition-colors">
-              <Activity className="w-6 h-6" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 bg-[#055A43]/10 rounded-full flex items-center justify-center text-[#055A43] group-hover:scale-105 transition-transform">
+                <Activity className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-[15px] font-bold text-gray-900 leading-tight">Evolução Geral</h4>
+                <p className="text-[12px] font-medium text-[#5C615D]">{evolution?.totalSessions || 0} treinos realizados</p>
+              </div>
             </div>
-            <div>
-              <h4 className="text-[15px] font-bold text-gray-900 mb-0.5">Evolução Geral</h4>
-              <p className="text-[13px] font-medium text-[#5C615D]">{evolution?.totalSessions || 0} treinos realizados</p>
-            </div>
+            {streak > 0 && (
+              <div className="flex items-center gap-1.5 bg-white/70 border border-orange-200/60 rounded-full px-3 py-1.5 shadow-sm">
+                <Flame className="w-4 h-4 text-orange-500" />
+                <span className="text-[13px] font-bold text-orange-600">{streak}</span>
+                <span className="text-[11px] font-medium text-[#5C615D]">dias</span>
+              </div>
+            )}
           </div>
-          <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#055A43] transition-colors" />
+
+          {planTotalTasks > 0 ? (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#5C615D]/80">Progresso do plano</span>
+                <span className="text-[13px] font-bold text-[#055A43]">{planProgressPct}%</span>
+              </div>
+              <div className="h-2.5 w-full rounded-full bg-[#055A43]/10 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${planProgressPct}%` }}
+                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+                  className="h-full rounded-full bg-gradient-to-r from-[#055A43] to-[#0a7a5c]"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-[12px] font-medium text-[#5C615D]">
+                  Etapa {planDoneTasks} de {planTotalTasks}
+                </p>
+                <span className="flex items-center gap-1 text-[12px] font-semibold text-[#055A43] group-hover:gap-1.5 transition-all">
+                  Ver detalhes <ChevronRight className="w-4 h-4" />
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <p className="text-[13px] font-medium text-[#5C615D]">Acompanhe a evolução {dogArticle} {dogName}</p>
+              <ChevronRight className="w-5 h-5 text-[#055A43]/50 group-hover:text-[#055A43] transition-colors" />
+            </div>
+          )}
         </motion.section>
 
         {/* Checkin Insights */}

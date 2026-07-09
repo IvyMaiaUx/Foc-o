@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '@/src/lib/firebase';
@@ -372,7 +372,7 @@ export function Perfil() {
           <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
             Desenvolvimento
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
             <button
               onClick={() => navigate('/sos')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
@@ -432,7 +432,7 @@ export function Perfil() {
           <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
             Saúde & Rotina
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
             <button
               onClick={() => navigate('/nutricao')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
@@ -472,7 +472,7 @@ export function Perfil() {
           <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
             Promoções
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
             <button onClick={() => navigate('/indique')}
               className="flex items-center justify-between p-4 px-3 active:bg-emerald-50/50 rounded-xl transition-colors text-left"
             >
@@ -504,7 +504,7 @@ export function Perfil() {
           <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
             Conta
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
             <button 
               onClick={() => navigate('/editar-perfil')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
@@ -600,7 +600,7 @@ export function Perfil() {
           <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
             Privacidade & LGPD
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col gap-1">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col gap-1">
             <button 
               onClick={handleExportData}
               disabled={isExporting}
@@ -649,7 +649,7 @@ export function Perfil() {
         <section className="pt-4">
           <button 
             onClick={handleSignOut}
-            className="w-full bg-white rounded-[1.5rem] p-4 border border-[#5F2620]/10 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex items-center justify-center gap-2 active:bg-gray-50 transition-colors"
+            className="w-full bg-white rounded-[1.5rem] p-4 border border-[#5F2620]/10 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex items-center justify-center gap-2 active:bg-gray-50 transition-colors"
           >
             <LogOut className="w-5 h-5 text-[#5F2620]" />
             <span className="font-medium text-[#5F2620] text-sm tracking-wide">Encerrar Sessão</span>

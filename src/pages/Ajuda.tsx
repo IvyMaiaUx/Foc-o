@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
@@ -121,7 +121,7 @@ export function Ajuda() {
           
           {/* Quick Actions */}
           <div className="grid grid-cols-1 gap-4">
-            <button className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex items-center gap-4 active:scale-[0.98] transition-transform w-full">
+            <button className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex items-center gap-4 active:scale-[0.98] transition-transform w-full">
               <div className="w-12 h-12 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
                 <MessageCircle className="w-6 h-6" />
               </div>
@@ -137,7 +137,7 @@ export function Ajuda() {
                <div key={catIdx}>
                  <h3 className="font-medium text-[#055A43] text-[11px] tracking-[0.15em] uppercase mb-4 px-2 opacity-80">{category.title}</h3>
                  
-                 <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col overflow-hidden">
+                 <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col overflow-hidden">
                    {category.faqs.map((faq) => {
                      const isExpanded = expandedId === faq.id;
                      

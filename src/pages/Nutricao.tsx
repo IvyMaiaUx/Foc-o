@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Info, Utensils, Droplets, ArrowRight, X, Loader2, Save, ChevronDown } from 'lucide-react';
@@ -61,8 +61,6 @@ export function Nutricao() {
   const [quantity, setQuantity] = useState('');
   const [foodOptions, setFoodOptions] = useState(DOG_FOOD_OPTIONS);
 
-  if (!isPremium) return <PremiumGate featureName="Nutrição inteligente" />;
-
   // Select Modal States
   const [isBrandSheetOpen, setIsBrandSheetOpen] = useState(false);
   const [isLineSheetOpen, setIsLineSheetOpen] = useState(false);
@@ -111,22 +109,42 @@ export function Nutricao() {
     loadProfile();
   }, []);
 
+  if (!isPremium) return <PremiumGate featureName="Nutrição inteligente" />;
+
   const handleSaveFood = async () => {
     try {
       const user = auth.currentUser;
       if (!user || !dogData?.id) return;
       setIsSaving(true);
-      const portionGrams = parsePortionGrams(quantity);
+      const mealsPerDay = dogData.nutrition?.mealsPerDay || parseMealsPerDay(dogData.mealsPerDay);
+      const nutritionPreview = NutritionMotor.calculateFood({
+        ...dogData,
+        foodBrand: brand,
+        foodLine: line,
+        lifeStage,
+        foodVersion: version,
+      });
+      const portionGrams = parsePortionGrams(quantity) || nutritionPreview.daily || undefined;
+      const matchConfidence = nutritionPreview.meta.confidence === 'high'
+        ? 0.95
+        : nutritionPreview.meta.confidence === 'medium'
+          ? 0.7
+          : 0.45;
+      const previousNutrition = { ...(dogData.nutrition || {}) };
+      delete previousNutrition.fallbackReason;
       const nextNutrition = {
-        ...(dogData.nutrition || {}),
+        ...previousNutrition,
         foodType: foodTypeFromDiet(dogData.diet),
         foodBrand: brand,
         foodLine: line,
         foodPhase: lifeStage,
         foodVersion: version,
-        mealsPerDay: dogData.nutrition?.mealsPerDay || parseMealsPerDay(dogData.mealsPerDay),
+        mealsPerDay,
         ...(portionGrams ? { portionGrams } : {}),
-        matchConfidence: brand && line ? 0.95 : 0.45,
+        ...(nutritionPreview.fallsback
+          ? { fallbackReason: 'Fórmula específica não cadastrada; estimativa aproximada aplicada.' }
+          : {}),
+        matchConfidence,
       };
 
       await DogRepository.saveDogProfile(user.uid, {
@@ -261,7 +279,7 @@ export function Nutricao() {
           {/* Tips / Info */}
           <h3 className="font-medium text-[#506352] text-sm tracking-widest uppercase mb-4 px-2">Orientações</h3>
           
-          <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col mb-4">
+          <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] overflow-hidden flex flex-col mb-4">
             <div className="p-4 px-5 flex gap-4">
               <div className="w-8 h-8 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
                 <Droplets className="w-4 h-4" />

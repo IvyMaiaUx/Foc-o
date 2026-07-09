@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Syringe, Calendar, CheckCircle2, X, ChevronDown } from 'lucide-react';
@@ -9,6 +9,7 @@ import { DogRepository } from '@/src/repositories/DogRepository';
 import { BottomSheetSelect } from '@/src/components/ui/BottomSheetSelect';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { PremiumGate } from '@/src/components/ui/PremiumGate';
+import { parseLocalDateKey } from '@/src/lib/dateKeys';
 
 export function Vacinas() {
   const navigate = useNavigate();
@@ -76,8 +77,9 @@ export function Vacinas() {
 
   // Upcoming vaccines (next 6 months)
   const today = new Date();
-  const upcoming = vaccines.filter(v => v.nextDose && new Date(v.nextDose) >= today).sort((a,b) => new Date(a.nextDose!).getTime() - new Date(b.nextDose!).getTime());
-  const history = vaccines.filter(v => !upcoming.some(u => u.id === v.id)).sort((a, b) => new Date(b.dateApplied).getTime() - new Date(a.dateApplied).getTime());
+  today.setHours(0, 0, 0, 0); // comparar por DIA local (dose de hoje conta como próxima)
+  const upcoming = vaccines.filter(v => v.nextDose && parseLocalDateKey(v.nextDose) >= today).sort((a,b) => parseLocalDateKey(a.nextDose!).getTime() - parseLocalDateKey(b.nextDose!).getTime());
+  const history = vaccines.filter(v => !upcoming.some(u => u.id === v.id)).sort((a, b) => parseLocalDateKey(b.dateApplied).getTime() - parseLocalDateKey(a.dateApplied).getTime());
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col relative">
@@ -109,7 +111,7 @@ export function Vacinas() {
             transition={{ duration: 0.5 }}
           >
             {/* Status Card */}
-            <div className={`rounded-[2rem] p-6 text-white shadow-lg mb-8 relative overflow-hidden ${upcoming.length > 0 && new Date(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000 ? 'bg-orange-500 shadow-orange-500/20' : 'bg-[#055A43] shadow-[0_20px_40px_-15px_rgb(5,90,67,0.5)]'}`}>
+            <div className={`rounded-[2rem] p-6 text-white shadow-lg mb-8 relative overflow-hidden ${upcoming.length > 0 && parseLocalDateKey(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000 ? 'bg-orange-500 shadow-orange-500/20' : 'bg-[#055A43] shadow-[0_20px_40px_-15px_rgb(5,90,67,0.5)]'}`}>
               <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
               
               <div className="flex items-start gap-4 relative z-10">
@@ -118,10 +120,10 @@ export function Vacinas() {
                 </div>
                 <div className="pt-1">
                   <h2 className="font-serif text-[22px] tracking-tight leading-tight mb-1">
-                    {upcoming.length > 0 && new Date(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000 ? 'Atenção às Doses' : 'Proteção em dia'}
+                    {upcoming.length > 0 && parseLocalDateKey(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000 ? 'Atenção às Doses' : 'Proteção em dia'}
                   </h2>
                   <p className="text-white/80 font-light text-sm max-w-[200px] leading-relaxed">
-                    {upcoming.length > 0 && new Date(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000 ? 'Há vacinas que vencem este mês.' : 'Não há doses críticas pendentes.'}
+                    {upcoming.length > 0 && parseLocalDateKey(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000 ? 'Há vacinas que vencem este mês.' : 'Não há doses críticas pendentes.'}
                   </p>
                 </div>
               </div>
@@ -131,9 +133,9 @@ export function Vacinas() {
               <>
                 <h3 className="font-medium text-[#055A43] text-sm tracking-widest uppercase mb-4 px-2">Próximas Doses</h3>
                 {upcoming.map(item => {
-                  const monthsDiff = Math.max(0, Math.round((new Date(item.nextDose!).getTime() - today.getTime()) / (1000*60*60*24*30)));
+                  const monthsDiff = Math.max(0, Math.round((parseLocalDateKey(item.nextDose!).getTime() - today.getTime()) / (1000*60*60*24*30)));
                   return (
-                    <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] mb-4 flex gap-4 items-center">
+                    <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] mb-4 flex gap-4 items-center">
                       <div className="w-12 h-12 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0">
                          <Calendar className="w-5 h-5 text-orange-400" />
                       </div>
@@ -142,7 +144,7 @@ export function Vacinas() {
                           <p className="font-medium text-[#506352] text-[15px]">{item.name}</p>
                         </div>
                         <div className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-600 px-2.5 py-1 rounded-md text-[10px] font-medium tracking-wide uppercase mt-1">
-                          Em {monthsDiff} meses ({new Date(item.nextDose!).toLocaleDateString()})
+                          Em {monthsDiff} meses ({parseLocalDateKey(item.nextDose!).toLocaleDateString()})
                         </div>
                       </div>
                     </div>
@@ -157,7 +159,7 @@ export function Vacinas() {
                {history.length === 0 ? (
                  <p className="text-[#5C615D] text-sm px-2">Nenhum registro encontrado.</p>
                ) : history.map(item => (
-                 <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex flex-col gap-3 opacity-90">
+                 <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col gap-3 opacity-90">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-[#055A43]/5 flex items-center justify-center">
@@ -184,7 +186,7 @@ export function Vacinas() {
       </main>
       
       {/* Footer CTA */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA] to-transparent pb-safe z-10">
+      <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA] to-transparent z-10" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
         <button
           onClick={() => setShowAddForm(true)}
           className="w-full bg-white text-[#055A43] border border-[#055A43]/20 h-14 rounded-2xl font-medium text-base shadow-[0_8px_30px_rgb(0,0,0,0.04)] active:scale-[0.98] transition-transform"
