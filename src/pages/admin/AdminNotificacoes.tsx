@@ -177,6 +177,12 @@ export function AdminNotificacoes() {
               <p className="text-sm text-[#506352] mt-1">Disparo e segmentação para usuários do Focão</p>
             </div>
           </div>
+          <button
+            onClick={() => navigate('/admin/checkins')}
+            className="text-sm font-medium text-[#055A43] bg-[#055A43]/5 px-4 py-2 rounded-full hover:bg-[#055A43]/10 transition-colors shrink-0"
+          >
+            Observações dos check-ins
+          </button>
         </header>
 
         <div className="flex flex-col md:flex-row gap-8">

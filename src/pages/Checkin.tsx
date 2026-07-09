@@ -19,6 +19,7 @@ export function Checkin() {
   const [saveError, setSaveError] = useState(false);
   const [dogName, setDogName] = useState('seu cão');
   const [dogGender, setDogGender] = useState('male');
+  const [isEditing, setIsEditing] = useState(false);
   
   const [data, setData] = useState<CheckinData>({
     energia: '',
@@ -32,17 +33,39 @@ export function Checkin() {
   });
 
   useEffect(() => {
-    const loadDog = async () => {
+    const load = async () => {
       const user = auth.currentUser;
-      if (user) {
-        const dog = await DogRepository.getDogProfile(user.uid);
-        if (dog) {
-          if (dog.name) setDogName(dog.name);
-          setDogGender(dog.gender || 'male');
+      if (!user) return;
+      const dog = await DogRepository.getDogProfile(user.uid);
+      if (dog) {
+        if (dog.name) setDogName(dog.name);
+        setDogGender(dog.gender || 'male');
+      }
+      // Se já existe check-in de hoje, pré-preenche o formulário (edição de verdade).
+      try {
+        const existing = await CheckinRepository.getCheckin(user.uid, toLocalDateKey());
+        if (existing) {
+          setIsEditing(true);
+          setData({
+            energia: existing.energia || '',
+            alimentacao: existing.alimentacao || '',
+            comportamento: existing.comportamento || '',
+            context: {
+              walked: existing.context?.walked,
+              walkDurationMinutes: existing.context?.walkDurationMinutes,
+              environment: existing.context?.environment,
+              incidents: existing.context?.incidents ?? [],
+              triggers: existing.context?.triggers ?? [],
+              intensity: existing.context?.intensity,
+              notes: existing.context?.notes ?? '',
+            },
+          });
         }
+      } catch {
+        /* sem check-in de hoje ou erro → começa em branco */
       }
     };
-    loadDog();
+    load();
   }, []);
 
   const updateData = (field: 'energia' | 'alimentacao' | 'comportamento', value: string) => {

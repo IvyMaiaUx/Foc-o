@@ -58,9 +58,18 @@ export class CheckinInsightsMotor {
       const matchCheckin = checkins.find(c => c.date === dateStr);
 
       if (matchCheckin) {
-        if (matchCheckin.comportamento === 'Dia excelente, sem problemas' || matchCheckin.comportamento === 'Passeio tranquilo') {
+        const incidents = matchCheckin.context?.incidents ?? [];
+
+        if (
+          incidents.length === 0 &&
+          (matchCheckin.comportamento === 'Dia excelente, sem problemas' || matchCheckin.comportamento === 'Passeio tranquilo')
+        ) {
           betterCount++;
-        } else if (matchCheckin.comportamento === 'Reagiu a outros cães' || matchCheckin.comportamento === 'Ansiedade ao ficar só') {
+        } else if (
+          incidents.length > 0 ||
+          matchCheckin.comportamento === 'Reagiu a outros cães' ||
+          matchCheckin.comportamento === 'Ansiedade ao ficar só'
+        ) {
           worseCount++;
         } else {
           sameCount++;

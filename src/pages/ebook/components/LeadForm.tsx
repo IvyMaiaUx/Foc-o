@@ -19,6 +19,11 @@ export function LeadForm({ formRef }: LeadFormProps) {
     setSubmitting(true);
     try {
       await LeadRepository.createMarketingLead(form);
+      const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
+      fbq?.("track", "Lead", {
+        content_name: "ebook_comportamento_e_rotina",
+        content_category: "ebook_free",
+      });
       setSubmitted(true);
     } catch (err) {
       console.error(err);

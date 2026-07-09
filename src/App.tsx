@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AppLaunchSplash } from './components/branding/AppLaunchSplash';
 import { Welcome } from './pages/auth/Welcome';
@@ -27,9 +27,16 @@ import { MainLayout } from './components/layout/MainLayout';
 import { Treino } from './pages/Treino';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
+  const { user, userProfile, isLoading } = useAuth();
+  const location = useLocation();
   if (isLoading) return <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center"><div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" /></div>;
   if (!user) return <Navigate to="/welcome" replace />;
+  // Onboarding incompleto: força o fluxo antes de liberar o resto do app (exceto as
+  // próprias rotas de /onboarding, senão vira loop). Só redireciona quando o perfil já
+  // carregou e marca explicitamente onboardingComplete === false.
+  if (userProfile?.onboardingComplete === false && !location.pathname.startsWith('/onboarding')) {
+    return <Navigate to="/onboarding/intro" replace />;
+  }
   return <>{children}</>;
 }
 

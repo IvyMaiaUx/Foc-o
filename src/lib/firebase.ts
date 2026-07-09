@@ -9,6 +9,9 @@ export const auth = getAuth(app);
 export const db = initializeFirestore(
   app,
   {
+    // Ignora campos `undefined` em vez de lançar erro (footgun comum do Firestore):
+    // evita que um campo ausente trave gravações como a do onboarding.
+    ignoreUndefinedProperties: true,
     localCache: persistentLocalCache({
       tabManager: persistentMultipleTabManager(),
     }),

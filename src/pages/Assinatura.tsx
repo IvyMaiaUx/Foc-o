@@ -133,6 +133,7 @@ export function Assinatura() {
 
   const isPremium = hasPremiumAccess(userProfile);
   const activeSince = userProfile?.subscription?.createdAt || userProfile?.createdAt;
+  const stripeCustomerId = userProfile?.subscription?.stripeCustomerId;
 
   const benefits = [
     'Plano de treino completo e personalizado',
@@ -188,7 +189,7 @@ export function Assinatura() {
                   : 'Quando seu Premium for liberado, os benefícios aparecem automaticamente nesta conta.'}
               </p>
               
-              {isPremium && userProfile?.subscription?.stripeCustomerId && (
+              {stripeCustomerId && (
                 <div className="mt-4">
                   <button
                     onClick={handleManageSubscription}
@@ -200,7 +201,7 @@ export function Assinatura() {
                     ) : (
                       <CreditCard className="w-3.5 h-3.5" />
                     )}
-                    Gerenciar Assinatura
+                    {isPremium ? 'Gerenciar assinatura' : 'Atualizar pagamento'}
                   </button>
                   {portalError && (
                     <p className="text-red-500 text-[11px] mt-1.5 font-medium">{portalError}</p>

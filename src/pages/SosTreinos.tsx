@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, ChevronLeft, CheckCircle2, Clock, Droplets, Hand, Home, ShieldCheck, Volume2, Wind } from 'lucide-react';
-import { auth } from '@/src/lib/firebase';
-import { TrainingRepository } from '@/src/repositories/TrainingRepository';
+import { AlertTriangle, ArrowUp, ChevronLeft, CheckCircle2, Clock, Droplets, Footprints, Hand, Home, Shield, ShieldCheck, Volume2, Wind } from 'lucide-react';
 
 const SOS_PROTOCOLS = [
   {
@@ -71,42 +69,52 @@ const SOS_PROTOCOLS = [
       'Anote horário e contexto para antecipar a próxima ida.',
     ],
   },
+  {
+    id: 'walking',
+    title: 'Puxando na guia',
+    trigger: 'passeio acelerado ou guia esticada',
+    icon: Footprints,
+    duration: '4 min',
+    firstMove: 'Pare antes de continuar.',
+    steps: [
+      'Fique parado até a guia afrouxar, sem puxar de volta.',
+      'Recompense quando o cão olhar para você ou voltar alguns passos.',
+      'Retome com poucos passos lentos e repita quando necessário.',
+    ],
+  },
+  {
+    id: 'jumping',
+    title: 'Pulando nas pessoas',
+    trigger: 'chegada, visita ou excesso de empolgação',
+    icon: ArrowUp,
+    duration: '4 min',
+    firstMove: 'Retire atenção por alguns segundos.',
+    steps: [
+      'Vire o corpo levemente e evite falar ou tocar enquanto houver pulos.',
+      'Recompense assim que as quatro patas voltarem ao chão.',
+      'Peça para a pessoa se aproximar novamente somente quando houver calma.',
+    ],
+  },
+  {
+    id: 'fear',
+    title: 'Medo ou insegurança',
+    trigger: 'recuo, tremor, tentativa de fuga ou corpo encolhido',
+    icon: Shield,
+    duration: '5 min',
+    firstMove: 'Aumente a distância do gatilho.',
+    steps: [
+      'Leve o cão para um ponto em que ele consiga observar sem entrar em pânico.',
+      'Evite forçar aproximações ou prender o cão perto do que causa medo.',
+      'Ofereça petiscos no chão e encerre a interação se ele não conseguir relaxar.',
+    ],
+  },
 ];
 
 export function SosTreinos() {
   const navigate = useNavigate();
   const [activeId, setActiveId] = useState(SOS_PROTOCOLS[0].id);
-  const [isOpeningTraining, setIsOpeningTraining] = useState(false);
   const active = SOS_PROTOCOLS.find((protocol) => protocol.id === activeId) || SOS_PROTOCOLS[0];
   const ActiveIcon = active.icon;
-
-  const openDailyTraining = async () => {
-    if (isOpeningTraining) return;
-
-    setIsOpeningTraining(true);
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        navigate('/login');
-        return;
-      }
-
-      const plan = await TrainingRepository.getCurrentPlan(user.uid);
-      const currentTask = plan?.tasks?.[plan.currentTaskIndex || 0] || plan?.tasks?.[0];
-
-      if (currentTask?.id) {
-        navigate(`/treino/${currentTask.id}`);
-        return;
-      }
-
-      navigate('/plano');
-    } catch (error) {
-      console.error('Erro ao abrir treino do dia', error);
-      navigate('/treino');
-    } finally {
-      setIsOpeningTraining(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans pb-10">
@@ -205,13 +213,11 @@ export function SosTreinos() {
             </div>
           </div>
 
-          <button
-            onClick={openDailyTraining}
-            disabled={isOpeningTraining}
-            className="w-full h-14 rounded-2xl bg-[#055A43] text-white text-sm font-bold tracking-wide shadow-[0_8px_22px_rgba(5,90,67,0.14)] active:scale-[0.98] transition-transform disabled:opacity-70"
-          >
-            {isOpeningTraining ? 'Abrindo treino...' : 'Ir para treino do dia'}
-          </button>
+          <div className="rounded-2xl bg-[#055A43]/[0.04] border border-[#055A43]/10 px-4 py-3">
+            <p className="text-[12px] text-[#506352] leading-relaxed">
+              Siga apenas estes passos agora. Quando a situação estiver mais calma, retome o plano normalmente pela Home.
+            </p>
+          </div>
         </motion.section>
 
         <section className="rounded-[1.5rem] border border-[#055A43]/10 bg-white p-5 flex gap-4 shadow-[0_8px_20px_rgb(0,0,0,0.02)]">

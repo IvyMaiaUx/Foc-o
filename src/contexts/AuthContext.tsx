@@ -4,6 +4,7 @@ import { auth } from '@/src/lib/firebase';
 import { UserProfile, hasPremiumAccess } from '@/src/types';
 import { UserRepository } from '@/src/repositories/UserRepository';
 import { PremiumClaimRepository } from '@/src/repositories/PremiumClaimRepository';
+import { UserProfileService } from '@/src/services/UserProfileService';
 
 interface AuthContextType {
   user: User | null;
@@ -33,10 +34,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (user) {
           let profile = await UserRepository.getUserProfile(user.uid);
           if (!profile && user.email) {
-            await UserRepository.createUserProfile(
-              user.uid,
-              user.email.trim().toLowerCase(),
-              user.displayName || user.email.split('@')[0] || 'Tutor'
+            await UserProfileService.ensureProfile(
+              user,
+              user.displayName || user.email.split('@')[0] || 'Tutor',
+              localStorage.getItem('focao_referred_by') || undefined
             );
             profile = await UserRepository.getUserProfile(user.uid);
           }
@@ -47,6 +48,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               profile = await UserRepository.getUserProfile(user.uid);
             }
           }
+          UserRepository.touchPresence(user.uid).catch((error) => {
+            console.warn('[AuthContext] failed to touch presence', error);
+          });
           setUserProfile(profile);
         } else {
           setUserProfile(null);
@@ -62,15 +66,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    let lastTouch = 0;
+    const touchPresence = () => {
+      if (document.visibilityState === 'hidden') return;
+
+      const now = Date.now();
+      if (now - lastTouch < 30_000) return;
+      lastTouch = now;
+
+      UserRepository.touchPresence(user.uid).catch((error) => {
+        console.warn('[AuthContext] failed to refresh presence', error);
+      });
+    };
+
+    touchPresence();
+    const intervalId = window.setInterval(touchPresence, 60_000);
+    document.addEventListener('visibilitychange', touchPresence);
+    window.addEventListener('focus', touchPresence);
+    window.addEventListener('online', touchPresence);
+
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', touchPresence);
+      window.removeEventListener('focus', touchPresence);
+      window.removeEventListener('online', touchPresence);
+    };
+  }, [user?.uid]);
+
   const refreshProfile = async () => {
     if (auth.currentUser) {
       try {
         let profile = await UserRepository.getUserProfile(auth.currentUser.uid);
         if (!profile && auth.currentUser.email) {
-          await UserRepository.createUserProfile(
-            auth.currentUser.uid,
-            auth.currentUser.email.trim().toLowerCase(),
-            auth.currentUser.displayName || auth.currentUser.email.split('@')[0] || 'Tutor'
+          await UserProfileService.ensureProfile(
+            auth.currentUser,
+            auth.currentUser.displayName || auth.currentUser.email.split('@')[0] || 'Tutor',
+            localStorage.getItem('focao_referred_by') || undefined
           );
           profile = await UserRepository.getUserProfile(auth.currentUser.uid);
         }

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { ArrowLeft, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
@@ -6,7 +7,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@/src/lib/firebase';
 
 interface AuthLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
   showBackButton?: boolean;
   showLogoutButton?: boolean;
   title?: string;

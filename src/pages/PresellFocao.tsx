@@ -146,6 +146,38 @@ export function PresellFocao() {
         })}
       </section>
 
+      <section className="mx-auto w-full max-w-5xl px-6 pb-14 pt-2">
+        <div className="mb-8 text-center">
+          <p className="text-[11px] font-black uppercase tracking-[0.28em] text-[#055A43]">Veja por dentro</p>
+          <h2 className="mt-3 font-serif text-[30px] font-semibold leading-tight text-[#102019] sm:text-[36px]">
+            Simples de usar, fácil de evoluir.
+          </h2>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-3">
+          {[
+            { src: '/prints/01-home.png', caption: 'Seu próximo passo, sempre claro' },
+            { src: '/prints/02-plano.png', caption: 'Treinos guiados, em sequência' },
+            { src: '/prints/03-evolucao.png', caption: 'Acompanhe a evolução acontecer' },
+          ].map((shot) => (
+            <figure key={shot.src} className="flex flex-col items-center">
+              <div className="relative aspect-[9/19.5] w-full max-w-[240px] overflow-hidden rounded-[34px] border-[6px] border-[#102019] bg-[#062F25] shadow-[0_20px_45px_rgba(6,47,37,0.18)]">
+                <div className="absolute left-1/2 top-2 z-10 h-1.5 w-16 -translate-x-1/2 rounded-full bg-black/30" />
+                <img
+                  src={shot.src}
+                  alt={shot.caption}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0'; }}
+                />
+              </div>
+              <figcaption className="mt-4 text-center text-[14px] font-semibold leading-6 text-[#59645E]">
+                {shot.caption}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
       <section id="diagnostico" className="mx-auto w-full max-w-3xl px-6 pb-16 pt-4">
         <div className="mb-5 overflow-hidden rounded-full bg-[#E2DCCF]">
           <div className="h-2 rounded-full bg-[#055A43] transition-all" style={{ width: `${Math.max(progress, 8)}%` }} />

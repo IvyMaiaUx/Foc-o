@@ -29,7 +29,7 @@ export function Navbar({ onCtaClick }: NavbarProps) {
       >
         <a
           href="#top"
-          aria-label="Focao"
+          aria-label="Focão"
           style={{
             display: "flex",
             alignItems: "center",

@@ -9,17 +9,27 @@ import { CheckinRepository } from '@/src/repositories/CheckinRepository';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { UserRepository } from '@/src/repositories/UserRepository';
 import { WeeklyReportMotor, WeeklyActivity } from '@/src/motors/WeeklyReportMotor';
+import { evaluateWeeklyReportGate, WeeklyReportGateResult } from '@/src/lib/weeklyReportGate';
+import { LockedReportState } from '@/src/components/reports/LockedReportState';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { PremiumGate } from '@/src/components/ui/PremiumGate';
 import { CheckinInsightsMotor, CheckinInsights } from '@/src/motors/CheckinInsightsMotor';
 import { CustomEventRepository } from '@/src/repositories/CustomEventRepository';
 import { EvolutionInsightsMotor, EvolutionInsights } from '@/src/motors/EvolutionInsightsMotor';
 import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
+import { WeeklyReportOverride, WeeklyReportOverrideRepository } from '@/src/repositories/WeeklyReportOverrideRepository';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function checkinTimestamp(date?: string): number {
+  return date ? new Date(`${date}T00:00:00`).getTime() : 0;
+}
 
 export function RelatorioSemanal() {
   const navigate = useNavigate();
   const { isPremium } = useAuth();
   const [dogName, setDogName] = useState('Seu cão');
+  const [gate, setGate] = useState<WeeklyReportGateResult | null>(null);
   const [dogGender, setDogGender] = useState('male');
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState<WeeklyActivity | null>(null);
@@ -27,6 +37,7 @@ export function RelatorioSemanal() {
   const [evolutionInsights, setEvolutionInsights] = useState<EvolutionInsights | null>(null);
   const [showWhatsappModal, setShowWhatsappModal] = useState(false);
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [adminReport, setAdminReport] = useState<WeeklyReportOverride | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -39,6 +50,7 @@ export function RelatorioSemanal() {
         const user = auth.currentUser;
         if (user) {
           const stats = await EvolutionRepository.getSummary(user.uid);
+          setAdminReport(await WeeklyReportOverrideRepository.get(user.uid));
           
           const dog = await DogRepository.getDogProfile(user.uid);
           if (dog) {
@@ -46,26 +58,36 @@ export function RelatorioSemanal() {
             setDogGender(dog.gender || 'male');
           }
 
-          // Get last 7 days data
-          const checkins = await CheckinRepository.getRecentCheckins(user.uid, 7);
+          // Keep two real calendar windows so the report can compare weeks.
+          const checkins = await CheckinRepository.getRecentCheckins(user.uid, 14);
           
           const logs = await TrainingRepository.getTrainingLogs(user.uid);
-          const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+          const now = Date.now();
+          const sevenDaysAgo = now - 7 * DAY_MS;
+          const fourteenDaysAgo = now - 14 * DAY_MS;
+          const recentCheckins = checkins.filter((checkin) => checkinTimestamp(checkin.date) >= sevenDaysAgo);
+          const previousCheckins = checkins.filter((checkin) => {
+            const timestamp = checkinTimestamp(checkin.date);
+            return timestamp >= fourteenDaysAgo && timestamp < sevenDaysAgo;
+          });
           const recentLogs = logs.filter(log => log.completedAt && log.completedAt >= sevenDaysAgo);
+          const previousLogs = logs.filter(log => log.completedAt && log.completedAt >= fourteenDaysAgo && log.completedAt < sevenDaysAgo);
 
-          const generatedReport = WeeklyReportMotor.generateReport(stats, checkins, recentLogs);
+          setGate(evaluateWeeklyReportGate(recentCheckins, recentLogs));
+
+          const generatedReport = WeeklyReportMotor.generateReport(stats, recentCheckins, recentLogs, previousCheckins, previousLogs);
           setReport(generatedReport);
           AnalyticsRepository.logEvent('report_viewed', {
             maturityLevel: generatedReport?.maturityLevel || 'empty',
             totalTrainings: generatedReport?.totalTrainings || 0,
             totalCheckins: generatedReport?.totalCheckins || 0
           });
-          setEvolutionInsights(EvolutionInsightsMotor.generateInsights(stats, checkins, recentLogs));
+          setEvolutionInsights(EvolutionInsightsMotor.generateInsights(stats, recentCheckins, recentLogs));
 
           // Fetch custom events and completions history for routine insights
           const [events, ...compsResults] = await Promise.all([
             CustomEventRepository.getEvents(user.uid),
-            ...checkins.map(async (c) => {
+            ...recentCheckins.map(async (c) => {
               if (!c.date) return { date: '', data: {} };
               const comps = await CustomEventRepository.getCompletions(user.uid, c.date);
               return { date: c.date, data: comps };
@@ -79,7 +101,7 @@ export function RelatorioSemanal() {
             }
           });
 
-          const insights = CheckinInsightsMotor.analyze(checkins, logs, events, completionsHistory);
+          const insights = CheckinInsightsMotor.analyze(recentCheckins, logs, events, completionsHistory);
           setCheckinInsights(insights);
 
           if (generatedReport && generatedReport.maturityLevel !== 'empty') {
@@ -128,7 +150,7 @@ export function RelatorioSemanal() {
           </div>
         </div>
 
-        {report && report.maturityLevel !== 'empty' && (
+        {report && gate?.unlocked && (
           <button
             onClick={() => navigate('/relatorio-impressao')}
             className="flex items-center gap-1.5 rounded-full bg-[#055A43] text-white px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider shadow-sm active:scale-[0.98] transition-all hover:bg-[#044c38]"
@@ -146,6 +168,15 @@ export function RelatorioSemanal() {
         <div className="flex-1 flex items-center justify-center">
            <p className="text-[#5C615D]">Erro ao carregar relatório.</p>
         </div>
+      ) : (!gate?.unlocked) ? (
+        <main className="flex-1 px-6 py-6 overflow-y-auto pb-32 flex items-center justify-center">
+          <LockedReportState
+            result={gate}
+            dogName={dogName}
+            onCheckin={() => navigate('/checkin')}
+            onTrain={() => navigate('/treino')}
+          />
+        </main>
       ) : (
         <main className="flex-1 px-6 py-6 overflow-y-auto pb-32">
           <motion.div
@@ -244,6 +275,75 @@ export function RelatorioSemanal() {
                         {evolutionInsights.smartReading.recommendation}
                       </p>
                     </div>
+                  </div>
+                )}
+
+                {adminReport && (adminReport.title || adminReport.summary || adminReport.recommendation) && (
+                  <div className="bg-[#F3EDE3]/45 rounded-[2rem] p-6 border border-[#D8C3A5]/70 shadow-[0_8px_24px_rgba(0,0,0,0.025)] mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                      <FileText className="w-4 h-4 text-[#8B7357]" />
+                      <p className="text-[11px] font-bold text-[#8B7357] uppercase tracking-[0.15em]">
+                        Acompanhamento da equipe Focão
+                      </p>
+                    </div>
+                    {adminReport.title && (
+                      <p className="font-serif text-[23px] text-[#055A43] leading-snug mb-3">{adminReport.title}</p>
+                    )}
+                    {adminReport.summary && (
+                      <p className="text-[#5C615D] font-light text-[14px] leading-relaxed whitespace-pre-line">{adminReport.summary}</p>
+                    )}
+                    {adminReport.recommendation && (
+                      <div className="mt-4 rounded-2xl bg-white/70 border border-[#D8C3A5]/50 px-4 py-3">
+                        <p className="text-[12px] font-semibold text-[#506352] leading-relaxed whitespace-pre-line">
+                          {adminReport.recommendation}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="bg-white rounded-[2rem] p-6 border border-[#055A43]/10 shadow-[0_8px_30px_rgb(0,0,0,0.03)] mb-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <TrendingUp className="w-4 h-4 text-[#055A43]" />
+                    <p className="text-[11px] font-bold text-[#055A43] uppercase tracking-[0.15em]">
+                      Comparação entre semanas
+                    </p>
+                  </div>
+                  <p className="font-serif text-[22px] text-gray-900 leading-snug mb-2">
+                    {report.comparison.headline}
+                  </p>
+                  <p className="text-[#5C615D] font-light text-[14px] leading-relaxed">
+                    {report.comparison.detail}
+                  </p>
+                  {report.comparison.hasPreviousWeekData && (
+                    <div className="grid grid-cols-3 gap-2 mt-5">
+                      <div className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-3 py-3">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-[#506352]/70">Dias ativos</p>
+                        <p className="mt-1 text-[15px] font-bold text-[#055A43]">{report.comparison.currentActiveDays} <span className="text-[#8A918D] font-medium">vs. {report.comparison.previousActiveDays}</span></p>
+                      </div>
+                      <div className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-3 py-3">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-[#506352]/70">Treinos</p>
+                        <p className="mt-1 text-[15px] font-bold text-[#055A43]">{report.comparison.currentTrainings} <span className="text-[#8A918D] font-medium">vs. {report.comparison.previousTrainings}</span></p>
+                      </div>
+                      <div className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-3 py-3">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-[#506352]/70">Check-ins</p>
+                        <p className="mt-1 text-[15px] font-bold text-[#055A43]">{report.comparison.currentCheckins} <span className="text-[#8A918D] font-medium">vs. {report.comparison.previousCheckins}</span></p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {report.recurringPattern && (
+                  <div className="bg-[#F3EDE3]/45 rounded-[2rem] p-6 border border-[#D8C3A5]/70 shadow-[0_8px_24px_rgba(0,0,0,0.025)] mb-8">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="w-4 h-4 text-[#8B7357]" />
+                      <p className="text-[11px] font-bold text-[#8B7357] uppercase tracking-[0.15em]">
+                        Padrão recorrente
+                      </p>
+                    </div>
+                    <p className="text-[#5C615D] font-light text-[14px] leading-relaxed">
+                      {report.recurringPattern}
+                    </p>
                   </div>
                 )}
 
@@ -381,54 +481,6 @@ export function RelatorioSemanal() {
         </main>
       )}
 
-      {/* Handlers and WhatsApp modal */}
-      {showWhatsappModal && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm p-4">
-          <motion.div 
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="w-full max-w-md bg-white rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 pb-8 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] border border-[#055A43]/10"
-          >
-            <div className="flex flex-col items-center text-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-50 border border-[#25D366]/20 flex items-center justify-center text-3xl shadow-sm">
-                📊
-              </div>
-              <div>
-                <h3 className="font-serif text-2xl text-[#055A43] tracking-tight">
-                  Gostou do seu relatório?
-                </h3>
-                <p className="text-[14px] text-[#5C615D] mt-2 leading-relaxed font-light">
-                  Receba automaticamente as análises de evolução, dicas e lembretes semanais direto no seu WhatsApp!
-                </p>
-              </div>
-              
-              <div className="w-full flex flex-col gap-2.5 mt-4">
-                <button
-                  onClick={() => {
-                    localStorage.setItem('focao_whatsapp_prompt_dismissed', 'true');
-                    setShowWhatsappModal(false);
-                    navigate('/notificacoes');
-                  }}
-                  className="w-full bg-[#055A43] hover:bg-[#075E54] text-white py-3.5 px-6 rounded-2xl font-semibold text-sm transition-all shadow-[0_4px_12px_rgba(5,90,67,0.15)] active:scale-[0.98] cursor-pointer"
-                >
-                  Conectar WhatsApp
-                </button>
-                <button
-                  onClick={() => {
-                    localStorage.setItem('focao_whatsapp_prompt_dismissed', 'true');
-                    setShowWhatsappModal(false);
-                  }}
-                  className="w-full bg-transparent hover:bg-gray-50 text-[#5C615D] py-3 px-6 rounded-2xl text-xs font-medium transition-all active:scale-[0.98] cursor-pointer"
-                >
-                  Agora não
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,88 +1,153 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Printer, Activity, Dumbbell, Shield, Sparkles, FileText, CheckCircle2, AlertTriangle, Calendar } from 'lucide-react';
+import {
+  Activity,
+  AlertTriangle,
+  Calendar,
+  CheckCircle2,
+  ChevronLeft,
+  Dumbbell,
+  FileText,
+  Printer,
+  Sparkles,
+  Target,
+} from 'lucide-react';
 import { auth } from '@/src/lib/firebase';
 import { EvolutionRepository } from '@/src/repositories/EvolutionRepository';
 import { TrainingRepository } from '@/src/repositories/TrainingRepository';
 import { CheckinRepository } from '@/src/repositories/CheckinRepository';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { WeeklyReportMotor, WeeklyActivity } from '@/src/motors/WeeklyReportMotor';
-import { useAuth } from '@/src/contexts/AuthContext';
 import { CheckinInsightsMotor, CheckinInsights } from '@/src/motors/CheckinInsightsMotor';
 import { EvolutionInsightsMotor, EvolutionInsights } from '@/src/motors/EvolutionInsightsMotor';
 import { CustomEventRepository } from '@/src/repositories/CustomEventRepository';
+import { WeeklyReportOverride, WeeklyReportOverrideRepository } from '@/src/repositories/WeeklyReportOverrideRepository';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function formatPeriod() {
+  const end = new Date();
+  const start = new Date(end.getTime() - 6 * DAY_MS);
+  return `${start.toLocaleDateString('pt-BR')} a ${end.toLocaleDateString('pt-BR')}`;
+}
+
+function sessionDate(session: any) {
+  return new Date(session.completedAt || session.date || Date.now()).toLocaleDateString('pt-BR');
+}
+
+function checkinTimestamp(date?: string): number {
+  return date ? new Date(`${date}T00:00:00`).getTime() : 0;
+}
+
+function sessionFeedback(feedback?: string) {
+  if (feedback === 'easy') return 'Fluiu bem';
+  if (feedback === 'medium') return 'Em adaptação';
+  if (feedback === 'hard') return 'Pede reforço';
+  return 'Concluído';
+}
+
+function foodTypeLabel(foodType?: string) {
+  if (foodType === 'dry') return 'Ração seca';
+  if (foodType === 'wet') return 'Alimento úmido';
+  if (foodType === 'natural') return 'Alimentação natural';
+  if (foodType === 'mixed') return 'Alimentação mista';
+  return 'Não cadastrada';
+}
+
+function trainingLevelLabel(level?: string) {
+  const labels: Record<string, string> = {
+    beginner: 'Iniciante',
+    intermediate: 'Intermediário',
+    advanced: 'Avançado',
+  };
+  return level ? labels[level] || level : 'Não informado';
+}
+
+function goalLabel(goal: string) {
+  const labels: Record<string, string> = {
+    obedience: 'Melhorar obediência básica',
+    bond: 'Fortalecer o vínculo',
+    behavior: 'Melhorar comportamento',
+    focus: 'Melhorar foco e atenção',
+    confidence: 'Desenvolver confiança',
+    training: 'Avançar nos treinos',
+  };
+  return labels[goal] || goal;
+}
 
 export function RelatorioImpressao() {
   const navigate = useNavigate();
-  const { isPremium } = useAuth();
   const [dog, setDog] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState<WeeklyActivity | null>(null);
   const [checkinInsights, setCheckinInsights] = useState<CheckinInsights | null>(null);
   const [evolutionInsights, setEvolutionInsights] = useState<EvolutionInsights | null>(null);
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
-  const [recentCheckins, setRecentCheckins] = useState<any[]>([]);
+  const [adminReport, setAdminReport] = useState<WeeklyReportOverride | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const user = auth.currentUser;
-        if (user) {
-          const stats = await EvolutionRepository.getSummary(user.uid);
-          const dogProfile = await DogRepository.getDogProfile(user.uid);
-          setDog(dogProfile);
+        if (!user) return;
 
-          // Get last 7 days data for weekly calculations
-          const checkins = await CheckinRepository.getRecentCheckins(user.uid, 14);
-          setRecentCheckins(checkins);
-          
-          const logs = await TrainingRepository.getTrainingLogs(user.uid);
-          setRecentSessions(logs.slice(0, 10));
+        const [stats, dogProfile, checkins, logs, override] = await Promise.all([
+          EvolutionRepository.getSummary(user.uid),
+          DogRepository.getDogProfile(user.uid),
+          CheckinRepository.getRecentCheckins(user.uid, 14),
+          TrainingRepository.getTrainingLogs(user.uid),
+          WeeklyReportOverrideRepository.get(user.uid),
+        ]);
 
-          const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-          const recentLogs = logs.filter(log => log.completedAt && log.completedAt >= sevenDaysAgo);
+        setDog(dogProfile);
+        setAdminReport(override);
+        setRecentSessions(logs.slice(0, 10));
 
-          const generatedReport = WeeklyReportMotor.generateReport(stats, checkins.slice(0, 7), recentLogs);
-          setReport(generatedReport);
-          setEvolutionInsights(EvolutionInsightsMotor.generateInsights(stats, checkins.slice(0, 7), recentLogs));
+        const now = Date.now();
+        const sevenDaysAgo = now - 7 * DAY_MS;
+        const fourteenDaysAgo = now - 14 * DAY_MS;
+        const recentLogs = logs.filter((log) => log.completedAt && log.completedAt >= sevenDaysAgo);
+        const previousLogs = logs.filter((log) => log.completedAt && log.completedAt >= fourteenDaysAgo && log.completedAt < sevenDaysAgo);
+        const weeklyCheckins = checkins.filter((checkin) => checkinTimestamp(checkin.date) >= sevenDaysAgo);
+        const previousCheckins = checkins.filter((checkin) => {
+          const timestamp = checkinTimestamp(checkin.date);
+          return timestamp >= fourteenDaysAgo && timestamp < sevenDaysAgo;
+        });
 
-          // Fetch custom events for routine patterns
-          const [events, ...compsResults] = await Promise.all([
-            CustomEventRepository.getEvents(user.uid),
-            ...checkins.slice(0, 7).map(async (c) => {
-              if (!c.date) return { date: '', data: {} };
-              const comps = await CustomEventRepository.getCompletions(user.uid, c.date);
-              return { date: c.date, data: comps };
-            })
-          ]);
+        setReport(WeeklyReportMotor.generateReport(stats, weeklyCheckins, recentLogs, previousCheckins, previousLogs));
+        setEvolutionInsights(EvolutionInsightsMotor.generateInsights(stats, weeklyCheckins, recentLogs));
 
-          const completionsHistory: Record<string, Record<string, boolean>> = {};
-          compsResults.forEach(r => {
-            if (r.date) {
-              completionsHistory[r.date] = r.data;
-            }
-          });
+        const [events, ...completionResults] = await Promise.all([
+          CustomEventRepository.getEvents(user.uid),
+          ...weeklyCheckins.map(async (checkin) => {
+            if (!checkin.date) return { date: '', data: {} };
+            return {
+              date: checkin.date,
+              data: await CustomEventRepository.getCompletions(user.uid, checkin.date),
+            };
+          }),
+        ]);
 
-          const insights = CheckinInsightsMotor.analyze(checkins.slice(0, 7), logs, events, completionsHistory);
-          setCheckinInsights(insights);
-        }
-      } catch (err) {
-        console.error("Error loading print report data", err);
+        const completionsHistory: Record<string, Record<string, boolean>> = {};
+        completionResults.forEach(({ date, data }) => {
+          if (date) completionsHistory[date] = data;
+        });
+
+        setCheckinInsights(CheckinInsightsMotor.analyze(weeklyCheckins, logs, events, completionsHistory));
+      } catch (error) {
+        console.error('Error loading print report data', error);
       } finally {
         setLoading(false);
       }
     };
+
     loadData();
   }, []);
-
-  const handlePrint = () => {
-    window.print();
-  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#055A43]/20 border-t-[#055A43] rounded-full animate-spin" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#055A43]/20 border-t-[#055A43]" />
       </div>
     );
   }
@@ -90,297 +155,287 @@ export function RelatorioImpressao() {
   if (!dog || !report) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
-        <p className="text-gray-500 mb-4">Dados insuficientes para gerar o relatório.</p>
-        <button onClick={() => navigate(-1)} className="text-[#055A43] font-bold">Voltar</button>
+        <p className="mb-4 text-gray-500">Ainda não há dados suficientes para gerar o relatório.</p>
+        <button onClick={() => navigate(-1)} className="font-bold text-[#055A43]">Voltar</button>
       </div>
     );
   }
 
+  const hasEnoughData = report.totalCheckins >= 3 && report.activeDays >= 3;
+  const smartReading = evolutionInsights?.smartReading;
+  const hasEditorialNote = Boolean(adminReport && (adminReport.title || adminReport.summary || adminReport.recommendation));
+  const recommendation = adminReport?.recommendation || smartReading?.recommendation || report.nextWeekSuggestion;
+  const executiveTitle = hasEnoughData
+    ? smartReading?.headline || 'Uma semana de evolução construída com consistência.'
+    : 'A leitura da jornada ainda está em construção.';
+  const executiveBody = hasEnoughData
+    ? smartReading?.body || 'Os registros desta semana já permitem acompanhar a rotina e orientar os próximos exercícios com mais precisão.'
+    : `Ainda faltam registros para interpretar a evolução de ${dog.name} com segurança. Com check-ins em pelo menos três dias da semana, o Focão consegue transformar a rotina em recomendações mais precisas.`;
+  const objectives = [
+    report.totalCheckins < 3 ? 'Registrar check-ins em pelo menos três dias da semana.' : 'Manter a frequência de check-ins para preservar a qualidade da leitura.',
+    report.totalTrainings === 0 ? 'Concluir ao menos um treino guiado durante a semana.' : 'Repetir os exercícios atuais em sessões curtas e consistentes.',
+    recommendation || 'Observar pequenas mudanças na rotina e registrar o que funcionou melhor.',
+  ];
+  const personality = Array.isArray(dog.personality) && dog.personality.length > 0 ? dog.personality.join(', ') : 'Não informado';
+  const goals = Array.isArray(dog.goals) && dog.goals.length > 0 ? dog.goals.map(goalLabel).join(', ') : 'Acompanhar a evolução da rotina';
+  const routineParts = [
+    typeof dog.walkFrequency === 'number' ? `${dog.walkFrequency} passeio(s) por dia` : '',
+    dog.walkDurationMinutes ? `${dog.walkDurationMinutes} min por passeio` : '',
+    dog.housingType === 'apartment' ? 'Apartamento' : dog.housingType === 'house' ? 'Casa' : '',
+  ].filter(Boolean);
+  const nutrition = dog.nutrition;
+  const trackingScore = Math.min(100, Math.round(
+    (Math.min(report.activeDays, 7) / 7) * 45
+    + (Math.min(report.totalCheckins, 4) / 4) * 35
+    + (Math.min(report.totalTrainings, 2) / 2) * 20
+  ));
+  const trackingStatus = !hasEnoughData
+    ? 'Base em construção'
+    : trackingScore >= 75
+      ? 'Boa consistência'
+      : 'Evolução parcial';
+
   return (
-    <div className="min-h-screen bg-gray-50 print:bg-white text-gray-800 font-sans selection:bg-[#055A43]/20">
-      
-      {/* Printable Actions Bar */}
-      <div className="print:hidden max-w-4xl mx-auto px-6 py-4 flex items-center justify-between border-b border-gray-200 bg-white sticky top-0 z-50">
-        <button 
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm font-semibold text-[#5C615D] hover:text-[#055A43] transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" /> Voltar
+    <div className="min-h-screen bg-[#F7F6F2] print:bg-white text-[#17221E] font-sans selection:bg-[#055A43]/20">
+      <div className="print:hidden sticky top-0 z-50 mx-auto flex max-w-4xl items-center justify-between border-b border-[#E5E1D7] bg-white px-6 py-4">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-semibold text-[#5C615D] transition-colors hover:text-[#055A43]">
+          <ChevronLeft className="h-4 w-4" /> Voltar
         </button>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500">Pronto para impressão / PDF</span>
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-2 rounded-lg bg-[#055A43] hover:bg-[#044c38] text-white px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all"
-          >
-            <Printer className="w-4 h-4" /> Imprimir / Salvar PDF
-          </button>
-        </div>
+        <button onClick={() => window.print()} className="flex items-center gap-2 rounded-lg bg-[#055A43] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#044C38]">
+          <Printer className="h-4 w-4" /> Imprimir / Salvar PDF
+        </button>
       </div>
 
-      {/* Main A4 Document */}
-      <div className="max-w-4xl mx-auto my-6 print:my-0 p-8 print:p-0 bg-white border print:border-0 border-gray-200 rounded-2xl print:rounded-none shadow-sm print:shadow-none min-h-[297mm] flex flex-col justify-between">
-        
-        <div>
-          {/* Header */}
-          <div className="border-b-2 border-[#055A43] pb-6 mb-6 flex justify-between items-start">
+      <article className="report-sheet mx-auto my-6 max-w-4xl rounded-xl border border-[#E5E1D7] bg-white p-8 shadow-sm print:my-0 print:rounded-none print:border-0 print:p-0 print:shadow-none">
+        <header className="mb-8 border-b border-[#D8C3A5] pb-7">
+          <div className="mb-7 flex items-start justify-between gap-4">
             <div>
-              <span className="text-[10px] font-black tracking-[0.25em] text-[#055A43] uppercase block mb-1">
-                FOCÃO — ADESBRAMENTO E BEM-ESTAR ANIMAL
-              </span>
-              <h1 className="font-serif text-3xl text-gray-900 font-bold leading-tight tracking-tight">
-                Relatório de Acompanhamento Comportamental
-              </h1>
-              <p className="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                <Calendar className="w-3.5 h-3.5" /> Gerado em: {new Date().toLocaleDateString('pt-BR')} · Documento de Autoridade Técnica
-              </p>
+              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.28em] text-[#055A43]">Focão · acompanhamento contínuo</p>
+              <h1 className="max-w-xl font-serif text-4xl font-semibold leading-[1.08] text-[#102019]">Relatório semanal de {dog.name}</h1>
             </div>
             <div className="text-right">
-              <span className="font-serif text-2xl font-black tracking-widest text-[#055A43]">FOCÃO</span>
-              <div className="text-[9px] text-gray-400 font-semibold tracking-wider mt-0.5">PLATAFORMA PREMIUM</div>
+              <p className="font-serif text-2xl font-semibold tracking-[0.16em] text-[#055A43]">FOCÃO</p>
+              <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-[#8A918D]">Evolução acompanhada</p>
             </div>
           </div>
+          <div className="flex flex-wrap gap-x-7 gap-y-2 text-[11px] font-medium text-[#6D7773]">
+            <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Período analisado: {formatPeriod()}</span>
+            <span>Emitido em {new Date().toLocaleDateString('pt-BR')}</span>
+            <span>{dog.breed || 'SRD'} · {dog.age || 'idade não informada'}{dog.weight ? ` · ${dog.weight} kg` : ''}</span>
+          </div>
+        </header>
 
-          {/* Profile Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-[#055A43]/[0.02] border border-[#055A43]/10 p-5 rounded-2xl">
-              <h2 className="text-xs font-black tracking-wider text-[#055A43] uppercase mb-3 flex items-center gap-2">
-                <Activity className="w-4 h-4" /> Dados do Cão
-              </h2>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between border-b border-gray-100 py-1">
-                  <span className="text-gray-500">Nome:</span>
-                  <span className="font-bold text-gray-900">{dog.name}</span>
-                </div>
-                <div className="flex justify-between border-b border-gray-100 py-1">
-                  <span className="text-gray-500">Raça:</span>
-                  <span className="font-medium">{dog.breed || 'SRD'}</span>
-                </div>
-                <div className="flex justify-between border-b border-gray-100 py-1">
-                  <span className="text-gray-500">Idade / Peso:</span>
-                  <span className="font-medium">{dog.age || '—'} · {dog.weight ? `${dog.weight} kg` : '—'}</span>
-                </div>
-                {dog.personality && dog.personality.length > 0 && (
-                  <div className="pt-2">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Perfil e Temperamento:</span>
-                    <div className="flex flex-wrap gap-1">
-                      {dog.personality.map((p: string) => (
-                        <span key={p} className="bg-gray-100 text-gray-700 text-[10px] px-2.5 py-0.5 rounded-full font-medium">{p}</span>
-                      ))}
-                    </div>
+        <section className="mb-7 rounded-lg border border-[#D8C3A5] bg-[#F8F3EB] p-6">
+          <div className="grid gap-5 md:grid-cols-[1fr_132px] md:items-start">
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-[#7C684E]">
+                <Sparkles className="h-4 w-4" />
+                <p className="text-[10px] font-black uppercase tracking-[0.2em]">Resumo da semana</p>
+              </div>
+              <span className="inline-flex rounded-full bg-white/75 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-[#7C684E]">{trackingStatus}</span>
+              <h2 className="mt-3 max-w-2xl font-serif text-2xl font-semibold leading-tight text-[#17221E]">{executiveTitle}</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-[#58635F]">{executiveBody}</p>
+            </div>
+            <div className="border-l border-[#E2D4C1] pl-5">
+              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#8B7357]">Índice de acompanhamento</p>
+              <p className="mt-2 font-serif text-4xl font-semibold text-[#055A43]">{trackingScore}<span className="text-base text-[#8A918D]">/100</span></p>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/80">
+                <div className="h-full rounded-full bg-[#055A43]" style={{ width: `${trackingScore}%` }} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-7 grid grid-cols-2 divide-x divide-y divide-[#E6E4DD] rounded-lg border border-[#E6E4DD] md:grid-cols-4 md:divide-y-0">
+          <div className="px-4 py-3.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Consistência semanal</p>
+            <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.streak}<span className="ml-1 text-sm text-[#8A918D]">dias</span></p>
+            <p className="mt-1 text-[10px] text-[#8A918D]">Sequência acompanhada</p>
+          </div>
+          <div className="px-4 py-3.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Dias ativos</p>
+            <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.activeDays}<span className="ml-1 text-sm text-[#8A918D]">/ 7</span></p>
+            <p className="mt-1 text-[10px] text-[#8A918D]">Rotina da semana</p>
+          </div>
+          <div className="px-4 py-3.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Treinos concluídos</p>
+            <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.totalTrainings}</p>
+            <p className="mt-1 text-[10px] text-[#8A918D]">{report.totalTrainings > 0 ? 'Repetição registrada' : 'Acompanhamento não iniciado'}</p>
+          </div>
+          <div className="px-4 py-3.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Check-ins comportamentais</p>
+            <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.totalCheckins}</p>
+            <p className="mt-1 text-[10px] text-[#8A918D]">{hasEnoughData ? 'Base útil para análise' : 'Base ainda insuficiente'}</p>
+          </div>
+        </section>
+
+        <section className="page-break-inside-avoid mb-7 rounded-lg border border-[#E6E4DD] p-5">
+          <div className="mb-3 flex items-center gap-2 text-[#055A43]">
+            <Activity className="h-4 w-4" />
+            <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Comparação entre semanas</h2>
+          </div>
+          <p className="font-serif text-xl font-semibold text-[#17221E]">{report.comparison.headline}</p>
+          <p className="mt-2 text-sm leading-6 text-[#58635F]">{report.comparison.detail}</p>
+          {report.comparison.hasPreviousWeekData && (
+            <div className="mt-4 grid grid-cols-3 divide-x divide-[#E6E4DD] rounded-lg border border-[#E6E4DD]">
+              <div className="px-3 py-3"><p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#89918D]">Dias ativos</p><p className="mt-1 text-sm font-semibold text-[#055A43]">{report.comparison.currentActiveDays} <span className="font-medium text-[#8A918D]">vs. {report.comparison.previousActiveDays}</span></p></div>
+              <div className="px-3 py-3"><p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#89918D]">Treinos</p><p className="mt-1 text-sm font-semibold text-[#055A43]">{report.comparison.currentTrainings} <span className="font-medium text-[#8A918D]">vs. {report.comparison.previousTrainings}</span></p></div>
+              <div className="px-3 py-3"><p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#89918D]">Check-ins</p><p className="mt-1 text-sm font-semibold text-[#055A43]">{report.comparison.currentCheckins} <span className="font-medium text-[#8A918D]">vs. {report.comparison.previousCheckins}</span></p></div>
+            </div>
+          )}
+          {report.recurringPattern && (
+            <div className="mt-4 border-l-2 border-[#D8C3A5] pl-4">
+              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#8B7357]">Padrão recorrente</p>
+              <p className="mt-1 text-xs leading-5 text-[#69736F]">{report.recurringPattern}</p>
+            </div>
+          )}
+        </section>
+
+        <section className="page-break-inside-avoid mb-7 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="rounded-lg border border-[#E6E4DD] p-4">
+            <div className="mb-4 flex items-center gap-2 text-[#055A43]">
+              <Activity className="h-4 w-4" />
+              <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Contexto de {dog.name}</h2>
+            </div>
+            <dl className="space-y-2.5 text-xs">
+              <div className="flex justify-between gap-4 border-b border-[#EEECE6] pb-2"><dt className="text-[#89918D]">Perfil comportamental</dt><dd className="text-right font-semibold text-[#394641]">{personality}</dd></div>
+              <div className="flex justify-between gap-4 border-b border-[#EEECE6] pb-2"><dt className="text-[#89918D]">Nível de treino</dt><dd className="text-right font-semibold text-[#394641]">{trainingLevelLabel(dog.trainingBase)}</dd></div>
+              <div className="flex justify-between gap-4"><dt className="text-[#89918D]">Objetivo atual</dt><dd className="max-w-[65%] text-right font-semibold text-[#394641]">{goals}</dd></div>
+            </dl>
+          </div>
+          <div className="rounded-lg border border-[#E6E4DD] p-4">
+            <div className="mb-4 flex items-center gap-2 text-[#055A43]">
+              <Calendar className="h-4 w-4" />
+              <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Nutrição e rotina</h2>
+            </div>
+            <dl className="space-y-2.5 text-xs">
+              <div className="flex justify-between gap-4 border-b border-[#EEECE6] pb-2"><dt className="text-[#89918D]">Alimentação</dt><dd className="text-right font-semibold text-[#394641]">{foodTypeLabel(nutrition?.foodType)}</dd></div>
+              {nutrition?.foodBrand && <div className="flex justify-between gap-4 border-b border-[#EEECE6] pb-2"><dt className="text-[#89918D]">Marca / linha</dt><dd className="text-right font-semibold text-[#394641]">{nutrition.foodBrand}{nutrition.foodLine ? ` · ${nutrition.foodLine}` : ''}</dd></div>}
+              <div className="flex justify-between gap-4"><dt className="text-[#89918D]">Rotina cadastrada</dt><dd className="max-w-[65%] text-right font-semibold text-[#394641]">{routineParts.length > 0 ? routineParts.join(' · ') : 'Ainda não informada'}</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        {hasEditorialNote && (
+          <section className="page-break-inside-avoid mb-8 border-l-2 border-[#D8C3A5] pl-5">
+            <div className="mb-2 flex items-center gap-2 text-[#8B7357]">
+              <FileText className="h-4 w-4" />
+              <p className="text-[10px] font-black uppercase tracking-[0.18em]">Orientação da equipe Focão</p>
+            </div>
+            {adminReport?.title && <h2 className="font-serif text-xl font-semibold text-[#17221E]">{adminReport.title}</h2>}
+            {adminReport?.summary && <p className="mt-2 whitespace-pre-line text-sm leading-6 text-[#58635F]">{adminReport.summary}</p>}
+          </section>
+        )}
+
+        {hasEnoughData ? (
+          <section className="mb-7 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="rounded-lg border-l-2 border-[#178A5B] bg-[#F8FBF9] p-5">
+              <div className="mb-3 flex items-center gap-2 text-[#055A43]">
+                <CheckCircle2 className="h-4 w-4" />
+                <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">O que evoluiu</h2>
+              </div>
+              <p className="text-sm leading-6 text-[#58635F]">{checkinInsights?.hasEnoughData ? checkinInsights.insightText : report.mainImprovement || 'A frequência de registros já permite acompanhar a evolução com mais clareza.'}</p>
+              {smartReading?.evidence?.length ? (
+                <ul className="mt-4 space-y-2">
+                  {smartReading.evidence.slice(0, 3).map((evidence) => (
+                    <li key={evidence} className="flex gap-2 text-xs leading-5 text-[#69736F]">
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#055A43]" /> {evidence}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+            <div className="rounded-lg border-l-2 border-[#D97706] bg-[#FFFBF5] p-5">
+              <div className="mb-3 flex items-center gap-2 text-[#9A743F]">
+                <AlertTriangle className="h-4 w-4" />
+                <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Ponto de atenção</h2>
+              </div>
+              <p className="text-sm leading-6 text-[#58635F]">{smartReading?.attention || report.attentionPoint || 'Nenhum ponto crítico foi identificado nos registros desta semana.'}</p>
+            </div>
+          </section>
+        ) : (
+          <section className="mb-7 rounded-lg border border-[#E6E4DD] p-5">
+            <div className="mb-3 flex items-center gap-2 text-[#055A43]">
+              <Activity className="h-4 w-4" />
+              <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Como construir uma leitura mais precisa</h2>
+            </div>
+            <p className="text-sm leading-6 text-[#58635F]">O relatório amadurece junto com o histórico. Pequenos registros ao longo da semana já são suficientes para revelar padrões úteis.</p>
+            <ul className="mt-4 grid gap-2 text-xs text-[#69736F] md:grid-cols-2">
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#055A43]" /> 3 check-ins comportamentais</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#055A43]" /> Registros em pelo menos 3 dias</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#055A43]" /> 1 treino guiado concluído</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#055A43]" /> Observações sobre a rotina</li>
+            </ul>
+          </section>
+        )}
+
+        <section className="page-break-inside-avoid mb-7 rounded-lg bg-[#055A43] p-6 text-white">
+          <div className="mb-3 flex items-center gap-2 text-[#D8C3A5]">
+            <Target className="h-4 w-4" />
+            <p className="text-[10px] font-black uppercase tracking-[0.2em]">Próxima semana</p>
+          </div>
+          <h2 className="font-serif text-2xl font-semibold">Foco recomendado para {dog.name}</h2>
+          <ul className="mt-4 space-y-2.5">
+            {objectives.map((objective) => (
+              <li key={objective} className="flex gap-2.5 text-sm leading-5 text-white/90">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#D8C3A5]" /> {objective}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {recentSessions.length > 0 && (
+          <section className="page-break-inside-avoid mb-7 rounded-lg border border-[#E6E4DD] p-5">
+            <div className="mb-4 flex items-center gap-2 text-[#055A43]">
+              <Dumbbell className="h-4 w-4" />
+              <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Treinos recentes</h2>
+            </div>
+            <div className="space-y-3">
+              {recentSessions.slice(0, 6).map((session, index) => (
+                <div key={`${session.moduleTitle}-${index}`} className="flex items-start justify-between gap-4 border-b border-[#EEECE6] pb-3 last:border-0 last:pb-0">
+                  <div>
+                    <p className="text-sm font-semibold text-[#25312D]">{session.moduleTitle}</p>
+                    <p className="mt-1 text-[11px] text-[#8A918D]">{sessionDate(session)} · {Math.max(1, Math.round((session.durationSeconds || 0) / 60))} min</p>
                   </div>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-[#055A43]/[0.02] border border-[#055A43]/10 p-5 rounded-2xl">
-              <h2 className="text-xs font-black tracking-wider text-[#055A43] uppercase mb-3 flex items-center gap-2">
-                <Shield className="w-4 h-4" /> Nutrição e Rotina
-              </h2>
-              <div className="space-y-2 text-sm">
-                {dog.nutrition ? (
-                  <>
-                    <div className="flex justify-between border-b border-gray-100 py-1">
-                      <span className="text-gray-500">Alimentação:</span>
-                      <span className="font-bold text-gray-900">
-                        {dog.nutrition.foodType === 'dry' ? 'Ração Seca' :
-                         dog.nutrition.foodType === 'wet' ? 'Alimento Úmido' :
-                         dog.nutrition.foodType === 'natural' ? 'Alimentação Natural' : 'Mista'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-100 py-1">
-                      <span className="text-gray-500">Marca / Linha:</span>
-                      <span className="font-medium truncate max-w-[180px]">{dog.nutrition.foodBrand || '—'} {dog.nutrition.foodLine ? `(${dog.nutrition.foodLine})` : ''}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-100 py-1">
-                      <span className="text-gray-500">Frequência:</span>
-                      <span className="font-medium">{dog.nutrition.mealsPerDay ? `${dog.nutrition.mealsPerDay} refeições/dia` : '—'}</span>
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-xs text-gray-400 py-4">Informações nutricionais não cadastradas.</p>
-                )}
-                <div className="flex justify-between border-b border-gray-100 py-1">
-                  <span className="text-gray-500">Rotina diária:</span>
-                  <span className="font-medium">{dog.walkFrequency ? `${dog.walkFrequency} passeio(s)/dia` : 'Passeios ocasionais'}</span>
+                  <span className="rounded-full bg-[#F2F5F3] px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#527064]">{sessionFeedback(session.feedback)}</span>
                 </div>
-              </div>
+              ))}
             </div>
-          </div>
+          </section>
+        )}
 
-          {/* Evolution Summary & Vaccines */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="border border-gray-200 p-4 rounded-xl text-center">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Streak Consistente</span>
-              <div className="text-2xl font-serif text-[#055A43] font-bold mt-1">{report.streak} dias</div>
-            </div>
-            <div className="border border-gray-200 p-4 rounded-xl text-center">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Dias Ativos (Semana)</span>
-              <div className="text-2xl font-serif text-[#055A43] font-bold mt-1">{report.activeDays} de 7</div>
-            </div>
-            <div className="border border-gray-200 p-4 rounded-xl text-center">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Treinos Realizados</span>
-              <div className="text-2xl font-serif text-[#055A43] font-bold mt-1">{report.totalTrainings} concluídos</div>
-            </div>
-          </div>
-
-          {/* Smart insights */}
-          {evolutionInsights?.smartReading && (
-            <div className="border border-[#055A43]/15 rounded-2xl p-5 mb-6">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-[#055A43]" />
-                <span className="text-[10px] font-black tracking-wider text-[#055A43] uppercase">Análise do Desenvolvimento do Cão</span>
-              </div>
-              <h3 className="font-serif text-xl font-bold text-gray-900 mb-2">{evolutionInsights.smartReading.headline}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed mb-4">{evolutionInsights.smartReading.body}</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                {evolutionInsights.smartReading.evidence.map((ev, i) => (
-                  <div key={i} className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-xs text-gray-700 font-medium">
-                    • {ev}
-                  </div>
-                ))}
-              </div>
-
-              <div className="bg-[#055A43]/[0.03] border-l-4 border-[#055A43] p-4 rounded-r-xl">
-                <p className="text-xs font-semibold text-[#055A43] leading-relaxed">
-                  <span className="font-bold uppercase tracking-wider text-[9px] mr-2">Recomendação:</span>
-                  {evolutionInsights.smartReading.recommendation}
+        {dog.health?.vaccines?.length > 0 && (
+          <section className="page-break-inside-avoid mb-8 border-t border-[#E6E4DD] pt-5">
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#89918D]">Lembretes de saúde cadastrados</p>
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+              {dog.health.vaccines.slice(0, 4).map((vaccine: any, index: number) => (
+                <p key={`${vaccine.name || vaccine.vaccineName}-${index}`} className="text-xs text-[#69736F]">
+                  <strong className="text-[#33413C]">{vaccine.name || vaccine.vaccineName}</strong>
+                  {(vaccine.nextDue || vaccine.nextDose) ? ` · próxima dose: ${vaccine.nextDue || vaccine.nextDose}` : ''}
                 </p>
-              </div>
+              ))}
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Behavior and attention points */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div className="border border-gray-200 p-5 rounded-2xl">
-              <h3 className="text-xs font-black tracking-wider text-gray-900 uppercase mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Padrões de Rotina & Pontos Positivos
-              </h3>
-              {checkinInsights?.hasEnoughData ? (
-                <p className="text-sm text-gray-600 leading-relaxed mb-4">{checkinInsights.insightText}</p>
-              ) : (
-                <p className="text-sm text-gray-400">Dados de comportamento insuficientes nesta semana.</p>
-              )}
-              {report.mainImprovement && (
-                <div className="mt-3 bg-emerald-50/50 border border-emerald-100 p-3 rounded-xl text-xs text-emerald-800 font-medium">
-                  <strong>Destaque da semana:</strong> {report.mainImprovement}
-                </div>
-              )}
-            </div>
+        <footer className="mt-9 border-t border-[#E6E4DD] pt-5 text-[10px] leading-4 text-[#8A918D]">
+          <p>© {new Date().getFullYear()} Focão · acompanhamento contínuo da evolução do seu cão.</p>
+          <p className="mt-1">Este resumo reflete os registros informados pelo tutor e não substitui avaliação veterinária ou comportamental presencial.</p>
+        </footer>
+      </article>
 
-            <div className="border border-gray-200 p-5 rounded-2xl">
-              <h3 className="text-xs font-black tracking-wider text-gray-900 uppercase mb-4 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-500" /> Pontos de Atenção & Alinhamento
-              </h3>
-              {report.attentionPoint ? (
-                <p className="text-sm text-gray-600 leading-relaxed mb-3">{report.attentionPoint}</p>
-              ) : (
-                <p className="text-sm text-gray-500">Nenhum desvio crítico de comportamento registrado.</p>
-              )}
-              {report.nextWeekSuggestion && (
-                <div className="mt-3 bg-amber-50/50 border border-amber-100 p-3 rounded-xl text-xs text-amber-800 font-medium">
-                  <strong>Sugestão técnica:</strong> {report.nextWeekSuggestion}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Vaccines detailed list */}
-          {dog.health?.vaccines && dog.health.vaccines.length > 0 && (
-            <div className="border border-gray-200 p-5 rounded-2xl mb-6">
-              <h3 className="text-xs font-black tracking-wider text-gray-900 uppercase mb-3">Histórico de Imunização (Vacinas)</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {dog.health.vaccines.map((v: any, index: number) => (
-                  <div key={index} className="flex justify-between items-center text-xs border-b border-gray-100 pb-2">
-                    <div>
-                      <span className="font-bold text-gray-900">{v.name || v.vaccineName}</span>
-                      <span className="text-gray-400 block">Dose recente: {v.date || v.lastDoseDate || '—'}</span>
-                    </div>
-                    {v.nextDue && (
-                      <span className="bg-amber-50 text-amber-800 border border-amber-100 px-2.5 py-0.5 rounded-full font-semibold">
-                        Próxima: {v.nextDue || v.nextDose}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Historical Activity Logs Section */}
-          <div className="page-break-before-always border border-gray-200 p-5 rounded-2xl">
-            <h3 className="text-xs font-black tracking-wider text-gray-900 uppercase mb-4 flex items-center gap-2">
-              <Dumbbell className="w-4 h-4 text-indigo-500" /> Registro Recente de Treinamentos
-            </h3>
-            {recentSessions.length > 0 ? (
-              <div className="space-y-3">
-                {recentSessions.map((session, i) => (
-                  <div key={i} className="flex justify-between items-start text-xs border-b border-gray-100 pb-2.5 last:border-none">
-                    <div>
-                      <span className="font-bold text-gray-800 block text-sm">{session.moduleTitle}</span>
-                      <span className="text-gray-400">
-                        Realizado em: {new Date(session.completedAt || session.date || Date.now()).toLocaleDateString('pt-BR')} · Duração: {Math.round(session.durationSeconds / 60)} min
-                      </span>
-                    </div>
-                    <span className={`px-2 py-0.5 rounded font-semibold text-[10px] uppercase tracking-wider ${
-                      session.feedback === 'easy' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-                      session.feedback === 'medium' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
-                      session.feedback === 'hard' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
-                      'bg-gray-50 text-gray-500'
-                    }`}>
-                      {session.feedback === 'easy' ? 'Fácil' :
-                       session.feedback === 'medium' ? 'Médio' :
-                       session.feedback === 'hard' ? 'Difícil' : 'Incompleto'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-gray-400 text-center py-6">Nenhum treino registrado recentemente.</p>
-            )}
-          </div>
-
-        </div>
-
-        {/* Footer */}
-        <div className="border-t border-gray-200 pt-6 mt-8 text-center text-[10px] text-gray-400">
-          <p>© {new Date().getFullYear()} Focão App · Relatório gerado digitalmente. Indicado para suporte clínico e de conduta.</p>
-          <p className="mt-1">A precisão deste relatório reflete os dados imputados pelo tutor de forma fidedigna na plataforma.</p>
-        </div>
-      </div>
-      
-      {/* CSS print overrides */}
       <style>{`
         @media print {
-          body {
-            background-color: white !important;
-            color: black !important;
-          }
-          .print\\:hidden {
-            display: none !important;
-          }
-          .print\\:border-0 {
-            border: 0 !important;
-          }
-          .print\\:p-0 {
-            padding: 0 !important;
-          }
-          .print\\:my-0 {
-            margin: 0 !important;
-          }
-          .print\\:shadow-none {
-            box-shadow: none !important;
-          }
-          .page-break-before-always {
-            page-break-before: always !important;
-          }
-          .page-break-inside-avoid {
-            page-break-inside: avoid !important;
-          }
+          @page { size: A4; margin: 15mm; }
+          body { background: white !important; color: black !important; }
+          .print\\:hidden { display: none !important; }
+          .print\\:border-0 { border: 0 !important; }
+          .print\\:p-0 { padding: 0 !important; }
+          .print\\:my-0 { margin: 0 !important; }
+          .print\\:shadow-none { box-shadow: none !important; }
+          .page-break-inside-avoid { page-break-inside: avoid !important; }
         }
       `}</style>
-
     </div>
   );
 }

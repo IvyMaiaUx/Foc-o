@@ -158,7 +158,7 @@ export function HealthCare() {
         {isRacao && (
           <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest ml-1">{isMista ? 'Qual a marca principal' : 'Qual marca ele usa hoje?'}</label>
+              <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest ml-1">{isMista ? 'Qual a marca principal?' : 'Qual marca ele usa hoje?'}</label>
               <button
                 type="button"
                 onClick={() => setIsBrandModalOpen(true)}
@@ -169,6 +169,13 @@ export function HealthCare() {
                   <ChevronDown className="w-5 h-5" />
                 </div>
               </button>
+              {formData.foodBrand === 'Outra' || (!foodBrands.includes(formData.foodBrand) && formData.foodBrand) ? (
+                <Input
+                  placeholder="Digite a marca da ração..."
+                  value={formData.foodBrand === 'Outra' ? '' : formData.foodBrand}
+                  onChange={(e) => setFormData(prev => ({ ...prev, foodBrand: e.target.value }))}
+                />
+              ) : null}
             </div>
 
             <div className="flex flex-col gap-1.5 w-full">
@@ -185,10 +192,10 @@ export function HealthCare() {
                   <ChevronDown className="w-5 h-5" />
                 </div>
               </button>
-              {!brandLineOptions.includes(formData.foodLine) && formData.foodLine ? (
+              {formData.foodLine === 'Outra' || (!brandLineOptions.includes(formData.foodLine) && formData.foodLine) ? (
                 <Input
                   placeholder="Digite a linha da ração..."
-                  value={formData.foodLine}
+                  value={formData.foodLine === 'Outra' ? '' : formData.foodLine}
                   onChange={(e) => setFormData(prev => ({ ...prev, foodLine: e.target.value }))}
                 />
               ) : null}

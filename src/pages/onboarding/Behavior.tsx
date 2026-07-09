@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useOnboardingState } from '@/src/lib/onboardingDraft';
 import { AuthLayout } from '@/src/components/layout/AuthLayout';
 import { SelectCard } from '@/src/components/ui/SelectCard';
 import { Button } from '@/src/components/ui/Button';
@@ -7,16 +8,18 @@ import { Button } from '@/src/components/ui/Button';
 export function Behavior() {
   const navigate = useNavigate();
   const location = useLocation();
-  const stateData = location.state || {};
+  const stateData = useOnboardingState(location.state);
 
   const [behaviors, setBehaviors] = useState<string[]>([]);
 
   const options = [
-    { id: 'separation_anxiety', title: 'Ansiedade de separação' },
-    { id: 'destructive', title: 'Comportamento destrutivo' },
-    { id: 'barking', title: 'Latidos excessivos' },
     { id: 'pulling', title: 'Puxa muito no passeio' },
-    { id: 'none', title: 'Nenhum problema grave' },
+    { id: 'barking', title: 'Late demais' },
+    { id: 'lack_focus', title: 'Não consegue focar' },
+    { id: 'agitation', title: 'Fica muito agitado' },
+    { id: 'destructive', title: 'Destrói objetos' },
+    { id: 'separation_anxiety', title: 'Ansiedade ao ficar sozinho' },
+    { id: 'none', title: 'Quero começar pelo básico' },
   ];
 
   const toggleBehavior = (id: string) => {
@@ -24,6 +27,7 @@ export function Behavior() {
       setBehaviors(['none']);
       return;
     }
+
     setBehaviors(prev => {
       const next = prev.filter(b => b !== 'none');
       if (next.includes(id)) {
@@ -35,16 +39,16 @@ export function Behavior() {
 
   const handleNext = () => {
     if (behaviors.length === 0) return;
-    navigate('/onboarding/training-base', { 
-      state: { ...stateData, behaviors } 
+    navigate('/onboarding/training-base', {
+      state: { ...stateData, behaviors }
     });
   };
 
   return (
-    <AuthLayout 
-      title="Comportamento" 
-      subtitle="Quais são os maiores desafios hoje?"
-      step="ETAPA 5 DE 7"
+    <AuthLayout
+      title="Maior dificuldade"
+      subtitle="Marque o que mais atrapalha a rotina hoje."
+      step="ETAPA 4 DE 6"
     >
       <div className="flex flex-col gap-4 flex-1 overflow-y-auto">
         {options.map(opt => (
@@ -58,7 +62,7 @@ export function Behavior() {
 
         <div className="mt-auto pt-6 pb-4">
           <Button onClick={handleNext} className="w-full" disabled={behaviors.length === 0}>
-            Próximo
+            Continuar
           </Button>
         </div>
       </div>

@@ -15,7 +15,7 @@ export function Wordmark({
 }: WordmarkProps) {
   const color = tone === 'light' ? '#E0E7E4' : '#055A43';
   const lineColor = tone === 'light' ? 'rgba(224,231,228,0.38)' : 'rgba(11,106,81,0.75)';
-  const fontSize = Math.max(24, Math.round(width * 0.32));
+  const fontSize = Math.max(14, Math.round(width * 0.24));
 
   return (
     <div
@@ -27,7 +27,7 @@ export function Wordmark({
         justifyContent: 'center',
         lineHeight: 1,
       }}
-      aria-label="FOCAO"
+      aria-label="FOCÃO"
     >
       <span
         style={{
@@ -37,11 +37,10 @@ export function Wordmark({
           fontWeight: 400,
           letterSpacing: '0.22em',
           paddingLeft: '0.22em',
-          textTransform: 'uppercase',
           whiteSpace: 'nowrap',
         }}
       >
-        FOCAO
+        FOCÃO
       </span>
       {underline && (
         <span

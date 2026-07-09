@@ -51,7 +51,7 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b1-t3': {
     id: 'b1-t3', name: 'Atenção em ambiente calmo', blockId: 'b1', level: 'iniciante', duration: '12 min',
-    objective: 'Fortaleça o foco em um context de baixa distração.', prerequisites: ["b1-t2"], nextPossible: ["b1-t4"],
+    objective: 'Fortaleça o foco em um contexto de baixa distração.', prerequisites: ["b1-t2"], nextPossible: ["b1-t4"],
     tags: ["foco", "conexao"],
     problemTags: ["falta_de_foco"],
     objectiveTags: ["foco", "calma"],
@@ -675,7 +675,7 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
   },
   'b7-t6': {
     id: 'b7-t6', name: 'Generalização da rotina', blockId: 'b7', level: 'avançado', duration: '12 min',
-    objective: 'Consolide o comportamento em diferentes momentos do dia.', prerequisites: ["b7-t5"], nextPossible: [],
+    objective: 'Consolide o comportamento em diferentes momentos do dia.', prerequisites: ["b7-t5"], nextPossible: ["b7-t7"],
     tags: ["higiene_necessidades"],
     problemTags: ["xixi_fora_lugar"],
     objectiveTags: ["rotina", "convivencia"],
@@ -687,6 +687,102 @@ export const TRAINING_TEMPLATES: Record<string, TrainingTemplate> = {
       'Mantenha o local adequado sempre acessível e claro.',
       'Continue reforçando acertos mesmo quando o comportamento já estiver melhor.',
       'Só reduza o reforço quando a consistência estiver bem sólida.',
+    ]
+  },
+  'b7-t7': {
+    id: 'b7-t7', name: 'Associar saída à necessidade', blockId: 'b7', level: 'iniciante', duration: '10 min',
+    objective: 'Crie a conexão entre sair de casa e fazer as necessidades na rua.', prerequisites: [], nextPossible: ["b7-t8"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "passeio"],
+    profileTags: ["filhote", "adulto", "apartamento"],
+    levelTag: 'iniciante',
+    beforeStart: 'Leve o cão sempre no mesmo horário e vá direto ao ponto de eliminação antes de qualquer passeio ou brincadeira. A regra é: necessidade primeiro, diversão depois.',
+    steps: [
+      'Coloque a guia e vá diretamente para o local de eliminação sem brincadeiras no caminho.',
+      'Fique parado, com pouca ou nenhuma conversa, para que o cão se concentre.',
+      'Aguarde pacientemente até que ele faça xixi ou cocô.',
+      'Assim que ele terminar, marque com "Muito bem!" e ofereça recompensa ou libere para o passeio.',
+    ]
+  },
+  'b7-t8': {
+    id: 'b7-t8', name: 'Reforço de rotina', blockId: 'b7', level: 'iniciante', duration: '15 min',
+    objective: 'Consolide consistência e o local certo com rotina previsível e reforço imediato.', prerequisites: ["b7-t7"], nextPossible: ["b7-t9"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "passeio"],
+    profileTags: ["filhote", "adulto", "apartamento"],
+    levelTag: 'iniciante',
+    beforeStart: 'Se o comportamento começou do nada em um cão já treinado, vale checar com o veterinário antes — pode ser causa médica. Nunca repreenda depois do fato: o cão não associa o castigo ao xixi de minutos atrás, só aprende a ter medo de você.',
+    steps: [
+      'Leve o cão sempre no mesmo local, na coleira, nos horários-chave: ao acordar, depois de comer e antes de dormir.',
+      'Espere ele fazer no lugar certo — evite ficar andando, deixe o cheiro do local guiar.',
+      'Assim que ele terminar, marque com elogio e dê o petisco nos primeiros 5 segundos.',
+      'Reduza o espaço livre dele em casa até ele mostrar 1-2 semanas de consistência lá fora.',
+    ]
+  },
+  'b7-t9': {
+    id: 'b7-t9', name: 'Aguardar o momento certo', blockId: 'b7', level: 'iniciante', duration: '12 min',
+    objective: 'Treine a paciência do cão — e a sua — no momento da eliminação.', prerequisites: ["b7-t8"], nextPossible: ["b7-t10"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "calma"],
+    profileTags: ["filhote", "adulto", "apartamento"],
+    levelTag: 'iniciante',
+    beforeStart: 'Cães que se distraem facilmente demoram mais. Mantenha a guia curta e o ambiente o mais calmo possível. Não force nem arraste — apenas aguarde.',
+    steps: [
+      'Chegue ao local e fique parado, com a guia curta e sem interagir.',
+      'Deixe o cão farejar a área ao redor sem se locomover demais.',
+      'Evite distrair com chamados, carinhos ou movimentos enquanto ele não eliminar.',
+      'Após a eliminação, elogie bastante e libere para o passeio como recompensa natural.',
+    ]
+  },
+  'b7-t10': {
+    id: 'b7-t10', name: 'Reduzir acidentes dentro de casa', blockId: 'b7', level: 'intermediario', duration: '10 min',
+    objective: 'Diminua os erros internos aumentando a previsibilidade das saídas.', prerequisites: ["b7-t9"], nextPossible: ["b7-t11"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "convivencia"],
+    profileTags: ["filhote", "adulto", "apartamento"],
+    levelTag: 'intermediario',
+    beforeStart: 'Acidentes acontecem — não brigue com o cão por eles. O segredo é antecipar: saídas mais frequentes nos horários críticos (ao acordar, após comer, após brincar, antes de dormir).',
+    steps: [
+      'Anote os horários em que costumam acontecer os acidentes e programe saídas antes desses momentos.',
+      'Fique de olho nos sinais de que o cão precisa ir: farejar o chão, andar em círculos, ir até a porta.',
+      'Quando notar esses sinais, leve imediatamente para a rua e recompense o acerto.',
+      'Se ocorrer um acidente, limpe sem chamar atenção para o cão e ajuste o horário da próxima saída.',
+    ]
+  },
+  'b7-t11': {
+    id: 'b7-t11', name: 'Eliminar em locais diferentes na rua', blockId: 'b7', level: 'intermediario', duration: '12 min',
+    objective: 'Generalize o comportamento para que o cão elimine em qualquer ponto adequado fora de casa.', prerequisites: ["b7-t10"], nextPossible: ["b7-t12"],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "passeio"],
+    profileTags: ["filhote", "adulto", "apartamento"],
+    levelTag: 'intermediario',
+    beforeStart: 'Alguns cães só eliminam em um local específico. Variar gradualmente os locais ajuda a criar flexibilidade e evita problemas em viagens ou mudanças de rotina.',
+    steps: [
+      'Leve o cão a um local diferente do habitual, ainda familiar (mesmo quarteirão ou praça próxima).',
+      'Use o comando "Faz xixi" e aguarde como nas sessões anteriores.',
+      'Recompense ao eliminar no novo local.',
+      'A cada saída, varie levemente o ponto de eliminação para ampliar a generalização.',
+    ]
+  },
+  'b7-t12': {
+    id: 'b7-t12', name: 'Consistência total na rua', blockId: 'b7', level: 'intermediario', duration: '10 min',
+    objective: 'Consolide o hábito de eliminar exclusivamente fora de casa.', prerequisites: ["b7-t11"], nextPossible: [],
+    tags: ["higiene_necessidades"],
+    problemTags: ["xixi_fora_lugar"],
+    objectiveTags: ["rotina", "passeio"],
+    profileTags: ["filhote", "adulto", "apartamento"],
+    levelTag: 'intermediario',
+    beforeStart: 'Esta etapa é de manutenção. Continue saindo com frequência e reforçando ocasionalmente os acertos. A consistência da sua rotina é o principal fator de sucesso.',
+    steps: [
+      'Mantenha as saídas regulares nos horários já estabelecidos.',
+      'Reforce com elogios (não precisa ser petisco toda vez) quando o cão eliminar corretamente.',
+      'Fique atento a mudanças de rotina — viagens, novos ambientes ou estresse podem causar regressões temporárias.',
+      'Em caso de regressão, volte às saídas mais frequentes por alguns dias sem pressão.',
     ]
   },
   'b8-t1': {

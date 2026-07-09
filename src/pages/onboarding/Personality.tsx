@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useOnboardingState } from '@/src/lib/onboardingDraft';
 import { AuthLayout } from '@/src/components/layout/AuthLayout';
 import { Button } from '@/src/components/ui/Button';
 import { Battery, BatteryMedium, BatteryFull, Bone, Car, Heart, Circle, Utensils, CircleHelp } from 'lucide-react';
@@ -9,7 +10,7 @@ import { PlanRegenerationService } from '@/src/services/PlanRegenerationService'
 export function Personality() {
   const navigate = useNavigate();
   const location = useLocation();
-  const stateData = location.state || {};
+  const stateData = useOnboardingState(location.state);
   const dogName = stateData.dogData?.name || 'seu cão';
   const isUpdateMode = stateData.mode === 'updatePlan';
   const existing = stateData.dogData || {};

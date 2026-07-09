@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/src/lib/firebase';
 import { AuthLayout } from '@/src/components/layout/AuthLayout';
@@ -9,17 +9,22 @@ import { hapticLightTap } from '@/src/lib/haptic';
 
 export function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const registrationState = location.state as { registered?: boolean; passwordReset?: boolean; email?: string } | null;
+  const [formData, setFormData] = useState({ email: registrationState?.email || '', password: '' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const redirectTo = useMemo(() => {
     const redirect = searchParams.get('redirect');
-    return redirect === 'ativar' ? '/ativar' : '/';
+    if (redirect === 'ativar') return '/ativar';
+    if (redirect === 'assinatura') return '/assinatura';
+    return '/';
   }, [searchParams]);
 
   const isActivationFlow = redirectTo === '/ativar';
+  const isSubscriptionFlow = redirectTo === '/assinatura';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,12 +57,22 @@ export function Login() {
       title="Bem-vindo de volta."
       subtitle={
         isActivationFlow
-          ? 'Entre na sua conta para concluir a ativacao da assinatura vinculada a este e-mail.'
-          : 'Ficamos felizes em ter voce e seu caozinho por aqui mais uma vez.'
+          ? 'Entre na sua conta para concluir a ativação da assinatura vinculada a este e-mail.'
+          : 'Ficamos felizes em ter você e seu cãozinho por aqui mais uma vez.'
       }
       topImage="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&q=80"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-5 flex-1">
+        {registrationState?.registered && (
+          <div className="rounded-xl border border-[#055A43]/15 bg-[#055A43]/5 p-4 text-sm leading-relaxed text-[#055A43]">
+            Conta criada com sucesso. Entre com o e-mail e a senha que você acabou de cadastrar.
+          </div>
+        )}
+        {registrationState?.passwordReset && (
+          <div className="rounded-xl border border-[#055A43]/15 bg-[#055A43]/5 p-4 text-sm leading-relaxed text-[#055A43]">
+            Senha atualizada com sucesso. Entre com sua nova senha.
+          </div>
+        )}
         <Input
           label="E-mail"
           type="email"
@@ -77,7 +92,7 @@ export function Login() {
 
         <button
           type="button"
-          onClick={() => navigate(`/forgot-password${isActivationFlow ? '?redirect=ativar' : ''}`)}
+          onClick={() => navigate(`/forgot-password${isActivationFlow ? '?redirect=ativar' : isSubscriptionFlow ? '?redirect=assinatura' : ''}`)}
           className="text-sm font-medium text-[#055A43] self-start ml-1 mt-2 hover:underline"
         >
           Esqueci minha senha

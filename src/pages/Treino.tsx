@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { X, Play, Pause, CheckCircle2, ChevronLeft, Award, Lightbulb } from 'lucide-react';
+import { X, Play, Pause, CheckCircle2, ChevronLeft, Award, Lightbulb, Lock } from 'lucide-react';
 import { doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 import { auth, db } from '@/src/lib/firebase';
 import { EvolutionRepository } from '@/src/repositories/EvolutionRepository';
@@ -17,6 +17,7 @@ import { useAuth } from '@/src/contexts/AuthContext';
 import { PremiumGate } from '@/src/components/ui/PremiumGate';
 import { sanitizeText } from '@/src/lib/textSanitizer';
 import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
+import { toLocalDateKey } from '@/src/lib/dateKeys';
 
 export function Treino() {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ export function Treino() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [feedbackScore, setFeedbackScore] = useState<string | null>(null);
+  const [hasCheckinToday, setHasCheckinToday] = useState(false);
+  const [shouldOfferCheckin, setShouldOfferCheckin] = useState(false);
 
   const [timerRunning, setTimerRunning] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -68,14 +71,17 @@ export function Treino() {
       try {
         const user = auth.currentUser;
         if (user) {
-          const [currentP, dogProf, evolution, checkinsList] = await Promise.all([
+          const todayKey = toLocalDateKey();
+          const [currentP, dogProf, evolution, checkinsList, todayCheckin] = await Promise.all([
              TrainingRepository.getCurrentPlan(user.uid),
              DogRepository.getDogProfile(user.uid),
              EvolutionRepository.getSummary(user.uid),
-             CheckinRepository.getRecentCheckins(user.uid, 5)
+             CheckinRepository.getRecentCheckins(user.uid, 5),
+             CheckinRepository.getCheckin(user.uid, todayKey)
           ]);
           setPlan(currentP);
           setDogProfile(dogProf);
+          setHasCheckinToday(!!todayCheckin);
 
           let task = null;
           if (currentP && currentP.tasks.length > 0) {
@@ -125,17 +131,22 @@ export function Treino() {
   const submitFeedback = async (score: string) => {
     setFeedbackScore(score);
     setIsSaving(true);
+    let offerCheckinAfterCompletion = false;
     try {
       const user = auth.currentUser;
       if (user && activeTask) {
         // Save completion record
         const elapsedMinutes = Math.max(1, Math.ceil(timeElapsed / 60)); // at least 1 minute
         const duration = timeElapsed > 0 ? elapsedMinutes : (parseInt(activeTask.duration) || 15);
+        const activeTaskIndex = plan?.tasks.findIndex((task) => task.id === activeTask.id) ?? -1;
+        const isReview = activeTaskIndex >= 0 && activeTaskIndex < (plan?.currentTaskIndex ?? 0);
+
         await TrainingRepository.logTraining(user.uid, {
           trainingId: activeTask.id,
           title: sanitizeText(activeTask.title),
           durationMinutes: duration,
-          feedback: score
+          feedback: score,
+          isReview,
         });
 
         // Track event
@@ -143,21 +154,32 @@ export function Treino() {
           trainingId: activeTask.id,
           title: activeTask.title,
           durationMinutes: duration,
-          feedback: score
+          feedback: score,
+          isReview,
         });
 
         // Update sequence (streak) and total sessions
-        if (score !== 'failed' && score !== 'hard') {
+        if (!isReview && score !== 'failed' && score !== 'hard') {
           await EvolutionRepository.updateFromTraining(user.uid);
           
           if (plan) {
-            const nextIndex = plan.currentTaskIndex + 1;
-            if (nextIndex < plan.tasks.length) {
-               await TrainingRepository.updatePlanProgress(user.uid, nextIndex);
-            }
+            const nextIndex = Math.min(plan.currentTaskIndex + 1, plan.tasks.length);
+            await TrainingRepository.updatePlanProgress(user.uid, nextIndex);
           }
-        } else if (score === 'hard') {
+        } else if (!isReview && score === 'hard') {
           await EvolutionRepository.updateFromTraining(user.uid);
+        }
+
+        if (!isReview && score !== 'failed') {
+          const todayKey = toLocalDateKey();
+          const promptKey = `focao_post_training_checkin_prompted_${user.uid}_${todayKey}`;
+          const alreadyPromptedToday = localStorage.getItem(promptKey) === 'true';
+
+          offerCheckinAfterCompletion = !hasCheckinToday && !alreadyPromptedToday;
+
+          if (offerCheckinAfterCompletion) {
+            localStorage.setItem(promptKey, 'true');
+          }
         }
       }
     } catch (err) {
@@ -165,6 +187,7 @@ export function Treino() {
     } finally {
       setIsSaving(false);
       setShowFeedback(false);
+      setShouldOfferCheckin(offerCheckinAfterCompletion);
       setIsCompleted(true);
     }
   };
@@ -309,15 +332,34 @@ export function Treino() {
             })()}
           </motion.p>
 
+          {shouldOfferCheckin && (
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.58 }}
+              className="mb-5 max-w-[280px] text-sm font-light leading-relaxed text-white/75"
+            >
+              Registre o check-in de hoje para deixar os relatórios e as próximas recomendações mais precisos.
+            </motion.p>
+          )}
+
           <motion.button 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            onClick={() => navigate('/')}
+            onClick={() => navigate(shouldOfferCheckin ? '/checkin' : '/')}
             className="bg-white text-[#055A43] w-full max-w-[280px] h-14 rounded-full font-medium text-[15px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] active:scale-[0.98] transition-transform"
           >
-            Voltar ao Início
+            {shouldOfferCheckin ? 'Fazer check-in de hoje' : 'Voltar ao Início'}
           </motion.button>
+          {shouldOfferCheckin && (
+            <button
+              onClick={() => navigate('/')}
+              className="mt-4 h-10 rounded-full px-5 text-sm font-medium text-white/80 transition-colors hover:text-white"
+            >
+              Agora não
+            </button>
+          )}
         </motion.div>
       </div>
     );
@@ -340,10 +382,54 @@ export function Treino() {
     );
   }
 
+  // Plano concluído: sem id específico e o índice já passou do fim da trilha.
+  // Antes caía em tasks[0] (treino errado / paywall de "revisão"). Agora mostra estado final.
+  if (!id && plan && plan.tasks.length > 0 && (plan.currentTaskIndex ?? 0) >= plan.tasks.length) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] px-6 font-sans flex flex-col items-center justify-center text-center">
+        <h1 className="font-serif text-[28px] text-[#055A43]">Plano concluído! 🎉</h1>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#5C615D]">
+          Vocês terminaram todos os treinos deste plano. Aguarde a geração do próximo ou acompanhe a evolução.
+        </p>
+        <button
+          onClick={() => navigate('/evolucao', { replace: true })}
+          className="mt-7 h-12 rounded-full bg-[#055A43] px-6 text-sm font-bold text-white"
+        >
+          Ver evolução
+        </button>
+      </div>
+    );
+  }
+
   const activeTaskIndex = plan?.tasks.findIndex((task) => task.id === activeTask.id) ?? -1;
+  const currentTaskIndex = plan?.currentTaskIndex ?? 0;
+  const isReview = activeTaskIndex >= 0 && activeTaskIndex < currentTaskIndex;
+  const isFutureTraining = activeTaskIndex > currentTaskIndex;
   const isPremiumTrainingLocked = !isPremium && (
-    (plan?.currentTaskIndex ?? 0) >= 3 || activeTaskIndex >= 3
+    currentTaskIndex >= 3 || activeTaskIndex >= 3
   );
+
+  if (isFutureTraining) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] px-6 font-sans flex flex-col items-center justify-center text-center">
+        <Lock className="h-8 w-8 text-[#055A43]" />
+        <h1 className="mt-4 font-serif text-[28px] text-[#055A43]">Esta etapa ainda não foi liberada.</h1>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#5C615D]">
+          Conclua o treino atual para avançar pela trilha na ordem recomendada.
+        </p>
+        <button
+          onClick={() => navigate('/plano', { replace: true })}
+          className="mt-7 h-12 rounded-full bg-[#055A43] px-6 text-sm font-bold text-white"
+        >
+          Voltar ao plano
+        </button>
+      </div>
+    );
+  }
+
+  if (isReview && !isPremium) {
+    return <PremiumGate featureName="Revisão de Treinos" />;
+  }
 
   if (isPremiumTrainingLocked) {
     return (
@@ -371,7 +457,7 @@ export function Treino() {
           <ChevronLeft className="w-6 h-6" />
         </button>
         <span className="bg-[#055A43]/10 px-3 py-1.5 rounded-full text-[#055A43] text-[10px] font-bold tracking-widest uppercase">
-          Módulo {activeTask.module}
+          {isReview ? 'Modo revisão' : `Módulo ${activeTask.module}`}
         </span>
       </header>
 
@@ -494,7 +580,7 @@ export function Treino() {
       </main>
 
       {/* Bottom Action */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA] to-transparent pb-safe">
+      <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA] to-transparent" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
         <button 
           onClick={handleCompleteRequest}
           disabled={isSaving}

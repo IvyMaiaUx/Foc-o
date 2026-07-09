@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useOnboardingState } from '@/src/lib/onboardingDraft';
 import { motion } from 'motion/react';
 import { AuthLayout } from '@/src/components/layout/AuthLayout';
 import { SelectCard } from '@/src/components/ui/SelectCard';
@@ -8,7 +9,7 @@ import { Button } from '@/src/components/ui/Button';
 export function Routine() {
   const navigate = useNavigate();
   const location = useLocation();
-  const stateData = location.state || {};
+  const stateData = useOnboardingState(location.state);
 
   const [routine, setRoutine] = useState('');
   const [walksPerDay, setWalksPerDay] = useState('');
@@ -27,7 +28,7 @@ export function Routine() {
   const handleNext = () => {
     if (!routine || !walksPerDay || (shouldAskDuration && !walkDuration)) return;
 
-    navigate('/onboarding/personality', {
+    navigate('/onboarding/health-care', {
       state: {
         ...stateData,
         routine,
@@ -45,7 +46,7 @@ export function Routine() {
     <AuthLayout
       title="Rotina básica"
       subtitle="Essas informações ajudam a ajustar a sequência inicial de treinos."
-      step="ETAPA 2 DE 5"
+      step="ETAPA 2 DE 6"
     >
       <div className="flex flex-col gap-8 flex-1 pb-10">
         <div>

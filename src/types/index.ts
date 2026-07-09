@@ -12,6 +12,10 @@ export interface SubscriptionData {
   currentPeriodEnd?: number;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+  accessSource?: string;
+  manualAccessDays?: number | null;
+  manualAccessNote?: string;
+  manualGrantedAt?: number;
   createdAt: number;
   updatedAt: number;
 }
@@ -79,7 +83,25 @@ export function hasPremiumAccess(profile: UserProfile | null): boolean {
     }
 
     if (subscription.status === 'active') {
-      return subscription.premiumAccess !== false;
+      if (subscription.premiumAccess === false) return false;
+      // Cortesia manual com prazo definido pelo ADM: respeita a data de expiração.
+      // (Assinaturas normais do Stripe não usam accessSource='manual_comp'.)
+      if (subscription.accessSource === 'manual_comp' && subscription.currentPeriodEnd) {
+        return subscription.currentPeriodEnd > Date.now();
+      }
+      return true;
+    }
+
+    // Fallback p/ docs legados/em transição: um plano premium pago que não está em
+    // status 'active' (ex.: 'canceling' no fim do período pago, ou status antigo)
+    // mantém o acesso, salvo cancelamento/inatividade explícitos ou premiumAccess=false.
+    if (
+      subscription.plan === 'premium' &&
+      subscription.premiumAccess !== false &&
+      subscription.status !== 'canceled' &&
+      subscription.status !== 'inactive'
+    ) {
+      return true;
     }
 
     return false;

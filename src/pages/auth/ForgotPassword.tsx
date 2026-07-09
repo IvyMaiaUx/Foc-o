@@ -5,6 +5,7 @@ import { auth } from '@/src/lib/firebase';
 import { AuthLayout } from '@/src/components/layout/AuthLayout';
 import { Input } from '@/src/components/ui/Input';
 import { Button } from '@/src/components/ui/Button';
+import { AuthEmailService } from '@/src/services/AuthEmailService';
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -16,15 +17,18 @@ export function ForgotPassword() {
 
   const redirectTo = useMemo(() => {
     const redirect = searchParams.get('redirect');
-    return redirect === 'ativar' ? '/ativar' : '/login';
+    if (redirect === 'ativar') return '/ativar';
+    if (redirect === 'assinatura') return '/assinatura';
+    return '/login';
   }, [searchParams]);
 
   const isActivationFlow = redirectTo === '/ativar';
+  const isSubscriptionFlow = redirectTo === '/assinatura';
 
   const loginUrl = useMemo(() => {
-    const suffix = isActivationFlow ? '?redirect=ativar' : '';
+    const suffix = isActivationFlow ? '?redirect=ativar' : isSubscriptionFlow ? '?redirect=assinatura' : '';
     return `${window.location.origin}/login${suffix}`;
-  }, [isActivationFlow]);
+  }, [isActivationFlow, isSubscriptionFlow]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,10 +41,18 @@ export function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      await sendPasswordResetEmail(auth, email.trim().toLowerCase(), {
-        url: loginUrl,
-        handleCodeInApp: false,
-      });
+      try {
+        await AuthEmailService.sendPasswordReset(
+          email,
+          isActivationFlow ? 'ativar' : isSubscriptionFlow ? 'assinatura' : undefined
+        );
+      } catch (customEmailError) {
+        console.warn('[ForgotPassword] custom email failed, using Firebase fallback', customEmailError);
+        await sendPasswordResetEmail(auth, email.trim().toLowerCase(), {
+          url: loginUrl,
+          handleCodeInApp: false,
+        });
+      }
       setSuccess(true);
     } catch (err: any) {
       console.error('[ForgotPassword] failed', err);
@@ -73,8 +85,8 @@ export function ForgotPassword() {
               <p className="text-[#055A43] font-medium text-[15px]">E-mail enviado</p>
               <p className="text-[#5C615D] text-sm mt-1">
                 {isActivationFlow
-                  ? 'Redefina sua senha pelo link recebido e volte para entrar e concluir a ativação.'
-                  : 'Verifique sua caixa de entrada para redefinir sua senha.'}
+                  ? 'Se houver uma conta vinculada a este e-mail, você receberá um link para redefinir sua senha e concluir a ativação.'
+                  : 'Se houver uma conta vinculada a este e-mail, você receberá um link para redefinir sua senha.'}
               </p>
             </div>
           </div>
@@ -98,7 +110,7 @@ export function ForgotPassword() {
             <button
               type="button"
               className="text-[#5C615D] text-sm font-medium hover:text-[#055A43] transition-colors"
-              onClick={() => navigate(isActivationFlow ? '/login?redirect=ativar' : '/login')}
+              onClick={() => navigate(isActivationFlow ? '/login?redirect=ativar' : isSubscriptionFlow ? '/login?redirect=assinatura' : '/login')}
             >
               Voltar para o login
             </button>

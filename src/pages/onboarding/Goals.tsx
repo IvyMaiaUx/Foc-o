@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useOnboardingState } from '@/src/lib/onboardingDraft';
 import { AuthLayout } from '@/src/components/layout/AuthLayout';
 import { SelectCard } from '@/src/components/ui/SelectCard';
 import { Button } from '@/src/components/ui/Button';
@@ -7,19 +8,18 @@ import { Button } from '@/src/components/ui/Button';
 export function Goals() {
   const navigate = useNavigate();
   const location = useLocation();
-  const stateData = location.state || {};
+  const stateData = useOnboardingState(location.state);
 
   const [goals, setGoals] = useState<string[]>([]);
   const [goalNotes, setGoalNotes] = useState('');
 
   const options = [
     { id: 'obedience', title: 'Melhorar obediência básica' },
-    { id: 'anxiety_alone', title: 'Reduzir ansiedade ao ficar sozinho' },
     { id: 'walks', title: 'Melhorar passeio na guia' },
+    { id: 'focus', title: 'Aumentar foco e atenção' },
+    { id: 'anxiety_alone', title: 'Reduzir ansiedade ao ficar sozinho' },
     { id: 'barking', title: 'Reduzir latidos' },
     { id: 'destruction', title: 'Evitar destruição de objetos' },
-    { id: 'socialization', title: 'Melhorar socialização' },
-    { id: 'tricks', title: 'Ensinar comandos' },
     { id: 'routine', title: 'Criar uma rotina melhor' },
     { id: 'other', title: 'Outro' }
   ];
@@ -35,16 +35,16 @@ export function Goals() {
 
   const handleNext = () => {
     if (goals.length === 0) return;
-    navigate('/onboarding/analyzing', { 
-      state: { ...stateData, goals, goalNotes } 
+    navigate('/onboarding/analyzing', {
+      state: { ...stateData, goals, goalNotes }
     });
   };
 
   return (
-    <AuthLayout 
-      title="Seus objetivos" 
-      subtitle="O que você mais deseja alcançar com o Focão?"
-      step="ETAPA 7 DE 7"
+    <AuthLayout
+      title="Objetivo principal"
+      subtitle="Escolha o foco inicial. Depois o plano pode evoluir com base no histórico."
+      step="ETAPA 6 DE 6"
     >
       <div className="flex flex-col gap-4 flex-1 overflow-y-auto">
         <div className="flex flex-col gap-3">
@@ -60,23 +60,23 @@ export function Goals() {
 
         <div className="mt-4 flex flex-col gap-2">
           <label className="text-[11px] font-bold uppercase tracking-widest text-[#055A43]">
-            Observações adicionais
+            Algo importante?
           </label>
           <p className="text-xs text-[#5C615D] mb-1 font-light leading-relaxed">
-            Conte com suas palavras o que você mais quer melhorar na rotina ou comportamento do seu cão.
+            Se quiser, conte em uma frase o que mais quer melhorar.
           </p>
           <textarea
             value={goalNotes}
             onChange={(e) => setGoalNotes(e.target.value)}
-            placeholder="Ex: Ele morde quando fica muito agitado, ou ela late muito quando saio de casa..."
-            rows={4}
+            placeholder="Ex: ele morde quando fica muito agitado..."
+            rows={3}
             className="w-full rounded-2xl border-2 border-gray-100 p-4 text-sm text-gray-800 outline-none focus:border-[#055A43]/30 resize-none font-light bg-white"
           />
         </div>
 
         <div className="mt-auto pt-6 pb-4">
           <Button onClick={handleNext} className="w-full" disabled={goals.length === 0}>
-            Analisar perfil
+            Criar plano
           </Button>
         </div>
       </div>

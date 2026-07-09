@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Send, Paperclip, Loader2, Info, X } from 'lucide-react';
 import { auth, storage } from '../lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -10,6 +10,7 @@ import { SupportMessage } from '../types';
 
 export function Suporte() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(true);
@@ -20,6 +21,13 @@ export function Suporte() {
   
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const state = location.state as { betaPrompt?: string } | null;
+    if (state?.betaPrompt) {
+      setInputText(state.betaPrompt);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     let unsubscribe = () => {};

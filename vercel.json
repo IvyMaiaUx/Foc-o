@@ -1,4 +1,22 @@
 {
+  "crons": [
+    {
+      "path": "/api/run-whatsapp-reminders",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/run-whatsapp-reminders",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/run-whatsapp-reminders",
+      "schedule": "0 13 * * 1"
+    },
+    {
+      "path": "/api/run-whatsapp-reminders",
+      "schedule": "0 13 1 * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, CheckCircle2, ChevronLeft, ChevronDown, Crown, ShieldPlus } from 'lucide-react';
+import { Camera, CheckCircle2, ChevronLeft, ChevronDown, Crown, ShieldPlus, Image as ImageIcon } from 'lucide-react';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { UserRepository } from '@/src/repositories/UserRepository';
 import { auth } from '@/src/lib/firebase';
@@ -8,6 +8,7 @@ import { Input } from '@/src/components/ui/Input';
 import { Button } from '@/src/components/ui/Button';
 import { BottomSheetSelect } from '@/src/components/ui/BottomSheetSelect';
 import { COMMON_BREEDS } from '@/src/lib/breeds';
+import { NutritionFormulaRepository, getBrandsFromOptions } from '@/src/repositories/NutritionFormulaRepository';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { getSubscriptionPlan, getSubscriptionStatus, hasPremiumAccess } from '@/src/types';
 import {
@@ -17,24 +18,49 @@ import {
   getDogAgeOptions,
   sanitizeDecimalInput,
   sanitizeDogName,
-  validateDogBasics,
+  validateDogProfileEdit,
 } from '@/src/lib/dogFieldValidation';
+
+const ENERGY_OPTIONS: { value: string; label: string }[] = [
+  { value: 'low', label: 'Baixa (Calmo)' },
+  { value: 'medium', label: 'Média (Equilibrado)' },
+  { value: 'high', label: 'Alta (Agitado)' },
+];
+const TRAINING_BASE_OPTIONS: { value: string; label: string }[] = [
+  { value: 'none', label: 'Nenhuma base' },
+  { value: 'beginner', label: 'Comandos básicos' },
+  { value: 'intermediate', label: 'Intermediário' },
+];
+const labelForValue = (options: { value: string; label: string }[], value: string) =>
+  options.find((o) => o.value === value)?.label || '';
+const valueForLabel = (options: { value: string; label: string }[], label: string) =>
+  options.find((o) => o.label === label)?.value || '';
 
 export function EditarPerfil() {
   const navigate = useNavigate();
   const { userProfile, refreshProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const [showPhotoOptions, setShowPhotoOptions] = useState(false);
   
   const [activeTab, setActiveTab] = useState<'basico'|'rotina'|'comportamento'|'saude'>('basico');
   const [isBreedModalOpen, setIsBreedModalOpen] = useState(false);
   const [isLifeStageModalOpen, setIsLifeStageModalOpen] = useState(false);
   const [isAgeModalOpen, setIsAgeModalOpen] = useState(false);
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+  const [isEnergyModalOpen, setIsEnergyModalOpen] = useState(false);
+  const [isTrainingBaseModalOpen, setIsTrainingBaseModalOpen] = useState(false);
 
-  const foodBrands = [
-    'Adidog', 'Affinity', 'Axia', 'Baw Waw', 'Biofresh', 'Cibau', 'Dog Chow', 'Faro', 'Formula Natural', 'Golden', 'Gran Plus', 'Guabi Natural', 
-    'Max', 'ND (N&D)', 'Nero', 'Nutrilus', 'Pedigree', 'PremieR', 'Quatree', 'Royal Canin', 'Sabor & Vida', 'Special Dog', 'Tutano', 'Outra'
-  ];
+  // Mesma fonte que o admin gerencia (coleção `nutritionFormulas`). Cai na lista
+  // estática (DOG_FOOD_OPTIONS) se a coleção estiver vazia/indisponível.
+  const [foodBrands, setFoodBrands] = useState<string[]>([]);
+  useEffect(() => {
+    let mounted = true;
+    NutritionFormulaRepository.getFoodOptions().then((options) => {
+      if (mounted) setFoodBrands([...getBrandsFromOptions(options), 'Outra']);
+    });
+    return () => { mounted = false; };
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -61,6 +87,11 @@ export function EditarPerfil() {
   const [dogId, setDogId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [savedMessage, setSavedMessage] = useState('');
+  useEffect(() => {
+    if (!savedMessage) return;
+    const timer = window.setTimeout(() => setSavedMessage(''), 3500);
+    return () => window.clearTimeout(timer);
+  }, [savedMessage]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [tutorNameInput, setTutorNameInput] = useState(userProfile?.name || auth.currentUser?.displayName || '');
@@ -93,7 +124,6 @@ export function EditarPerfil() {
   };
 
   const planBadge = getSubscriptionDisplay();
-  const isPremiumProfile = getSubscriptionPlan(userProfile) === 'premium' && hasPremiumAccess(userProfile);
   const tutorName = userProfile?.name || auth.currentUser?.displayName || 'Tutor';
 
   useEffect(() => {
@@ -185,7 +215,10 @@ export function EditarPerfil() {
 
   const handleSave = async () => {
     const user = auth.currentUser;
-    if (!user || !dogId) return;
+    if (!user) {
+      setError('Você precisa estar conectado para salvar o perfil.');
+      return;
+    }
 
     setError('');
     setSavedMessage('');
@@ -196,12 +229,7 @@ export function EditarPerfil() {
       return;
     }
 
-    if (!formData.lifeStage) {
-      setError('Selecione a fase da vida do cão.');
-      return;
-    }
-
-    const validationError = validateDogBasics(formData);
+    const validationError = validateDogProfileEdit(formData);
     if (validationError) {
       setError(validationError);
       return;
@@ -231,6 +259,7 @@ export function EditarPerfil() {
         nextCheckup: formData.nextCheckup,
         observations: formData.observations
       });
+      setDogId(dogId || 'profile');
       await UserRepository.updateTutorName(user.uid, cleanTutorName);
       await refreshProfile();
       setSavedMessage('Alterações salvas com sucesso.');
@@ -254,6 +283,54 @@ export function EditarPerfil() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col pb-safe">
+      {savedMessage && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[80] flex items-center gap-2 bg-[#055A43] text-white text-sm font-medium px-5 py-3 rounded-full shadow-lg shadow-[#055A43]/25 animate-in slide-in-from-top-4 fade-in duration-300">
+          <CheckCircle2 className="h-4 w-4" />
+          {savedMessage}
+        </div>
+      )}
+      {showPhotoOptions && (
+        <div className="fixed inset-0 z-[90] flex items-end justify-center">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowPhotoOptions(false)}
+          />
+          <div className="relative w-full max-w-md bg-white rounded-t-[2rem] p-4 pb-safe shadow-2xl animate-in slide-in-from-bottom-4 fade-in duration-300">
+            <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4 mt-1" />
+            <p className="text-center text-[11px] font-semibold uppercase tracking-widest text-[#5C615D]/70 mb-2">
+              Foto do cão
+            </p>
+            <button
+              type="button"
+              onClick={() => { setShowPhotoOptions(false); cameraInputRef.current?.click(); }}
+              className="w-full flex items-center gap-3 px-3 py-4 rounded-2xl active:bg-[#055A43]/5 transition-colors text-left"
+            >
+              <div className="w-10 h-10 rounded-full bg-[#055A43]/5 flex items-center justify-center text-[#055A43] shrink-0">
+                <Camera className="w-5 h-5" />
+              </div>
+              <span className="font-medium text-gray-900">Tirar foto</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShowPhotoOptions(false); fileInputRef.current?.click(); }}
+              className="w-full flex items-center gap-3 px-3 py-4 rounded-2xl active:bg-[#055A43]/5 transition-colors text-left"
+            >
+              <div className="w-10 h-10 rounded-full bg-[#055A43]/5 flex items-center justify-center text-[#055A43] shrink-0">
+                <ImageIcon className="w-5 h-5" />
+              </div>
+              <span className="font-medium text-gray-900">Escolher da galeria</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowPhotoOptions(false)}
+              className="w-full text-center py-3 mt-2 text-[#5C615D] font-medium"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
       <header className="px-6 pt-16 pb-4 bg-white flex items-center gap-4 sticky top-0 z-10">
         <button 
           onClick={() => navigate(-1)}
@@ -279,16 +356,21 @@ export function EditarPerfil() {
           onChange={handlePhotoUpload}
           className="hidden"
         />
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          ref={cameraInputRef}
+          onChange={handlePhotoUpload}
+          className="hidden"
+        />
         <button
           type="button"
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => setShowPhotoOptions(true)}
           disabled={isUploading}
           className="relative w-24 h-24 rounded-[2rem] shadow-xl shadow-[#055A43]/10 mb-4 border border-[#055A43]/10 bg-[#055A43] flex items-center justify-center active:scale-[0.98] transition-all"
           aria-label="Alterar foto do cão"
         >
-          {isPremiumProfile && (
-            <span className="pointer-events-none absolute -inset-1 rounded-full border-[2.5px] border-[#D8C3A5] shadow-[inset_0_1px_0_rgba(255,255,255,0.45),0_2px_10px_rgba(216,195,165,0.18)]" />
-          )}
           <span className="absolute inset-0 rounded-[2rem] overflow-hidden flex items-center justify-center">
           {formData.photoUrl ? (
             <img src={formData.photoUrl} alt="Foto do cão" className="w-full h-full object-cover" />
@@ -476,40 +558,30 @@ export function EditarPerfil() {
           <div className="flex flex-col gap-6 animate-in slide-in-from-right-4 fade-in duration-300">
             <div className="flex flex-col gap-1.5 w-full">
               <label className="text-[#5C615D] text-sm font-medium ml-1">Nível de Energia</label>
-              <div className="relative">
-                <select
-                  value={formData.energyLevel}
-                  onChange={(e) => setFormData(prev => ({ ...prev, energyLevel: e.target.value }))}
-                  className="w-full text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] placeholder-[#A0A4A1] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all appearance-none"
-                >
-                  <option value="" disabled>Selecione</option>
-                  <option value="low">Baixa (Calmo)</option>
-                  <option value="medium">Média (Equilibrado)</option>
-                  <option value="high">Alta (Agitado)</option>
-                </select>
+              <button
+                type="button"
+                onClick={() => setIsEnergyModalOpen(true)}
+                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative"
+              >
+                {labelForValue(ENERGY_OPTIONS, formData.energyLevel) || <span className="text-[#A0A4A1]">Selecione</span>}
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
                   <ChevronDown className="w-5 h-5" />
                 </div>
-              </div>
+              </button>
             </div>
 
             <div className="flex flex-col gap-1.5 w-full">
               <label className="text-[#5C615D] text-sm font-medium ml-1">Base de Treino Anterior</label>
-              <div className="relative">
-                <select
-                  value={formData.trainingBase}
-                  onChange={(e) => setFormData(prev => ({ ...prev, trainingBase: e.target.value }))}
-                  className="w-full text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] placeholder-[#A0A4A1] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all appearance-none"
-                >
-                  <option value="" disabled>Selecione</option>
-                  <option value="none">Nenhuma base</option>
-                  <option value="beginner">Comandos básicos</option>
-                  <option value="intermediate">Intermediário</option>
-                </select>
+              <button
+                type="button"
+                onClick={() => setIsTrainingBaseModalOpen(true)}
+                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative"
+              >
+                {labelForValue(TRAINING_BASE_OPTIONS, formData.trainingBase) || <span className="text-[#A0A4A1]">Selecione</span>}
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
                   <ChevronDown className="w-5 h-5" />
                 </div>
-              </div>
+              </button>
             </div>
           </div>
         )}
@@ -585,12 +657,6 @@ export function EditarPerfil() {
           </div>
         )}
 
-        {savedMessage && (
-          <p className="mt-6 flex items-center justify-center gap-2 text-sm font-medium text-[#055A43]">
-            <CheckCircle2 className="h-4 w-4" />
-            {savedMessage}
-          </p>
-        )}
         {error && <p className="text-red-500 text-sm ml-1 mt-6 text-center">{error}</p>}
       </main>
 
@@ -636,6 +702,24 @@ export function EditarPerfil() {
         onSelect={(val) => setFormData(prev => ({ ...prev, age: val }))}
         title="Idade aproximada"
         placeholder="Buscar idade..."
+      />
+      <BottomSheetSelect
+        isOpen={isEnergyModalOpen}
+        onClose={() => setIsEnergyModalOpen(false)}
+        options={ENERGY_OPTIONS.map((o) => o.label)}
+        value={labelForValue(ENERGY_OPTIONS, formData.energyLevel)}
+        onSelect={(label) => setFormData(prev => ({ ...prev, energyLevel: valueForLabel(ENERGY_OPTIONS, label) }))}
+        title="Nível de energia"
+        placeholder="Buscar..."
+      />
+      <BottomSheetSelect
+        isOpen={isTrainingBaseModalOpen}
+        onClose={() => setIsTrainingBaseModalOpen(false)}
+        options={TRAINING_BASE_OPTIONS.map((o) => o.label)}
+        value={labelForValue(TRAINING_BASE_OPTIONS, formData.trainingBase)}
+        onSelect={(label) => setFormData(prev => ({ ...prev, trainingBase: valueForLabel(TRAINING_BASE_OPTIONS, label) }))}
+        title="Base de treino anterior"
+        placeholder="Buscar..."
       />
     </div>
   );

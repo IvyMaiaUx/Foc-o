@@ -96,6 +96,22 @@ export function useReminders() {
       new Notification(title, { body, icon: '/icon-192.png' });
     };
 
+    const hasMinimumWeeklyCheckins = async (uid: string) => {
+      const today = new Date();
+      const cutoff = new Date(today);
+      cutoff.setDate(today.getDate() - 6);
+      const cutoffKey = toLocalDateKey(cutoff);
+      const todayKey = toLocalDateKey(today);
+      const snap = await getDocs(query(collection(db, 'users', uid, 'checkins'), orderBy('date', 'desc'), limit(7)));
+      const activeDays = new Set(
+        snap.docs
+          .map((docSnap) => docSnap.data()?.date || docSnap.id)
+          .filter((date) => typeof date === 'string' && date >= cutoffKey && date <= todayKey)
+      );
+
+      return activeDays.size >= 3;
+    };
+
     const checkReminders = async (uid: string) => {
       if (!userSettings?.notificationsEnabled) return;
 
@@ -146,11 +162,17 @@ export function useReminders() {
         }
       }
 
-      if (remindersConf.report !== false && now.getDay() === 0 && currentTime >= '09:00' && pendingNotifications.report !== todayStr) {
-        const body = 'Seu relatório semanal está pronto. Veja a evolução.';
-        showInAppNotification('Focão', body, '/relatorio', navigate);
-        pushSystemNotification('Focão', body);
-        updates['pendingNotifications.report'] = todayStr;
+      if (remindersConf.report !== false && now.getDay() === 1 && currentTime >= '09:00' && pendingNotifications.report !== todayStr) {
+        try {
+          if (await hasMinimumWeeklyCheckins(uid)) {
+            const body = 'Seu relatório semanal está pronto. Veja a evolução.';
+            showInAppNotification('Focão', body, '/relatorio', navigate);
+            pushSystemNotification('Focão', body);
+            updates['pendingNotifications.report'] = todayStr;
+          }
+        } catch (err) {
+          console.error('Error checking weekly report eligibility', err);
+        }
       }
 
       if (Object.keys(updates).length > 0) {

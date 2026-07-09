@@ -1,10 +1,9 @@
-import { db } from '@/src/lib/firebase';
+import { auth, db } from '@/src/lib/firebase';
 import { 
   collection, 
   doc, 
-  getDoc, 
-  addDoc, 
-  updateDoc, 
+  getDoc,
+  updateDoc,
   getDocs, 
   query, 
   where, 
@@ -88,9 +87,23 @@ export interface WhatsappNotificationDoc {
   userId: string;
   dogId: string;
   dogName: string;
-  type: 'welcome' | 'weekly_report' | 'inactivity_3d' | 'trial_ending' | 'payment_failed' | 'renewal_success' | 'test';
-  status: 'pending' | 'mock_sent' | 'skipped' | 'failed';
-  provider: 'mock' | 'whatsapp_cloud_api';
+  type:
+    | 'welcome'
+    | 'agenda_day'
+    | 'training_reminder'
+    | 'checkin_reminder'
+    | 'vaccine_reminder'
+    | 'weekly_report'
+    | 'monthly_report'
+    | 'inactivity_3d'
+    | 'trial_ending'
+    | 'payment_failed'
+    | 'renewal_success'
+    | 'premium_activated'
+    | 'test'
+    | 'referral_reward';
+  status: 'pending' | 'sent' | 'mock_sent' | 'skipped' | 'failed';
+  provider: 'mock' | 'whatsapp_cloud_api' | 'zapresponder';
   templateName: string;
   payload: Record<string, any>;
   scheduledFor: number;
@@ -102,6 +115,7 @@ export interface WhatsappNotificationDoc {
 
 export class WhatsAppNotificationService {
   private static provider: WhatsAppProvider = new MockWhatsAppProvider();
+  private static apiEndpoint = import.meta.env.VITE_WHATSAPP_SEND_API_URL || 'https://foc-o.vercel.app/api/send-whatsapp-message';
 
   static setProvider(newProvider: WhatsAppProvider) {
     this.provider = newProvider;
@@ -114,7 +128,6 @@ export class WhatsAppNotificationService {
     return {
       whatsappEnabled: data.whatsappEnabled ?? false,
       whatsappPhone: data.whatsappPhone ?? '',
-      whatsappPreferredTime: data.whatsappPreferredTime ?? '18:00',
       whatsappNotificationTypes: data.whatsappNotificationTypes ?? {
         weeklyReport: true,
         trainingReminder: true,
@@ -142,16 +155,51 @@ export class WhatsAppNotificationService {
     // Check notification type filter
     const mapping: Record<string, keyof typeof prefs.whatsappNotificationTypes> = {
       welcome: 'trialAndBilling',
+      agenda_day: 'agendaDay',
+      training_reminder: 'trainingReminder',
+      checkin_reminder: 'trainingReminder',
+      vaccine_reminder: 'trainingReminder',
       weekly_report: 'weeklyReport',
+      monthly_report: 'weeklyReport',
       inactivity_3d: 'inactivity',
       trial_ending: 'trialAndBilling',
       payment_failed: 'trialAndBilling',
       renewal_success: 'trialAndBilling',
+      premium_activated: 'trialAndBilling',
+      referral_reward: 'trialAndBilling',
       test: 'weeklyReport' // Test messages bypass but classified under weekly
     };
     const prefKey = mapping[type];
     if (prefKey && !prefs.whatsappNotificationTypes[prefKey]) {
       return { skip: true, reason: `disabled_type_${type}` };
+    }
+
+    if (type === 'weekly_report') {
+      const now = new Date();
+      const cutoff = new Date(now);
+      cutoff.setDate(now.getDate() - 6);
+      const toDateKey = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      const cutoffKey = toDateKey(cutoff);
+      const todayKey = toDateKey(now);
+      const checkinsSnap = await getDocs(query(
+        collection(db, 'users', userId, 'checkins'),
+        orderBy('date', 'desc'),
+        limit(7)
+      ));
+      const activeDays = new Set(
+        checkinsSnap.docs
+          .map((docSnap) => docSnap.data()?.date || docSnap.id)
+          .filter((date) => typeof date === 'string' && date >= cutoffKey && date <= todayKey)
+      );
+
+      if (activeDays.size < 3) {
+        return { skip: true, reason: 'insufficient_weekly_checkins' };
+      }
     }
 
     // Prevent duplicate messages of the same type on the same calendar day (UTC-3 / Brazilian standard)
@@ -183,38 +231,30 @@ export class WhatsAppNotificationService {
     type: WhatsappNotificationDoc['type'];
     templateName: string;
     payload: Record<string, any>;
+    variables?: Record<string, any> | string[];
     scheduledFor?: number;
   }): Promise<string> {
-    const { userId, dogId = '', dogName = '', type, templateName, payload, scheduledFor = Date.now() } = params;
-
-    const skipCheck = await this.shouldSkipNotification(userId, type);
-    const prefs = await this.getUserWhatsappPreferences(userId);
-
-    const notificationData: WhatsappNotificationDoc = {
-      userId,
-      dogId,
-      dogName,
-      type,
-      status: skipCheck.skip ? 'skipped' : 'pending',
-      provider: this.provider.getProviderName() as any,
-      templateName,
-      payload: { ...payload, skipReason: skipCheck.reason || null },
-      scheduledFor,
-      sentAt: null,
-      error: skipCheck.skip ? `Notificação ignorada: ${skipCheck.reason}` : null,
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    };
-
-    // Add to Firestore
-    const docRef = await addDoc(collection(db, 'whatsapp_notifications'), notificationData);
-    
-    // Automatically trigger mock sending if status is pending (since this is client-side mock phase)
-    if (!skipCheck.skip) {
-      await this.sendMockMessage(docRef.id);
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      throw new Error('Usuário não autenticado para envio de WhatsApp.');
     }
 
-    return docRef.id;
+    const token = await currentUser.getIdToken();
+    const response = await fetch(this.apiEndpoint, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data?.error || 'Falha ao enviar mensagem pelo WhatsApp.');
+    }
+
+    return data.notificationId;
   }
 
   static async sendMockMessage(notificationId: string): Promise<void> {

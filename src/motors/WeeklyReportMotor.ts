@@ -1,6 +1,6 @@
 import { CheckinData } from '../repositories/CheckinRepository';
 import { TrainingSession } from '../types';
-import { EvolutionSummary } from '../repositories/EvolutionRepository';
+import { EvolutionRepository, EvolutionSummary } from '../repositories/EvolutionRepository';
 import { toLocalDateKey } from '../lib/dateKeys';
 
 export interface WeeklyActivity {
@@ -266,7 +266,7 @@ export class WeeklyReportMotor {
       totalTrainings,
       totalCheckins,
       activeDays,
-      streak: summary?.streak || 0,
+      streak: EvolutionRepository.liveStreak(summary),
       weeklyActivityScore,
       averageDailyScore: Number(averageDailyScore.toFixed(1)),
       behaviorAverage,

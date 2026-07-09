@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Home, ClipboardList, CheckCircle2, TrendingUp, User } from 'lucide-react';
+import { Home, ClipboardList, CheckCircle2, Sparkles, TrendingUp, User } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { useReminders } from '@/src/hooks/useReminders';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { SupportRepository } from '@/src/repositories/SupportRepository';
 import { haptics } from '@/src/lib/haptics';
+import { isBetaEnvironment } from '@/src/lib/beta';
 
 export function MainLayout() {
   const location = useLocation();
   const { user } = useAuth();
+  const isBeta = isBetaEnvironment();
   const [hasUnreadSupport, setHasUnreadSupport] = useState(false);
   useReminders();
 
@@ -31,14 +33,16 @@ export function MainLayout() {
 
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
-    { path: '/plano', icon: ClipboardList, label: 'Plano' },
+    isBeta
+      ? { path: '/beta', icon: Sparkles, label: 'Beta' }
+      : { path: '/plano', icon: ClipboardList, label: 'Plano' },
     { path: '/checkin', icon: CheckCircle2, label: 'Check-in' },
     { path: '/evolucao', icon: TrendingUp, label: 'Evolução' },
     { path: '/perfil', icon: User, label: 'Perfil', hasBadge: hasUnreadSupport },
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col relative pb-24">
+    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col relative">
       {/* Main Content Area */}
       <AnimatePresence mode="wait">
         <motion.div

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { PremiumClaimRepository } from '@/src/repositories/PremiumClaimRepository';
+import { notifyPremiumActivated } from '@/src/services/whatsappService';
 import confetti from 'canvas-confetti';
 
 export function Ativar() {
@@ -45,6 +46,9 @@ export function Ativar() {
         const claimed = await PremiumClaimRepository.claimForUser(user);
         if (claimed) {
           await refreshProfile();
+          notifyPremiumActivated(user.uid).catch((whatsappError) => {
+            console.warn('[Ativar] notifyPremiumActivated failed', whatsappError);
+          });
           confetti({
             particleCount: 120,
             spread: 70,
@@ -58,13 +62,13 @@ export function Ativar() {
         } else {
           setStatus('error');
           setErrorMsg(
-            `Nao encontramos nenhuma ativacao pendente para o e-mail ${user.email}. Se voce acabou de pagar, aguarde 1 a 2 minutos e atualize esta pagina.`
+            `Não encontramos nenhuma ativação pendente para o e-mail ${user.email}. Se você acabou de pagar, aguarde 1 a 2 minutos e atualize esta página.`
           );
         }
       } catch (err) {
         console.error('Erro ao ativar premium', err);
         setStatus('error');
-        setErrorMsg('Ocorreu um erro ao verificar sua ativacao. Tente novamente.');
+        setErrorMsg('Ocorreu um erro ao verificar sua ativação. Tente novamente.');
       }
     };
 
@@ -107,7 +111,7 @@ export function Ativar() {
             <h2 className="font-serif text-3xl text-[#055A43] mt-2">Premium ativado!</h2>
             <p className="text-emerald-800 font-medium text-[15px] bg-emerald-50 px-4 py-1.5 rounded-full flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-600" />
-              Bem-vindo ao Focao Premium
+              Bem-vindo ao Focão Premium
             </p>
             <p className="text-[#5C615D] text-sm leading-relaxed max-w-[300px]">
               Seu acesso completo foi liberado. Aproveite todos os treinos personalizados e recursos exclusivos.
@@ -126,9 +130,9 @@ export function Ativar() {
             <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8 text-[#055A43]" />
             </div>
-            <h2 className="font-serif text-2xl text-[#055A43] mt-2">Premium ja ativo!</h2>
+            <h2 className="font-serif text-2xl text-[#055A43] mt-2">Premium já ativo!</h2>
             <p className="text-[#5C615D] text-sm leading-relaxed max-w-[280px]">
-              Voce ja possui acesso ilimitado as funcionalidades Premium do Focao. Redirecionando...
+              Você já possui acesso ilimitado às funcionalidades Premium do Focão. Redirecionando...
             </p>
           </div>
         )}
@@ -195,7 +199,7 @@ export function Ativar() {
                 onClick={() => navigate('/')}
                 className="w-full h-12 rounded-2xl border border-gray-200 text-gray-700 text-[14px] font-semibold flex items-center justify-center active:scale-[0.98] transition-all bg-white"
               >
-                Ir para a home gratis
+                Ir para a home grátis
               </button>
             </div>
           </div>

@@ -151,10 +151,13 @@ export class NutritionMotor {
     // Determine activity level column
     let activityColumn: 'lowActivityGrams' | 'normalActivityGrams' | 'highActivityGrams' = 'normalActivityGrams';
     let activityLabel = 'Normal';
-    if (dog.energyLevel === 'Baixa' || dog.energyLevel === 'Muito calma') {
+    // energyLevel é salvo como 'low' | 'medium' | 'high' (onboarding/EditarPerfil).
+    // Mantemos fallback para strings PT legadas por segurança com dados antigos.
+    const energy = String(dog.energyLevel || '').toLowerCase();
+    if (energy === 'low' || energy === 'baixa' || energy === 'muito calma') {
       activityColumn = 'lowActivityGrams';
       activityLabel = 'Baixa';
-    } else if (dog.energyLevel === 'Alta' || dog.energyLevel === 'Muito Alta' || dog.energyLevel === 'Inesgotável') {
+    } else if (energy === 'high' || energy === 'alta' || energy === 'muito alta' || energy === 'inesgotável') {
        activityColumn = 'highActivityGrams';
        activityLabel = 'Alta';
     }
