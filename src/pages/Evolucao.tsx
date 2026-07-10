@@ -19,10 +19,13 @@ export function Evolucao() {
     const loadData = async () => {
       const user = auth.currentUser;
       if (user) {
-        const stats = await EvolutionRepository.getSummary(user.uid);
+        // Em paralelo (antes eram 3 idas sequenciais ao Firestore = lento).
+        const [stats, checkins, trainingLogs] = await Promise.all([
+          EvolutionRepository.getSummary(user.uid),
+          CheckinRepository.getRecentCheckins(user.uid, 14),
+          TrainingRepository.getTrainingLogs(user.uid),
+        ]);
         setSummary(stats);
-        const checkins = await CheckinRepository.getRecentCheckins(user.uid, 14);
-        const trainingLogs = await TrainingRepository.getTrainingLogs(user.uid);
         setInsights(EvolutionInsightsMotor.generateInsights(stats, checkins, trainingLogs));
       }
       setLoading(false);
