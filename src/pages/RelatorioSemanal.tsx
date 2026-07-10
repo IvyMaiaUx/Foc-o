@@ -131,12 +131,12 @@ export function RelatorioSemanal() {
   if (!isPremium) return <PremiumGate featureName="Relatório Semanal" />;
 
   return (
-    <div className="min-h-screen bg-[#F9F9F8] font-sans flex flex-col relative selection:bg-[#055A43]/20">
-      <header className="px-6 pt-16 pb-6 bg-[#F9F9F8] border-b border-[#055A43]/5 flex items-center justify-between sticky top-0 z-10">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col relative selection:bg-[#055A43]/20">
+      <header className="px-6 pt-16 pb-6 bg-[#F7F5EF] border-b border-[#055A43]/5 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-white border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
+            className="w-10 h-10 rounded-full bg-white border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -166,7 +166,7 @@ export function RelatorioSemanal() {
         </div>
       ) : !report ? (
         <div className="flex-1 flex items-center justify-center">
-           <p className="text-[#5C615D]">Erro ao carregar relatório.</p>
+           <p className="text-[#6B7A6E]">Erro ao carregar relatório.</p>
         </div>
       ) : (!gate?.unlocked) ? (
         <main className="flex-1 px-6 py-6 overflow-y-auto pb-32 flex items-center justify-center">
@@ -191,7 +191,7 @@ export function RelatorioSemanal() {
                    <span className="text-[10px] font-bold tracking-[0.15em] uppercase">Últimos 7 dias</span>
                  </div>
               </div>
-              <p className="text-[#5C615D] text-[16px] font-light leading-relaxed max-w-[280px]">
+              <p className="text-[#6B7A6E] text-[16px] font-light leading-relaxed max-w-[280px]">
                 {(() => {
                   const art = dogGender === 'female' ? 'da' : 'do';
                   return report.maturityLevel === 'empty' 
@@ -203,11 +203,11 @@ export function RelatorioSemanal() {
 
             {report.maturityLevel === 'empty' ? (
               <div className="bg-white rounded-[2rem] p-8 border border-[#055A43]/10 shadow-sm text-center flex flex-col items-center justify-center py-16">
-                 <div className="w-16 h-16 rounded-full bg-[#FAFAFA] flex items-center justify-center mb-6 border border-gray-100">
-                    <Info className="w-8 h-8 text-[#5C615D]/40" />
+                 <div className="w-16 h-16 rounded-full bg-[#F7F5EF] flex items-center justify-center mb-6 border border-gray-100">
+                    <Info className="w-8 h-8 text-[#6B7A6E]/40" />
                  </div>
                  <h3 className="font-serif text-2xl text-[#055A43] mb-3">Relatório em construção</h3>
-                 <p className="text-[#5C615D] font-light leading-relaxed text-[15px] max-w-[240px]">
+                 <p className="text-[#6B7A6E] font-light leading-relaxed text-[15px] max-w-[240px]">
                    Seu relatório semanal ficará mais completo conforme você registra treinos e check-ins.
                  </p>
               </div>
@@ -260,12 +260,12 @@ export function RelatorioSemanal() {
                     <p className="font-serif text-[24px] text-gray-900 leading-snug mb-3">
                       {evolutionInsights.smartReading.headline}
                     </p>
-                    <p className="text-[#5C615D] font-light text-[14px] leading-relaxed mb-5">
+                    <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed mb-5">
                       {evolutionInsights.smartReading.body}
                     </p>
                     <div className="grid gap-2 mb-5">
                       {evolutionInsights.smartReading.evidence.map((item) => (
-                        <div key={item} className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-4 py-3">
+                        <div key={item} className="rounded-2xl bg-[#F7F5EF] border border-[#055A43]/5 px-4 py-3">
                           <p className="text-[12px] font-semibold text-[#506352]">{item}</p>
                         </div>
                       ))}
@@ -290,7 +290,7 @@ export function RelatorioSemanal() {
                       <p className="font-serif text-[23px] text-[#055A43] leading-snug mb-3">{adminReport.title}</p>
                     )}
                     {adminReport.summary && (
-                      <p className="text-[#5C615D] font-light text-[14px] leading-relaxed whitespace-pre-line">{adminReport.summary}</p>
+                      <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed whitespace-pre-line">{adminReport.summary}</p>
                     )}
                     {adminReport.recommendation && (
                       <div className="mt-4 rounded-2xl bg-white/70 border border-[#D8C3A5]/50 px-4 py-3">
@@ -312,20 +312,20 @@ export function RelatorioSemanal() {
                   <p className="font-serif text-[22px] text-gray-900 leading-snug mb-2">
                     {report.comparison.headline}
                   </p>
-                  <p className="text-[#5C615D] font-light text-[14px] leading-relaxed">
+                  <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed">
                     {report.comparison.detail}
                   </p>
                   {report.comparison.hasPreviousWeekData && (
                     <div className="grid grid-cols-3 gap-2 mt-5">
-                      <div className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-3 py-3">
+                      <div className="rounded-2xl bg-[#F7F5EF] border border-[#055A43]/5 px-3 py-3">
                         <p className="text-[9px] font-bold uppercase tracking-wider text-[#506352]/70">Dias ativos</p>
                         <p className="mt-1 text-[15px] font-bold text-[#055A43]">{report.comparison.currentActiveDays} <span className="text-[#8A918D] font-medium">vs. {report.comparison.previousActiveDays}</span></p>
                       </div>
-                      <div className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-3 py-3">
+                      <div className="rounded-2xl bg-[#F7F5EF] border border-[#055A43]/5 px-3 py-3">
                         <p className="text-[9px] font-bold uppercase tracking-wider text-[#506352]/70">Treinos</p>
                         <p className="mt-1 text-[15px] font-bold text-[#055A43]">{report.comparison.currentTrainings} <span className="text-[#8A918D] font-medium">vs. {report.comparison.previousTrainings}</span></p>
                       </div>
-                      <div className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-3 py-3">
+                      <div className="rounded-2xl bg-[#F7F5EF] border border-[#055A43]/5 px-3 py-3">
                         <p className="text-[9px] font-bold uppercase tracking-wider text-[#506352]/70">Check-ins</p>
                         <p className="mt-1 text-[15px] font-bold text-[#055A43]">{report.comparison.currentCheckins} <span className="text-[#8A918D] font-medium">vs. {report.comparison.previousCheckins}</span></p>
                       </div>
@@ -341,7 +341,7 @@ export function RelatorioSemanal() {
                         Padrão recorrente
                       </p>
                     </div>
-                    <p className="text-[#5C615D] font-light text-[14px] leading-relaxed">
+                    <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed">
                       {report.recurringPattern}
                     </p>
                   </div>
@@ -363,7 +363,7 @@ export function RelatorioSemanal() {
                           <div className={`w-11 h-11 rounded-full flex items-center justify-center border shrink-0 ${
                             index === 0
                               ? 'bg-[#F3EDE3]/70 border-[#D8C3A5]/80'
-                              : 'bg-[#FAFAFA] border-[#055A43]/10'
+                              : 'bg-[#F7F5EF] border-[#055A43]/10'
                           }`}>
                             <Star className={`w-5 h-5 ${index === 0 ? 'text-[#8B7357]' : 'text-[#055A43]/60'}`} />
                           </div>
@@ -372,7 +372,7 @@ export function RelatorioSemanal() {
                               {achievement.context}
                             </p>
                             <p className="font-serif text-[#055A43] text-lg leading-tight">{achievement.title}</p>
-                            <p className="text-[#5C615D] text-[13px] font-light leading-relaxed">
+                            <p className="text-[#6B7A6E] text-[13px] font-light leading-relaxed">
                               {achievement.description}
                             </p>
                           </div>
@@ -394,10 +394,10 @@ export function RelatorioSemanal() {
                         <p className="font-bold text-gray-900 text-[15px] mb-1 flex justify-between">
                           Comportamento Positivo <span className="text-[#055A43]">{report.behaviorAverage}%</span>
                         </p>
-                        <div className="w-full bg-[#FAFAFA] h-1.5 rounded-full mt-2 mb-3">
+                        <div className="w-full bg-[#F7F5EF] h-1.5 rounded-full mt-2 mb-3">
                            <div className="h-full bg-[#055A43]" style={{ width: `${report.behaviorAverage}%`, borderRadius: '999px' }} />
                         </div>
-                        <p className="text-[#5C615D] font-light text-[14px] leading-relaxed">
+                        <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed">
                           {report.predominantMood ? `Humor predominante: ${report.predominantMood}.` : 'Registros variados na semana.'}
                         </p>
                       </div>
@@ -411,7 +411,7 @@ export function RelatorioSemanal() {
                       </div>
                       <div className="pt-1 w-full">
                         <p className="font-bold text-gray-900 text-[15px] mb-1">Padrões de Rotina</p>
-                        <p className="text-[#5C615D] font-light text-[14px] leading-relaxed">
+                        <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed">
                           {checkinInsights.insightText}
                         </p>
                       </div>
@@ -425,7 +425,7 @@ export function RelatorioSemanal() {
                       </div>
                       <div className="pt-1 w-full">
                         <p className="font-bold text-gray-900 text-[15px] mb-1">Destaque da Semana</p>
-                        <p className="text-[#5C615D] font-light text-[14px] leading-relaxed">
+                        <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed">
                           {report.mainImprovement}
                         </p>
                       </div>
@@ -439,12 +439,12 @@ export function RelatorioSemanal() {
                       </div>
                       <div className="pt-1">
                         <p className="font-bold text-gray-900 text-[15px] mb-1">Atenção e Ajuste</p>
-                        <p className="text-[#5C615D] font-light text-[14px] leading-relaxed mb-3">
+                        <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed mb-3">
                            {report.attentionPoint}
                         </p>
                         {report.nextWeekSuggestion && (
-                          <div className="bg-[#FAFAFA] p-3 rounded-xl border border-orange-100">
-                            <p className="text-[12px] text-[#5C615D] font-medium">
+                          <div className="bg-[#F7F5EF] p-3 rounded-xl border border-orange-100">
+                            <p className="text-[12px] text-[#6B7A6E] font-medium">
                                <span className="text-orange-500 font-bold uppercase tracking-widest text-[10px] mr-2">Sugestão</span> 
                                {report.nextWeekSuggestion}
                             </p>
@@ -455,8 +455,8 @@ export function RelatorioSemanal() {
                   )}
                   
                   {(!report.attentionPoint && report.nextWeekSuggestion) && (
-                    <div className="bg-[#FAFAFA] p-4 rounded-[1.5rem] border border-gray-100 mb-8">
-                      <p className="text-[13px] text-[#5C615D] font-medium leading-relaxed">
+                    <div className="bg-[#F7F5EF] p-4 rounded-[1.5rem] border border-gray-100 mb-8">
+                      <p className="text-[13px] text-[#6B7A6E] font-medium leading-relaxed">
                          <span className="text-[#055A43] font-bold uppercase tracking-widest text-[10px] block mb-1">Próxima Semana</span> 
                          {report.nextWeekSuggestion}
                       </p>
@@ -464,10 +464,10 @@ export function RelatorioSemanal() {
                   )}
 
                   {report.activeDays > 0 && (
-                    <div className="bg-gradient-to-br from-[#FAFAFA] to-white rounded-[2rem] p-6 border border-[#055A43]/10 shadow-sm flex items-center justify-between">
+                    <div className="bg-gradient-to-br from-[#F7F5EF] to-white rounded-[2rem] p-6 border border-[#055A43]/10 shadow-sm flex items-center justify-between">
                       <div>
                         <p className="font-bold text-gray-900 text-sm mb-1">Consistência</p>
-                        <p className="text-[13px] text-[#5C615D] font-medium">{Math.round((report.activeDays / 7) * 100)}% da semana ativa</p>
+                        <p className="text-[13px] text-[#6B7A6E] font-medium">{Math.round((report.activeDays / 7) * 100)}% da semana ativa</p>
                       </div>
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#055A43]/5 to-[#055A43]/10 flex items-center justify-center border border-[#055A43]/10">
                         <TrendingUp className="w-5 h-5 text-[#055A43]" />

@@ -90,7 +90,7 @@ export function Personality() {
         
         {/* ENERGIA */}
         <div>
-          <h3 className="text-[#5C615D] text-[10px] font-bold tracking-wider mb-3 uppercase">
+          <h3 className="text-[#6B7A6E] text-[10px] font-bold tracking-wider mb-3 uppercase">
             COMO VOCÊ DESCREVERIA O NÍVEL DE ENERGIA DO {dogName.toUpperCase()}?
           </h3>
           <div className="flex flex-col gap-3">
@@ -108,7 +108,7 @@ export function Personality() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#5C615D]">
+                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#6B7A6E]">
                       <Icon className="w-5 h-5" />
                     </div>
                     <span className={`font-medium ${isSelected ? 'text-[#055A43]' : 'text-gray-900'}`}>
@@ -128,7 +128,7 @@ export function Personality() {
 
         {/* PERSONALIDADE */}
         <div>
-          <h3 className="text-[#5C615D] text-[10px] font-bold tracking-wider mb-3 uppercase">
+          <h3 className="text-[#6B7A6E] text-[10px] font-bold tracking-wider mb-3 uppercase">
             QUAL OPÇÃO MAIS COMBINA COM A PERSONALIDADE DELE?
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -153,7 +153,7 @@ export function Personality() {
 
         {/* RECOMPENSA */}
         <div>
-          <h3 className="text-[#5C615D] text-[10px] font-bold tracking-wider mb-3 uppercase">
+          <h3 className="text-[#6B7A6E] text-[10px] font-bold tracking-wider mb-3 uppercase">
             O QUE MAIS CHAMA A ATENÇÃO DO {dogName.toUpperCase()} E PODE FUNCIONAR MELHOR COMO RECOMPENSA DURANTE OS TREINOS?
           </h3>
           <div className="grid grid-cols-2 gap-3">
@@ -178,7 +178,7 @@ export function Personality() {
                     </div>
                   </div>
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    isSelected ? 'bg-[#055A43]/10 text-[#055A43]' : 'bg-gray-50 text-[#5C615D]'
+                    isSelected ? 'bg-[#055A43]/10 text-[#055A43]' : 'bg-gray-50 text-[#6B7A6E]'
                   }`}>
                     <Icon className="w-6 h-6" />
                   </div>

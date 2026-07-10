@@ -62,7 +62,7 @@ export function Goals() {
           <label className="text-[11px] font-bold uppercase tracking-widest text-[#055A43]">
             Algo importante?
           </label>
-          <p className="text-xs text-[#5C615D] mb-1 font-light leading-relaxed">
+          <p className="text-xs text-[#6B7A6E] mb-1 font-light leading-relaxed">
             Se quiser, conte em uma frase o que mais quer melhorar.
           </p>
           <textarea

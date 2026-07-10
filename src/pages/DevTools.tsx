@@ -95,7 +95,7 @@ export function DevTools() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex flex-col p-6">
+    <div className="min-h-screen bg-[#F7F5EF] flex flex-col p-6">
       <header className="pt-10 flex items-center mb-8">
         <button onClick={() => navigate(-1)} className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-gray-200">
           <ChevronLeft className="w-5 h-5 text-gray-600" />

@@ -14,14 +14,14 @@ export function PremiumGate({ featureName }: PremiumGateProps) {
     AnalyticsRepository.logEvent('premium_viewed', { feature: featureName });
   }, [featureName]);
   return (
-    <div className="min-h-screen bg-[#F9F9F8] font-sans flex flex-col items-center justify-center px-8 text-center">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col items-center justify-center px-8 text-center">
       <div className="w-16 h-16 bg-[#055A43]/5 rounded-[1.5rem] flex items-center justify-center mb-6">
         <Lock className="w-8 h-8 text-[#055A43]/40" />
       </div>
       <h2 className="font-serif text-[28px] text-[#055A43] tracking-tight leading-tight mb-3">
         {featureName}
       </h2>
-      <p className="text-[15px] text-[#5C615D] font-light leading-relaxed mb-8 max-w-xs">
+      <p className="text-[15px] text-[#6B7A6E] font-light leading-relaxed mb-8 max-w-xs">
         Este recurso faz parte do plano Premium. Inicie seus 7 dias gratuitos para desbloquear.
       </p>
       <button
@@ -32,7 +32,7 @@ export function PremiumGate({ featureName }: PremiumGateProps) {
       </button>
       <button
         onClick={() => navigate(-1)}
-        className="mt-4 text-[13px] text-[#5C615D]/60 underline underline-offset-2"
+        className="mt-4 text-[13px] text-[#6B7A6E]/60 underline underline-offset-2"
       >
         Voltar
       </button>

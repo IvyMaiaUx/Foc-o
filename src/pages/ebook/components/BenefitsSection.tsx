@@ -38,7 +38,7 @@ export function BenefitsSection() {
             <h2
               style={{
                 fontFamily: "var(--font-serif)",
-                color: "#FAFAFA",
+                color: "#F7F5EF",
                 fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
                 lineHeight: 1.2,
                 fontWeight: 500,
@@ -108,7 +108,7 @@ export function BenefitsSection() {
                 <p
                   style={{
                     fontFamily: "var(--font-sans)",
-                    color: "#FAFAFA",
+                    color: "#F7F5EF",
                     fontSize: "0.95rem",
                     fontWeight: 500,
                     lineHeight: 1.4,

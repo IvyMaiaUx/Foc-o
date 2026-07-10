@@ -125,7 +125,7 @@ export function Assinatura() {
 
   if (loading || isAuthLoading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-[#FAFAFA]">
+      <div className="flex justify-center items-center h-screen bg-[#F7F5EF]">
         <Loader2 className="w-8 h-8 text-[#055A43] animate-spin" />
       </div>
     );
@@ -144,11 +144,11 @@ export function Assinatura() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col items-center">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col items-center">
       <header className="w-full max-w-lg px-6 pt-16 pb-4 flex items-center justify-between">
         <button
           onClick={() => { hapticLightTap(); navigate(-1); }}
-          className="w-10 h-10 rounded-full bg-white border border-[#055A43]/10 flex items-center justify-center text-[#5C615D] shadow-sm active:scale-[0.98] transition-all"
+          className="w-10 h-10 rounded-full bg-white border border-[#055A43]/10 flex items-center justify-center text-[#6B7A6E] shadow-sm active:scale-[0.98] transition-all"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -263,7 +263,7 @@ export function Assinatura() {
           </div>
         </motion.div>
 
-        <p className="text-center text-[12px] text-[#5C615D]/60 px-6 font-light">
+        <p className="text-center text-[12px] text-[#6B7A6E]/60 px-6 font-light">
           O acesso Premium é vinculado ao email usado na compra e nesta conta.
         </p>
       </main>

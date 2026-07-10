@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, Copy, Check, Share2, Users, Award, Gift } from 'lucide-react';
@@ -101,7 +101,7 @@ export function IndiqueGanhe() {
   };
 
   return (
-    <div className="flex-1 bg-[#FAFAFA] font-sans pb-32 min-h-screen">
+    <div className="flex-1 bg-[#F7F5EF] font-sans pb-32 min-h-screen">
       {/* Header */}
       <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5 flex items-center justify-between sticky top-0 z-10">
         <button 
@@ -136,19 +136,19 @@ export function IndiqueGanhe() {
 
         {/* Stats Grid */}
         <section className="grid grid-cols-2 gap-4">
-          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col">
             <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
               <Users className="w-4 h-4" />
             </div>
-            <span className="text-[10px] font-medium text-[#5C615D]/60 uppercase tracking-wider">Indicações Válidas</span>
+            <span className="text-[10px] font-medium text-[#6B7A6E]/60 uppercase tracking-wider">Indicações Válidas</span>
             <span className="font-serif text-2xl text-[#055A43] mt-1 font-bold">{validReferrals}/3</span>
           </div>
 
-          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col">
             <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
               <Award className="w-4 h-4" />
             </div>
-            <span className="text-[10px] font-medium text-[#5C615D]/60 uppercase tracking-wider">Dias Ganhos</span>
+            <span className="text-[10px] font-medium text-[#6B7A6E]/60 uppercase tracking-wider">Dias Ganhos</span>
             <span className="font-serif text-2xl text-[#055A43] mt-1 font-bold">{referralRewardsDays} dias</span>
           </div>
         </section>
@@ -163,8 +163,8 @@ export function IndiqueGanhe() {
         </div>
 
         {/* Badges de Reconhecimento */}
-        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)]">
-          <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#5C615D]/60 mb-4 px-1">
+        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#6B7A6E]/60 mb-4 px-1">
             Badges de Reconhecimento
           </h3>
           
@@ -191,7 +191,7 @@ export function IndiqueGanhe() {
                     <span className="text-[9px] bg-emerald-500/10 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">Conquistado</span>
                   )}
                 </div>
-                <p className="text-[11px] text-[#5C615D]/85 mt-0.5">
+                <p className="text-[11px] text-[#6B7A6E]/85 mt-0.5">
                   1 indicação válida concluída
                 </p>
               </div>
@@ -219,7 +219,7 @@ export function IndiqueGanhe() {
                     <span className="text-[9px] bg-emerald-500/10 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">Conquistado</span>
                   )}
                 </div>
-                <p className="text-[11px] text-[#5C615D]/85 mt-0.5">
+                <p className="text-[11px] text-[#6B7A6E]/85 mt-0.5">
                   2 indicações válidas concluídas
                 </p>
               </div>
@@ -247,7 +247,7 @@ export function IndiqueGanhe() {
                     <span className="text-[9px] bg-emerald-500/10 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">Conquistado</span>
                   )}
                 </div>
-                <p className="text-[11px] text-[#5C615D]/85 mt-0.5">
+                <p className="text-[11px] text-[#6B7A6E]/85 mt-0.5">
                   3 indicações válidas concluídas
                 </p>
               </div>
@@ -256,10 +256,10 @@ export function IndiqueGanhe() {
         </section>
 
         {/* Code & Sharing Section */}
-        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col items-center">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#5C615D]/60 mb-2">Seu código de indicação</p>
+        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col items-center">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B7A6E]/60 mb-2">Seu código de indicação</p>
           <div className="flex items-center gap-2 mb-6">
-            <div className="bg-[#FAFAFA] border border-[#055A43]/10 rounded-2xl px-6 py-3 font-mono text-xl font-bold tracking-wider text-[#055A43]">
+            <div className="bg-[#F7F5EF] border border-[#055A43]/10 rounded-2xl px-6 py-3 font-mono text-xl font-bold tracking-wider text-[#055A43]">
               {referralCode}
             </div>
             <button
@@ -294,16 +294,16 @@ export function IndiqueGanhe() {
 
         {/* History */}
         <section>
-          <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
+          <h3 className="text-[10px] font-medium text-[#6B7A6E] tracking-[0.15em] uppercase mb-3 px-2">
             Status das Indicações
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-3 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] min-h-[100px] flex flex-col justify-center">
+          <div className="bg-white rounded-[1.5rem] p-3 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] min-h-[100px] flex flex-col justify-center">
             {loading ? (
               <div className="py-8 flex justify-center">
                 <div className="animate-spin w-6 h-6 border-2 border-[#055A43]/20 border-t-[#055A43] rounded-full" />
               </div>
             ) : referrals.length === 0 ? (
-              <div className="py-6 text-center text-sm text-[#5C615D]/60 font-light">
+              <div className="py-6 text-center text-sm text-[#6B7A6E]/60 font-light">
                 Nenhuma indicação iniciada ainda.
               </div>
             ) : (
@@ -313,7 +313,7 @@ export function IndiqueGanhe() {
                     <div className="flex items-center justify-between py-3 px-2 text-xs">
                       <div>
                         <p className="font-semibold text-[#506352]">Tutor Indicado</p>
-                        <p className="text-[10px] text-[#5C615D]/60 mt-0.5">
+                        <p className="text-[10px] text-[#6B7A6E]/60 mt-0.5">
                           Check-ins: {ref.checkinsCompleted || 0} | Onboarding: {ref.onboardingCompleted ? 'OK' : 'Pendente'}
                         </p>
                       </div>
@@ -330,9 +330,9 @@ export function IndiqueGanhe() {
         </section>
 
         {/* Rules */}
-        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)]">
+        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]">
           <h4 className="font-serif text-sm text-[#055A43] mb-4 font-semibold">Regras do Programa</h4>
-          <div className="text-xs text-[#5C615D]/80 space-y-3 leading-relaxed">
+          <div className="text-xs text-[#6B7A6E]/80 space-y-3 leading-relaxed">
             <p>
               Todos os usuários do Focão podem fazer indicações, sejam usuários Free, Trial ou Premium.
             </p>

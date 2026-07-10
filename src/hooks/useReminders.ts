@@ -32,7 +32,7 @@ function showInAppNotification(title: string, message: string, navigatePath?: st
   heading.textContent = title;
 
   const paragraph = document.createElement('p');
-  paragraph.className = 'text-[12px] text-[#5C615D] leading-tight mt-0.5';
+  paragraph.className = 'text-[12px] text-[#6B7A6E] leading-tight mt-0.5';
   paragraph.textContent = message;
 
   iconWrap.append(icon, dot);

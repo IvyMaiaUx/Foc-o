@@ -198,7 +198,7 @@ export function RelatorioImpressao() {
   return (
     <div className="min-h-screen bg-[#F7F6F2] print:bg-white text-[#17221E] font-sans selection:bg-[#055A43]/20">
       <div className="print:hidden sticky top-0 z-50 mx-auto flex max-w-4xl items-center justify-between border-b border-[#E5E1D7] bg-white px-6 py-4">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-semibold text-[#5C615D] transition-colors hover:text-[#055A43]">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-semibold text-[#6B7A6E] transition-colors hover:text-[#055A43]">
           <ChevronLeft className="h-4 w-4" /> Voltar
         </button>
         <button onClick={() => window.print()} className="flex items-center gap-2 rounded-lg bg-[#055A43] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#044C38]">

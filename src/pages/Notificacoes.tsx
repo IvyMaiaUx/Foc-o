@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, BellOff, CheckCircle2, ChevronLeft, Clock, Save } from 'lucide-react';
@@ -154,7 +154,7 @@ export function Notificacoes() {
   if (loading) return null;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
       <header className="px-6 py-6 bg-white border-b border-[#055A43]/5 flex items-center justify-between sticky top-0 z-10">
         <button
           onClick={() => navigate(-1)}
@@ -182,11 +182,11 @@ export function Notificacoes() {
             <h2 className="text-[14px] font-medium text-[#055A43] tracking-wide uppercase">Lembretes no App</h2>
           </div>
 
-          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col gap-6">
+          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col gap-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-[#506352] text-[15px]">Ativar notificações push</p>
-                <p className="text-[#5C615D]/80 text-[13px] font-light mt-1 max-w-[220px]">
+                <p className="text-[#6B7A6E]/80 text-[13px] font-light mt-1 max-w-[220px]">
                   Receba avisos conforme a agenda do seu cão.
                 </p>
               </div>
@@ -251,7 +251,7 @@ function TimeRow({ label, value, onChange }: { label: string; value: string; onC
         type="time"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="bg-[#FAFAFA] border border-[#055A43]/10 text-[#055A43] rounded-lg px-3 py-1.5 font-medium text-[15px] focus:outline-none focus:ring-1 focus:ring-[#055A43]"
+        className="bg-[#F7F5EF] border border-[#055A43]/10 text-[#055A43] rounded-lg px-3 py-1.5 font-medium text-[15px] focus:outline-none focus:ring-1 focus:ring-[#055A43]"
       />
     </div>
   );

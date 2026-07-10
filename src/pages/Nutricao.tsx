@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Info, Utensils, Droplets, ArrowRight, X, Loader2, Save, ChevronDown } from 'lucide-react';
@@ -178,19 +178,19 @@ export function Nutricao() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F7F5EF] flex items-center justify-center">
         <div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
       {/* Header */}
       <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5 flex items-center gap-4 sticky top-0 z-10">
         <button 
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-[#FAFAFA] border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
+          className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -279,14 +279,14 @@ export function Nutricao() {
           {/* Tips / Info */}
           <h3 className="font-medium text-[#506352] text-sm tracking-widest uppercase mb-4 px-2">Orientações</h3>
           
-          <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] overflow-hidden flex flex-col mb-4">
+          <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] overflow-hidden flex flex-col mb-4">
             <div className="p-4 px-5 flex gap-4">
               <div className="w-8 h-8 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
                 <Droplets className="w-4 h-4" />
               </div>
               <div>
                 <p className="text-[#055A43] font-medium text-[15px] mb-1">Hidratação constante</p>
-                <p className="text-[#5C615D] text-sm font-light leading-relaxed">
+                <p className="text-[#6B7A6E] text-sm font-light leading-relaxed">
                   Mantenha água fresca sempre disponível. Aumente a oferta em dias quentes ou após passeios.
                 </p>
               </div>
@@ -300,7 +300,7 @@ export function Nutricao() {
               </div>
               <div>
                 <p className="text-[#055A43] font-medium text-[15px] mb-1">Petiscos no Treino</p>
-                <p className="text-[#5C615D] text-sm font-light leading-relaxed">
+                <p className="text-[#6B7A6E] text-sm font-light leading-relaxed">
                   Os petiscos de treino devem representar, no máximo, 10% do total calórico diário para evitar sobrepeso.
                 </p>
               </div>
@@ -343,10 +343,10 @@ export function Nutricao() {
                     <button
                       type="button"
                       onClick={() => setIsBrandSheetOpen(true)}
-                      className="w-full text-left text-base font-normal h-14 bg-[#FAFAFA] border border-[#E5E5E5] rounded-[14px] px-5 text-[#055A43] focus:outline-none focus:border-[#055A43] transition-all relative"
+                      className="w-full text-left text-base font-normal h-14 bg-[#F7F5EF] border border-[#E5E5E5] rounded-[14px] px-5 text-[#055A43] focus:outline-none focus:border-[#055A43] transition-all relative"
                     >
                       {brand || <span className="text-[#A0A4A1]">Selecione uma marca...</span>}
-                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                         <ChevronDown className="w-5 h-5" />
                       </div>
                     </button>
@@ -369,10 +369,10 @@ export function Nutricao() {
                     <button
                       type="button"
                       onClick={() => setIsLineSheetOpen(true)}
-                      className="w-full text-left text-base font-normal h-14 bg-[#FAFAFA] border border-[#E5E5E5] rounded-[14px] px-5 text-[#055A43] focus:outline-none focus:border-[#055A43] transition-all relative"
+                      className="w-full text-left text-base font-normal h-14 bg-[#F7F5EF] border border-[#E5E5E5] rounded-[14px] px-5 text-[#055A43] focus:outline-none focus:border-[#055A43] transition-all relative"
                     >
                       {line || <span className="text-[#A0A4A1]">Selecione uma linha...</span>}
-                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                         <ChevronDown className="w-5 h-5" />
                       </div>
                     </button>
@@ -393,7 +393,7 @@ export function Nutricao() {
                     {/* Fase */}
                     <div className="space-y-1.5">
                       <label className="text-[11px] font-medium text-[#506352] uppercase tracking-widest ml-1">Fase</label>
-                      <div className="flex bg-[#FAFAFA] border border-gray-100 rounded-2xl p-1 h-14">
+                      <div className="flex bg-[#F7F5EF] border border-gray-100 rounded-2xl p-1 h-14">
                         {['Filhote', 'Adulto', 'Sênior'].map((stage) => {
                           const value = stage === 'Sênior' ? 'Senior' : stage;
                           return (
@@ -404,7 +404,7 @@ export function Nutricao() {
                               className={`flex-1 rounded-xl text-xs font-bold transition-all ${
                                 lifeStage === value 
                                   ? 'bg-white text-[#055A43] shadow-sm' 
-                                  : 'text-[#5C615D]/60'
+                                  : 'text-[#6B7A6E]/60'
                               }`}
                             >
                               {stage}
@@ -420,10 +420,10 @@ export function Nutricao() {
                       <button
                         type="button"
                         onClick={() => setIsVersionSheetOpen(true)}
-                        className="w-full text-left text-base font-normal h-14 bg-[#FAFAFA] border border-[#E5E5E5] rounded-[14px] px-5 text-[#055A43] focus:outline-none focus:border-[#055A43] transition-all relative"
+                        className="w-full text-left text-base font-normal h-14 bg-[#F7F5EF] border border-[#E5E5E5] rounded-[14px] px-5 text-[#055A43] focus:outline-none focus:border-[#055A43] transition-all relative"
                       >
                         {version || <span className="text-[#A0A4A1]">Selecione a versão...</span>}
-                        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+                        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                           <ChevronDown className="w-5 h-5" />
                         </div>
                       </button>
@@ -449,7 +449,7 @@ export function Nutricao() {
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
                         placeholder="Ex: 250"
-                        className="w-full h-14 px-5 bg-[#FAFAFA] border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#055A43]/20 focus:border-[#055A43] transition-all outline-none text-[#055A43]"
+                        className="w-full h-14 px-5 bg-[#F7F5EF] border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#055A43]/20 focus:border-[#055A43] transition-all outline-none text-[#055A43]"
                       />
                       <span className="absolute right-5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#A0A4A1] uppercase tracking-widest">g</span>
                     </div>

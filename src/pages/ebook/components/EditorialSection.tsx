@@ -26,7 +26,7 @@ export function EditorialSection() {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
           style={{
             fontFamily: "var(--font-serif)",
-            color: "#FAFAFA",
+            color: "#F7F5EF",
             fontSize: "clamp(1.8rem, 4vw, 3rem)",
             lineHeight: 1.2,
             fontWeight: 400,

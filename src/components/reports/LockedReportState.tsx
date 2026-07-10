@@ -32,7 +32,7 @@ export function LockedReportState({ result, dogName, onCheckin, onTrain }: Locke
       <h2 className="font-serif text-[26px] text-[#055A43] tracking-tight leading-tight mb-1">
         Construindo a semana{dogName ? ` ${dogName.endsWith('a') ? 'da' : 'de'} ${dogName}` : ''}
       </h2>
-      <p className="text-[14px] text-[#5C615D] leading-relaxed max-w-[280px] mb-8">
+      <p className="text-[14px] text-[#6B7A6E] leading-relaxed max-w-[280px] mb-8">
         Faltam alguns registros pra liberar seu relatório. Continue acompanhando o dia a dia!
       </p>
 
@@ -56,7 +56,7 @@ export function LockedReportState({ result, dogName, onCheckin, onTrain }: Locke
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="font-serif text-[32px] text-[#055A43] leading-none">{clampedPct}%</span>
-          <span className="text-[10px] uppercase tracking-widest text-[#5C615D]/70 mt-1">concluído</span>
+          <span className="text-[10px] uppercase tracking-widest text-[#6B7A6E]/70 mt-1">concluído</span>
         </div>
       </div>
 
@@ -75,11 +75,11 @@ export function LockedReportState({ result, dogName, onCheckin, onTrain }: Locke
               ) : (
                 <Circle className="w-5 h-5 text-gray-300" />
               )}
-              <span className={`text-sm font-medium ${r.met ? 'text-[#055A43]' : 'text-[#5C615D]'}`}>
+              <span className={`text-sm font-medium ${r.met ? 'text-[#055A43]' : 'text-[#6B7A6E]'}`}>
                 {r.label}
               </span>
             </div>
-            <span className={`text-sm font-semibold ${r.met ? 'text-[#055A43]' : 'text-[#5C615D]/70'}`}>
+            <span className={`text-sm font-semibold ${r.met ? 'text-[#055A43]' : 'text-[#6B7A6E]/70'}`}>
               {Math.min(r.current, r.target)}/{r.target}
             </span>
           </div>

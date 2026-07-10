@@ -23,12 +23,12 @@ export function BetaFocao() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] px-6 py-10 pb-24 font-sans text-[#506352]">
+    <div className="min-h-screen bg-[#F7F5EF] px-6 py-10 pb-24 font-sans text-[#506352]">
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6">
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-[#055A43]/10 bg-white text-[#5C615D] shadow-sm"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-[#055A43]/10 bg-white text-[#6B7A6E] shadow-sm"
           aria-label="Voltar"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -38,11 +38,11 @@ export function BetaFocao() {
           <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#055A43] text-white shadow-[0_10px_24px_rgba(5,90,67,0.18)]">
             <Sparkles className="h-5 w-5" />
           </div>
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#5C615D]/70">Beta Focão</p>
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#6B7A6E]/70">Beta Focão</p>
           <h1 className="font-serif text-[34px] leading-tight text-[#055A43]">
             Ajude a construir o Focão
           </h1>
-          <p className="mt-4 text-[15px] leading-relaxed text-[#5C615D]">
+          <p className="mt-4 text-[15px] leading-relaxed text-[#6B7A6E]">
             Você está participando da fase beta do app. Nesta etapa, seu papel é testar, explorar e nos dizer o que funciona bem e o que precisa melhorar.
           </p>
           <p className="mt-4 rounded-2xl border border-[#055A43]/10 bg-[#055A43]/[0.03] p-4 text-[13px] leading-relaxed text-[#506352]">
@@ -52,7 +52,7 @@ export function BetaFocao() {
 
         <section className="rounded-[1.5rem] border border-[#055A43]/10 bg-white p-5">
           <h2 className="font-serif text-2xl text-[#055A43]">Como funciona o Beta</h2>
-          <p className="mt-3 text-sm leading-relaxed text-[#5C615D]">
+          <p className="mt-3 text-sm leading-relaxed text-[#6B7A6E]">
             Durante essa fase, o acesso ao app é gratuito e temporário. Nosso objetivo é entender o que funciona melhor, o que precisa ser ajustado e quais recursos geram mais valor para você.
           </p>
           <div className="mt-5 flex flex-col gap-3">
@@ -73,7 +73,7 @@ export function BetaFocao() {
           >
             <span className="flex items-center gap-3">
               <HeartHandshake className="h-5 w-5 text-[#055A43]" />
-              <span><strong className="block text-sm text-[#055A43]">Enviar feedback</strong><small className="text-xs text-[#5C615D]">Conte sua experiência</small></span>
+              <span><strong className="block text-sm text-[#055A43]">Enviar feedback</strong><small className="text-xs text-[#6B7A6E]">Conte sua experiência</small></span>
             </span>
           </button>
           <button
@@ -83,7 +83,7 @@ export function BetaFocao() {
           >
             <span className="flex items-center gap-3">
               <Bug className="h-5 w-5 text-[#055A43]" />
-              <span><strong className="block text-sm text-[#055A43]">Reportar problema</strong><small className="text-xs text-[#5C615D]">Descreva o que aconteceu</small></span>
+              <span><strong className="block text-sm text-[#055A43]">Reportar problema</strong><small className="text-xs text-[#6B7A6E]">Descreva o que aconteceu</small></span>
             </span>
           </button>
           <button
@@ -93,7 +93,7 @@ export function BetaFocao() {
           >
             <span className="flex items-center gap-3">
               <Lightbulb className="h-5 w-5 text-[#055A43]" />
-              <span><strong className="block text-sm text-[#055A43]">Sugerir função</strong><small className="text-xs text-[#5C615D]">Ideias para a versão oficial</small></span>
+              <span><strong className="block text-sm text-[#055A43]">Sugerir função</strong><small className="text-xs text-[#6B7A6E]">Ideias para a versão oficial</small></span>
             </span>
           </button>
           <button
@@ -103,7 +103,7 @@ export function BetaFocao() {
           >
             <span className="flex items-center gap-3">
               <MessageSquareText className="h-5 w-5 text-[#055A43]" />
-              <span><strong className="block text-sm text-[#055A43]">Avaliar experiência</strong><small className="text-xs text-[#5C615D]">Muito boa, boa ou pode melhorar</small></span>
+              <span><strong className="block text-sm text-[#055A43]">Avaliar experiência</strong><small className="text-xs text-[#6B7A6E]">Muito boa, boa ou pode melhorar</small></span>
             </span>
           </button>
         </section>

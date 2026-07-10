@@ -83,7 +83,7 @@ export function ForgotPassword() {
           <div className="flex flex-col mt-4">
             <div className="bg-[#055A43]/5 border-l-4 border-[#055A43] p-4 rounded-r-xl">
               <p className="text-[#055A43] font-medium text-[15px]">E-mail enviado</p>
-              <p className="text-[#5C615D] text-sm mt-1">
+              <p className="text-[#6B7A6E] text-sm mt-1">
                 {isActivationFlow
                   ? 'Se houver uma conta vinculada a este e-mail, você receberá um link para redefinir sua senha e concluir a ativação.'
                   : 'Se houver uma conta vinculada a este e-mail, você receberá um link para redefinir sua senha.'}
@@ -109,7 +109,7 @@ export function ForgotPassword() {
           <div className="text-center mt-4">
             <button
               type="button"
-              className="text-[#5C615D] text-sm font-medium hover:text-[#055A43] transition-colors"
+              className="text-[#6B7A6E] text-sm font-medium hover:text-[#055A43] transition-colors"
               onClick={() => navigate(isActivationFlow ? '/login?redirect=ativar' : isSubscriptionFlow ? '/login?redirect=assinatura' : '/login')}
             >
               Voltar para o login

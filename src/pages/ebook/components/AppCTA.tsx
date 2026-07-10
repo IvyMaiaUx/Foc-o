@@ -4,7 +4,7 @@ import { Reveal } from "./Reveal";
 export function AppCTA() {
   return (
     <section
-      style={{ backgroundColor: "#FAFAFA" }}
+      style={{ backgroundColor: "#F7F5EF" }}
       className="py-24 px-6 md:px-16 lg:px-24"
     >
       <Reveal>
@@ -58,7 +58,7 @@ export function AppCTA() {
                     justifyContent: "center",
                   }}
                 >
-                  <Smartphone size={16} style={{ color: "#FAFAFA" }} />
+                  <Smartphone size={16} style={{ color: "#F7F5EF" }} />
                 </div>
                 <span
                   style={{
@@ -76,7 +76,7 @@ export function AppCTA() {
               <h2
                 style={{
                   fontFamily: "var(--font-serif)",
-                  color: "#FAFAFA",
+                  color: "#F7F5EF",
                   fontSize: "clamp(1.5rem, 3vw, 2.2rem)",
                   lineHeight: 1.2,
                   fontWeight: 500,
@@ -103,7 +103,7 @@ export function AppCTA() {
                 href="/register"
                 style={{
                   backgroundColor: "#055A43",
-                  color: "#FAFAFA",
+                  color: "#F7F5EF",
                   fontFamily: "var(--font-sans)",
                   fontSize: "0.9rem",
                   fontWeight: 500,

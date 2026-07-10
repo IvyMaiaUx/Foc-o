@@ -81,7 +81,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               "flex h-14 w-full rounded-2xl border-2 border-gray-200 bg-white px-4 py-2 text-[15px] font-medium text-[#055A43] transition-all duration-200",
               "focus-visible:outline-none focus-visible:border-[#055A43] focus-visible:ring-4 focus-visible:ring-[#055A43]/10 shadow-sm",
-              "placeholder:text-[#5C615D]/40 placeholder:font-normal disabled:cursor-not-allowed disabled:opacity-50",
+              "placeholder:text-[#6B7A6E]/40 placeholder:font-normal disabled:cursor-not-allowed disabled:opacity-50",
               isPassword && "pr-12",
               error && "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/10",
               className
@@ -105,7 +105,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               type="button"
               aria-label={showPassword ? 'Ocultar senha' : 'Visualizar senha'}
               onClick={() => setShowPassword((current) => !current)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5C615D]/70 transition-colors hover:text-[#055A43] focus-visible:outline-none focus-visible:text-[#055A43]"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B7A6E]/70 transition-colors hover:text-[#055A43] focus-visible:outline-none focus-visible:text-[#055A43]"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>

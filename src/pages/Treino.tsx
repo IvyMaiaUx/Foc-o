@@ -204,14 +204,14 @@ export function Treino() {
           angle: 60,
           spread: 55,
           origin: { x: 0, y: 0.8 },
-          colors: ['#ffffff', '#EAB308', '#055A43', '#506352']
+          colors: ['#FFFEFB', '#EAB308', '#055A43', '#506352']
         });
         confetti({
           particleCount: 5,
           angle: 120,
           spread: 55,
           origin: { x: 1, y: 0.8 },
-          colors: ['#ffffff', '#EAB308', '#055A43', '#506352']
+          colors: ['#FFFEFB', '#EAB308', '#055A43', '#506352']
         });
 
         if (Date.now() < end) {
@@ -232,7 +232,7 @@ export function Treino() {
            className="w-full max-w-md mx-auto flex flex-col items-center"
         >
            <h2 className="font-serif text-[32px] text-[#055A43] mb-2 text-center">Como foi o treino?</h2>
-           <p className="text-[#5C615D] text-[15px] font-light mb-8 text-center text-balance">
+           <p className="text-[#6B7A6E] text-[15px] font-light mb-8 text-center text-balance">
              Seu feedback ajuda a adaptar os próximos treinos para o seu cão.
            </p>
 
@@ -250,7 +250,7 @@ export function Treino() {
                  className="flex flex-col w-full text-left p-4 rounded-2xl border-2 border-gray-100 bg-white hover:border-[#055A43]/30 transition-all active:scale-[0.98]"
                >
                  <span className="font-semibold text-[#055A43] text-[15px]">{opt.label}</span>
-                 <span className="text-[#5C615D] text-sm mt-0.5">{opt.desc}</span>
+                 <span className="text-[#6B7A6E] text-sm mt-0.5">{opt.desc}</span>
                </button>
              ))}
            </div>
@@ -367,7 +367,7 @@ export function Treino() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F9F9F8] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F7F5EF] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-[#055A43]/20 border-t-[#055A43] rounded-full animate-spin" />
       </div>
     );
@@ -375,8 +375,8 @@ export function Treino() {
 
   if (!activeTask) {
     return (
-      <div className="min-h-screen bg-[#F9F9F8] p-6 flex flex-col items-center justify-center">
-        <p className="text-[#5C615D]">Treino não encontrado.</p>
+      <div className="min-h-screen bg-[#F7F5EF] p-6 flex flex-col items-center justify-center">
+        <p className="text-[#6B7A6E]">Treino não encontrado.</p>
         <button onClick={() => navigate(-1)} className="mt-4 text-[#055A43] font-medium">Voltar</button>
       </div>
     );
@@ -386,9 +386,9 @@ export function Treino() {
   // Antes caía em tasks[0] (treino errado / paywall de "revisão"). Agora mostra estado final.
   if (!id && plan && plan.tasks.length > 0 && (plan.currentTaskIndex ?? 0) >= plan.tasks.length) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] px-6 font-sans flex flex-col items-center justify-center text-center">
+      <div className="min-h-screen bg-[#F7F5EF] px-6 font-sans flex flex-col items-center justify-center text-center">
         <h1 className="font-serif text-[28px] text-[#055A43]">Plano concluído! 🎉</h1>
-        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#5C615D]">
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#6B7A6E]">
           Vocês terminaram todos os treinos deste plano. Aguarde a geração do próximo ou acompanhe a evolução.
         </p>
         <button
@@ -411,10 +411,10 @@ export function Treino() {
 
   if (isFutureTraining) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] px-6 font-sans flex flex-col items-center justify-center text-center">
+      <div className="min-h-screen bg-[#F7F5EF] px-6 font-sans flex flex-col items-center justify-center text-center">
         <Lock className="h-8 w-8 text-[#055A43]" />
         <h1 className="mt-4 font-serif text-[28px] text-[#055A43]">Esta etapa ainda não foi liberada.</h1>
-        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#5C615D]">
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#6B7A6E]">
           Conclua o treino atual para avançar pela trilha na ordem recomendada.
         </p>
         <button
@@ -433,11 +433,11 @@ export function Treino() {
 
   if (isPremiumTrainingLocked) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col">
+      <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
         <header className="px-6 pt-safe-top mt-6 pb-6 flex items-start justify-between z-10 relative">
           <button 
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#5C615D]"
+            className="w-10 h-10 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#6B7A6E]"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -448,11 +448,11 @@ export function Treino() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
       <header className="px-6 pt-safe-top mt-6 pb-6 flex items-start justify-between z-10 relative">
         <button 
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#5C615D]"
+          className="w-10 h-10 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#6B7A6E]"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -472,7 +472,7 @@ export function Treino() {
                </span>
              )}
           </div>
-          <span className="text-[13px] font-medium text-[#5C615D]/80 uppercase tracking-widest">
+          <span className="text-[13px] font-medium text-[#6B7A6E]/80 uppercase tracking-widest">
             {dogProfile?.name || 'Seu cão'}
           </span>
         </div>
@@ -491,7 +491,7 @@ export function Treino() {
         <h1 className="font-serif text-[32px] leading-[1.1] tracking-tight text-[#055A43] mb-4">
           {sanitizeText(activeTask.title)}
         </h1>
-        <p className="text-[#5C615D] text-[15px] font-light leading-relaxed mb-6">
+        <p className="text-[#6B7A6E] text-[15px] font-light leading-relaxed mb-6">
           {sanitizeText(TRAINING_TEMPLATES[activeTask.id]?.objective || activeTask.description)}
         </p>
 
@@ -513,11 +513,11 @@ export function Treino() {
              </p>
              <div className="flex flex-col gap-2 mt-2">
                <div className="flex items-center justify-between border-t border-[#055A43]/5 pt-3 mt-1">
-                  <span className="text-[12px] uppercase tracking-wider text-[#5C615D]/80 font-semibold">Fase</span>
+                  <span className="text-[12px] uppercase tracking-wider text-[#6B7A6E]/80 font-semibold">Fase</span>
                   <span className="text-[#055A43] font-medium text-[13px]">{sanitizeText(trainingReason.phase)}</span>
                </div>
                <div className="flex items-center justify-between border-t border-[#055A43]/5 pt-3">
-                  <span className="text-[12px] uppercase tracking-wider text-[#5C615D]/80 font-semibold">Foco Atual</span>
+                  <span className="text-[12px] uppercase tracking-wider text-[#6B7A6E]/80 font-semibold">Foco Atual</span>
                   <span className="text-[#055A43] font-medium text-[13px]">{sanitizeText(trainingReason.focus)}</span>
                </div>
              </div>
@@ -550,10 +550,10 @@ export function Treino() {
                 key={index}
                 className="flex gap-4"
               >
-                <div className="w-8 h-8 rounded-full bg-[#FAFAFA] border border-[#055A43]/10 flex items-center justify-center text-[#055A43] font-serif text-sm shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#F7F5EF] border border-[#055A43]/10 flex items-center justify-center text-[#055A43] font-serif text-sm shrink-0">
                   {index + 1}
                 </div>
-                <p className="text-[#5C615D] text-[15px] leading-relaxed pt-1">
+                <p className="text-[#6B7A6E] text-[15px] leading-relaxed pt-1">
                   {sanitizeText(step)}
                 </p>
               </motion.div>
@@ -561,14 +561,14 @@ export function Treino() {
           </div>
         </div>
 
-        {/* Timer Section */}
-        <div className="flex flex-col items-center justify-center mb-8">
-          <div className="text-[72px] font-mono tracking-tighter text-[#055A43] mb-8 font-light tabular-nums">
+        {/* Timer Section — "momento de treino": card suave verde */}
+        <div className="flex flex-col items-center justify-center mb-8 bg-[#EAF0E8] rounded-[20px] p-6">
+          <div className="text-[64px] font-mono tracking-tighter text-[#055A43] mb-6 font-light tabular-nums">
             {formatTime(timeElapsed)}
           </div>
-          <button 
+          <button
             onClick={handleToggleTimer}
-            className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg transform transition-transform active:scale-95 border-4 border-white ${timerRunning ? 'bg-[#506352] text-white' : 'bg-[#055A43] text-white animate-pulse shadow-[#055A43]/20'}`}
+            className={`w-20 h-20 rounded-full flex items-center justify-center shadow-[0_8px_24px_rgba(45,74,58,0.08)] transform transition-transform duration-150 ease-out active:scale-95 border-4 border-[#FFFEFB] ${timerRunning ? 'bg-[#506352] text-white' : 'bg-[#055A43] text-white shadow-[#055A43]/20'}`}
           >
             {timerRunning ? (
               <Pause className="w-8 h-8" fill="currentColor" />
@@ -580,7 +580,7 @@ export function Treino() {
       </main>
 
       {/* Bottom Action */}
-      <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA] to-transparent" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
+      <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
         <button 
           onClick={handleCompleteRequest}
           disabled={isSaving}

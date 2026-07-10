@@ -4,24 +4,81 @@
 @theme {
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Lora", ui-serif, Georgia, serif;
+  --font-display: "Abril Fatface", ui-serif, Georgia, serif;
 
+  /* ---- Marca (verde-floresta) — NÃO alterar ---- */
   --color-brand-primary: #055A43;
+  --color-brand: #055A43;
   --color-brand-secondary: #506352;
   --color-brand-tertiary: #5F2620;
-  --color-neutral-base: #5C615D;
-  --color-background-offwhite: #FAFAFA;
-  --color-surface-white: #FFFFFF;
+
+  /* ---- Neutros quentes (conforto visual) ---- */
+  --color-background: #F7F5EF;          /* fundo das telas (off-white quente) */
+  --color-background-offwhite: #F7F5EF; /* legado */
+  --color-surface: #FFFEFB;             /* cards / superfícies elevadas (branco quente) */
+  --color-surface-white: #FFFEFB;       /* legado */
+  --color-surface-soft: #EAF0E8;        /* superfície suave verde (cards secundários, timer) */
   --color-cream: #F7F3E8;
+
+  /* Texto */
+  --color-ink: #2E3830;        /* primário (verde-quase-preto) */
+  --color-ink-soft: #6B7A6E;   /* secundário (verde-acinzentado) */
+  --color-ink-faint: #8A9589;  /* terciário / hints / labels / ícones inativos */
+  --color-neutral-base: #6B7A6E;
+
+  /* Linhas / bordas / estados */
+  --color-line: #E4E1D6;       /* bordas suaves de inputs/cards */
+  --color-line-green: #C9D2C9; /* borda de botão secundário/outline */
+  --color-disabled-bg: #DCE5DC;
+  --color-disabled-ink: #7E8E80;
+
+  /* ---- Accent quente secundário (terracota) — máx. 5% da UI ---- */
+  --color-terracotta: #C2703E;      /* principal */
+  --color-terracotta-ink: #9A6A2E;  /* texto/escuro */
+  --color-amber-soft: #FBF3E4;      /* fundo âmbar suave */
   --color-gold: #B08D57;
-  --font-display: "Abril Fatface", ui-serif, Georgia, serif;
+
+  /* ---- Branco aquecido: qualquer bg-white/text-white vira branco quente ---- */
+  --color-white: #FFFEFB;
+
+  /* ---- Escala de cinza aquecida (verde-acinzentado; sem cinzas puros) ---- */
+  --color-gray-50: #F7F5EF;
+  --color-gray-100: #EAF0E8;
+  --color-gray-200: #E4E1D6;
+  --color-gray-300: #C9D2C9;
+  --color-gray-400: #8A9589;
+  --color-gray-500: #8A9589;
+  --color-gray-600: #6B7A6E;
+  --color-gray-700: #4A554C;
+  --color-gray-800: #3A443C;
+  --color-gray-900: #2E3830;
+
+  /* ---- Sombra única e suave do app ---- */
+  --shadow-soft: 0 8px 24px rgba(45, 74, 58, 0.08);
+
+  /* ---- Raios padronizados ---- */
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 24px;
 }
 
 body {
-  background-color: var(--color-background-offwhite);
-  color: var(--color-brand-primary);
+  background-color: var(--color-background);
+  color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  line-height: 1.5;
+  line-height: 1.55;
+}
+
+/* Preenchimento com leve overshoot (checkbox de missão concluída) */
+@keyframes focao-pop {
+  0%   { transform: scale(0.8); }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@utility animate-pop {
+  animation: focao-pop 260ms ease-out;
 }
 
 @utility pb-safe {
@@ -43,4 +100,3 @@ body {
 @utility mt-safe {
   margin-top: env(safe-area-inset-top, 0px);
 }
-

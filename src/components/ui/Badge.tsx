@@ -12,7 +12,7 @@ const variants: Record<NonNullable<BadgeProps['variant']>, string> = {
   gold:   'bg-[#B08D57]/12 text-[#7a6234]',
   amber:  'bg-amber-100 text-amber-700',
   muted:  'bg-[#506352]/10 text-[#506352]',
-  red:    'bg-[#5F2620]/10 text-[#5F2620]',
+  red:    'bg-[#C2703E]/10 text-[#C2703E]',
 };
 
 export function Badge({ children, variant = 'green', className }: BadgeProps) {

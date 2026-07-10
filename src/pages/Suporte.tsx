@@ -113,19 +113,19 @@ export function Suporte() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
       {/* Header */}
       <header className="px-6 pt-16 pb-4 bg-white flex items-center justify-between sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-[#FAFAFA] border border-[#055A43]/10 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
+            className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/10 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div>
             <h1 className="font-serif text-xl text-[#055A43]">Equipe Focão</h1>
-            <p className="text-xs text-[#5C615D]">Suporte</p>
+            <p className="text-xs text-[#6B7A6E]">Suporte</p>
           </div>
         </div>
       </header>
@@ -151,7 +151,7 @@ export function Suporte() {
                  <span className="text-2xl">👋</span>
               </div>
               <p className="text-[#055A43] font-medium text-lg mb-2">Como podemos ajudar?</p>
-              <p className="text-[#5C615D] text-sm font-light">
+              <p className="text-[#6B7A6E] text-sm font-light">
                  Envie suas dúvidas sobre treinamento, comportamento ou nutrição. Nossos especialistas responderão em breve.
               </p>
            </div>
@@ -180,7 +180,7 @@ export function Suporte() {
               <React.Fragment key={msg.id}>
                 {showSeparator && (
                   <div className="flex justify-center my-4">
-                    <span className="text-[11px] font-medium text-[#5C615D]/60 bg-gray-100 px-3 py-1 rounded-full uppercase tracking-widest">
+                    <span className="text-[11px] font-medium text-[#6B7A6E]/60 bg-gray-100 px-3 py-1 rounded-full uppercase tracking-widest">
                       {formatDateSeparator(msg.createdAt)}
                     </span>
                   </div>
@@ -192,7 +192,7 @@ export function Suporte() {
                      className={`max-w-[80%] rounded-2xl px-4 py-3 text-[15px] ${
                         msg.sender === 'user' 
                           ? 'bg-[#055A43] text-white rounded-br-sm' 
-                          : 'bg-white border border-gray-100 text-[#5C615D] rounded-bl-sm shadow-sm'
+                          : 'bg-white border border-gray-100 text-[#6B7A6E] rounded-bl-sm shadow-sm'
                      }`}
                    >
                      {msg.imageUrl && (
@@ -228,7 +228,7 @@ export function Suporte() {
           <div className="flex items-end gap-2">
             <button 
                onClick={() => fileInputRef.current?.click()}
-               className="w-12 h-12 rounded-full flex items-center justify-center bg-[#FAFAFA] border border-gray-200 text-[#5C615D] active:scale-[0.98] shrink-0"
+               className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F7F5EF] border border-gray-200 text-[#6B7A6E] active:scale-[0.98] shrink-0"
             >
                <Paperclip className="w-5 h-5" />
             </button>
@@ -239,12 +239,12 @@ export function Suporte() {
                className="hidden"
                onChange={handleFileChange}
             />
-            <div className="flex-1 bg-[#FAFAFA] border border-gray-200 rounded-2xl flex items-center px-4 py-1">
+            <div className="flex-1 bg-[#F7F5EF] border border-gray-200 rounded-2xl flex items-center px-4 py-1">
                <textarea 
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   placeholder="Digite sua mensagem..."
-                  className="w-full bg-transparent border-none focus:ring-0 resize-none py-3 text-[15px] text-[#055A43] placeholder-[#5C615D]/50"
+                  className="w-full bg-transparent border-none focus:ring-0 resize-none py-3 text-[15px] text-[#055A43] placeholder-[#6B7A6E]/50"
                   rows={1}
                   onKeyDown={(e) => {
                      if (e.key === 'Enter' && !e.shiftKey) {

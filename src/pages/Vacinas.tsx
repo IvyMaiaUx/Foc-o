@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Syringe, Calendar, CheckCircle2, X, ChevronDown } from 'lucide-react';
@@ -82,12 +82,12 @@ export function Vacinas() {
   const history = vaccines.filter(v => !upcoming.some(u => u.id === v.id)).sort((a, b) => parseLocalDateKey(b.dateApplied).getTime() - parseLocalDateKey(a.dateApplied).getTime());
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col relative">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col relative">
       {/* Header */}
       <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5 flex items-center gap-4 sticky top-0 z-10">
         <button 
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-[#FAFAFA] border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
+          className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -135,7 +135,7 @@ export function Vacinas() {
                 {upcoming.map(item => {
                   const monthsDiff = Math.max(0, Math.round((parseLocalDateKey(item.nextDose!).getTime() - today.getTime()) / (1000*60*60*24*30)));
                   return (
-                    <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] mb-4 flex gap-4 items-center">
+                    <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] mb-4 flex gap-4 items-center">
                       <div className="w-12 h-12 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0">
                          <Calendar className="w-5 h-5 text-orange-400" />
                       </div>
@@ -157,9 +157,9 @@ export function Vacinas() {
                         {/* History */}
             <div className="flex flex-col gap-3">
                {history.length === 0 ? (
-                 <p className="text-[#5C615D] text-sm px-2">Nenhum registro encontrado.</p>
+                 <p className="text-[#6B7A6E] text-sm px-2">Nenhum registro encontrado.</p>
                ) : history.map(item => (
-                 <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col gap-3 opacity-90">
+                 <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col gap-3 opacity-90">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-[#055A43]/5 flex items-center justify-center">
@@ -167,14 +167,14 @@ export function Vacinas() {
                         </div>
                         <div>
                           <p className="font-medium text-[#506352] text-sm mb-0.5">{item.name}</p>
-                          <p className="text-[11px] text-[#5C615D] font-light">Aplicada em {new Date(item.dateApplied).toLocaleDateString()}</p>
+                          <p className="text-[11px] text-[#6B7A6E] font-light">Aplicada em {new Date(item.dateApplied).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <CheckCircle2 className="w-5 h-5 text-[#055A43]/50" />
                     </div>
                     {item.notes && (
-                      <div className="ml-14 bg-[#FAFAFA] rounded-xl p-3 border border-gray-100">
-                        <p className="text-xs text-[#5C615D] italic">{item.notes}</p>
+                      <div className="ml-14 bg-[#F7F5EF] rounded-xl p-3 border border-gray-100">
+                        <p className="text-xs text-[#6B7A6E] italic">{item.notes}</p>
                       </div>
                     )}
                  </div>
@@ -186,10 +186,10 @@ export function Vacinas() {
       </main>
       
       {/* Footer CTA */}
-      <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA] to-transparent z-10" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
+      <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent z-10" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
         <button
           onClick={() => setShowAddForm(true)}
-          className="w-full bg-white text-[#055A43] border border-[#055A43]/20 h-14 rounded-2xl font-medium text-base shadow-[0_8px_30px_rgb(0,0,0,0.04)] active:scale-[0.98] transition-transform"
+          className="w-full bg-white text-[#055A43] border border-[#055A43]/20 h-14 rounded-2xl font-medium text-base shadow-[0_8px_30px_rgba(45,74,58,0.08)] active:scale-[0.98] transition-transform"
         >
           Registrar nova dose
         </button>
@@ -207,7 +207,7 @@ export function Vacinas() {
             <header className="px-6 pt-16 flex items-center justify-between">
               <button 
                 onClick={() => setShowAddForm(false)}
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[#5C615D]"
+                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[#6B7A6E]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -217,32 +217,32 @@ export function Vacinas() {
             
             <div className="p-6 flex flex-col gap-6 flex-1 overflow-y-auto">
                <div className="flex flex-col gap-2 w-full">
-                  <label className="block text-[#5C615D] text-xs font-bold uppercase tracking-widest mb-1 ml-1">Nome da Vacina</label>
+                  <label className="block text-[#6B7A6E] text-xs font-bold uppercase tracking-widest mb-1 ml-1">Nome da Vacina</label>
                   <button
                     type="button"
                     onClick={() => setIsVaccineModalOpen(true)}
-                    className="w-full text-left text-[15px] font-normal h-14 bg-[#FAFAFA] border border-gray-100 rounded-2xl p-4 text-[#055A43] focus:outline-none focus:border-[#055A43]/30 transition-all relative flex items-center"
+                    className="w-full text-left text-[15px] font-normal h-14 bg-[#F7F5EF] border border-gray-100 rounded-2xl p-4 text-[#055A43] focus:outline-none focus:border-[#055A43]/30 transition-all relative flex items-center"
                   >
                     {formData.name || <span className="text-[#A0A4A1]">Selecione a vacina</span>}
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                       <ChevronDown className="w-5 h-5" />
                     </div>
                   </button>
                </div>
                <div>
-                  <label className="block text-[#5C615D] text-xs font-bold uppercase tracking-widest mb-2 ml-1">Data de Aplicação</label>
-                  <input type="date" value={formData.dateApplied} onChange={e => setFormData(f => ({ ...f, dateApplied: e.target.value }))} className="w-full bg-[#FAFAFA] border border-gray-100 rounded-2xl p-4 text-[15px] focus:outline-none focus:border-[#055A43]/30" />
+                  <label className="block text-[#6B7A6E] text-xs font-bold uppercase tracking-widest mb-2 ml-1">Data de Aplicação</label>
+                  <input type="date" value={formData.dateApplied} onChange={e => setFormData(f => ({ ...f, dateApplied: e.target.value }))} className="w-full bg-[#F7F5EF] border border-gray-100 rounded-2xl p-4 text-[15px] focus:outline-none focus:border-[#055A43]/30" />
                </div>
                <div>
-                  <label className="block text-[#5C615D] text-xs font-bold uppercase tracking-widest mb-2 ml-1">Próxima Dose (opcional)</label>
-                  <input type="date" value={formData.nextDose} onChange={e => setFormData(f => ({ ...f, nextDose: e.target.value }))} className="w-full bg-[#FAFAFA] border border-gray-100 rounded-2xl p-4 text-[15px] focus:outline-none focus:border-[#055A43]/30" />
+                  <label className="block text-[#6B7A6E] text-xs font-bold uppercase tracking-widest mb-2 ml-1">Próxima Dose (opcional)</label>
+                  <input type="date" value={formData.nextDose} onChange={e => setFormData(f => ({ ...f, nextDose: e.target.value }))} className="w-full bg-[#F7F5EF] border border-gray-100 rounded-2xl p-4 text-[15px] focus:outline-none focus:border-[#055A43]/30" />
                </div>
                <div>
-                  <label className="block text-[#5C615D] text-xs font-bold uppercase tracking-widest mb-2 ml-1">Anotações / Lote (opcional)</label>
+                  <label className="block text-[#6B7A6E] text-xs font-bold uppercase tracking-widest mb-2 ml-1">Anotações / Lote (opcional)</label>
                   <textarea 
                     value={formData.notes} 
                     onChange={e => setFormData(f => ({ ...f, notes: e.target.value }))} 
-                    className="w-full bg-[#FAFAFA] border border-gray-100 rounded-2xl p-4 text-[15px] focus:outline-none focus:border-[#055A43]/30 min-h-[100px] resize-none"
+                    className="w-full bg-[#F7F5EF] border border-gray-100 rounded-2xl p-4 text-[15px] focus:outline-none focus:border-[#055A43]/30 min-h-[100px] resize-none"
                     placeholder="Ex: Fabricante, reações..."
                   />
                </div>

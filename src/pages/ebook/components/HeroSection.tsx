@@ -10,7 +10,7 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
   return (
     <section
       id="top"
-      style={{ backgroundColor: "#F9F9F8" }}
+      style={{ backgroundColor: "#F7F5EF" }}
       className="min-h-screen flex items-center px-6 md:px-16 lg:px-24 py-24"
     >
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -108,7 +108,7 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
               onClick={onCtaClick}
               style={{
                 backgroundColor: "#055A43",
-                color: "#FAFAFA",
+                color: "#F7F5EF",
                 fontFamily: "var(--font-sans)",
                 fontSize: "0.95rem",
                 fontWeight: 500,
@@ -218,7 +218,7 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
               <h2
                 style={{
                   fontFamily: "var(--font-serif)",
-                  color: "#F9F9F8",
+                  color: "#F7F5EF",
                   fontSize: "1.65rem",
                   lineHeight: 1.2,
                   fontWeight: 500,

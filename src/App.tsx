@@ -29,7 +29,7 @@ import { Treino } from './pages/Treino';
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, userProfile, isLoading } = useAuth();
   const location = useLocation();
-  if (isLoading) return <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center"><div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" /></div>;
+  if (isLoading) return <div className="min-h-screen bg-[#F7F5EF] flex items-center justify-center"><div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" /></div>;
   if (!user) return <Navigate to="/welcome" replace />;
   // Onboarding incompleto: força o fluxo antes de liberar o resto do app (exceto as
   // próprias rotas de /onboarding, senão vira loop). Só redireciona quando o perfil já
@@ -44,7 +44,7 @@ const APP_ADMIN_EMAILS = new Set(['focaosupport@gmail.com']);
 
 function RequireAppAdmin({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
-  if (isLoading) return <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center"><div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" /></div>;
+  if (isLoading) return <div className="min-h-screen bg-[#F7F5EF] flex items-center justify-center"><div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" /></div>;
   if (!user) return <Navigate to="/welcome" replace />;
   if (!user.email || !APP_ADMIN_EMAILS.has(user.email.toLowerCase())) return <Navigate to="/" replace />;
   return <>{children}</>;
@@ -103,7 +103,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="font-sans min-h-screen bg-[#FAFAFA] text-[#5C615D] selection:bg-[#055A43]/20">
+        <div className="font-sans min-h-screen bg-[#F7F5EF] text-[#6B7A6E] selection:bg-[#055A43]/20">
           <AppLaunchSplash visible={showLaunchSplash} />
           {isMaintenance ? (
             <Manutencao />

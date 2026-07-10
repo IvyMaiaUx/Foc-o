@@ -69,7 +69,7 @@ export function AuthLayout({
           {showLogoutButton && (
             <button
               onClick={handleLogout}
-              className="w-10 h-10 flex items-center justify-center -mr-2 rounded-full text-[#5F2620] hover:bg-[#5F2620]/5 transition-colors"
+              className="w-10 h-10 flex items-center justify-center -mr-2 rounded-full text-[#C2703E] hover:bg-[#C2703E]/5 transition-colors"
               title="Encerrar sessão"
             >
               <LogOut className="w-5 h-5" strokeWidth={1.5} />
@@ -97,7 +97,7 @@ export function AuthLayout({
               </h1>
             )}
             {subtitle && (
-              <p className="text-[#5C615D] text-[15px] leading-relaxed max-w-[280px]">
+              <p className="text-[#6B7A6E] text-[15px] leading-relaxed max-w-[280px]">
                 {subtitle}
               </p>
             )}

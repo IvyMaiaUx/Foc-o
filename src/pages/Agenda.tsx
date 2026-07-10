@@ -286,7 +286,7 @@ export function Agenda() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 bg-[#FAFAFA] flex items-center justify-center">
+      <div className="flex-1 bg-[#F7F5EF] flex items-center justify-center">
         <div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" />
       </div>
     );
@@ -295,13 +295,13 @@ export function Agenda() {
   const dogName = dogProfile?.name || 'seu cão';
 
   return (
-    <div className="flex-1 bg-[#F9F9F8] font-sans min-h-screen pb-24">
+    <div className="flex-1 bg-[#F7F5EF] font-sans min-h-screen pb-24">
       {/* Header */}
-      <header className="px-6 pt-16 pb-6 bg-[#F9F9F8] sticky top-0 z-10">
+      <header className="px-6 pt-16 pb-6 bg-[#F7F5EF] sticky top-0 z-10">
         <div className="flex items-center gap-4 mb-3">
           <button 
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-white border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] shadow-sm"
+            className="w-10 h-10 rounded-full bg-white border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] shadow-sm"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -309,17 +309,17 @@ export function Agenda() {
         <h1 className="font-serif text-[32px] text-[#055A43] tracking-tight leading-none mb-2">
           Agenda de {dogName}
         </h1>
-        <p className="text-[#5C615D] text-[15px] font-light leading-relaxed">
+        <p className="text-[#6B7A6E] text-[15px] font-light leading-relaxed">
           Veja os próximos passos da rotina, treinos e cuidados.
         </p>
       </header>
 
       <main className="px-6 flex flex-col gap-8">
-        <section className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_15px_rgb(0,0,0,0.02)] p-5">
+        <section className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_15px_rgba(45,74,58,0.08)] p-5">
           <div className="flex items-start justify-between gap-4 mb-5">
             <div>
               <h2 className="text-[15px] font-bold text-gray-900">Personalizar agenda</h2>
-              <p className="text-[13px] text-[#5C615D] mt-1 leading-relaxed">
+              <p className="text-[13px] text-[#6B7A6E] mt-1 leading-relaxed">
                 Defina os horários de lembrete para a rotina do cão.
               </p>
             </div>
@@ -394,7 +394,7 @@ export function Agenda() {
              {/* Treino do dia */}
              <div 
                onClick={() => navigate('/treino')}
-               className={`flex items-center gap-4 p-4 rounded-2xl border cursor-pointer active:scale-[0.98] transition-all bg-white hover:border-[#055A43]/30 ${agendaState?.hasCompletedTrainingToday ? 'border-[#055A43]/20 shadow-sm' : 'border-[#055A43]/10 shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}
+               className={`flex items-center gap-4 p-4 rounded-2xl border cursor-pointer active:scale-[0.98] transition-all bg-white hover:border-[#055A43]/30 ${agendaState?.hasCompletedTrainingToday ? 'border-[#055A43]/20 shadow-sm' : 'border-[#055A43]/10 shadow-[0_4px_15px_rgba(45,74,58,0.08)]'}`}
              >
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${agendaState?.hasCompletedTrainingToday ? 'bg-[#055A43] text-white' : 'bg-[#055A43]/5 text-[#055A43]'}`}>
                   {agendaState?.hasCompletedTrainingToday ? <CheckCircle2 className="w-6 h-6" /> : <Play className="w-5 h-5 ml-0.5" fill="currentColor" />}
@@ -403,7 +403,7 @@ export function Agenda() {
                   <span className="text-[11px] font-bold tracking-wider uppercase text-[#055A43] mb-0.5 block">Treino diário</span>
                   <p className="text-[15px] font-medium text-gray-900 leading-snug">{sanitizeText(agendaState?.activeTask?.title) || 'Sem treino previsto'}</p>
                 </div>
-                <div className="text-[12px] font-medium text-[#506352] bg-[#FAFAFA] px-2.5 py-1 rounded-md border border-gray-100">
+                <div className="text-[12px] font-medium text-[#506352] bg-[#F7F5EF] px-2.5 py-1 rounded-md border border-gray-100">
                    {agendaState?.hasCompletedTrainingToday ? 'Concluído' : 'Pendente'}
                 </div>
              </div>
@@ -420,7 +420,7 @@ export function Agenda() {
                   <span className="text-[11px] font-bold tracking-wider uppercase text-[#506352] mb-0.5 block">Monitoramento</span>
                   <p className="text-[15px] font-medium text-gray-900 leading-snug">Check-in da Rotina</p>
                 </div>
-                <div className="text-[12px] font-medium text-[#506352] bg-[#FAFAFA] px-2.5 py-1 rounded-md border border-gray-100">
+                <div className="text-[12px] font-medium text-[#506352] bg-[#F7F5EF] px-2.5 py-1 rounded-md border border-gray-100">
                    {agendaState?.hasCheckedInToday ? 'Concluído' : 'Pendente'}
                 </div>
              </div>
@@ -491,13 +491,13 @@ export function Agenda() {
           
           <div className="flex flex-col gap-2">
             {(!agendaState?.upcomingTasks || agendaState.upcomingTasks.length === 0) ? (
-               <p className="text-sm text-[#5C615D] italic">Não há mais tarefas no bloco atual.</p>
+               <p className="text-sm text-[#6B7A6E] italic">Não há mais tarefas no bloco atual.</p>
             ) : (
                agendaState.upcomingTasks.map((t, i) => (
                  <div key={i} className="flex flex-col gap-1 p-3.5 bg-white rounded-xl border border-gray-100 relative pl-10">
                    <div className="absolute left-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#055A43]/20" />
                    <p className="text-[14px] font-medium text-gray-900 leading-none">{sanitizeText(t.title)}</p>
-                   <span className="text-[11px] text-[#5C615D]">{t.duration} • Bloco {t.module}</span>
+                   <span className="text-[11px] text-[#6B7A6E]">{t.duration} • Bloco {t.module}</span>
                  </div>
                ))
             )}
@@ -511,8 +511,8 @@ export function Agenda() {
           <div className="flex flex-col gap-3">
              {agendaState?.weeklyPreview?.map((day, idx) => (
                 <div key={idx} className="flex gap-4 items-start bg-white p-4 rounded-2xl border border-gray-100">
-                   <div className="w-[50px] flex flex-col items-center justify-center bg-[#FAFAFA] border border-gray-200 rounded-lg py-2 shrink-0">
-                     <span className="text-[10px] font-bold uppercase text-[#5C615D]">{day.label}</span>
+                   <div className="w-[50px] flex flex-col items-center justify-center bg-[#F7F5EF] border border-gray-200 rounded-lg py-2 shrink-0">
+                     <span className="text-[10px] font-bold uppercase text-[#6B7A6E]">{day.label}</span>
                      <span className="text-[16px] font-bold text-gray-900 leading-none mt-1">{day.dateValue.getDate()}</span>
                    </div>
                    <div className="flex flex-col gap-2 flex-1 pt-1">
@@ -567,17 +567,17 @@ export function Agenda() {
                 </div>
              )}
 
-             <div onClick={() => navigate('/relatorio')} className="bg-[#FAFAFA] border border-gray-200 rounded-2xl p-4 cursor-pointer hover:bg-gray-50 transition-colors">
-               <Calendar className="w-6 h-6 text-[#5C615D] mb-2" />
+             <div onClick={() => navigate('/relatorio')} className="bg-[#F7F5EF] border border-gray-200 rounded-2xl p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+               <Calendar className="w-6 h-6 text-[#6B7A6E] mb-2" />
                <p className="text-[13px] font-bold text-gray-900 leading-tight">Relatório</p>
-               <p className="text-[11px] text-[#5C615D] mt-1">{agendaState?.reportAvailable ? 'Pronto para ver' : 'Domingo'}</p>
+               <p className="text-[11px] text-[#6B7A6E] mt-1">{agendaState?.reportAvailable ? 'Pronto para ver' : 'Domingo'}</p>
              </div>
              
              {!agendaState?.upcomingVaccine && (
-                <div onClick={() => navigate('/vacinas')} className="bg-[#FAFAFA] border border-gray-200 rounded-2xl p-4 cursor-pointer hover:bg-gray-50 transition-colors">
-                  <Syringe className="w-6 h-6 text-[#5C615D]/50 mb-2" />
+                <div onClick={() => navigate('/vacinas')} className="bg-[#F7F5EF] border border-gray-200 rounded-2xl p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                  <Syringe className="w-6 h-6 text-[#6B7A6E]/50 mb-2" />
                    <p className="text-[13px] font-bold text-gray-900 leading-tight">Saúde em dia</p>
-                   <p className="text-[11px] text-[#5C615D] mt-1">Nenhuma vacina</p>
+                   <p className="text-[11px] text-[#6B7A6E] mt-1">Nenhuma vacina</p>
                 </div>
              )}
           </div>
@@ -622,7 +622,7 @@ export function Agenda() {
                       placeholder="Ex: Passeio no parque, Escovar dentes"
                       value={eventForm.title}
                       onChange={(e) => setEventForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full bg-[#FAFAFA] border border-[#055A43]/10 rounded-2xl px-4 py-3 text-[15px] font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#055A43]/20"
+                      className="w-full bg-[#F7F5EF] border border-[#055A43]/10 rounded-2xl px-4 py-3 text-[15px] font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#055A43]/20"
                     />
                   </div>
 
@@ -635,7 +635,7 @@ export function Agenda() {
                       type="time"
                       value={eventForm.time}
                       onChange={(e) => setEventForm(prev => ({ ...prev, time: e.target.value }))}
-                      className="w-full bg-[#FAFAFA] border border-[#055A43]/10 rounded-2xl px-4 py-3 text-[15px] font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#055A43]/20"
+                      className="w-full bg-[#F7F5EF] border border-[#055A43]/10 rounded-2xl px-4 py-3 text-[15px] font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#055A43]/20"
                     />
                   </div>
 
@@ -662,7 +662,7 @@ export function Agenda() {
                             className={`flex flex-col items-center justify-center gap-1.5 py-3.5 px-2 rounded-2xl border text-center transition-all cursor-pointer ${
                               isSelected
                                 ? 'bg-[#055A43] text-white border-transparent shadow-sm'
-                                : 'bg-[#FAFAFA] text-gray-600 border-gray-100 hover:border-[#055A43]/20'
+                                : 'bg-[#F7F5EF] text-gray-600 border-gray-100 hover:border-[#055A43]/20'
                             }`}
                           >
                             {cat.icon}
@@ -678,7 +678,7 @@ export function Agenda() {
                     <label className="text-[12px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">
                       Repetição
                     </label>
-                    <div className="flex bg-[#FAFAFA] p-1 rounded-2xl border border-gray-100">
+                    <div className="flex bg-[#F7F5EF] p-1 rounded-2xl border border-gray-100">
                       {[
                         { id: 'daily', label: 'Diário' },
                         { id: 'weekly', label: 'Semanal' },
@@ -728,7 +728,7 @@ export function Agenda() {
                               className={`w-9 h-9 rounded-full text-[13px] font-semibold flex items-center justify-center transition-all cursor-pointer ${
                                 isSelected
                                   ? 'bg-[#055A43] text-white shadow-sm'
-                                  : 'bg-[#FAFAFA] text-gray-600 border border-gray-100 hover:border-[#055A43]/20'
+                                  : 'bg-[#F7F5EF] text-gray-600 border border-gray-100 hover:border-[#055A43]/20'
                               }`}
                             >
                               {dayChar}
@@ -748,7 +748,7 @@ export function Agenda() {
                         type="date"
                         value={eventForm.date}
                         onChange={(e) => setEventForm(prev => ({ ...prev, date: e.target.value }))}
-                        className="w-full bg-[#FAFAFA] border border-[#055A43]/10 rounded-2xl px-4 py-3 text-[15px] font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#055A43]/20"
+                        className="w-full bg-[#F7F5EF] border border-[#055A43]/10 rounded-2xl px-4 py-3 text-[15px] font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#055A43]/20"
                       />
                     </div>
                   )}
@@ -799,7 +799,7 @@ function AgendaTimeInput({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-2.5 rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-4 py-3">
+    <div className="flex flex-col gap-2.5 rounded-2xl bg-[#F7F5EF] border border-[#055A43]/5 px-4 py-3">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-2.5 text-[13px] font-semibold text-[#506352]">
           <Clock className="w-4.5 h-4.5 text-[#055A43]" />
@@ -818,7 +818,7 @@ function AgendaTimeInput({
 
       {enabled && (
         <div className="flex items-center justify-between pt-1.5 border-t border-[#055A43]/5 mt-1.5 animate-in slide-in-from-top-1 fade-in duration-200">
-          <span className="text-[12px] text-[#5C615D]/80 font-light">Horário do lembrete:</span>
+          <span className="text-[12px] text-[#6B7A6E]/80 font-light">Horário do lembrete:</span>
           <input
             type="time"
             value={value}

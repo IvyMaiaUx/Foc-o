@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Award, CheckCircle2, ChevronRight, Dumbbell, Flame, Sparkles, TrendingDown, TrendingUp, X } from 'lucide-react';
 import { auth } from '@/src/lib/firebase';
@@ -33,7 +33,7 @@ export function Evolucao() {
   const streak = EvolutionRepository.liveStreak(summary);
 
   return (
-    <div className="flex-1 bg-[#FAFAFA] font-sans pb-28">
+    <div className="flex-1 bg-[#F7F5EF] font-sans pb-28">
       <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <p className="text-[13px] font-medium text-[#506352] mb-1">Seu progresso</p>
@@ -94,7 +94,7 @@ export function Evolucao() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.05 }}
-              className="bg-white rounded-[1.75rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col gap-3"
+              className="bg-white rounded-[1.75rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col gap-3"
             >
               {insights.statusItems.map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
@@ -110,18 +110,18 @@ export function Evolucao() {
             {[
               { value: insights?.isEmpty ? 0 : (summary?.totalSessions ?? 0), label: 'Sessões', color: '#055A43', icon: <Dumbbell className="w-4 h-4" /> },
               { value: insights?.totalCheckins ?? 0, label: 'Check-ins', color: '#506352', icon: <CheckCircle2 className="w-4 h-4" /> },
-              { value: streak, label: streak === 1 ? 'Dia seguido' : 'Dias seguidos', color: '#5F2620', icon: <Flame className="w-4 h-4" /> },
+              { value: streak, label: streak === 1 ? 'Dia seguido' : 'Dias seguidos', color: '#C2703E', icon: <Flame className="w-4 h-4" /> },
             ].map((stat, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 + i * 0.05 }}
-                className="bg-white rounded-[1.5rem] p-4 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)]"
+                className="bg-white rounded-[1.5rem] p-4 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]"
               >
                 <div className="mb-2" style={{ color: stat.color }}>{stat.icon}</div>
                 <p className="font-serif text-[26px] leading-none mb-1" style={{ color: stat.color }}>{stat.value}</p>
-                <p className="text-[10px] font-medium text-[#5C615D]/60 uppercase tracking-widest leading-tight">{stat.label}</p>
+                <p className="text-[10px] font-medium text-[#6B7A6E]/60 uppercase tracking-widest leading-tight">{stat.label}</p>
               </motion.div>
             ))}
           </div>
@@ -132,14 +132,14 @@ export function Evolucao() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="bg-white rounded-[1.75rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)]"
+              className="bg-white rounded-[1.75rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]"
             >
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="w-4 h-4 text-[#055A43]" />
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#055A43]">Análise da semana</p>
               </div>
               <p className="font-serif text-[18px] text-gray-900 leading-snug mb-2">{insights.smartReading.headline}</p>
-              <p className="text-[13px] text-[#5C615D] leading-relaxed mb-4">{insights.smartReading.recommendation}</p>
+              <p className="text-[13px] text-[#6B7A6E] leading-relaxed mb-4">{insights.smartReading.recommendation}</p>
               <button
                 onClick={() => navigate('/relatorio')}
                 className="flex items-center gap-1.5 text-[12px] font-semibold text-[#055A43] uppercase tracking-widest"
@@ -155,7 +155,7 @@ export function Evolucao() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.25 }}
-              className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)]"
+              className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]"
             >
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#055A43] mb-5">Evolução por habilidade</p>
               <div className="flex flex-col gap-4">
@@ -173,7 +173,7 @@ export function Evolucao() {
                         className="h-full bg-[#055A43] rounded-full"
                       />
                     </div>
-                    <p className="text-[11px] text-[#5C615D]/60 mt-1">{skill.completions} {skill.completions === 1 ? 'sessão concluída' : 'sessões concluídas'}</p>
+                    <p className="text-[11px] text-[#6B7A6E]/60 mt-1">{skill.completions} {skill.completions === 1 ? 'sessão concluída' : 'sessões concluídas'}</p>
                   </div>
                 ))}
               </div>
@@ -186,7 +186,7 @@ export function Evolucao() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.3 }}
-              className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)]"
+              className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]"
             >
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#055A43] mb-5">Evolução emocional</p>
               <div className="grid grid-cols-2 gap-3">
@@ -216,12 +216,12 @@ export function Evolucao() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.35 }}
-            className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)]"
+            className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]"
           >
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="font-medium text-[#055A43] text-[11px] tracking-widest uppercase">{insights?.chartTitle || 'Atividade Semanal'}</h3>
-                <p className="text-[11px] text-[#5C615D] mt-1 font-light">{insights?.chartSubtitle}</p>
+                <p className="text-[11px] text-[#6B7A6E] mt-1 font-light">{insights?.chartSubtitle}</p>
               </div>
               <TrendingUp className="w-5 h-5 text-[#506352]/60 shrink-0" />
             </div>
@@ -243,12 +243,12 @@ export function Evolucao() {
                         className={`w-full rounded-t-lg ${d.value > 0 ? (hasActivity ? 'bg-[#055A43]' : 'bg-[#055A43]/40') : 'bg-transparent'}`}
                       />
                     </div>
-                    <span className="text-[9px] font-medium text-[#5C615D]/60 mt-2 uppercase tracking-widest">{d.label}</span>
+                    <span className="text-[9px] font-medium text-[#6B7A6E]/60 mt-2 uppercase tracking-widest">{d.label}</span>
                   </button>
                 );
               })}
             </div>
-            <p className="text-[10px] text-[#5C615D]/50 mt-3 text-center">Toque em um dia para ver detalhes</p>
+            <p className="text-[10px] text-[#6B7A6E]/50 mt-3 text-center">Toque em um dia para ver detalhes</p>
           </motion.div>
 
           {/* Timeline */}
@@ -257,7 +257,7 @@ export function Evolucao() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.4 }}
-              className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)]"
+              className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]"
             >
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#055A43] mb-5">Linha do tempo</p>
               <div className="flex flex-col">
@@ -275,7 +275,7 @@ export function Evolucao() {
                       )}
                     </div>
                     <div className="pb-4 flex-1">
-                      <p className="text-[10px] font-semibold text-[#5C615D]/60 uppercase tracking-widest mb-0.5">{event.dayLabel}</p>
+                      <p className="text-[10px] font-semibold text-[#6B7A6E]/60 uppercase tracking-widest mb-0.5">{event.dayLabel}</p>
                       <p className="text-[13px] font-medium text-[#506352] leading-snug">{event.label}</p>
                     </div>
                   </div>
@@ -299,7 +299,7 @@ export function Evolucao() {
                 {insights.achievements.slice(0, 3).map((achievement, index) => (
                   <div
                     key={achievement.id}
-                    className={`bg-white rounded-[1.5rem] p-5 border shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex items-center gap-4 ${index === 0 ? 'border-[#D8C3A5]/70' : 'border-[#055A43]/5'}`}
+                    className={`bg-white rounded-[1.5rem] p-5 border shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex items-center gap-4 ${index === 0 ? 'border-[#D8C3A5]/70' : 'border-[#055A43]/5'}`}
                   >
                     <div className="w-11 h-11 rounded-full bg-[#055A43]/5 flex items-center justify-center border border-[#055A43]/10 shrink-0">
                       <Award className="w-5 h-5 text-[#055A43]/60" />
@@ -307,7 +307,7 @@ export function Evolucao() {
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#506352]/70 mb-1">{achievement.context}</p>
                       <p className="font-serif text-[#055A43] text-[16px] leading-tight">{achievement.title}</p>
-                      <p className="text-[#5C615D] text-[12px] font-light mt-0.5">{achievement.description}</p>
+                      <p className="text-[#6B7A6E] text-[12px] font-light mt-0.5">{achievement.description}</p>
                     </div>
                   </div>
                 ))}
@@ -323,7 +323,7 @@ export function Evolucao() {
               className="bg-white rounded-[1.75rem] p-8 border border-[#055A43]/5 text-center"
             >
               <p className="font-serif text-[20px] text-[#055A43] mb-2">Comece hoje</p>
-              <p className="text-[14px] text-[#5C615D] leading-relaxed">
+              <p className="text-[14px] text-[#6B7A6E] leading-relaxed">
                 Complete um treino ou check-in para ver sua evolução aqui.
               </p>
             </motion.div>
@@ -345,7 +345,7 @@ export function Evolucao() {
             <div className="flex items-center justify-between mb-5">
               <p className="font-serif text-[20px] text-[#055A43]">{selectedDay.dayLabel}</p>
               <button onClick={() => setSelectedDay(null)} className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
-                <X className="w-4 h-4 text-[#5C615D]" />
+                <X className="w-4 h-4 text-[#6B7A6E]" />
               </button>
             </div>
             <div className="flex flex-col gap-3">
@@ -361,13 +361,13 @@ export function Evolucao() {
                   <div>
                     <p className="text-[14px] font-medium text-[#506352]">{t.title}</p>
                     {t.durationMinutes && (
-                      <p className="text-[12px] text-[#5C615D]/70 mt-0.5">{t.durationMinutes} min</p>
+                      <p className="text-[12px] text-[#6B7A6E]/70 mt-0.5">{t.durationMinutes} min</p>
                     )}
                   </div>
                 </div>
               ))}
               {!selectedDay.hasCheckin && selectedDay.trainings.length === 0 && (
-                <p className="text-[14px] text-[#5C615D] text-center py-2">Nenhuma atividade registrada neste dia.</p>
+                <p className="text-[14px] text-[#6B7A6E] text-center py-2">Nenhuma atividade registrada neste dia.</p>
               )}
             </div>
           </motion.div>

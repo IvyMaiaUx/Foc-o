@@ -1,10 +1,10 @@
 export const COLORS = {
   primary: '#055A43',
   secondary: '#506352',
-  tertiary: '#5F2620',
-  neutral: '#5C615D',
-  background: '#FAFAFA',
-  surface: '#FFFFFF',
+  tertiary: '#C2703E',
+  neutral: '#6B7A6E',
+  background: '#F7F5EF',
+  surface: '#FFFEFB',
 };
 
 export const TYPOGRAPHY = {

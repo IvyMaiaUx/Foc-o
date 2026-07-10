@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
@@ -94,12 +94,12 @@ export function Ajuda() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
       {/* Header */}
       <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5 flex flex-col gap-4 sticky top-0 z-10">
         <button 
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-[#FAFAFA] border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
+          className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -107,7 +107,7 @@ export function Ajuda() {
           <h1 className="font-serif text-[32px] text-[#055A43] tracking-tight leading-none mb-2">
             Como podemos <br/> <span className="italic">ajudar?</span>
           </h1>
-          <p className="text-[#5C615D] font-light text-[15px]">Encontre respostas rápidas ou fale conosco.</p>
+          <p className="text-[#6B7A6E] font-light text-[15px]">Encontre respostas rápidas ou fale conosco.</p>
         </div>
       </header>
 
@@ -121,13 +121,13 @@ export function Ajuda() {
           
           {/* Quick Actions */}
           <div className="grid grid-cols-1 gap-4">
-            <button className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex items-center gap-4 active:scale-[0.98] transition-transform w-full">
+            <button className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex items-center gap-4 active:scale-[0.98] transition-transform w-full">
               <div className="w-12 h-12 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
                 <MessageCircle className="w-6 h-6" />
               </div>
               <div className="text-left flex-1">
                 <p className="font-medium text-[#055A43] text-[15px]">Falar com Suporte</p>
-                <p className="text-[#5C615D] text-[13px] font-light mt-0.5">Tempo de resposta: ~2h</p>
+                <p className="text-[#6B7A6E] text-[13px] font-light mt-0.5">Tempo de resposta: ~2h</p>
               </div>
             </button>
           </div>
@@ -137,12 +137,12 @@ export function Ajuda() {
                <div key={catIdx}>
                  <h3 className="font-medium text-[#055A43] text-[11px] tracking-[0.15em] uppercase mb-4 px-2 opacity-80">{category.title}</h3>
                  
-                 <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col overflow-hidden">
+                 <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col overflow-hidden">
                    {category.faqs.map((faq) => {
                      const isExpanded = expandedId === faq.id;
                      
                      return (
-                       <div key={faq.id} className="border-b border-[#055A43]/5 last:border-0 hover:bg-[#FAFAFA] transition-colors">
+                       <div key={faq.id} className="border-b border-[#055A43]/5 last:border-0 hover:bg-[#F7F5EF] transition-colors">
                          <button 
                            onClick={() => toggleFaq(faq.id)}
                            className="w-full p-5 flex justify-between items-start text-left gap-4"
@@ -167,7 +167,7 @@ export function Ajuda() {
                                transition={{ duration: 0.2 }}
                                className="overflow-hidden"
                              >
-                               <div className="px-5 pb-5 pt-1 text-[#5C615D] text-[14px] font-light leading-relaxed">
+                               <div className="px-5 pb-5 pt-1 text-[#6B7A6E] text-[14px] font-light leading-relaxed">
                                  {faq.a}
                                </div>
                              </motion.div>

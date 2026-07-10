@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '@/src/lib/firebase';
@@ -108,8 +108,8 @@ const rewardLabel = (value?: string) => {
 
 function ProfileField({ label, value }: { label: string; value: any }) {
   return (
-    <div className="rounded-2xl bg-[#FAFAFA] border border-[#055A43]/5 px-4 py-3">
-      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#5C615D]/55 mb-1">{label}</p>
+    <div className="rounded-2xl bg-[#F7F5EF] border border-[#055A43]/5 px-4 py-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#6B7A6E]/55 mb-1">{label}</p>
       <p className="text-[13px] font-medium text-[#506352] leading-snug">{valueOrFallback(value)}</p>
     </div>
   );
@@ -179,7 +179,7 @@ export function Perfil() {
     }
 
     if (status === 'canceled') {
-      return { text: 'Cancelado', color: 'bg-[#5C615D]/10 text-[#5C615D] border-[#5C615D]/20' };
+      return { text: 'Cancelado', color: 'bg-[#6B7A6E]/10 text-[#6B7A6E] border-[#6B7A6E]/20' };
     }
     
     if (plan === 'premium' && hasPremiumAccess(userProfile)) return { text: 'Premium', color: 'bg-emerald-400/20 text-emerald-600 border-emerald-400/30' };
@@ -192,7 +192,7 @@ export function Perfil() {
       }
     }
     
-    return { text: 'Plano Grátis', color: 'bg-[#5C615D]/10 text-[#5C615D] border-[#5C615D]/20' };
+    return { text: 'Plano Grátis', color: 'bg-[#6B7A6E]/10 text-[#6B7A6E] border-[#6B7A6E]/20' };
   };
 
   const planBadge = getSubscriptionDisplay();
@@ -319,7 +319,7 @@ export function Perfil() {
   };
 
   return (
-    <div className="flex-1 bg-[#FAFAFA] font-sans pb-32">
+    <div className="flex-1 bg-[#F7F5EF] font-sans pb-32">
       {/* Header Profile Area */}
       <header className="px-6 pt-16 pb-12 bg-white border-b border-[#055A43]/5 flex flex-col items-center">
         {loading ? (
@@ -369,10 +369,10 @@ export function Perfil() {
         
         {/* Desenvolvimento & Treinos */}
         <section>
-          <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
+          <h3 className="text-[10px] font-medium text-[#6B7A6E] tracking-[0.15em] uppercase mb-3 px-2">
             Desenvolvimento
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col">
             <button
               onClick={() => navigate('/sos')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
@@ -383,7 +383,7 @@ export function Perfil() {
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-[#506352] text-sm">Treinos SOS</p>
-                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Protocolos rápidos para crise</p>
+                  <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">Protocolos rápidos para crise</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-[#506352]/40" />
@@ -399,7 +399,7 @@ export function Perfil() {
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-[#506352] text-sm">Histórico de Treinos</p>
-                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Sessões concluídas</p>
+                  <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">Sessões concluídas</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-[#506352]/40" />
@@ -417,7 +417,7 @@ export function Perfil() {
                     </div>
                     <div className="text-left">
                       <p className="font-medium text-[#506352] text-sm">Recalcular meu plano</p>
-                      <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Gerar plano personalizado inteligente</p>
+                      <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">Gerar plano personalizado inteligente</p>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-[#506352]/40" />
@@ -429,10 +429,10 @@ export function Perfil() {
 
         {/* Saúde & Rotina */}
         <section>
-          <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
+          <h3 className="text-[10px] font-medium text-[#6B7A6E] tracking-[0.15em] uppercase mb-3 px-2">
             Saúde & Rotina
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col">
             <button
               onClick={() => navigate('/nutricao')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
@@ -443,7 +443,7 @@ export function Perfil() {
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-[#506352] text-sm">Nutrição & Peso</p>
-                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Plano alimentar e pesagem</p>
+                  <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">Plano alimentar e pesagem</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-[#506352]/40" />
@@ -459,7 +459,7 @@ export function Perfil() {
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-[#506352] text-sm">Carteira de Vacinação</p>
-                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Próximas doses e histórico</p>
+                  <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">Próximas doses e histórico</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-[#506352]/40" />
@@ -469,10 +469,10 @@ export function Perfil() {
 
         {/* Indicações */}
         <section>
-          <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
+          <h3 className="text-[10px] font-medium text-[#6B7A6E] tracking-[0.15em] uppercase mb-3 px-2">
             Promoções
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col">
             <button onClick={() => navigate('/indique')}
               className="flex items-center justify-between p-4 px-3 active:bg-emerald-50/50 rounded-xl transition-colors text-left"
             >
@@ -491,7 +491,7 @@ export function Perfil() {
                       </span>
                     )}
                   </div>
-                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Ganhe 7 dias Premium com seus amigos</p>
+                  <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">Ganhe 7 dias Premium com seus amigos</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-[#506352]/40" />
@@ -501,10 +501,10 @@ export function Perfil() {
 
         {/* Conta */}
         <section>
-          <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
+          <h3 className="text-[10px] font-medium text-[#6B7A6E] tracking-[0.15em] uppercase mb-3 px-2">
             Conta
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col">
             <button 
               onClick={() => navigate('/editar-perfil')}
               className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors"
@@ -561,7 +561,7 @@ export function Perfil() {
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-[#506352] text-sm">Perguntas Frequentes</p>
-                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">FAQ</p>
+                  <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">FAQ</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-[#506352]/40" />
@@ -597,10 +597,10 @@ export function Perfil() {
 
         {/* Privacidade (LGPD) */}
         <section>
-          <h3 className="text-[10px] font-medium text-[#5C615D] tracking-[0.15em] uppercase mb-3 px-2">
+          <h3 className="text-[10px] font-medium text-[#6B7A6E] tracking-[0.15em] uppercase mb-3 px-2">
             Privacidade & LGPD
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex flex-col gap-1">
+          <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col gap-1">
             <button 
               onClick={handleExportData}
               disabled={isExporting}
@@ -612,7 +612,7 @@ export function Perfil() {
                 </div>
                 <div>
                   <p className="font-medium text-[#506352] text-sm">Exportar Meus Dados</p>
-                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Baixar meus dados estruturados em JSON</p>
+                  <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">Baixar meus dados estruturados em JSON</p>
                 </div>
               </div>
               {isExporting ? (
@@ -633,7 +633,7 @@ export function Perfil() {
                 </div>
                 <div>
                   <p className="font-medium text-red-600 text-sm">Excluir Minha Conta</p>
-                  <p className="text-[#5C615D]/70 text-[11px] font-light mt-0.5">Excluir permanentemente todos os meus dados (LGPD)</p>
+                  <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">Excluir permanentemente todos os meus dados (LGPD)</p>
                 </div>
               </div>
               {isDeleting ? (
@@ -649,10 +649,10 @@ export function Perfil() {
         <section className="pt-4">
           <button 
             onClick={handleSignOut}
-            className="w-full bg-white rounded-[1.5rem] p-4 border border-[#5F2620]/10 shadow-[0_4px_24px_rgba(3,28,24,0.08)] flex items-center justify-center gap-2 active:bg-gray-50 transition-colors"
+            className="w-full bg-white rounded-[1.5rem] p-4 border border-[#C2703E]/10 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex items-center justify-center gap-2 active:bg-gray-50 transition-colors"
           >
-            <LogOut className="w-5 h-5 text-[#5F2620]" />
-            <span className="font-medium text-[#5F2620] text-sm tracking-wide">Encerrar Sessão</span>
+            <LogOut className="w-5 h-5 text-[#C2703E]" />
+            <span className="font-medium text-[#C2703E] text-sm tracking-wide">Encerrar Sessão</span>
           </button>
         </section>
 

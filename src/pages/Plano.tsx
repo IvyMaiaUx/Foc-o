@@ -108,14 +108,14 @@ export function Plano() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-[#FAFAFA]">
+      <div className="flex flex-1 items-center justify-center bg-[#F7F5EF]">
         <div className="h-8 w-8 animate-pulse rounded-full bg-[#055A43]/20" />
       </div>
     );
   }
 
   return (
-    <div className="flex-1 bg-[#FAFAFA] pb-28 font-sans">
+    <div className="flex-1 bg-[#F7F5EF] pb-28 font-sans">
       <header className="border-b border-[#055A43]/5 bg-white px-6 pb-7 pt-14">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -129,14 +129,14 @@ export function Plano() {
           <h1 className="font-serif text-[34px] leading-tight text-[#055A43]">
             Plano de treino
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#5C615D]">
+          <p className="mt-2 text-sm leading-relaxed text-[#6B7A6E]">
             Acompanhe a evolução {dogGender === 'female' ? 'da' : 'do'} {dogName} passo a passo.
           </p>
 
           <div className="mt-6 rounded-2xl border border-[#055A43]/10 bg-[#F8FBF9] p-4">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#5C615D]/70">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B7A6E]/70">
                   Progresso geral
                 </p>
                 <p className="mt-1 text-sm font-semibold text-[#055A43]">
@@ -168,7 +168,7 @@ export function Plano() {
           <section className="rounded-[1.75rem] border border-[#055A43]/10 bg-white p-7 text-center">
             <CheckCircle2 className="mx-auto h-8 w-8 text-[#055A43]" />
             <h2 className="mt-4 font-serif text-2xl text-[#055A43]">Plano concluído</h2>
-            <p className="mt-2 text-sm leading-relaxed text-[#5C615D]">
+            <p className="mt-2 text-sm leading-relaxed text-[#6B7A6E]">
               Todas as etapas atuais foram concluídas. Continue registrando a rotina para acompanhar a evolução.
             </p>
           </section>
@@ -211,7 +211,7 @@ export function Plano() {
         {upcomingTasks.length > 0 && (
           <section>
             <h2 className="font-serif text-[22px] text-[#506352]">Próximos passos</h2>
-            <p className="mt-1 text-xs leading-relaxed text-[#5C615D]">
+            <p className="mt-1 text-xs leading-relaxed text-[#6B7A6E]">
               A sequência prevista para continuar a evolução.
             </p>
             <div className="mt-4 flex flex-col gap-3">
@@ -220,7 +220,7 @@ export function Plano() {
                   key={`${task.id}-${index}`}
                   className="flex items-center gap-4 rounded-2xl border border-[#055A43]/8 bg-white p-4"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAFAFA] text-[#5C615D]/55">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F7F5EF] text-[#6B7A6E]/55">
                     <Lock className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -228,10 +228,10 @@ export function Plano() {
                       <span className="text-[10px] font-bold uppercase tracking-widest text-[#055A43]/70">
                         {index === 0 ? 'Próximo passo' : 'Em breve'}
                       </span>
-                      <span className="text-[10px] uppercase tracking-wider text-[#5C615D]/60">{task.duration}</span>
+                      <span className="text-[10px] uppercase tracking-wider text-[#6B7A6E]/60">{task.duration}</span>
                     </div>
                     <h3 className="mt-1 truncate font-serif text-[17px] text-[#506352]">{sanitizeText(task.title)}</h3>
-                    <p className="mt-1 text-[11px] leading-relaxed text-[#5C615D]/70">
+                    <p className="mt-1 text-[11px] leading-relaxed text-[#6B7A6E]/70">
                       {index === 0 ? 'Libera ao concluir o treino atual.' : 'Libera após concluir a próxima etapa.'}
                     </p>
                   </div>
@@ -255,7 +255,7 @@ export function Plano() {
             <div className="flex items-end justify-between gap-4">
               <div>
                 <h2 className="font-serif text-[22px] text-[#506352]">Concluídos recentemente</h2>
-                <p className="mt-1 text-xs text-[#5C615D]">Refaça um exercício sem alterar sua trilha.</p>
+                <p className="mt-1 text-xs text-[#6B7A6E]">Refaça um exercício sem alterar sua trilha.</p>
               </div>
               {isPremium && (
                 <button onClick={() => navigate('/historico')} className="text-xs font-bold text-[#055A43]">
@@ -280,7 +280,7 @@ export function Plano() {
                     </span>
                     <h3 className="mt-1 truncate font-serif text-[17px] text-[#506352]">{sanitizeText(task.title)}</h3>
                   </div>
-                  <ChevronRight className="h-4 w-4 shrink-0 text-[#5C615D]/45" />
+                  <ChevronRight className="h-4 w-4 shrink-0 text-[#6B7A6E]/45" />
                 </button>
               ))}
             </div>
@@ -293,7 +293,7 @@ export function Plano() {
               <Layers3 className="h-5 w-5 text-[#055A43]" />
               <h2 className="font-serif text-[22px] text-[#506352]">Módulos do plano</h2>
             </div>
-            <p className="mt-1 text-xs text-[#5C615D]">Progresso por área de desenvolvimento.</p>
+            <p className="mt-1 text-xs text-[#6B7A6E]">Progresso por área de desenvolvimento.</p>
             <div className="mt-4 flex flex-col gap-3">
               {modules.map((module) => {
                 const progress = Math.round((module.completed / module.tasks.length) * 100);
@@ -303,7 +303,7 @@ export function Plano() {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h3 className="font-semibold text-[#055A43]">{sanitizeText(module.name)}</h3>
-                        <p className="mt-1 text-xs text-[#5C615D]">
+                        <p className="mt-1 text-xs text-[#6B7A6E]">
                           {module.completed} de {module.tasks.length} concluídos
                         </p>
                       </div>
@@ -322,7 +322,7 @@ export function Plano() {
         )}
 
         {knownCommands.length > 0 && (
-          <p className="text-center text-xs text-[#5C615D]/70">
+          <p className="text-center text-xs text-[#6B7A6E]/70">
             Nível {translateLevel(trainingBase)} · {knownCommands.length} comandos consolidados
           </p>
         )}

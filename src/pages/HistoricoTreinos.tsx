@@ -94,7 +94,7 @@ export function HistoricoTreinos() {
       <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5 flex items-center gap-4 sticky top-0 z-10">
         <button 
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-[#FAFAFA] border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
+          className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -123,7 +123,7 @@ export function HistoricoTreinos() {
               <CalendarClock className="w-10 h-10 text-[#055A43]/40" />
             </div>
             <h2 className="font-serif text-2xl text-[#055A43] mb-2">Sem histórico</h2>
-            <p className="text-[#5C615D] text-[15px] font-light max-w-[260px]">
+            <p className="text-[#6B7A6E] text-[15px] font-light max-w-[260px]">
               Vocês ainda não concluíram nenhum treino. Que tal começar hoje?
             </p>
             <button 
@@ -178,16 +178,16 @@ export function HistoricoTreinos() {
                         <div className="w-10 h-10 rounded-full bg-white border-2 border-gray-100 flex items-center justify-center shrink-0 z-10 shadow-sm mt-1">
                           <CheckCircle2 className="w-5 h-5 text-[#055A43]" />
                         </div>
-                        <div className="flex-1 bg-white border border-gray-100 rounded-2xl p-4 shadow-[0_2px_10px_rgb(0,0,0,0.02)] transition-shadow group-hover:shadow-md">
+                        <div className="flex-1 bg-white border border-gray-100 rounded-2xl p-4 shadow-[0_2px_10px_rgba(45,74,58,0.08)] transition-shadow group-hover:shadow-md">
                           <div className="flex justify-between items-start mb-2">
                             <h5 className="font-medium text-[#055A43] text-[15px] leading-snug">
                               {log.title}
                             </h5>
-                            <span className="text-[12px] font-medium text-[#506352] bg-[#FAFAFA] px-2 py-0.5 rounded border border-gray-100 ml-2 shrink-0">
+                            <span className="text-[12px] font-medium text-[#506352] bg-[#F7F5EF] px-2 py-0.5 rounded border border-gray-100 ml-2 shrink-0">
                               {log.durationMinutes} min
                             </span>
                           </div>
-                          <div className="flex items-center text-[#5C615D]/70 text-xs">
+                          <div className="flex items-center text-[#6B7A6E]/70 text-xs">
                             <span>{formatDate(log.completedAt)}</span>
                             <span className="mx-1.5">•</span>
                             <span>{formatTime(log.completedAt)}</span>

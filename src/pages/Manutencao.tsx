@@ -4,7 +4,7 @@ import { Hammer, Sparkles, Sprout } from 'lucide-react';
 
 export function Manutencao() {
   return (
-    <div className="min-h-screen bg-[#F9F9F8] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[#F7F5EF] flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Background Ornaments */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -left-24 w-64 h-64 bg-[#055A43]/5 rounded-full blur-3xl" />
@@ -19,7 +19,7 @@ export function Manutencao() {
           className="w-24 h-24 mb-8 bg-white rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] relative border border-[#055A43]/5"
         >
           <Hammer className="w-10 h-10 text-[#055A43]" strokeWidth={1.5} />
-          <div className="absolute -top-2 -right-2 bg-[#F9F9F8] rounded-full p-1.5 shadow-sm border border-gray-100">
+          <div className="absolute -top-2 -right-2 bg-[#F7F5EF] rounded-full p-1.5 shadow-sm border border-gray-100">
              <Sparkles className="w-4 h-4 text-yellow-500" />
           </div>
         </motion.div>
@@ -37,7 +37,7 @@ export function Manutencao() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          className="text-[#5C615D] text-[15px] leading-relaxed mb-10 font-light"
+          className="text-[#6B7A6E] text-[15px] leading-relaxed mb-10 font-light"
         >
           O Focão está passando por melhorias para oferecer uma experiência ainda mais premium para você e seu cão.
         </motion.p>

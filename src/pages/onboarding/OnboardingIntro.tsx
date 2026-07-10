@@ -91,7 +91,7 @@ export function OnboardingIntro() {
           <h2 className="font-serif text-[28px] leading-tight text-[#055A43] mb-3">
             Em poucos minutos, seu plano inicial fica pronto.
           </h2>
-          <p className="text-[15px] leading-relaxed text-[#5C615D]">
+          <p className="text-[15px] leading-relaxed text-[#6B7A6E]">
             Vamos pedir só o necessário agora. Depois você pode completar o perfil para deixar relatórios e recomendações mais precisos.
           </p>
         </div>
@@ -106,7 +106,7 @@ export function OnboardingIntro() {
                 </div>
                 <div>
                   <h3 className="text-[14px] font-bold text-gray-900 mb-1">{benefit.title}</h3>
-                  <p className="text-[13px] leading-relaxed text-[#5C615D]">{benefit.description}</p>
+                  <p className="text-[13px] leading-relaxed text-[#6B7A6E]">{benefit.description}</p>
                 </div>
               </div>
             );

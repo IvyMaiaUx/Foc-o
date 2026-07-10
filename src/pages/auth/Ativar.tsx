@@ -81,7 +81,7 @@ export function Ativar() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F9F8] font-sans flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex items-center justify-center px-6 py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -97,7 +97,7 @@ export function Ativar() {
               <Loader2 className="w-10 h-10 text-[#055A43] animate-spin relative" />
             </div>
             <h2 className="font-serif text-2xl text-[#055A43] mt-2">Verificando pagamento...</h2>
-            <p className="text-[#5C615D] text-sm leading-relaxed max-w-[280px]">
+            <p className="text-[#6B7A6E] text-sm leading-relaxed max-w-[280px]">
               Buscando sua assinatura vinculada ao e-mail <strong className="text-gray-900">{user?.email}</strong>.
             </p>
           </div>
@@ -113,7 +113,7 @@ export function Ativar() {
               <Sparkles className="w-4 h-4 text-emerald-600" />
               Bem-vindo ao Focão Premium
             </p>
-            <p className="text-[#5C615D] text-sm leading-relaxed max-w-[300px]">
+            <p className="text-[#6B7A6E] text-sm leading-relaxed max-w-[300px]">
               Seu acesso completo foi liberado. Aproveite todos os treinos personalizados e recursos exclusivos.
             </p>
             <button
@@ -131,7 +131,7 @@ export function Ativar() {
               <CheckCircle2 className="w-8 h-8 text-[#055A43]" />
             </div>
             <h2 className="font-serif text-2xl text-[#055A43] mt-2">Premium já ativo!</h2>
-            <p className="text-[#5C615D] text-sm leading-relaxed max-w-[280px]">
+            <p className="text-[#6B7A6E] text-sm leading-relaxed max-w-[280px]">
               Você já possui acesso ilimitado às funcionalidades Premium do Focão. Redirecionando...
             </p>
           </div>
@@ -143,7 +143,7 @@ export function Ativar() {
               <AlertCircle className="w-8 h-8" />
             </div>
             <h2 className="font-serif text-2xl text-[#055A43] mt-2">Login necessario</h2>
-            <p className="text-[#5C615D] text-sm leading-relaxed max-w-[280px]">
+            <p className="text-[#6B7A6E] text-sm leading-relaxed max-w-[280px]">
               Entre na conta vinculada ao pagamento. Se esqueceu a senha, use a recuperacao e volte para esta ativacao.
             </p>
             <div className="flex flex-col gap-2 w-full mt-4">
@@ -175,7 +175,7 @@ export function Ativar() {
               <AlertCircle className="w-8 h-8" />
             </div>
             <h2 className="font-serif text-2xl text-[#055A43] mt-2">Ativacao pendente</h2>
-            <p className="text-[#5C615D] text-sm leading-relaxed">{errorMsg}</p>
+            <p className="text-[#6B7A6E] text-sm leading-relaxed">{errorMsg}</p>
             <div className="flex flex-col gap-2 w-full mt-4">
               <button
                 onClick={handleRetry}

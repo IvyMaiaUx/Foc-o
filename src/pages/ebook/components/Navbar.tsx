@@ -43,7 +43,7 @@ export function Navbar({ onCtaClick }: NavbarProps) {
           onClick={onCtaClick}
           style={{
             backgroundColor: "#055A43",
-            color: "#FAFAFA",
+            color: "#F7F5EF",
             fontFamily: "var(--font-sans)",
             fontSize: "0.82rem",
             fontWeight: 500,

@@ -38,7 +38,7 @@ export function LeadForm({ formRef }: LeadFormProps) {
     padding: "14px 18px",
     border: "1px solid #E7E3DA",
     borderRadius: "10px",
-    backgroundColor: "#FAFAFA",
+    backgroundColor: "#F7F5EF",
     fontFamily: "var(--font-sans)",
     fontSize: "0.95rem",
     fontWeight: 300,
@@ -49,7 +49,7 @@ export function LeadForm({ formRef }: LeadFormProps) {
 
   return (
     <section
-      style={{ backgroundColor: "#F9F9F8" }}
+      style={{ backgroundColor: "#F7F5EF" }}
       className="py-24 px-6 md:px-16 lg:px-24"
     >
       <div ref={formRef} className="max-w-2xl mx-auto">
@@ -137,7 +137,7 @@ export function LeadForm({ formRef }: LeadFormProps) {
             <form
               onSubmit={handleSubmit}
               style={{
-                backgroundColor: "#FAFAFA",
+                backgroundColor: "#F7F5EF",
                 border: "1px solid #E7E3DA",
                 borderRadius: "20px",
                 padding: "40px 36px",
@@ -245,7 +245,7 @@ export function LeadForm({ formRef }: LeadFormProps) {
                 style={{
                   marginTop: "8px",
                   backgroundColor: "#055A43",
-                  color: "#FAFAFA",
+                  color: "#F7F5EF",
                   fontFamily: "var(--font-sans)",
                   fontSize: "0.95rem",
                   fontWeight: 500,

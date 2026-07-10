@@ -59,11 +59,11 @@ export function AdminCheckins() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col pb-safe">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col pb-safe">
       <header className="px-6 pt-16 pb-4 bg-white flex items-center gap-4 sticky top-0 z-10">
         <button
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-[#FAFAFA] border border-[#055A43]/5 flex items-center justify-center text-[#5C615D] active:scale-[0.98] transition-all"
+          className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -83,21 +83,21 @@ export function AdminCheckins() {
         ) : error ? (
           <p className="text-red-500 text-sm text-center py-10">{error}</p>
         ) : notes.length === 0 ? (
-          <div className="text-center py-16 text-[#5C615D]/70 flex flex-col items-center gap-3">
+          <div className="text-center py-16 text-[#6B7A6E]/70 flex flex-col items-center gap-3">
             <MessageSquareText className="w-10 h-10 text-[#055A43]/20" />
             <p>Nenhuma observação registrada ainda.</p>
           </div>
         ) : (
           <>
-            <p className="text-[12px] text-[#5C615D]/70 mb-1">{notes.length} observação(ões)</p>
+            <p className="text-[12px] text-[#6B7A6E]/70 mb-1">{notes.length} observação(ões)</p>
             {notes.map((n, i) => (
               <div
                 key={`${n.userId}-${n.date}-${i}`}
-                className="bg-white border border-[#055A43]/10 rounded-2xl p-4 shadow-[0_4px_16px_rgb(0,0,0,0.02)]"
+                className="bg-white border border-[#055A43]/10 rounded-2xl p-4 shadow-[0_4px_16px_rgba(45,74,58,0.08)]"
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="font-semibold text-sm text-[#055A43]">{n.userName}</span>
-                  <span className="text-[11px] text-[#5C615D]/60">{n.date}</span>
+                  <span className="text-[11px] text-[#6B7A6E]/60">{n.date}</span>
                 </div>
                 {n.comportamento && (
                   <span className="inline-block text-[10px] uppercase tracking-wide text-[#506352] bg-[#055A43]/5 px-2 py-0.5 rounded-full mb-2">

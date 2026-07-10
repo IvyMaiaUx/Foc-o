@@ -107,7 +107,7 @@ export function DogData() {
           <div className="rounded-[18px] border border-[#055A43]/10 bg-[#055A43]/[0.04] px-4 py-3">
             <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#6C7870]">Cão cadastrado</p>
             <p className="mt-1 font-serif text-[24px] leading-tight text-[#055A43]">{formData.name}</p>
-            {formData.age && <p className="mt-1 text-sm font-medium text-[#5C615D]">{formData.age}</p>}
+            {formData.age && <p className="mt-1 text-sm font-medium text-[#6B7A6E]">{formData.age}</p>}
           </div>
         ) : (
           <Input
@@ -120,7 +120,7 @@ export function DogData() {
         )}
 
         <div className="flex flex-col gap-1.5 w-full">
-          <label className="text-[#5C615D] text-sm font-medium ml-1">Sexo</label>
+          <label className="text-[#6B7A6E] text-sm font-medium ml-1">Sexo</label>
           <div className="flex gap-3">
             {genderOptions.map(opt => (
               <button
@@ -140,14 +140,14 @@ export function DogData() {
         </div>
 
         <div className="flex flex-col gap-1.5 w-full">
-          <label className="text-[#5C615D] text-sm font-medium ml-1">Fase da vida</label>
+          <label className="text-[#6B7A6E] text-sm font-medium ml-1">Fase da vida</label>
           <button
             type="button"
             onClick={() => setIsLifeStageModalOpen(true)}
             className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative"
           >
             {formData.lifeStage || <span className="text-[#A0A4A1]">Selecione a fase</span>}
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
               <ChevronDown className="w-5 h-5" />
             </div>
           </button>
@@ -155,7 +155,7 @@ export function DogData() {
 
         <div className={`grid gap-4 ${hideBetaPrefilledBasics ? 'grid-cols-1' : 'grid-cols-2'}`}>
           <div className={`flex flex-col gap-1.5 ${hideBetaPrefilledBasics ? 'hidden' : ''}`}>
-            <label className="text-[#5C615D] text-sm font-medium ml-1">Idade aprox.</label>
+            <label className="text-[#6B7A6E] text-sm font-medium ml-1">Idade aprox.</label>
             <button
               type="button"
               onClick={() => setIsAgeModalOpen(true)}
@@ -163,14 +163,14 @@ export function DogData() {
               className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative disabled:opacity-60"
             >
               {formData.age || <span className="text-[#A0A4A1]">Opcional</span>}
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                 <ChevronDown className="w-5 h-5" />
               </div>
             </button>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-[#5C615D] text-sm font-medium ml-1">Peso aprox.</label>
+            <label className="text-[#6B7A6E] text-sm font-medium ml-1">Peso aprox.</label>
             <div className="relative">
               <input
                 type="text"
@@ -187,7 +187,7 @@ export function DogData() {
         </div>
 
         <div className="rounded-[1.5rem] bg-[#055A43]/5 border border-[#055A43]/10 p-4">
-          <p className="text-[13px] leading-relaxed text-[#5C615D]">
+          <p className="text-[13px] leading-relaxed text-[#6B7A6E]">
             Você poderá adicionar raça, alimentação, convivência, foto e detalhes avançados depois no perfil.
           </p>
         </div>

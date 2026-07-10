@@ -135,7 +135,7 @@ export function HealthCare() {
       <div className="flex flex-col gap-8 flex-1">
         
         <div>
-          <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
+          <label className="block text-[#6B7A6E] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
             Como o {dogName} se alimenta hoje?
           </label>
           <div className="flex flex-col gap-2">
@@ -158,14 +158,14 @@ export function HealthCare() {
         {isRacao && (
           <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest ml-1">{isMista ? 'Qual a marca principal?' : 'Qual marca ele usa hoje?'}</label>
+              <label className="block text-[#6B7A6E] text-[13px] font-bold uppercase tracking-widest ml-1">{isMista ? 'Qual a marca principal?' : 'Qual marca ele usa hoje?'}</label>
               <button
                 type="button"
                 onClick={() => setIsBrandModalOpen(true)}
-                className="w-full text-left font-normal h-[56px] bg-[#FAFAFA] border border-gray-100 rounded-2xl px-4 text-[15px] text-[#055A43] focus:outline-none transition-all relative"
+                className="w-full text-left font-normal h-[56px] bg-[#F7F5EF] border border-gray-100 rounded-2xl px-4 text-[15px] text-[#055A43] focus:outline-none transition-all relative"
               >
                 {formData.foodBrand || <span className="text-[#A0A4A1]">Ex: Royal Canin, PremieR...</span>}
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                   <ChevronDown className="w-5 h-5" />
                 </div>
               </button>
@@ -179,16 +179,16 @@ export function HealthCare() {
             </div>
 
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest ml-1">
+              <label className="block text-[#6B7A6E] text-[13px] font-bold uppercase tracking-widest ml-1">
                 {isMista ? 'Qual é a linha principal?' : 'Qual é a linha da ração?'}
               </label>
               <button
                 type="button"
                 onClick={() => setIsLineModalOpen(true)}
-                className="w-full text-left font-normal min-h-[56px] bg-[#FAFAFA] border border-gray-100 rounded-2xl px-4 py-3 text-[15px] text-[#055A43] focus:outline-none transition-all relative pr-12"
+                className="w-full text-left font-normal min-h-[56px] bg-[#F7F5EF] border border-gray-100 rounded-2xl px-4 py-3 text-[15px] text-[#055A43] focus:outline-none transition-all relative pr-12"
               >
                 {formData.foodLine || <span className="text-[#A0A4A1]">Selecione a linha da ração...</span>}
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5C615D]">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                   <ChevronDown className="w-5 h-5" />
                 </div>
               </button>
@@ -202,7 +202,7 @@ export function HealthCare() {
             </div>
 
             <div>
-              <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
+              <label className="block text-[#6B7A6E] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
                 Em qual fase ele está?
               </label>
               <div className="flex gap-2">
@@ -226,7 +226,7 @@ export function HealthCare() {
             </div>
 
             <div>
-              <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
+              <label className="block text-[#6B7A6E] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
                 A fórmula é de algum tipo específico?
               </label>
               <div className="flex flex-wrap gap-2">
@@ -251,18 +251,18 @@ export function HealthCare() {
         {isNatural && (
           <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-top-2 duration-300">
             <div>
-               <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
+               <label className="block text-[#6B7A6E] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
                 Detalhes da Alimentação Natural
               </label>
               <textarea
                 value={formData.naturalFoodDetails}
                 onChange={(e) => setFormData(prev => ({ ...prev, naturalFoodDetails: e.target.value }))}
                 placeholder="Ex: dietas cruas, cozidas, restrições..."
-                className="w-full bg-[#FAFAFA] border border-gray-100 rounded-2xl p-4 text-[#5C615D] text-[15px] focus:outline-none focus:border-[#055A43]/20 focus:bg-white transition-colors h-24 resize-none"
+                className="w-full bg-[#F7F5EF] border border-gray-100 rounded-2xl p-4 text-[#6B7A6E] text-[15px] focus:outline-none focus:border-[#055A43]/20 focus:bg-white transition-colors h-24 resize-none"
               />
             </div>
             <div>
-               <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
+               <label className="block text-[#6B7A6E] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
                 Acompanha orientação profissional?
               </label>
               <div className="flex flex-wrap gap-2">
@@ -287,7 +287,7 @@ export function HealthCare() {
         {formData.diet && (
           <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-top-2 duration-300 pt-4 border-t border-gray-100">
             <div>
-               <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
+               <label className="block text-[#6B7A6E] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
                 Quantas vezes ele come por dia?
               </label>
               <div className="flex flex-wrap gap-2">
@@ -355,14 +355,14 @@ export function HealthCare() {
               />
 
               <div>
-                 <label className="block text-[#5C615D] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
+                 <label className="block text-[#6B7A6E] text-[13px] font-bold uppercase tracking-widest mb-3 ml-1">
                   Observações de saúde (opcional)
                 </label>
                 <textarea
                   value={formData.observations}
                   onChange={(e) => setFormData(prev => ({ ...prev, observations: e.target.value }))}
                   placeholder="Alguma condição de saúde, alergia ou preferência que devemos saber?"
-                  className="w-full bg-[#FAFAFA] border border-gray-100 rounded-2xl p-4 text-[#5C615D] text-[15px] focus:outline-none focus:border-[#055A43]/20 focus:bg-white transition-colors h-24 resize-none"
+                  className="w-full bg-[#F7F5EF] border border-gray-100 rounded-2xl p-4 text-[#6B7A6E] text-[15px] focus:outline-none focus:border-[#055A43]/20 focus:bg-white transition-colors h-24 resize-none"
                 />
               </div>
             </div>

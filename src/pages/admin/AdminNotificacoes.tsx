@@ -165,7 +165,7 @@ export function AdminNotificacoes() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex text-[#5C615D]">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex text-[#6B7A6E]">
       <div className="w-full max-w-5xl mx-auto flex flex-col p-6">
         <header className="pt-6 pb-6 flex items-center justify-between border-b border-[#055A43]/10 mb-6">
           <div className="flex items-center gap-4">
@@ -201,7 +201,7 @@ export function AdminNotificacoes() {
                         value={title}
                         onChange={e => setTitle(e.target.value)}
                         placeholder="Ex: O treino de hoje já está pronto."
-                        className="w-full bg-[#FAFAFA] border border-[#055A43]/10 rounded-xl p-3 focus:outline-none focus:border-[#055A43] transition-colors font-medium text-[#055A43]"
+                        className="w-full bg-[#F7F5EF] border border-[#055A43]/10 rounded-xl p-3 focus:outline-none focus:border-[#055A43] transition-colors font-medium text-[#055A43]"
                       />
                     </div>
                     <div>
@@ -211,7 +211,7 @@ export function AdminNotificacoes() {
                         onChange={e => setBody(e.target.value)}
                         placeholder="Ex: Pequenos passos ainda contam. Bora evoluir?"
                         rows={3}
-                        className="w-full bg-[#FAFAFA] border border-[#055A43]/10 rounded-xl p-3 focus:outline-none focus:border-[#055A43] transition-colors text-sm text-[#506352] resize-none"
+                        className="w-full bg-[#F7F5EF] border border-[#055A43]/10 rounded-xl p-3 focus:outline-none focus:border-[#055A43] transition-colors text-sm text-[#506352] resize-none"
                       />
                     </div>
                   </div>
@@ -223,7 +223,7 @@ export function AdminNotificacoes() {
                     <select 
                       value={segment}
                       onChange={e => setSegment(e.target.value)}
-                      className="w-full bg-[#FAFAFA] border border-[#055A43]/10 rounded-xl p-3 focus:outline-none focus:border-[#055A43] transition-colors text-sm text-[#506352]"
+                      className="w-full bg-[#F7F5EF] border border-[#055A43]/10 rounded-xl p-3 focus:outline-none focus:border-[#055A43] transition-colors text-sm text-[#506352]"
                     >
                       <option value="all">Todos os usuários</option>
                       <option value="free">Free</option>
@@ -242,7 +242,7 @@ export function AdminNotificacoes() {
                     <select 
                       value={destination}
                       onChange={e => setDestination(e.target.value)}
-                      className="w-full bg-[#FAFAFA] border border-[#055A43]/10 rounded-xl p-3 focus:outline-none focus:border-[#055A43] transition-colors text-sm text-[#506352]"
+                      className="w-full bg-[#F7F5EF] border border-[#055A43]/10 rounded-xl p-3 focus:outline-none focus:border-[#055A43] transition-colors text-sm text-[#506352]"
                     >
                       <option value="/">Home</option>
                       <option value="/treino">Treino do dia</option>
@@ -257,7 +257,7 @@ export function AdminNotificacoes() {
                   </div>
                 </div>
 
-                <div className="border border-[#055A43]/10 rounded-2xl p-4 bg-[#FAFAFA]">
+                <div className="border border-[#055A43]/10 rounded-2xl p-4 bg-[#F7F5EF]">
                    <label className="text-xs font-semibold uppercase tracking-wider text-[#055A43]/80 mb-3 block flex items-center gap-2"><Calendar className="w-3.5 h-3.5" /> Agendamento</label>
                    
                    <div className="flex items-center gap-4 mb-4">
@@ -306,7 +306,7 @@ export function AdminNotificacoes() {
                   <h2 className="text-lg font-serif text-[#055A43]">Confirmação de Envio</h2>
                 </div>
 
-                <div className="bg-[#FAFAFA] border border-[#055A43]/10 rounded-2xl p-5 flex flex-col gap-4">
+                <div className="bg-[#F7F5EF] border border-[#055A43]/10 rounded-2xl p-5 flex flex-col gap-4">
                   <div>
                      <p className="text-xs text-[#506352]/70 uppercase tracking-wider font-semibold">Mensagem</p>
                      <p className="text-[#055A43] font-medium text-[15px] mt-1">{title}</p>

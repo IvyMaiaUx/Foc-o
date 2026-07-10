@@ -49,7 +49,7 @@ export function BottomSheetSelect({
               <h3 className="text-xl font-serif text-[#055A43]">{title}</h3>
               <button 
                 onClick={onClose}
-                className="w-8 h-8 rounded-full bg-[#FAFAFA] flex items-center justify-center text-[#5C615D] active:scale-95"
+                className="w-8 h-8 rounded-full bg-[#F7F5EF] flex items-center justify-center text-[#6B7A6E] active:scale-95"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -63,14 +63,14 @@ export function BottomSheetSelect({
                   placeholder={placeholder}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-12 bg-[#FAFAFA] border border-[#E5E5E5] rounded-xl pl-11 pr-4 text-[#055A43] placeholder-[#A0A4A1] focus:outline-none focus:border-[#055A43]/30 transition-colors"
+                  className="w-full h-12 bg-[#F7F5EF] border border-[#E5E5E5] rounded-xl pl-11 pr-4 text-[#055A43] placeholder-[#A0A4A1] focus:outline-none focus:border-[#055A43]/30 transition-colors"
                 />
               </div>
             </div>
 
             <div className="flex-1 overflow-y-auto px-2 pb-safe">
               {filteredOptions.length === 0 ? (
-                <div className="p-8 text-center text-[#5C615D]">
+                <div className="p-8 text-center text-[#6B7A6E]">
                   Nenhum resultado encontrado para "{search}"
                 </div>
               ) : (
@@ -82,7 +82,7 @@ export function BottomSheetSelect({
                         onSelect(opt);
                         onClose();
                       }}
-                      className="flex items-center justify-between p-4 px-6 active:bg-[#FAFAFA] transition-colors text-left"
+                      className="flex items-center justify-between p-4 px-6 active:bg-[#F7F5EF] transition-colors text-left"
                     >
                       <span className={`text-base ${value === opt ? 'font-medium text-[#055A43]' : 'text-[#506352]'}`}>
                         {opt}

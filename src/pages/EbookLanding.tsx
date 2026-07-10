@@ -21,7 +21,7 @@ export function EbookLanding() {
     <div
       style={{
         fontFamily: 'var(--font-sans)',
-        backgroundColor: '#F9F9F8',
+        backgroundColor: '#F7F5EF',
         overflowX: 'hidden',
       }}
     >

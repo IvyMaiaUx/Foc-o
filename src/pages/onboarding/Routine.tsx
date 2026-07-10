@@ -50,7 +50,7 @@ export function Routine() {
     >
       <div className="flex flex-col gap-8 flex-1 pb-10">
         <div>
-          <h3 className="text-[#5C615D] font-medium mb-3 ml-1 uppercase tracking-wider text-[11px]">Onde ele vive?</h3>
+          <h3 className="text-[#6B7A6E] font-medium mb-3 ml-1 uppercase tracking-wider text-[11px]">Onde ele vive?</h3>
           <div className="flex flex-col gap-3">
             {options.map(opt => (
               <SelectCard
@@ -65,7 +65,7 @@ export function Routine() {
         </div>
 
         <div>
-          <h3 className="text-[#5C615D] font-medium mb-3 ml-1 uppercase tracking-wider text-[11px]">Quantos passeios por dia?</h3>
+          <h3 className="text-[#6B7A6E] font-medium mb-3 ml-1 uppercase tracking-wider text-[11px]">Quantos passeios por dia?</h3>
           <div className="flex flex-wrap gap-2">
             {walksOptions.map(item => (
               <button
@@ -88,7 +88,7 @@ export function Routine() {
 
         {shouldAskDuration && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <h3 className="text-[#5C615D] font-medium mb-3 ml-1 uppercase tracking-wider text-[11px]">Duração média</h3>
+            <h3 className="text-[#6B7A6E] font-medium mb-3 ml-1 uppercase tracking-wider text-[11px]">Duração média</h3>
             <div className="flex flex-wrap gap-2">
               {durationOptions.map(item => (
                 <button

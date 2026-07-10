@@ -179,7 +179,7 @@ export function Checkin() {
           <h2 className="font-serif text-[32px] text-[#055A43] leading-tight tracking-tight mb-3">
             Diário <br/>Atualizado
           </h2>
-          <p className="text-[#5C615D] text-sm font-light leading-relaxed mb-10">
+          <p className="text-[#6B7A6E] text-sm font-light leading-relaxed mb-10">
             Check-in de hoje registrado. Cuidar também é observar. Hoje vocês deram mais um passo na jornada.
           </p>
           <button
@@ -202,20 +202,20 @@ export function Checkin() {
               <Battery className="w-6 h-6 text-[#506352]" />
             </div>
             <h2 className="font-serif text-3xl text-[#055A43] mb-2 tracking-tight">Energia</h2>
-            <p className="text-[#5C615D] text-[15px] font-light mb-8">Como foi o ritmo do seu cão hoje?</p>
+            <p className="text-[#6B7A6E] text-[15px] font-light mb-8">Como foi o ritmo do seu cão hoje?</p>
             
             <div className="flex flex-col gap-3">
               {['Calmo e relaxado', 'Equilibrado', 'Agitado e sem foco'].map(option => (
                 <button
                   key={option}
                   onClick={() => updateData('energia', option)}
-                  className={`w-full p-5 rounded-[1.5rem] border text-left flex justify-between items-center transition-all ${
+                  className={`w-full min-h-[56px] px-5 py-4 rounded-2xl border text-left flex justify-between items-center transition-all duration-200 ease-out ${
                     data.energia === option 
-                    ? 'border-[#055A43] bg-[#055A43]/5' 
-                    : 'border-[#055A43]/10 bg-white hover:border-[#055A43]/30'
+                    ? 'border-[#055A43] bg-[#EAF0E8]' 
+                    : 'border-[#E4E1D6] bg-[#FFFEFB] hover:border-[#055A43]/40'
                   }`}
                 >
-                  <span className={`text-[15px] ${data.energia === option ? 'text-[#055A43] font-medium' : 'text-[#5C615D]'}`}>
+                  <span className={`text-[15px] ${data.energia === option ? 'text-[#055A43] font-medium' : 'text-[#6B7A6E]'}`}>
                     {option}
                   </span>
                   {data.energia === option && <Check className="w-5 h-5 text-[#055A43]" />}
@@ -227,24 +227,24 @@ export function Checkin() {
       case 2:
         return (
           <motion.div key="2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-            <div className="w-12 h-12 bg-[#5F2620]/10 rounded-full flex items-center justify-center mb-6">
-              <HeartPulse className="w-6 h-6 text-[#5F2620]" />
+            <div className="w-12 h-12 bg-[#C2703E]/10 rounded-full flex items-center justify-center mb-6">
+              <HeartPulse className="w-6 h-6 text-[#C2703E]" />
             </div>
             <h2 className="font-serif text-3xl text-[#055A43] mb-2 tracking-tight">Alimentação</h2>
-            <p className="text-[#5C615D] text-[15px] font-light mb-8">O apetite dele estava normal?</p>
+            <p className="text-[#6B7A6E] text-[15px] font-light mb-8">O apetite dele estava normal?</p>
             
             <div className="flex flex-col gap-3">
               {['Comeu tudo com gosto', 'Deixou um pouco', 'Sem apetite'].map(option => (
                 <button
                   key={option}
                   onClick={() => updateData('alimentacao', option)}
-                  className={`w-full p-5 rounded-[1.5rem] border text-left flex justify-between items-center transition-all ${
+                  className={`w-full min-h-[56px] px-5 py-4 rounded-2xl border text-left flex justify-between items-center transition-all duration-200 ease-out ${
                     data.alimentacao === option 
-                    ? 'border-[#055A43] bg-[#055A43]/5' 
-                    : 'border-[#055A43]/10 bg-white hover:border-[#055A43]/30'
+                    ? 'border-[#055A43] bg-[#EAF0E8]' 
+                    : 'border-[#E4E1D6] bg-[#FFFEFB] hover:border-[#055A43]/40'
                   }`}
                 >
-                  <span className={`text-[15px] ${data.alimentacao === option ? 'text-[#055A43] font-medium' : 'text-[#5C615D]'}`}>
+                  <span className={`text-[15px] ${data.alimentacao === option ? 'text-[#055A43] font-medium' : 'text-[#6B7A6E]'}`}>
                     {option}
                   </span>
                   {data.alimentacao === option && <Check className="w-5 h-5 text-[#055A43]" />}
@@ -260,20 +260,20 @@ export function Checkin() {
               <Sparkles className="w-6 h-6 text-[#055A43]" />
             </div>
             <h2 className="font-serif text-3xl text-[#055A43] mb-2 tracking-tight">Comportamento</h2>
-            <p className="text-[#5C615D] text-[15px] font-light mb-8">Houve algum desvio na rotina ou reatividade?</p>
+            <p className="text-[#6B7A6E] text-[15px] font-light mb-8">Houve algum desvio na rotina ou reatividade?</p>
             
             <div className="flex flex-col gap-3">
               {['Passeio tranquilo', 'Reagiu a outros cães', 'Ansiedade ao ficar só', 'Dia excelente, sem problemas'].map(option => (
                 <button
                   key={option}
                   onClick={() => updateData('comportamento', option)}
-                  className={`w-full p-5 rounded-[1.5rem] border text-left flex justify-between items-center transition-all ${
+                  className={`w-full min-h-[56px] px-5 py-4 rounded-2xl border text-left flex justify-between items-center transition-all duration-200 ease-out ${
                     data.comportamento === option 
-                    ? 'border-[#055A43] bg-[#055A43]/5' 
-                    : 'border-[#055A43]/10 bg-white hover:border-[#055A43]/30'
+                    ? 'border-[#055A43] bg-[#EAF0E8]' 
+                    : 'border-[#E4E1D6] bg-[#FFFEFB] hover:border-[#055A43]/40'
                   }`}
                 >
-                  <span className={`text-[15px] ${data.comportamento === option ? 'text-[#055A43] font-medium' : 'text-[#5C615D]'}`}>
+                  <span className={`text-[15px] ${data.comportamento === option ? 'text-[#055A43] font-medium' : 'text-[#6B7A6E]'}`}>
                     {option}
                   </span>
                   {data.comportamento === option && <Check className="w-5 h-5 text-[#055A43]" />}
@@ -311,7 +311,7 @@ export function Checkin() {
               <MapPin className="w-6 h-6 text-[#055A43]" />
             </div>
             <h2 className="font-serif text-3xl text-[#055A43] mb-2 tracking-tight">Contexto do dia</h2>
-            <p className="text-[#5C615D] text-[15px] font-light mb-6">
+            <p className="text-[#6B7A6E] text-[15px] font-light mb-6">
               Opcional. Esses detalhes tornam as recomendações mais precisas.
             </p>
 
@@ -330,8 +330,8 @@ export function Checkin() {
                       onClick={() => setWalked(option.value)}
                       className={`min-h-11 rounded-xl border px-2 text-xs transition-all ${
                         data.context?.walked === option.value
-                          ? 'border-[#055A43] bg-[#055A43]/5 text-[#055A43] font-semibold'
-                          : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                          ? 'border-[#055A43] bg-[#EAF0E8] text-[#055A43] font-semibold'
+                          : 'border-[#055A43]/10 bg-white text-[#6B7A6E]'
                       }`}
                     >
                       {option.label}
@@ -352,8 +352,8 @@ export function Checkin() {
                           onClick={() => updateContext('walkDurationMinutes', minutes)}
                           className={`min-h-11 rounded-xl border px-2 text-xs transition-all ${
                             data.context?.walkDurationMinutes === minutes
-                              ? 'border-[#055A43] bg-[#055A43]/5 text-[#055A43] font-semibold'
-                              : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                              ? 'border-[#055A43] bg-[#EAF0E8] text-[#055A43] font-semibold'
+                              : 'border-[#055A43]/10 bg-white text-[#6B7A6E]'
                           }`}
                         >
                           {minutes} min
@@ -377,7 +377,7 @@ export function Checkin() {
                           className={`rounded-full border px-3 py-2 text-xs transition-all ${
                             data.context?.environment === option.value
                               ? 'border-[#055A43] bg-[#055A43] text-white'
-                              : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                              : 'border-[#055A43]/10 bg-white text-[#6B7A6E]'
                           }`}
                         >
                           {option.label}
@@ -399,7 +399,7 @@ export function Checkin() {
                       className={`rounded-full border px-3 py-2 text-xs transition-all ${
                         incidents.includes(option.value)
                           ? 'border-[#055A43] bg-[#055A43] text-white'
-                          : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                          : 'border-[#055A43]/10 bg-white text-[#6B7A6E]'
                       }`}
                     >
                       {option.label}
@@ -421,7 +421,7 @@ export function Checkin() {
                           className={`rounded-full border px-3 py-2 text-xs transition-all ${
                             triggers.includes(option.value)
                               ? 'border-[#055A43] bg-[#055A43] text-white'
-                              : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                              : 'border-[#055A43]/10 bg-white text-[#6B7A6E]'
                           }`}
                         >
                           {option.label}
@@ -443,8 +443,8 @@ export function Checkin() {
                           onClick={() => updateContext('intensity', option.value)}
                           className={`min-h-11 rounded-xl border px-2 text-xs transition-all ${
                             data.context?.intensity === option.value
-                              ? 'border-[#055A43] bg-[#055A43]/5 text-[#055A43] font-semibold'
-                              : 'border-[#055A43]/10 bg-white text-[#5C615D]'
+                              ? 'border-[#055A43] bg-[#EAF0E8] text-[#055A43] font-semibold'
+                              : 'border-[#055A43]/10 bg-white text-[#6B7A6E]'
                           }`}
                         >
                           {option.label}
@@ -465,7 +465,7 @@ export function Checkin() {
                   onChange={(event) => updateContext('notes', event.target.value.slice(0, 180))}
                   placeholder="Ex.: ficou mais calmo depois do passeio."
                   rows={3}
-                  className="w-full resize-none rounded-2xl border border-[#055A43]/10 bg-white p-4 text-sm text-[#5C615D] outline-none transition focus:border-[#055A43]/40"
+                  className="w-full resize-none rounded-2xl border border-[#055A43]/10 bg-white p-4 text-sm text-[#6B7A6E] outline-none transition focus:border-[#055A43]/40"
                 />
               </section>
             </div>
@@ -484,12 +484,12 @@ export function Checkin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
       {/* Header */}
       <header className="px-6 pt-16 flex items-center justify-between">
         <button 
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-white border border-[#055A43]/10 flex items-center justify-center text-[#5C615D]"
+          className="w-10 h-10 rounded-full bg-white border border-[#055A43]/10 flex items-center justify-center text-[#6B7A6E]"
         >
           <X className="w-5 h-5" />
         </button>
@@ -521,7 +521,7 @@ export function Checkin() {
       </main>
 
       {/* Footer */}
-      <div className="fixed bottom-[80px] left-0 right-0 p-6 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA] to-transparent z-40 pointer-events-none">
+      <div className="fixed bottom-[80px] left-0 right-0 p-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent z-40 pointer-events-none">
         {saveError && (
           <p className="mb-3 text-center text-[13px] text-[#B42318] pointer-events-auto">
             Não foi possível salvar seu check-in. Verifique a conexão e tente de novo.

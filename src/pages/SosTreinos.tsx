@@ -117,12 +117,12 @@ export function SosTreinos() {
   const ActiveIcon = active.icon;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans pb-10">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans pb-10">
       <header className="px-6 pt-12 pb-7 bg-white border-b border-[#055A43]/5">
         <div className="max-w-lg mx-auto">
           <button
             onClick={() => navigate(-1)}
-            className="w-11 h-11 rounded-full bg-[#FAFAFA] border border-[#055A43]/10 text-[#506352] flex items-center justify-center mb-8 active:scale-95 transition-transform"
+            className="w-11 h-11 rounded-full bg-[#F7F5EF] border border-[#055A43]/10 text-[#506352] flex items-center justify-center mb-8 active:scale-95 transition-transform"
             aria-label="Voltar"
           >
             <ChevronLeft className="w-6 h-6" />
@@ -140,7 +140,7 @@ export function SosTreinos() {
             <h1 className="mt-5 font-serif text-[34px] leading-[1.05] tracking-tight text-[#055A43]">
               O que está acontecendo agora?
             </h1>
-            <p className="mt-4 text-[#5C615D] text-[15px] leading-relaxed max-w-sm">
+            <p className="mt-4 text-[#6B7A6E] text-[15px] leading-relaxed max-w-sm">
               Escolha a situação e siga só o primeiro movimento. O objetivo é baixar a intensidade, não resolver tudo de uma vez.
             </p>
           </motion.div>
@@ -160,7 +160,7 @@ export function SosTreinos() {
                 className={`min-h-[116px] rounded-[1.5rem] border p-4 text-left transition-all active:scale-[0.98] ${
                   selected
                     ? 'bg-[#055A43] text-white border-[#055A43] shadow-[0_8px_24px_rgba(5,90,67,0.16)]'
-                    : 'bg-white text-[#506352] border-[#055A43]/10 shadow-[0_8px_20px_rgb(0,0,0,0.02)]'
+                    : 'bg-white text-[#506352] border-[#055A43]/10 shadow-[0_8px_20px_rgba(45,74,58,0.08)]'
                 }`}
               >
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-4 ${
@@ -169,7 +169,7 @@ export function SosTreinos() {
                   <Icon className="w-5 h-5" />
                 </div>
                 <span className="block text-[15px] font-bold leading-tight">{protocol.title}</span>
-                <span className={`block mt-1 text-[11px] leading-snug ${selected ? 'text-white/65' : 'text-[#5C615D]/70'}`}>
+                <span className={`block mt-1 text-[11px] leading-snug ${selected ? 'text-white/65' : 'text-[#6B7A6E]/70'}`}>
                   {protocol.trigger}
                 </span>
               </button>
@@ -194,14 +194,14 @@ export function SosTreinos() {
             </span>
           </div>
 
-          <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#5C615D]/55 mb-2">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#6B7A6E]/55 mb-2">
             Primeiro movimento
           </p>
           <h2 className="font-serif text-[29px] leading-tight text-[#055A43] mb-5">
             {active.firstMove}
           </h2>
 
-          <div className="rounded-[1.5rem] bg-[#FAFAFA] border border-[#055A43]/8 p-4 mb-5">
+          <div className="rounded-[1.5rem] bg-[#F7F5EF] border border-[#055A43]/8 p-4 mb-5">
             <p className="text-[13px] font-bold uppercase tracking-widest text-[#055A43] mb-3">Depois disso</p>
             <div className="flex flex-col gap-3">
               {active.steps.map((step) => (
@@ -220,7 +220,7 @@ export function SosTreinos() {
           </div>
         </motion.section>
 
-        <section className="rounded-[1.5rem] border border-[#055A43]/10 bg-white p-5 flex gap-4 shadow-[0_8px_20px_rgb(0,0,0,0.02)]">
+        <section className="rounded-[1.5rem] border border-[#055A43]/10 bg-white p-5 flex gap-4 shadow-[0_8px_20px_rgba(45,74,58,0.08)]">
           <ShieldCheck className="w-5 h-5 text-[#055A43] shrink-0 mt-0.5" />
           <p className="text-[13px] text-[#506352] leading-relaxed">
             Se houver risco de mordida, fuga, dor, engasgo, intoxicação ou machucado, procure ajuda veterinária ou presencial imediatamente.

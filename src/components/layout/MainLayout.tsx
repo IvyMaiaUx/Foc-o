@@ -42,7 +42,7 @@ export function MainLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans flex flex-col relative">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col relative">
       {/* Main Content Area */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -71,7 +71,7 @@ export function MainLayout() {
                 onClick={haptics.light}
                 className={cn(
                   "relative flex flex-col items-center justify-center px-1 py-2 rounded-[1rem] w-[64px] min-h-[58px] transition-all duration-300 ease-out",
-                  isActive ? "bg-[#055A43] text-white shadow-md shadow-[#055A43]/20" : "text-[#7B827D] hover:bg-[#FAFAFA] active:scale-95"
+                  isActive ? "bg-[#055A43] text-white shadow-md shadow-[#055A43]/20" : "text-[#7B827D] hover:bg-[#F7F5EF] active:scale-95"
                 )}
               >
                 <div className="relative">

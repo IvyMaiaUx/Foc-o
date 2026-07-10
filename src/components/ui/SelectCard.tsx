@@ -25,7 +25,7 @@ export const SelectCard = forwardRef<HTMLButtonElement, SelectCardProps>(
         <div className="flex items-center justify-between w-full">
           <span className={cn(
             "font-semibold text-[15px]",
-            selected ? "text-[#055A43]" : "text-[#5C615D]"
+            selected ? "text-[#055A43]" : "text-[#6B7A6E]"
           )}>
             {title}
           </span>
@@ -39,7 +39,7 @@ export const SelectCard = forwardRef<HTMLButtonElement, SelectCardProps>(
         {description && (
           <span className={cn(
             "text-[13px] mt-2 leading-relaxed pr-6",
-            selected ? "text-[#055A43]/80" : "text-[#5C615D]/70"
+            selected ? "text-[#055A43]/80" : "text-[#6B7A6E]/70"
           )}>
             {description}
           </span>

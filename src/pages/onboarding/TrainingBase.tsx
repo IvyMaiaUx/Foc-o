@@ -81,7 +81,7 @@ export function TrainingBase() {
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border-2 flex items-center gap-1.5 ${
                         isSelected
                           ? 'border-[#055A43] bg-[#055A43]/5 text-[#055A43]'
-                          : 'border-gray-200 bg-white text-[#5C615D] hover:border-[#055A43]/30'
+                          : 'border-gray-200 bg-white text-[#6B7A6E] hover:border-[#055A43]/30'
                       }`}
                     >
                       {isSelected && <Check className="w-4 h-4" strokeWidth={2.5} />}

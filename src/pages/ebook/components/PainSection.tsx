@@ -3,7 +3,7 @@ import { Reveal } from "./Reveal";
 export function PainSection() {
   return (
     <section
-      style={{ backgroundColor: "#FAFAFA" }}
+      style={{ backgroundColor: "#F7F5EF" }}
       className="py-24 px-6 md:px-16 lg:px-24"
     >
       <div className="max-w-4xl mx-auto flex flex-col gap-8">

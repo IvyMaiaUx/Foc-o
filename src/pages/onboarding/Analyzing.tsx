@@ -321,7 +321,7 @@ export function Analyzing() {
   const dogInitial = (stateData?.dogData?.name || "C").charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#F9F9F8] font-sans flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-sm flex flex-col items-center text-center">
         {/* Avatar do cão */}
         <motion.div
@@ -362,7 +362,7 @@ export function Analyzing() {
         <h1 className="font-serif text-[28px] text-[#055A43] tracking-tight leading-tight mb-1">
           Montando o plano
         </h1>
-        <p className="text-[13px] text-[#5C615D] mb-8">
+        <p className="text-[13px] text-[#6B7A6E] mb-8">
           Personalizando cada treino para {dogDisplayName}.
         </p>
 
@@ -390,7 +390,7 @@ export function Analyzing() {
                 ) : (
                   <Circle className="w-5 h-5 text-gray-300 shrink-0" />
                 )}
-                <span className={`text-[13px] font-medium leading-snug ${done ? "text-[#055A43]" : "text-[#5C615D]"}`}>
+                <span className={`text-[13px] font-medium leading-snug ${done ? "text-[#055A43]" : "text-[#6B7A6E]"}`}>
                   {step}
                 </span>
               </motion.div>

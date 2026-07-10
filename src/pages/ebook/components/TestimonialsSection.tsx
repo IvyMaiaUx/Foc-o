@@ -27,7 +27,7 @@ export function TestimonialsSection() {
 
   return (
     <section
-      style={{ backgroundColor: "#F9F9F8" }}
+      style={{ backgroundColor: "#F7F5EF" }}
       className="py-24 px-6 md:px-16 lg:px-24"
     >
       <div className="max-w-7xl mx-auto flex flex-col gap-12">
@@ -79,7 +79,7 @@ export function TestimonialsSection() {
                 visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
               }}
               style={{
-                backgroundColor: "#FAFAFA",
+                backgroundColor: "#F7F5EF",
                 border: "1px solid #E7E3DA",
                 borderRadius: "16px",
                 padding: "28px 28px",

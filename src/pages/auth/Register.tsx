@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   createUserWithEmailAndPassword,
@@ -287,7 +287,7 @@ export function Register() {
             {isBeta ? 'Entrar no Beta' : 'Continuar'}
           </Button>
           {isBeta && (
-            <p className="mt-3 text-center text-xs font-medium text-[#5C615D]">
+            <p className="mt-3 text-center text-xs font-medium text-[#6B7A6E]">
               Você está acessando uma versão beta gratuita do app.
             </p>
           )}
