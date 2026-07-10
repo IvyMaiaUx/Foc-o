@@ -565,33 +565,35 @@ export class EvolutionInsightsMotor {
       };
     }
 
+    // Headlines descrevem a ATIVIDADE registrada (fato), não "evolução" (juízo que
+    // o dado não sustenta). Filtro: o dado sustenta a afirmação, ou só a acompanha?
     const headline =
       score >= 75
-        ? 'A evolução está consistente e bem sustentada.'
+        ? 'Uma semana com bastante presença de vocês.'
         : score >= 55
-          ? 'A rotina mostra progresso com boa regularidade.'
+          ? 'Uma semana com atividade em vários dias.'
           : score >= 35
-            ? 'Há sinais de progresso, mas a rotina ainda precisa ganhar ritmo.'
-            : 'A jornada começou, mas ainda precisa de mais constância.';
+            ? 'Uma semana mais tranquila de registros.'
+            : 'Poucos registros nesta semana — acontece.';
 
     const body =
       positiveTrainings >= hardTrainings
-        ? 'Os registros indicam que os treinos estão sendo assimilados com estabilidade, principalmente quando a rotina é mantida por mais dias na semana.'
-        : 'Os registros mostram que alguns treinos ainda pedem ajuste de ritmo, ambiente ou recompensa para ficarem mais fáceis de repetir.';
+        ? 'Os treinos desta semana foram concluídos sem marcar dificuldade nos registros. Repetir em sessões curtas ajuda a fixar.'
+        : 'Alguns treinos foram marcados como difíceis. Vale repetir em ambiente mais simples antes de avançar.';
 
     const attention =
       behaviorSignals > 0
-        ? 'Os check-ins trouxeram sinais de agitação, ansiedade ou desconforto. Vale observar se aparecem depois de mudanças na rotina.'
+        ? 'Os check-ins registraram alguns incidentes (agitação, ansiedade ou reatividade). Vale observar se aparecem depois de mudanças na rotina.'
         : activeDays < 4
-          ? 'A principal oportunidade é aumentar a frequência dos registros, porque isso melhora a personalização do plano.'
-          : 'Não há um ponto crítico nos registros recentes. O foco é manter a consistência.';
+          ? 'Foram poucos dias com registro nesta semana.'
+          : 'Sem ponto de atenção claro nos registros desta semana.';
 
     const recommendation =
       behaviorSignals > 0
-        ? 'Próximo foco: priorizar exercícios curtos de calma e previsibilidade antes de aumentar a dificuldade.'
+        ? 'Próximo foco: exercícios curtos de calma e previsibilidade antes de aumentar a dificuldade.'
         : hardTrainings > 0
           ? 'Próximo foco: repetir os treinos mais difíceis em ambientes mais simples antes de avançar.'
-          : 'Próximo foco: manter check-ins e treinos em dias alternados para consolidar o progresso.';
+          : 'Sem um ajuste específico a sugerir com os registros desta semana.';
 
     return {
       headline,

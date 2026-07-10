@@ -212,8 +212,6 @@ export class CheckinInsightsMotor {
       insightText = 'Nos dias em que vocês treinaram, o comportamento de seu cão melhorou. A consistência está funcionando.';
     } else if (behaviorAfterTraining === 'worse' && energyPattern === 'high') {
       insightText = 'Seu cão demonstra energia alta nos dias de treino. Sessões mais curtas e frequentes podem funcionar melhor.';
-    } else if (behaviorAfterTraining === 'worse') {
-      insightText = 'Alguns dias após o treino registraram mais agitação. Considere ajustar o horário ou a intensidade.';
     } else if (regularFeedChecked) {
       insightText = 'A consistência na marcação das refeições mostra uma rotina alimentar exemplar. Isso ajuda a estabilizar os níveis de energia ao longo do dia.';
     } else if (energyPattern === 'high') {

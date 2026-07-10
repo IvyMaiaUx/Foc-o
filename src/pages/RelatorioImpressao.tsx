@@ -22,6 +22,7 @@ import { CheckinInsightsMotor, CheckinInsights } from '@/src/motors/CheckinInsig
 import { EvolutionInsightsMotor, EvolutionInsights } from '@/src/motors/EvolutionInsightsMotor';
 import { CustomEventRepository } from '@/src/repositories/CustomEventRepository';
 import { WeeklyReportOverride, WeeklyReportOverrideRepository } from '@/src/repositories/WeeklyReportOverrideRepository';
+import { goalLabel } from '@/src/lib/goalLabels';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -63,17 +64,7 @@ function trainingLevelLabel(level?: string) {
   return level ? labels[level] || level : 'Não informado';
 }
 
-function goalLabel(goal: string) {
-  const labels: Record<string, string> = {
-    obedience: 'Melhorar obediência básica',
-    bond: 'Fortalecer o vínculo',
-    behavior: 'Melhorar comportamento',
-    focus: 'Melhorar foco e atenção',
-    confidence: 'Desenvolver confiança',
-    training: 'Avançar nos treinos',
-  };
-  return labels[goal] || goal;
-}
+// goalLabel foi extraído para src/lib/goalLabels.ts (fonte única + teste de CI).
 
 export function RelatorioImpressao() {
   const navigate = useNavigate();
@@ -227,23 +218,14 @@ export function RelatorioImpressao() {
     recommendation || 'Observar pequenas mudanças na rotina e registrar o que funcionou melhor.',
   ];
   const personality = Array.isArray(dog.personality) && dog.personality.length > 0 ? dog.personality.join(', ') : 'Não informado';
-  const goals = Array.isArray(dog.goals) && dog.goals.length > 0 ? dog.goals.map(goalLabel).join(', ') : 'Acompanhar a evolução da rotina';
+  const goals = (Array.isArray(dog.goals) ? dog.goals.map(goalLabel).filter(Boolean) : []).join(', ') || 'Acompanhar a evolução da rotina';
   const routineParts = [
-    typeof dog.walkFrequency === 'number' ? `${dog.walkFrequency} passeio(s) por dia` : '',
+    typeof dog.walkFrequency === 'number' ? `${dog.walkFrequency} ${dog.walkFrequency === 1 ? 'passeio' : 'passeios'} por dia` : '',
     dog.walkDurationMinutes ? `${dog.walkDurationMinutes} min por passeio` : '',
     dog.housingType === 'apartment' ? 'Apartamento' : dog.housingType === 'house' ? 'Casa' : '',
   ].filter(Boolean);
   const nutrition = dog.nutrition;
-  const trackingScore = Math.min(100, Math.round(
-    (Math.min(report.activeDays, 7) / 7) * 45
-    + (Math.min(report.totalCheckins, 4) / 4) * 35
-    + (Math.min(report.totalTrainings, 2) / 2) * 20
-  ));
-  const trackingStatus = !hasEnoughData
-    ? 'Base em construção'
-    : trackingScore >= 75
-      ? 'Boa consistência'
-      : 'Evolução parcial';
+  // Índice 0-100 removido: era precisão falsa (número sem composição visível ao tutor).
 
   return (
     <div className="min-h-screen bg-[#F7F6F2] print:bg-white text-[#17221E] font-sans selection:bg-[#055A43]/20">
@@ -280,47 +262,18 @@ export function RelatorioImpressao() {
         </header>
 
         <section className="mb-7 rounded-lg border border-[#D8C3A5] bg-[#F8F3EB] p-6">
-          <div className="grid gap-5 md:grid-cols-[1fr_132px] md:items-start">
-            <div>
-              <div className="mb-3 flex items-center gap-2 text-[#7C684E]">
-                <Sparkles className="h-4 w-4" />
-                <p className="text-[10px] font-black uppercase tracking-[0.2em]">Resumo da semana</p>
-              </div>
-              <span className="inline-flex rounded-full bg-white/75 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-[#7C684E]">{trackingStatus}</span>
-              <h2 className="mt-3 max-w-2xl font-serif text-2xl font-semibold leading-tight text-[#17221E]">{executiveTitle}</h2>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-[#58635F]">{executiveBody}</p>
-            </div>
-            <div className="border-l border-[#E2D4C1] pl-5">
-              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#8B7357]">Índice de acompanhamento</p>
-              <p className="mt-2 font-serif text-4xl font-semibold text-[#055A43]">{trackingScore}<span className="text-base text-[#8A918D]">/100</span></p>
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/80">
-                <div className="h-full rounded-full bg-[#055A43]" style={{ width: `${trackingScore}%` }} />
-              </div>
-            </div>
+          <div className="mb-3 flex items-center gap-2 text-[#7C684E]">
+            <Sparkles className="h-4 w-4" />
+            <p className="text-[10px] font-black uppercase tracking-[0.2em]">Resumo da semana</p>
           </div>
+          <h2 className="mt-1 max-w-2xl font-serif text-2xl font-semibold leading-tight text-[#17221E]">{executiveTitle}</h2>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-[#58635F]">{executiveBody}</p>
         </section>
 
-        <section className="mb-7 grid grid-cols-2 divide-x divide-y divide-[#E6E4DD] rounded-lg border border-[#E6E4DD] md:grid-cols-4 md:divide-y-0">
-          <div className="px-4 py-3.5">
-            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Consistência semanal</p>
-            <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.streak}<span className="ml-1 text-sm text-[#8A918D]">dias</span></p>
-            <p className="mt-1 text-[10px] text-[#8A918D]">Sequência acompanhada</p>
-          </div>
-          <div className="px-4 py-3.5">
-            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Dias ativos</p>
-            <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.activeDays}<span className="ml-1 text-sm text-[#8A918D]">/ 7</span></p>
-            <p className="mt-1 text-[10px] text-[#8A918D]">Rotina da semana</p>
-          </div>
-          <div className="px-4 py-3.5">
-            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Treinos concluídos</p>
-            <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.totalTrainings}</p>
-            <p className="mt-1 text-[10px] text-[#8A918D]">{report.totalTrainings > 0 ? 'Repetição registrada' : 'Acompanhamento não iniciado'}</p>
-          </div>
-          <div className="px-4 py-3.5">
-            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Check-ins comportamentais</p>
-            <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.totalCheckins}</p>
-            <p className="mt-1 text-[10px] text-[#8A918D]">{hasEnoughData ? 'Base útil para análise' : 'Base ainda insuficiente'}</p>
-          </div>
+        <section className="mb-7 rounded-lg border border-[#E6E4DD] px-5 py-4">
+          <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Esta semana</p>
+          <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.activeDays} <span className="text-base font-medium text-[#8A918D]">de 7 dias com registro</span></p>
+          <p className="mt-1 text-[11px] text-[#8A918D]">{report.totalTrainings} {report.totalTrainings === 1 ? 'treino' : 'treinos'} · {report.totalCheckins} {report.totalCheckins === 1 ? 'check-in' : 'check-ins'}</p>
         </section>
 
         <section className="page-break-inside-avoid mb-7 rounded-lg border border-[#E6E4DD] p-5">
