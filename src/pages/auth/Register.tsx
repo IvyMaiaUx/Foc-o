@@ -91,7 +91,7 @@ export function Register() {
     e.preventDefault();
     hapticLightTap();
     if (!formData.name || !formData.email || !formData.password || (isBeta && (!formData.whatsapp || !formData.dogName || !formData.dogAge))) {
-      setError('Por favor, preencha todos os campos.');
+      setError('Preencha todos os campos para continuar.');
       setInfo('');
       return;
     }

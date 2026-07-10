@@ -170,7 +170,7 @@ export function Notificacoes() {
         {saved && (
           <div className="flex items-center gap-2 rounded-2xl border border-[#055A43]/10 bg-white px-4 py-3 text-sm font-medium text-[#055A43] shadow-sm">
             <CheckCircle2 className="h-4 w-4" />
-            Alterações salvas com sucesso.
+            Alterações salvas.
           </div>
         )}
 

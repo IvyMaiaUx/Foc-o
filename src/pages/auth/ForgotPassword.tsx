@@ -33,7 +33,7 @@ export function ForgotPassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      setError('Por favor, informe seu e-mail.');
+      setError('Informe seu e-mail para receber o link.');
       return;
     }
 

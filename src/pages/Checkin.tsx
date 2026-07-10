@@ -17,6 +17,7 @@ export function Checkin() {
   const [isSaving, setIsSaving] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [saveErrorMsg, setSaveErrorMsg] = useState('Não foi possível salvar seu check-in. Verifique a conexão e tente de novo.');
   const [dogName, setDogName] = useState('seu cão');
   const [dogGender, setDogGender] = useState('male');
   const [isEditing, setIsEditing] = useState(false);
@@ -158,6 +159,11 @@ export function Checkin() {
       setIsCompleted(true);
     } catch (err) {
       console.error("Erro ao salvar check-in", err);
+      setSaveErrorMsg(
+        err instanceof Error && err.message === 'Usuário não autenticado'
+          ? 'Sua sessão expirou. Entre novamente para continuar.'
+          : 'Não foi possível salvar seu check-in. Verifique a conexão e tente de novo.'
+      );
       setSaveError(true);
     } finally {
       setIsSaving(false);
@@ -177,7 +183,7 @@ export function Checkin() {
             <Check className="w-10 h-10 text-[#055A43]" />
           </div>
           <h2 className="font-serif text-[32px] text-[#055A43] leading-tight tracking-tight mb-3">
-            Diário <br/>Atualizado
+            Diário <br/>atualizado
           </h2>
           <p className="text-[#6B7A6E] text-sm font-light leading-relaxed mb-10">
             Check-in de hoje registrado. Cuidar também é observar. Hoje vocês deram mais um passo na jornada.
@@ -186,7 +192,7 @@ export function Checkin() {
             onClick={() => navigate('/')}
             className="w-full bg-[#055A43] text-white h-14 rounded-2xl font-medium shadow-lg hover:bg-[#044735] active:scale-[0.98] transition-all"
           >
-            Voltar ao Início
+            Voltar ao início
           </button>
         </motion.div>
       </div>
@@ -202,7 +208,7 @@ export function Checkin() {
               <Battery className="w-6 h-6 text-[#506352]" />
             </div>
             <h2 className="font-serif text-3xl text-[#055A43] mb-2 tracking-tight">Energia</h2>
-            <p className="text-[#6B7A6E] text-[15px] font-light mb-8">Como foi o ritmo do seu cão hoje?</p>
+            <p className="text-[#6B7A6E] text-[15px] font-light mb-8">Como foi o ritmo {dogGender === 'female' ? 'da' : 'do'} {dogName} hoje?</p>
             
             <div className="flex flex-col gap-3">
               {['Calmo e relaxado', 'Equilibrado', 'Agitado e sem foco'].map(option => (
@@ -524,7 +530,7 @@ export function Checkin() {
       <div className="fixed bottom-[80px] left-0 right-0 p-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent z-40 pointer-events-none">
         {saveError && (
           <p className="mb-3 text-center text-[13px] text-[#B42318] pointer-events-auto">
-            Não foi possível salvar seu check-in. Verifique a conexão e tente de novo.
+            {saveErrorMsg}
           </p>
         )}
         <button
@@ -536,7 +542,7 @@ export function Checkin() {
              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
-              <span>{step === 4 ? 'Finalizar Check-in' : 'Continuar'}</span>
+              <span>{step === 4 ? 'Finalizar check-in' : 'Continuar'}</span>
               {step !== 4 && <ArrowRight className="w-5 h-5" />}
             </>
           )}

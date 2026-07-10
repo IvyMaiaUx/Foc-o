@@ -271,12 +271,12 @@ export function Perfil() {
     if (!user) return;
 
     const confirmFirst = window.confirm(
-      "Tem certeza absoluta de que deseja excluir sua conta e TODOS os seus dados do Focão permanentemente? Esta ação é irreversível."
+      "Excluir sua conta apaga permanentemente todos os seus dados do Focão — treinos, check-ins, vacinas e perfil. Essa ação não pode ser desfeita. Deseja continuar?"
     );
     if (!confirmFirst) return;
 
     const confirmSecond = window.confirm(
-      "Para confirmar e cumprir a LGPD, o Focão irá deletar seu histórico de treinos, check-ins, vacinas, perfil do cão e cadastro. Clique em OK para confirmar a exclusão imediata."
+      "Para confirmar e cumprir a LGPD, o Focão irá deletar seu histórico de treinos, check-ins, vacinas, perfil do cão e cadastro. Toque em OK para confirmar a exclusão imediata."
     );
     if (!confirmSecond) return;
 
@@ -297,16 +297,16 @@ export function Perfil() {
 
       await signOut(auth).catch(() => undefined);
 
-      alert("Sua conta e todos os seus dados foram excluídos com sucesso em conformidade com a LGPD.");
+      alert("Sua conta e todos os seus dados foram excluídos, em conformidade com a LGPD.");
       navigate('/');
     } catch (err: any) {
       console.error("Erro ao excluir conta:", err);
       if (err?.code === 'auth/requires-recent-login') {
         alert(
-          "Por motivos de segurança, você precisa fazer login novamente antes de excluir sua conta. Por favor, encerre a sessão, faça login de novo e repita o processo."
+          "Por segurança, é preciso entrar novamente antes de excluir a conta. Encerre a sessão, faça login de novo e repita o processo."
         );
       } else {
-        alert(`Ocorreu um erro ao excluir sua conta: ${err.message || err}`);
+        alert('Não foi possível concluir a exclusão agora. Tente novamente em alguns minutos.');
       }
     } finally {
       setIsDeleting(false);
@@ -652,7 +652,7 @@ export function Perfil() {
             className="w-full bg-white rounded-[1.5rem] p-4 border border-[#C2703E]/10 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex items-center justify-center gap-2 active:bg-gray-50 transition-colors"
           >
             <LogOut className="w-5 h-5 text-[#C2703E]" />
-            <span className="font-medium text-[#C2703E] text-sm tracking-wide">Encerrar Sessão</span>
+            <span className="font-medium text-[#C2703E] text-sm tracking-wide">Encerrar sessão</span>
           </button>
         </section>
 

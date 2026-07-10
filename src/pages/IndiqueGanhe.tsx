@@ -76,7 +76,7 @@ export function IndiqueGanhe() {
   // Status text for client
   const remainingReferrals = Math.max(0, 3 - validReferrals);
   const statusMessage = isLimitReached
-    ? 'Limite de indicações atingido!'
+    ? 'Você completou todas as indicações — obrigado por espalhar o Focão. 💛'
     : `Ainda ${remainingReferrals === 1 ? 'falta' : 'faltam'} ${remainingReferrals} ${remainingReferrals === 1 ? 'indicação' : 'indicações'} para atingir o limite.`;
 
   const getStatusLabel = (status: string) => {
@@ -124,7 +124,7 @@ export function IndiqueGanhe() {
             </div>
             {isLimitReached && (
               <span className="bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-medium px-3 py-1 rounded-full uppercase tracking-wider">
-                Limite Atingido
+                Limite atingido
               </span>
             )}
           </div>
@@ -140,7 +140,7 @@ export function IndiqueGanhe() {
             <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
               <Users className="w-4 h-4" />
             </div>
-            <span className="text-[10px] font-medium text-[#6B7A6E]/60 uppercase tracking-wider">Indicações Válidas</span>
+            <span className="text-[10px] font-medium text-[#6B7A6E]/60 uppercase tracking-wider">Indicações válidas</span>
             <span className="font-serif text-2xl text-[#055A43] mt-1 font-bold">{validReferrals}/3</span>
           </div>
 
@@ -148,7 +148,7 @@ export function IndiqueGanhe() {
             <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
               <Award className="w-4 h-4" />
             </div>
-            <span className="text-[10px] font-medium text-[#6B7A6E]/60 uppercase tracking-wider">Dias Ganhos</span>
+            <span className="text-[10px] font-medium text-[#6B7A6E]/60 uppercase tracking-wider">Dias ganhos</span>
             <span className="font-serif text-2xl text-[#055A43] mt-1 font-bold">{referralRewardsDays} dias</span>
           </div>
         </section>
@@ -165,7 +165,7 @@ export function IndiqueGanhe() {
         {/* Badges de Reconhecimento */}
         <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]">
           <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#6B7A6E]/60 mb-4 px-1">
-            Badges de Reconhecimento
+            Badges de reconhecimento
           </h3>
           
           <div className="flex flex-col gap-4">
@@ -295,7 +295,7 @@ export function IndiqueGanhe() {
         {/* History */}
         <section>
           <h3 className="text-[10px] font-medium text-[#6B7A6E] tracking-[0.15em] uppercase mb-3 px-2">
-            Status das Indicações
+            Status das indicações
           </h3>
           <div className="bg-white rounded-[1.5rem] p-3 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] min-h-[100px] flex flex-col justify-center">
             {loading ? (
@@ -304,7 +304,7 @@ export function IndiqueGanhe() {
               </div>
             ) : referrals.length === 0 ? (
               <div className="py-6 text-center text-sm text-[#6B7A6E]/60 font-light">
-                Nenhuma indicação iniciada ainda.
+                Compartilhe seu convite para acompanhar as indicações por aqui.
               </div>
             ) : (
               <div className="flex flex-col">
@@ -331,7 +331,7 @@ export function IndiqueGanhe() {
 
         {/* Rules */}
         <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]">
-          <h4 className="font-serif text-sm text-[#055A43] mb-4 font-semibold">Regras do Programa</h4>
+          <h4 className="font-serif text-sm text-[#055A43] mb-4 font-semibold">Regras do programa</h4>
           <div className="text-xs text-[#6B7A6E]/80 space-y-3 leading-relaxed">
             <p>
               Todos os usuários do Focão podem fazer indicações, sejam usuários Free, Trial ou Premium.

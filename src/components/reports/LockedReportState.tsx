@@ -6,11 +6,14 @@ import { WeeklyReportGateResult } from '@/src/lib/weeklyReportGate';
 interface LockedReportStateProps {
   result: WeeklyReportGateResult;
   dogName: string;
+  dogGender?: string;
   onCheckin: () => void;
   onTrain: () => void;
 }
 
-export function LockedReportState({ result, dogName, onCheckin, onTrain }: LockedReportStateProps) {
+export function LockedReportState({ result, dogName, dogGender, onCheckin, onTrain }: LockedReportStateProps) {
+  // Artigo por gênero (mesma lógica do restante do app: female → "da", senão "do").
+  const art = dogGender === 'female' ? 'da' : 'do';
   const { overallPct, requirements } = result;
 
   const radius = 54;
@@ -30,10 +33,10 @@ export function LockedReportState({ result, dogName, onCheckin, onTrain }: Locke
       className="flex flex-col items-center text-center px-6 py-8"
     >
       <h2 className="font-serif text-[26px] text-[#055A43] tracking-tight leading-tight mb-1">
-        Construindo a semana{dogName ? ` ${dogName.endsWith('a') ? 'da' : 'de'} ${dogName}` : ''}
+        Construindo a semana{dogName ? ` ${art} ${dogName}` : ''}
       </h2>
       <p className="text-[14px] text-[#6B7A6E] leading-relaxed max-w-[280px] mb-8">
-        Faltam alguns registros pra liberar seu relatório. Continue acompanhando o dia a dia!
+        Faltam alguns registros para liberar seu relatório. Continue acompanhando o dia a dia!
       </p>
 
       {/* Donut de progresso */}

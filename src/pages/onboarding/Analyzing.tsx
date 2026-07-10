@@ -308,7 +308,7 @@ export function Analyzing() {
         navigate("/"); // Go to Home
       } catch (error: any) {
         console.error("Error saving onboarding data:", error?.message);
-        alert(`Erro de permissão ou conexão: ${error?.message}`);
+        alert('Não foi possível salvar seus dados agora. Verifique a conexão e tente de novo.');
         navigate("/");
       }
     };

@@ -131,7 +131,7 @@ export function Vacinas() {
 
             {upcoming.length > 0 && (
               <>
-                <h3 className="font-medium text-[#055A43] text-sm tracking-widest uppercase mb-4 px-2">Próximas Doses</h3>
+                <h3 className="font-medium text-[#055A43] text-sm tracking-widest uppercase mb-4 px-2">Próximas doses</h3>
                 {upcoming.map(item => {
                   const monthsDiff = Math.max(0, Math.round((parseLocalDateKey(item.nextDose!).getTime() - today.getTime()) / (1000*60*60*24*30)));
                   return (
@@ -157,7 +157,7 @@ export function Vacinas() {
                         {/* History */}
             <div className="flex flex-col gap-3">
                {history.length === 0 ? (
-                 <p className="text-[#6B7A6E] text-sm px-2">Nenhum registro encontrado.</p>
+                 <p className="text-[#6B7A6E] text-sm px-2">Registre a primeira dose para começar o histórico do seu cão.</p>
                ) : history.map(item => (
                  <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col gap-3 opacity-90">
                     <div className="flex items-center justify-between">
@@ -211,13 +211,13 @@ export function Vacinas() {
               >
                 <X className="w-5 h-5" />
               </button>
-              <h1 className="font-serif text-[20px] text-[#055A43]">Nova Vacina</h1>
+              <h1 className="font-serif text-[20px] text-[#055A43]">Nova vacina</h1>
               <div className="w-10" />
             </header>
             
             <div className="p-6 flex flex-col gap-6 flex-1 overflow-y-auto">
                <div className="flex flex-col gap-2 w-full">
-                  <label className="block text-[#6B7A6E] text-xs font-bold uppercase tracking-widest mb-1 ml-1">Nome da Vacina</label>
+                  <label className="block text-[#6B7A6E] text-xs font-bold uppercase tracking-widest mb-1 ml-1">Nome da vacina</label>
                   <button
                     type="button"
                     onClick={() => setIsVaccineModalOpen(true)}
@@ -230,7 +230,7 @@ export function Vacinas() {
                   </button>
                </div>
                <div>
-                  <label className="block text-[#6B7A6E] text-xs font-bold uppercase tracking-widest mb-2 ml-1">Data de Aplicação</label>
+                  <label className="block text-[#6B7A6E] text-xs font-bold uppercase tracking-widest mb-2 ml-1">Data de aplicação</label>
                   <input type="date" value={formData.dateApplied} onChange={e => setFormData(f => ({ ...f, dateApplied: e.target.value }))} className="w-full bg-[#F7F5EF] border border-gray-100 rounded-2xl p-4 text-[15px] focus:outline-none focus:border-[#055A43]/30" />
                </div>
                <div>
@@ -252,7 +252,7 @@ export function Vacinas() {
                   onClick={handleSave}
                   className="w-full mt-auto bg-[#055A43] text-white h-14 rounded-2xl font-medium text-base active:scale-[0.98] transition-transform flex items-center justify-center disabled:opacity-50 mb-8 pb-safe"
                 >
-                  {isSaving ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Salvar Registro'}
+                  {isSaving ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Salvar registro'}
                 </button>
             </div>
           </motion.div>
@@ -265,7 +265,7 @@ export function Vacinas() {
         options={['V8 (Polivalente)', 'V10 (Polivalente)', 'V11 / V12', 'Antirrábica', 'Giárdia', 'Gripe Canina / Tosse dos Canis', 'Leishmaniose', 'Lyme (Borreliose)', 'Coronavirose', 'Outra']}
         value={formData.name}
         onSelect={(val) => setFormData(prev => ({ ...prev, name: val }))}
-        title="Selecione a Vacina"
+        title="Selecione a vacina"
         placeholder="Buscar vacina..."
       />
     </div>

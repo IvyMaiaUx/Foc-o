@@ -339,21 +339,21 @@ export function Agenda() {
               onChange={(value) => setAgendaSettings((prev) => ({ ...prev, trainingReminderTime: value }))}
             />
             <AgendaTimeInput
-              label="Check-in da Rotina"
+              label="Check-in da rotina"
               value={agendaSettings.checkinReminderTime}
               enabled={agendaSettings.reminders.checkin}
               onToggle={(enabled) => setAgendaSettings((prev) => ({ ...prev, reminders: { ...prev.reminders, checkin: enabled } }))}
               onChange={(value) => setAgendaSettings((prev) => ({ ...prev, checkinReminderTime: value }))}
             />
             <AgendaTimeInput
-              label="Avisos de Vacinas"
+              label="Avisos de vacinas"
               value={agendaSettings.vaccineReminderTime}
               enabled={agendaSettings.reminders.vaccines}
               onToggle={(enabled) => setAgendaSettings((prev) => ({ ...prev, reminders: { ...prev.reminders, vaccines: enabled } }))}
               onChange={(value) => setAgendaSettings((prev) => ({ ...prev, vaccineReminderTime: value }))}
             />
             <AgendaTimeInput
-              label="Alerta de Relatório Semanal"
+              label="Alerta de relatório semanal"
               value={agendaSettings.reportReminderTime}
               enabled={agendaSettings.reminders.report}
               onToggle={(enabled) => setAgendaSettings((prev) => ({ ...prev, reminders: { ...prev.reminders, report: enabled } }))}
@@ -418,7 +418,7 @@ export function Agenda() {
                 </div>
                 <div className="flex-1">
                   <span className="text-[11px] font-bold tracking-wider uppercase text-[#506352] mb-0.5 block">Monitoramento</span>
-                  <p className="text-[15px] font-medium text-gray-900 leading-snug">Check-in da Rotina</p>
+                  <p className="text-[15px] font-medium text-gray-900 leading-snug">Check-in da rotina</p>
                 </div>
                 <div className="text-[12px] font-medium text-[#506352] bg-[#F7F5EF] px-2.5 py-1 rounded-md border border-gray-100">
                    {agendaState?.hasCheckedInToday ? 'Concluído' : 'Pendente'}
@@ -491,7 +491,7 @@ export function Agenda() {
           
           <div className="flex flex-col gap-2">
             {(!agendaState?.upcomingTasks || agendaState.upcomingTasks.length === 0) ? (
-               <p className="text-sm text-[#6B7A6E] italic">Não há mais tarefas no bloco atual.</p>
+               <p className="text-sm text-[#6B7A6E] italic">Bloco atual concluído — os próximos treinos aparecem aqui.</p>
             ) : (
                agendaState.upcomingTasks.map((t, i) => (
                  <div key={i} className="flex flex-col gap-1 p-3.5 bg-white rounded-xl border border-gray-100 relative pl-10">
@@ -528,7 +528,7 @@ export function Agenda() {
                       )}
                       {day.isReportDay && (
                         <div className="flex items-center gap-2 text-[13px] text-blue-700 font-bold">
-                          <Calendar className="w-3.5 h-3.5" /> Relatório Semanal
+                          <Calendar className="w-3.5 h-3.5" /> Relatório semanal
                         </div>
                       )}
                       {getEventsForDate(day.dateValue).map((event) => {

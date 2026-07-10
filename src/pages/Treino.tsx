@@ -300,7 +300,7 @@ export function Treino() {
             transition={{ delay: 0.3 }}
             className="text-white/80 font-medium tracking-widest uppercase text-xs mb-3"
           >
-            {isFailed ? "Tentativa Registrada" : "Sessão Finalizada"}
+            {isFailed ? "Tentativa registrada" : "Sessão finalizada"}
           </motion.span>
           
           <motion.h1 
@@ -350,7 +350,7 @@ export function Treino() {
             onClick={() => navigate(shouldOfferCheckin ? '/checkin' : '/')}
             className="bg-white text-[#055A43] w-full max-w-[280px] h-14 rounded-full font-medium text-[15px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] active:scale-[0.98] transition-transform"
           >
-            {shouldOfferCheckin ? 'Fazer check-in de hoje' : 'Voltar ao Início'}
+            {shouldOfferCheckin ? 'Fazer check-in de hoje' : 'Voltar ao início'}
           </motion.button>
           {shouldOfferCheckin && (
             <button
@@ -389,7 +389,7 @@ export function Treino() {
       <div className="min-h-screen bg-[#F7F5EF] px-6 font-sans flex flex-col items-center justify-center text-center">
         <h1 className="font-serif text-[28px] text-[#055A43]">Plano concluído! 🎉</h1>
         <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#6B7A6E]">
-          Vocês terminaram todos os treinos deste plano. Aguarde a geração do próximo ou acompanhe a evolução.
+          Vocês terminaram todos os treinos deste plano. Enquanto preparamos o próximo, vale explorar a evolução.
         </p>
         <button
           onClick={() => navigate('/evolucao', { replace: true })}
@@ -591,7 +591,7 @@ export function Treino() {
           ) : (
             <>
               <CheckCircle2 className="w-5 h-5" />
-              <span>Marcar como Concluído</span>
+              <span>Marcar como concluído</span>
             </>
           )}
         </button>

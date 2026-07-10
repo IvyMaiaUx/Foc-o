@@ -57,15 +57,15 @@ export function Evolucao() {
               className="bg-[#FBF3E4] rounded-[20px] p-[18px] shadow-[0_8px_24px_rgba(45,74,58,0.08)]"
             >
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#B07C3A] mb-2">
-                Sentimos sua falta
+                Bom te ver por aqui
               </p>
               <p className="text-[15px] font-semibold text-[#4A3A22] leading-snug mb-1">
                 {insights.daysSinceLastActivity >= 900
                   ? 'Que tal começar a acompanhar a evolução?'
-                  : `Faz ${insights.daysSinceLastActivity} dias sem um registro`}
+                  : 'Que tal atualizar o diário do seu cão?'}
               </p>
               <p className="text-[13px] text-[#9A6A2E] leading-relaxed mb-4">
-                Um check-in rápido já atualiza a leitura da evolução do seu cão.
+                Um check-in rápido já atualiza a leitura da evolução.
               </p>
               <button
                 onClick={() => navigate('/checkin')}

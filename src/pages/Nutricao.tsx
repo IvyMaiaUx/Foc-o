@@ -220,7 +220,7 @@ export function Nutricao() {
                   <Utensils className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-medium text-white/70 uppercase tracking-widest">Plano Diário</p>
+                  <p className="text-[11px] font-medium text-white/70 uppercase tracking-widest">Plano diário</p>
                   <p className="text-white text-[15px] font-medium">{dogData?.name || 'Seu cão'}</p>
                 </div>
               </div>
@@ -228,9 +228,9 @@ export function Nutricao() {
                 {foodInfo.fallsback ? (
                   <span className="bg-white/10 text-white border border-white/20 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Recomendado</span>
                 ) : foodInfo.meta.confidence === 'high' ? (
-                  <span className="bg-[#4ADE80]/20 text-[#4ADE80] border border-[#4ADE80]/30 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Alta Precisão</span>
+                  <span className="bg-[#4ADE80]/20 text-[#4ADE80] border border-[#4ADE80]/30 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Alta precisão</span>
                 ) : foodInfo.meta.confidence === 'medium' ? (
-                  <span className="bg-[#FBBF24]/20 text-[#FBBF24] border border-[#FBBF24]/30 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Boa Precisão</span>
+                  <span className="bg-[#FBBF24]/20 text-[#FBBF24] border border-[#FBBF24]/30 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Boa precisão</span>
                 ) : (
                   <span className="bg-white/10 text-white border border-white/20 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Aproximado</span>
                 )}
@@ -299,7 +299,7 @@ export function Nutricao() {
                 <Utensils className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-[#055A43] font-medium text-[15px] mb-1">Petiscos no Treino</p>
+                <p className="text-[#055A43] font-medium text-[15px] mb-1">Petiscos no treino</p>
                 <p className="text-[#6B7A6E] text-sm font-light leading-relaxed">
                   Os petiscos de treino devem representar, no máximo, 10% do total calórico diário para evitar sobrepeso.
                 </p>
@@ -442,7 +442,7 @@ export function Nutricao() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-medium text-[#506352] uppercase tracking-widest ml-1">Quantidade Diária (em gramas)</label>
+                    <label className="text-[11px] font-medium text-[#506352] uppercase tracking-widest ml-1">Quantidade diária (em gramas)</label>
                     <div className="relative">
                       <input 
                         type="number" 
@@ -465,7 +465,7 @@ export function Nutricao() {
                     isLoading={isSaving}
                     className="w-full"
                   >
-                    Salvar Informações
+                    Salvar informações
                   </Button>
                 </div>
               </motion.div>
@@ -482,7 +482,7 @@ export function Nutricao() {
             setBrand(val);
             setLine('');
           }}
-          title="Selecione a Marca"
+          title="Selecione a marca"
           placeholder="Buscar marca..."
         />
         
@@ -496,7 +496,7 @@ export function Nutricao() {
             const detectedLifeStage = getLifeStageFromOptions(foodOptions, brand, val);
             if (detectedLifeStage) setLifeStage(detectedLifeStage);
           }}
-          title="Selecione a Linha"
+          title="Selecione a linha"
           placeholder="Buscar linha..."
         />
         
@@ -509,7 +509,7 @@ export function Nutricao() {
             if (val === 'Outra') setVersion('');
             else setVersion(val);
           }}
-          title="Selecione a Versão"
+          title="Selecione a versão"
           placeholder="Buscar versão..."
         />
       </main>

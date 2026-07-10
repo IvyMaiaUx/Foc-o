@@ -205,9 +205,9 @@ export class CheckinInsightsMotor {
     let insightText = 'Continue registrando para refinar as recomendações do plano.';
 
     if (uncompletedWalkCorrelation) {
-      insightText = 'Nos dias em que os passeios agendados não foram marcados como concluídos, seu cão tendeu a apresentar energia mais alta e falta de foco. Priorize os passeios da agenda.';
+      insightText = 'Percebemos um padrão: nos dias com passeio, seu cão tende a ficar mais calmo e focado. Vale proteger esse horário na agenda.';
     } else if (medsMissed) {
-      insightText = 'Notamos que algumas doses de remédios agendadas não foram concluídas. Lembre-se de manter os horários da medicação em dia para o bem-estar físico do seu cão.';
+      insightText = 'Algumas doses de remédio ficaram sem confirmação. Se já foram dadas, é só marcar — e, se precisar, o lembrete de horário ajuda a manter a rotina.';
     } else if (behaviorAfterTraining === 'better') {
       insightText = 'Nos dias em que vocês treinaram, o comportamento de seu cão melhorou. A consistência está funcionando.';
     } else if (behaviorAfterTraining === 'worse' && energyPattern === 'high') {

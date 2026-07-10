@@ -120,7 +120,7 @@ export function Ativar() {
               onClick={() => navigate('/')}
               className="mt-4 w-full h-12 rounded-2xl bg-[#055A43] text-white text-[14px] font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all hover:bg-[#044a37]"
             >
-              Comecar jornada <ArrowRight className="w-4 h-4" />
+              Começar jornada <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -142,9 +142,9 @@ export function Ativar() {
             <div className="w-16 h-16 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
               <AlertCircle className="w-8 h-8" />
             </div>
-            <h2 className="font-serif text-2xl text-[#055A43] mt-2">Login necessario</h2>
+            <h2 className="font-serif text-2xl text-[#055A43] mt-2">Login necessário</h2>
             <p className="text-[#6B7A6E] text-sm leading-relaxed max-w-[280px]">
-              Entre na conta vinculada ao pagamento. Se esqueceu a senha, use a recuperacao e volte para esta ativacao.
+              Entre na conta vinculada ao pagamento. Se esqueceu a senha, use a recuperação de senha e volte para esta ativação.
             </p>
             <div className="flex flex-col gap-2 w-full mt-4">
               <button
@@ -174,7 +174,7 @@ export function Ativar() {
             <div className="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
               <AlertCircle className="w-8 h-8" />
             </div>
-            <h2 className="font-serif text-2xl text-[#055A43] mt-2">Ativacao pendente</h2>
+            <h2 className="font-serif text-2xl text-[#055A43] mt-2">Ativação pendente</h2>
             <p className="text-[#6B7A6E] text-sm leading-relaxed">{errorMsg}</p>
             <div className="flex flex-col gap-2 w-full mt-4">
               <button

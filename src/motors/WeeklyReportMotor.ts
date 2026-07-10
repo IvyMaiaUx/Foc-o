@@ -216,7 +216,7 @@ export class WeeklyReportMotor {
              nextWeekSuggestion = 'Considere adicionar pequenas sessões de gasto mental com brinquedos recheáveis.';
           }
        } else if (totalTrainings === 0) {
-          attentionPoint = 'A semana passou quase sem treinos direcionados registrados.';
+          attentionPoint = 'Esta semana teve poucos treinos registrados — acontece.';
           nextWeekSuggestion = 'Retome com treinos de 3 a 5 minutos diários de obediência básica para aquecer.';
        } else {
           // No apparent issues
@@ -253,7 +253,7 @@ export class WeeklyReportMotor {
         : activityDelta > 0
           ? 'A rotina ganhou mais presença nesta semana.'
           : activityDelta < 0
-            ? 'A frequência de registros caiu em relação à semana anterior.'
+            ? 'O ritmo de registros diminuiu em relação à semana anterior — normal em semanas cheias.'
             : 'A frequência de acompanhamento se manteve estável.',
       detail: !hasPreviousWeekData
         ? 'Ainda não há registros suficientes da semana anterior para medir tendência com segurança.'

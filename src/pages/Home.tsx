@@ -428,7 +428,7 @@ export function Home() {
                 </div>
                 <div>
                   <h4 className="text-[15px] font-bold text-[#055A43] mb-0.5 flex items-center gap-2">
-                    Relatório da Semana <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
+                    Relatório da semana <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
                   </h4>
                   <p className="text-[12px] text-[#6B7A6E] font-medium">Sua análise semanal está pronta.</p>
                 </div>
@@ -463,7 +463,7 @@ export function Home() {
             <div className="relative z-10 flex flex-col text-white h-[208px]">
               <div className="flex justify-between items-center mb-auto pt-1">
                 <span className={`text-[10px] font-bold tracking-[0.15em] uppercase border px-4 py-1.5 rounded-full backdrop-blur-md text-emerald-100/90 border-emerald-100/20 bg-black/10`}>
-                  {homeState?.hasCompletedTrainingToday ? 'Concluído' : 'Treino do Dia'}
+                  {homeState?.hasCompletedTrainingToday ? 'Concluído' : 'Treino do dia'}
                 </span>
                 {!homeState?.hasCompletedTrainingToday && activeTask && (
                   <span className="text-emerald-100/90 text-[12px] font-semibold bg-black/10 px-3 py-1 rounded-full backdrop-blur-md">
@@ -503,7 +503,7 @@ export function Home() {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <h3 className="font-serif text-2xl text-[#055A43] mb-3">Tudo concluído!</h3>
-            <p className="text-[#6B7A6E] text-[15px] leading-relaxed max-w-[240px]">Aguarde a geração do seu próximo plano de treinos pelo sistema.</p>
+            <p className="text-[#6B7A6E] text-[15px] leading-relaxed max-w-[240px]">Estamos preparando o próximo plano de treinos. Já já ele aparece por aqui.</p>
           </motion.section>
         )}
 
@@ -589,7 +589,7 @@ export function Home() {
             <div className="relative">
               <p className="font-bold text-gray-900 text-[16px] mb-1">Check-in</p>
               <p className={`text-[13px] font-medium leading-tight ${homeState?.hasCheckedInToday ? 'text-[#055A43]' : 'text-[#6B7A6E]'}`}>
-                {homeState?.hasCheckedInToday ? "✓ Feito hoje · toque pra editar" : "Pendente hoje"}
+                {homeState?.hasCheckedInToday ? "✓ Feito hoje · toque para editar" : "Pendente hoje"}
               </p>
             </div>
           </button>
@@ -650,7 +650,7 @@ export function Home() {
               <Calendar className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="text-[15px] font-bold text-gray-900 mb-0.5">Agenda do Cão</h4>
+              <h4 className="text-[15px] font-bold text-gray-900 mb-0.5">Agenda do cão</h4>
               <p className="text-[13px] font-medium text-[#6B7A6E]">Ver próximos treinos</p>
             </div>
           </div>
@@ -671,7 +671,7 @@ export function Home() {
                 <Activity className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-[15px] font-bold text-gray-900 leading-tight">Evolução Geral</h4>
+                <h4 className="text-[15px] font-bold text-gray-900 leading-tight">Evolução geral</h4>
                 <p className="text-[12px] font-medium text-[#6B7A6E]">{evolution?.totalSessions || 0} treinos realizados</p>
               </div>
             </div>
@@ -768,7 +768,7 @@ export function Home() {
                 {notifications.length === 0 ? (
                   <div className="text-center py-10 text-[#6B7A6E]/60 flex flex-col items-center">
                     <Bell className="w-12 h-12 mb-3 text-[#055A43]/20" />
-                    <p>Nenhuma notificação no momento.</p>
+                    <p>Tudo tranquilo por aqui. Avisamos quando houver novidade.</p>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-4">

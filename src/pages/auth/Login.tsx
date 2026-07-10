@@ -30,7 +30,7 @@ export function Login() {
     e.preventDefault();
     hapticLightTap();
     if (!formData.email || !formData.password) {
-      setError('Por favor, preencha todos os campos.');
+      setError('Preencha todos os campos para continuar.');
       return;
     }
 
@@ -65,12 +65,12 @@ export function Login() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-5 flex-1">
         {registrationState?.registered && (
           <div className="rounded-xl border border-[#055A43]/15 bg-[#055A43]/5 p-4 text-sm leading-relaxed text-[#055A43]">
-            Conta criada com sucesso. Entre com o e-mail e a senha que você acabou de cadastrar.
+            Conta criada. Entre com o e-mail e a senha que você acabou de cadastrar.
           </div>
         )}
         {registrationState?.passwordReset && (
           <div className="rounded-xl border border-[#055A43]/15 bg-[#055A43]/5 p-4 text-sm leading-relaxed text-[#055A43]">
-            Senha atualizada com sucesso. Entre com sua nova senha.
+            Senha atualizada. Entre com sua nova senha.
           </div>
         )}
         <Input

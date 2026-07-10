@@ -262,7 +262,7 @@ export function EditarPerfil() {
       setDogId(dogId || 'profile');
       await UserRepository.updateTutorName(user.uid, cleanTutorName);
       await refreshProfile();
-      setSavedMessage('Alterações salvas com sucesso.');
+      setSavedMessage('Alterações salvas.');
       setTimeout(() => navigate(-1), 900);
     } catch (err) {
       console.error('Erro ao salvar', err);
@@ -589,7 +589,7 @@ export function EditarPerfil() {
         {activeTab === 'saude' && (
           <div className="flex flex-col gap-6 animate-in slide-in-from-right-4 fade-in duration-300">
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Alimentação Base</label>
+              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Alimentação base</label>
               <div className="relative">
                 <select
                   value={formData.diet}
@@ -610,7 +610,7 @@ export function EditarPerfil() {
             
             {(formData.diet === 'Ração seca' || formData.diet === 'Ração úmida' || formData.diet === 'Mista') && (
               <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-[#6B7A6E] text-sm font-medium ml-1">Marca da Ração (se aplicável)</label>
+                <label className="text-[#6B7A6E] text-sm font-medium ml-1">Marca da ração (se aplicável)</label>
                 <button
                   type="button"
                   onClick={() => setIsBrandModalOpen(true)}
@@ -646,7 +646,7 @@ export function EditarPerfil() {
             />
 
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Observações de Saúde</label>
+              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Observações de saúde</label>
               <textarea
                 value={formData.observations}
                 onChange={(e) => setFormData(prev => ({ ...prev, observations: e.target.value }))}
@@ -662,7 +662,7 @@ export function EditarPerfil() {
 
       <div className="p-6 bg-white border-t border-[#055A43]/5">
         <Button onClick={handleSave} className="w-full" disabled={isSaving || isUploading}>
-          {isSaving ? 'Salvando...' : 'Salvar Alterações'}
+          {isSaving ? 'Salvando...' : 'Salvar alterações'}
         </Button>
       </div>
 
@@ -672,7 +672,7 @@ export function EditarPerfil() {
         options={COMMON_BREEDS}
         value={formData.breed}
         onSelect={(val) => setFormData(prev => ({ ...prev, breed: val }))}
-        title="Selecione a Raça"
+        title="Selecione a raça"
         placeholder="Buscar raça..."
       />
 
@@ -682,7 +682,7 @@ export function EditarPerfil() {
         options={foodBrands}
         value={formData.foodBrand}
         onSelect={(val) => setFormData(prev => ({ ...prev, foodBrand: val }))}
-        title="Selecione a Marca"
+        title="Selecione a marca"
         placeholder="Buscar marca..."
       />
       <BottomSheetSelect

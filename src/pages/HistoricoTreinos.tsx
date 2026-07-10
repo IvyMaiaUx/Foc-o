@@ -142,17 +142,17 @@ export function HistoricoTreinos() {
               className="bg-[#055A43] text-white rounded-[2rem] p-6 shadow-lg shadow-[#055A43]/20 relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/4" />
-              <h3 className="text-white/80 uppercase tracking-widest text-[10px] font-medium mb-4">Métricas de Foco</h3>
+              <h3 className="text-white/80 uppercase tracking-widest text-[10px] font-medium mb-4">Métricas de foco</h3>
               <div className="flex justify-between items-end">
                 <div>
                   <p className="font-serif text-4xl mb-1">{logs.length}</p>
-                  <p className="text-white/80 text-xs font-light">Sessões<br/>Concluídas</p>
+                  <p className="text-white/80 text-xs font-light">Sessões<br/>concluídas</p>
                 </div>
                 <div className="text-right">
                   <p className="font-serif text-4xl mb-1">
                     {logs.reduce((acc, log) => acc + log.durationMinutes, 0)}<span className="text-xl ml-1">m</span>
                   </p>
-                  <p className="text-white/80 text-xs font-light">Tempo de<br/>Treino</p>
+                  <p className="text-white/80 text-xs font-light">Tempo de<br/>treino</p>
                 </div>
               </div>
             </motion.div>

@@ -142,10 +142,10 @@ export function RelatorioSemanal() {
           </button>
           <div>
             <p className="text-[10px] font-medium text-[#506352] tracking-[0.15em] uppercase mb-0.5">
-              Análise Comportamental
+              Análise comportamental
             </p>
             <h1 className="font-serif text-[24px] text-[#055A43] tracking-tight leading-none">
-              Relatório Semanal
+              Relatório semanal
             </h1>
           </div>
         </div>
@@ -173,6 +173,7 @@ export function RelatorioSemanal() {
           <LockedReportState
             result={gate}
             dogName={dogName}
+            dogGender={dogGender}
             onCheckin={() => navigate('/checkin')}
             onTrain={() => navigate('/treino')}
           />
@@ -383,7 +384,7 @@ export function RelatorioSemanal() {
                 )}
 
                 <div className="pl-1">
-                  <h3 className="font-bold text-[#506352] text-[11px] tracking-[0.15em] uppercase mb-5">Análise Comportamental</h3>
+                  <h3 className="font-bold text-[#506352] text-[11px] tracking-[0.15em] uppercase mb-5">Análise comportamental</h3>
                   
                   {report.behaviorAverage > 0 && (
                     <div className="bg-white rounded-[2rem] p-6 border border-[#055A43]/10 shadow-[0_8px_30px_rgb(0,0,0,0.03)] mb-4 flex gap-5 items-start transition-colors hover:border-[#055A43]/20">
@@ -392,7 +393,7 @@ export function RelatorioSemanal() {
                       </div>
                       <div className="pt-1 w-full">
                         <p className="font-bold text-gray-900 text-[15px] mb-1 flex justify-between">
-                          Comportamento Positivo <span className="text-[#055A43]">{report.behaviorAverage}%</span>
+                          Comportamento positivo <span className="text-[#055A43]">{report.behaviorAverage}%</span>
                         </p>
                         <div className="w-full bg-[#F7F5EF] h-1.5 rounded-full mt-2 mb-3">
                            <div className="h-full bg-[#055A43]" style={{ width: `${report.behaviorAverage}%`, borderRadius: '999px' }} />
@@ -410,7 +411,7 @@ export function RelatorioSemanal() {
                         <Sparkles className="w-6 h-6 text-amber-500" />
                       </div>
                       <div className="pt-1 w-full">
-                        <p className="font-bold text-gray-900 text-[15px] mb-1">Padrões de Rotina</p>
+                        <p className="font-bold text-gray-900 text-[15px] mb-1">Padrões de rotina</p>
                         <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed">
                           {checkinInsights.insightText}
                         </p>
@@ -424,7 +425,7 @@ export function RelatorioSemanal() {
                         <Star className="w-6 h-6 text-blue-500" />
                       </div>
                       <div className="pt-1 w-full">
-                        <p className="font-bold text-gray-900 text-[15px] mb-1">Destaque da Semana</p>
+                        <p className="font-bold text-gray-900 text-[15px] mb-1">Destaque da semana</p>
                         <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed">
                           {report.mainImprovement}
                         </p>
@@ -438,7 +439,7 @@ export function RelatorioSemanal() {
                         <AlertCircle className="w-6 h-6 text-orange-400" />
                       </div>
                       <div className="pt-1">
-                        <p className="font-bold text-gray-900 text-[15px] mb-1">Atenção e Ajuste</p>
+                        <p className="font-bold text-gray-900 text-[15px] mb-1">Atenção e ajuste</p>
                         <p className="text-[#6B7A6E] font-light text-[14px] leading-relaxed mb-3">
                            {report.attentionPoint}
                         </p>
@@ -457,7 +458,7 @@ export function RelatorioSemanal() {
                   {(!report.attentionPoint && report.nextWeekSuggestion) && (
                     <div className="bg-[#F7F5EF] p-4 rounded-[1.5rem] border border-gray-100 mb-8">
                       <p className="text-[13px] text-[#6B7A6E] font-medium leading-relaxed">
-                         <span className="text-[#055A43] font-bold uppercase tracking-widest text-[10px] block mb-1">Próxima Semana</span> 
+                         <span className="text-[#055A43] font-bold uppercase tracking-widest text-[10px] block mb-1">Próxima semana</span>
                          {report.nextWeekSuggestion}
                       </p>
                     </div>

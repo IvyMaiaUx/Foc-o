@@ -34,7 +34,7 @@ export function EmailConfirmed() {
 
         if (!active) return;
         setStatus('success');
-        setMessage('Seu e-mail foi confirmado com sucesso. Agora você já pode entrar no Focão.');
+        setMessage('E-mail confirmado. Agora você já pode entrar no Focão.');
       } catch {
         if (!active) return;
         setStatus('error');

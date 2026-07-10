@@ -123,7 +123,7 @@ export class AgendaMotor {
 
     let todayAlert = null;
     if (trialEndingSoon) {
-       todayAlert = `Seu período grátis termina em ${trialDaysLeft} dias.`;
+       todayAlert = `Seu período grátis termina em ${trialDaysLeft} dias. Para continuar de onde pararam, é só ativar o plano.`;
     }
 
     return {

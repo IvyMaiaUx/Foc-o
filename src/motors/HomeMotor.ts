@@ -92,7 +92,7 @@ export class HomeMotor {
     if (isPremiumLocked) {
        priorityAlert = 'Seu período premium ou de teste expirou. Escolha um plano para liberar os próximos treinos.';
     } else if (isTrialActive && trialDaysLeft <= 3) {
-       priorityAlert = `Aproveite! Seu período de teste acaba em ${trialDaysLeft} ${trialDaysLeft === 1 ? 'dia' : 'dias'}.`;
+       priorityAlert = `Seu período grátis termina em ${trialDaysLeft} ${trialDaysLeft === 1 ? 'dia' : 'dias'}. Para continuar de onde pararam, é só ativar o plano.`;
     }
 
     if (!hasCompletedTrainingToday) {
@@ -119,7 +119,7 @@ export class HomeMotor {
     const activeTask = currentPlan?.tasks[currentPlan?.currentTaskIndex || 0];
     const objectiveText = activeTask?.title ? `focar em ${activeTask.title.toLowerCase()}` : 'manter a rotina';
     
-    let heroTitle = activeTask?.title || 'Plano Concluído';
+    let heroTitle = activeTask?.title || 'Plano concluído';
     let heroSubtitle = TRAINING_TEMPLATES[activeTask?.id || '']?.objective || 'Sem pendências.';
     let heroCta = 'Começar agora';
     
@@ -130,9 +130,9 @@ export class HomeMotor {
 
     if (isPremiumLocked) {
        heroCta = 'Assinar Premium';
-       mainInsight = 'Sua jornada no Focão está pausada. Desbloqueie o acesso para continuar acompanhando a evolução inteligente do seu cão.';
+       mainInsight = 'Sua jornada está guardada e pronta para continuar. Reative o acesso para retomar de onde pararam.';
        emotionalMessage = `Acompanhar a rotina ${pronoun} é o primeiro passo para o comportamento ideal.`;
-       primaryCTA = 'Ver Planos';
+       primaryCTA = 'Ver planos';
        secondaryCTA = 'Continuar Free';
     } else if (isNewUser) {
        heroTitle = 'Primeiro passo do plano';
@@ -151,14 +151,14 @@ export class HomeMotor {
          primaryCTA = 'Fazer check-in';
          secondaryCTA = 'Ver evolução';
        } else {
-         mainInsight = `Dia completo! Vocês treinaram e acompanharam a rotina ${art} ${dogProfile?.name || 'seu cão'} com sucesso.`;
+         mainInsight = `Dia completo! Vocês treinaram e acompanharam a rotina ${art} ${dogProfile?.name || 'seu cão'}.`;
          emotionalMessage = 'Dia após dia, o comportamento que você espera toma forma.';
          primaryCTA = 'Ver relatório';
          secondaryCTA = 'Explorar dicas';
        }
     } else {
        if (!activeTask) {
-          heroSubtitle = 'Aguarde a geração do seu próximo plano de treinos.';
+          heroSubtitle = 'Estamos preparando o próximo plano de treinos. Já já ele aparece por aqui.';
           mainInsight = 'Vocês concluíram a etapa programada. Estamos preparando a continuidade.';
           emotionalMessage = 'A pausa também faz parte do aprendizado.';
           primaryCTA = 'Ver histórico';

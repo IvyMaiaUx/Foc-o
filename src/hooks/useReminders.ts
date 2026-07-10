@@ -123,7 +123,7 @@ export function useReminders() {
       const updates: Record<string, string> = {};
 
       if (remindersConf.training !== false && userSettings.trainingReminderTime && currentTime >= userSettings.trainingReminderTime && pendingNotifications.training !== todayStr) {
-        const body = 'Está na hora do treino do seu cão.';
+        const body = 'Hora do treino do seu cão.';
         showInAppNotification('Focão', body, '/treino', navigate);
         pushSystemNotification('Focão', body);
         updates['pendingNotifications.training'] = todayStr;

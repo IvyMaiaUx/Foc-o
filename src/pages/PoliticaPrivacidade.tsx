@@ -102,7 +102,7 @@ export function PoliticaPrivacidade() {
 
       <Section title="6. Retenção de dados">
         <p>
-          Mantemos seus dados enquanto sua conta estiver activa. Ao excluir sua conta,
+          Mantemos seus dados enquanto sua conta estiver ativa. Ao excluir sua conta,
           os dados pessoais são removidos em até 30 dias, exceto quando há
           obrigação legal de retenção (ex: registros fiscais por 5 anos).
         </p>

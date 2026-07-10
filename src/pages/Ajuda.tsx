@@ -127,7 +127,7 @@ export function Ajuda() {
               </div>
               <div className="text-left flex-1">
                 <p className="font-medium text-[#055A43] text-[15px]">Falar com Suporte</p>
-                <p className="text-[#6B7A6E] text-[13px] font-light mt-0.5">Tempo de resposta: ~2h</p>
+                <p className="text-[#6B7A6E] text-[13px] font-light mt-0.5">Resposta em até 48h úteis</p>
               </div>
             </button>
           </div>

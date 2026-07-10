@@ -13,7 +13,7 @@ export class NotificationRepository {
     const notifyAt = new Date(dueDate.getTime() - (3 * 24 * 60 * 60 * 1000));
     
     await setDoc(doc(notifsRef, notifId), {
-      title: 'Lembrete de Check-up',
+      title: 'Lembrete de check-up',
       body: `O check-up veterinário de ${dogName} está chegando (marcado para ${dueDate.toLocaleDateString('pt-BR')}).`,
       notifyAt: notifyAt.toISOString(),
       dueDate: nextCheckupDate,
@@ -35,7 +35,7 @@ export class NotificationRepository {
     const notifyAt = new Date(dueDate.getTime() - (3 * 24 * 60 * 60 * 1000));
     
     await setDoc(doc(notifsRef, notifId), {
-      title: 'Lembrete de Vacina',
+      title: 'Lembrete de vacina',
       body: `A vacina ${vaccineName} de ${dogName} precisa ser aplicada em breve (vence em ${dueDate.toLocaleDateString()}).`,
       notifyAt: notifyAt.toISOString(),
       dueDate: nextDoseDate,

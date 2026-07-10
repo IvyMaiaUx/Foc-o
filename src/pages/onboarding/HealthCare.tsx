@@ -77,15 +77,15 @@ export function HealthCare() {
 
   const handleNext = async () => {
     if (!formData.diet) {
-      setError('Por favor, selecione como o cão se alimenta.');
+      setError('Selecione como o cão se alimenta.');
       return;
     }
     if (!formData.mealsPerDay) {
-      setError('Por favor, informe a quantidade de refeições.');
+      setError('Informe a quantidade de refeições.');
       return;
     }
     if (!formData.weight) {
-      setError('Por favor, informe o peso atual.');
+      setError('Informe o peso atual.');
       return;
     }
 
@@ -394,7 +394,7 @@ export function HealthCare() {
         options={[...foodBrands, 'Outra']}
         value={formData.foodBrand}
         onSelect={(val) => setFormData(prev => ({ ...prev, foodBrand: val, foodLine: '' }))}
-        title="Selecione a Marca"
+        title="Selecione a marca"
         placeholder="Buscar marca..."
       />
       <BottomSheetSelect
@@ -410,7 +410,7 @@ export function HealthCare() {
             lifeStage: detectedLifeStage || prev.lifeStage
           }));
         }}
-        title="Selecione a Linha"
+        title="Selecione a linha"
         placeholder="Buscar linha..."
       />
     </AuthLayout>

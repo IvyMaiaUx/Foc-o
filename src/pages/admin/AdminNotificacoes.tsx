@@ -125,7 +125,7 @@ export function AdminNotificacoes() {
       setTitle('');
       setBody('');
       navigate('/dev-tools'); // Go back or show success
-      alert('Notificação ' + (isSchedule ? 'agendada' : 'enviada') + ' com sucesso!');
+      alert('Notificação ' + (isSchedule ? 'agendada' : 'enviada') + '.');
     } catch (e) {
       console.error(e);
       alert('Erro ao enviar.');
@@ -152,14 +152,14 @@ export function AdminNotificacoes() {
   const getDestinationName = (d: string) => {
     const map: any = {
       '/': 'Home',
-      '/treino': 'Treino do Dia',
+      '/treino': 'Treino do dia',
       '/checkin': 'Check-in',
       '/agenda': 'Agenda',
       '/nutricao': 'Nutrição',
       '/vacinas': 'Vacinas',
-      '/relatorio': 'Relatório Semanal',
+      '/relatorio': 'Relatório semanal',
       '/assinatura': 'Assinatura',
-      '/suporte': 'Chat/Suporte'
+      '/suporte': 'Chat / Suporte'
     };
     return map[d] || d;
   };
@@ -191,7 +191,7 @@ export function AdminNotificacoes() {
             {step === 1 ? (
               <div className="flex flex-col gap-6">
                 <div>
-                  <h2 className="text-lg font-serif text-[#055A43] mb-4">Compor Notificação</h2>
+                  <h2 className="text-lg font-serif text-[#055A43] mb-4">Compor notificação</h2>
                   
                   <div className="flex flex-col gap-4">
                     <div>
@@ -250,7 +250,7 @@ export function AdminNotificacoes() {
                       <option value="/agenda">Agenda</option>
                       <option value="/nutricao">Nutrição</option>
                       <option value="/vacinas">Vacinas</option>
-                      <option value="/relatorio">Relatório Semanal</option>
+                      <option value="/relatorio">Relatório semanal</option>
                       <option value="/assinatura">Assinatura</option>
                       <option value="/suporte">Chat / Suporte</option>
                     </select>
@@ -303,7 +303,7 @@ export function AdminNotificacoes() {
                   <button onClick={() => setStep(1)} className="w-8 h-8 rounded-full bg-gray-100 flex justify-center items-center hover:bg-gray-200">
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <h2 className="text-lg font-serif text-[#055A43]">Confirmação de Envio</h2>
+                  <h2 className="text-lg font-serif text-[#055A43]">Confirmação de envio</h2>
                 </div>
 
                 <div className="bg-[#F7F5EF] border border-[#055A43]/10 rounded-2xl p-5 flex flex-col gap-4">
@@ -351,7 +351,7 @@ export function AdminNotificacoes() {
                   className="mt-4 bg-[#055A43] text-white py-4 rounded-xl flex justify-center items-center gap-2 font-medium shadow-md shadow-[#055A43]/20 hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
                   {sending ? 'Processando...' : (
-                    <><Send className="w-4 h-4 ml-1" /> {scheduleType === 'now' ? 'Disparar Notificação' : 'Confirmar Agendamento'}</>
+                    <><Send className="w-4 h-4 ml-1" /> {scheduleType === 'now' ? 'Disparar notificação' : 'Confirmar agendamento'}</>
                   )}
                 </button>
               </div>
@@ -361,7 +361,7 @@ export function AdminNotificacoes() {
           <div className="w-full md:w-[320px] flex flex-col gap-6">
             {/* Preview */}
             <div className="bg-white rounded-[2rem] p-4 shadow-sm border border-[#055A43]/5 flex flex-col items-center">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#506352] mb-3">Prévia no Celular</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#506352] mb-3">Prévia no celular</h3>
               <div className="w-[260px] h-[100px] bg-gray-900 rounded-3xl p-3 shadow-lg flex flex-col gap-2 relative overflow-hidden">
                  {/* Fake status bar */}
                  <div className="flex justify-between items-center px-1">
@@ -393,7 +393,7 @@ export function AdminNotificacoes() {
 
             {/* History mini panel */}
             <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#055A43]/5">
-               <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#055A43] mb-4 flex items-center gap-2"><Activity className="w-4 h-4" /> Últimos Disparos</h3>
+               <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#055A43] mb-4 flex items-center gap-2"><Activity className="w-4 h-4" /> Últimos disparos</h3>
                <div className="flex flex-col gap-3">
                  {history.slice(0,3).map(h => (
                    <div key={h.id} className="border border-gray-100 rounded-xl p-3 flex flex-col gap-1.5">
