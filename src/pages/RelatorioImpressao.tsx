@@ -84,6 +84,7 @@ export function RelatorioImpressao() {
   const [evolutionInsights, setEvolutionInsights] = useState<EvolutionInsights | null>(null);
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
   const [adminReport, setAdminReport] = useState<WeeklyReportOverride | null>(null);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -144,6 +145,55 @@ export function RelatorioImpressao() {
     loadData();
   }, []);
 
+  // Gera o PDF no próprio app: window.print() não funciona no iOS/PWA.
+  // As libs são carregadas sob demanda (dynamic import) só ao clicar.
+  const handleSavePdf = async () => {
+    const el = document.querySelector('.report-sheet') as HTMLElement | null;
+    if (!el || generating) return;
+    setGenerating(true);
+    try {
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ]);
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false,
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pageW) / canvas.width;
+      let heightLeft = imgH;
+      let position = 0;
+      pdf.addImage(imgData, 'JPEG', 0, position, pageW, imgH);
+      heightLeft -= pageH;
+      while (heightLeft > 0) {
+        position = heightLeft - imgH;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, pageW, imgH);
+        heightLeft -= pageH;
+      }
+      const safeName = (dog?.name || 'focao')
+        .toString()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      pdf.save(`relatorio-${safeName || 'focao'}.pdf`);
+    } catch (error) {
+      console.error('Falha ao gerar o PDF', error);
+      // Fallback: impressão nativa (funciona no desktop).
+      try { window.print(); } catch {}
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -201,8 +251,12 @@ export function RelatorioImpressao() {
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-semibold text-[#6B7A6E] transition-colors hover:text-[#055A43]">
           <ChevronLeft className="h-4 w-4" /> Voltar
         </button>
-        <button onClick={() => window.print()} className="flex items-center gap-2 rounded-lg bg-[#055A43] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#044C38]">
-          <Printer className="h-4 w-4" /> Imprimir / Salvar PDF
+        <button onClick={handleSavePdf} disabled={generating} className="flex items-center gap-2 rounded-lg bg-[#055A43] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#044C38] disabled:opacity-60 disabled:cursor-default">
+          {generating ? (
+            <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" /> Gerando…</>
+          ) : (
+            <><Printer className="h-4 w-4" /> Salvar PDF</>
+          )}
         </button>
       </div>
 
