@@ -118,7 +118,7 @@ export function SosTreinos() {
 
   return (
     <div className="min-h-screen bg-[#F7F5EF] font-sans pb-10">
-      <header className="px-6 pt-12 pb-7 bg-white border-b border-[#055A43]/5">
+      <header className="px-6 pt-[calc(env(safe-area-inset-top,0px)+3rem)] pb-7 bg-white border-b border-[#055A43]/5">
         <div className="max-w-lg mx-auto">
           <button
             onClick={() => navigate(-1)}
@@ -182,7 +182,7 @@ export function SosTreinos() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35 }}
-          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.03)]"
+          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(45,74,58,0.08)]"
         >
           <div className="flex items-center justify-between gap-4 mb-5">
             <div className="w-14 h-14 rounded-2xl bg-[#055A43]/5 text-[#055A43] flex items-center justify-center border border-[#055A43]/10">
