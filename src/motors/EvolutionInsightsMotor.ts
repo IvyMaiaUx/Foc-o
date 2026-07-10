@@ -85,6 +85,8 @@ export interface EvolutionInsights {
   scoreDelta: number;
   /** Rótulo qualitativo do score (ex.: "Excelente consistência"). */
   scoreLabel: string;
+  /** Dias desde a última atividade (check-in OU treino). Alimenta o card de "retomar". */
+  daysSinceLastActivity: number;
 }
 
 // Rótulos das 7 tags canônicas de comportamento (evolução por habilidade).
@@ -177,6 +179,19 @@ export class EvolutionInsightsMotor {
     const prevWeekCheckins = checkins.filter((c) => { const ms = checkinMs(c); return ms >= prevWeekStart && ms < thisWeekStart; });
     const scoreDelta = this.weeklyScore(thisWeekCheckins, thisWeekLogs) - this.weeklyScore(prevWeekCheckins, prevWeekLogs);
 
+    // Recência: o Score e a leitura "esfriam" quando o tutor fica dias sem registrar.
+    const lastActivityMs = this.lastActivityMs(summary, checkins, trainingLogs);
+    const daysSinceLastActivity = lastActivityMs > 0 ? Math.max(0, Math.floor((todayMidnight - lastActivityMs) / oneDay)) : 999;
+    const recencyFactor = this.recencyFactor(daysSinceLastActivity);
+    const evolutionScore = Math.round(smartReading.score * recencyFactor);
+    const scoreLabel = this.scoreLabel(evolutionScore, daysSinceLastActivity);
+
+    // Narrativa honesta quando faz tempo sem registro (evita "tudo consistente" com dados velhos).
+    if (smartReading.hasEnoughData && daysSinceLastActivity >= 7) {
+      smartReading.headline = 'Faz um tempo desde o último registro.';
+      smartReading.recommendation = 'Retome com um check-in rápido ou um treino curto — assim a leitura da evolução volta a refletir o momento atual do seu cão.';
+    }
+
     const base = {
       chartData,
       chartDayDetails,
@@ -188,9 +203,10 @@ export class EvolutionInsightsMotor {
       emotionalTrends,
       timeline,
       totalCheckins: checkins.length,
-      evolutionScore: smartReading.score,
+      evolutionScore,
       scoreDelta,
-      scoreLabel: smartReading.consistencyLabel,
+      scoreLabel,
+      daysSinceLastActivity,
     };
 
     if (totalRecords === 0) {
@@ -239,36 +255,53 @@ export class EvolutionInsightsMotor {
     checkins: CheckinData[],
     trainingLogs: any[]
   ): StatusItem[] {
-    const activeDays = this.countActiveDays(checkins, trainingLogs);
+    const today = new Date();
+    const weekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() - 6 * 24 * 60 * 60 * 1000;
+    const ckMs = (c: CheckinData): number => {
+      const [y, m, d] = (c.date || '').split('-').map(Number);
+      return y ? new Date(y, m - 1, d).getTime() : 0;
+    };
+    // Janela real dos últimos 7 dias — para que os rótulos "esta semana" sejam honestos.
+    const weekCheckins = checkins.filter((c) => ckMs(c) >= weekStart);
+    const weekLogs = trainingLogs.filter((l) => l.completedAt && l.completedAt >= weekStart);
+    const activeDaysWeek = this.countActiveDays(weekCheckins, weekLogs);
     const streak = EvolutionRepository.liveStreak(summary);
     const hardRatio =
-      trainingLogs.length > 0
-        ? trainingLogs.filter((l) => l.feedback === 'failed' || l.feedback === 'hard').length /
-          trainingLogs.length
+      weekLogs.length > 0
+        ? weekLogs.filter((l) => l.feedback === 'failed' || l.feedback === 'hard').length / weekLogs.length
         : 0;
 
     return [
       {
         label:
-          activeDays >= 5
+          activeDaysWeek >= 5
             ? 'Excelente consistência esta semana'
-            : activeDays >= 3
+            : activeDaysWeek >= 3
               ? 'Boa frequência esta semana'
-              : 'Frequência pode melhorar',
-        status: activeDays >= 3 ? 'green' : 'yellow',
+              : activeDaysWeek >= 1
+                ? 'Comece a criar ritmo esta semana'
+                : 'Sem registros esta semana ainda',
+        status: activeDaysWeek >= 3 ? 'green' : 'yellow',
       },
       {
         label:
-          checkins.length >= 5
-            ? 'Check-ins completos'
-            : checkins.length >= 3
-              ? 'Bons check-ins registrados'
-              : 'Mais check-ins fariam bem',
-        status: checkins.length >= 3 ? 'green' : 'yellow',
+          weekCheckins.length >= 5
+            ? 'Check-ins completos esta semana'
+            : weekCheckins.length >= 3
+              ? 'Bons check-ins esta semana'
+              : weekCheckins.length >= 1
+                ? 'Poucos check-ins esta semana'
+                : 'Nenhum check-in esta semana',
+        status: weekCheckins.length >= 3 ? 'green' : 'yellow',
       },
       {
-        label: hardRatio < 0.3 ? 'Treinos bem assimilados' : 'Alguns treinos pedem revisão',
-        status: hardRatio < 0.3 ? 'green' : 'yellow',
+        label:
+          weekLogs.length === 0
+            ? 'Nenhum treino esta semana'
+            : hardRatio < 0.3
+              ? 'Treinos bem assimilados'
+              : 'Alguns treinos pedem revisão',
+        status: weekLogs.length > 0 && hardRatio < 0.3 ? 'green' : 'yellow',
       },
       {
         label:
@@ -596,6 +629,39 @@ export class EvolutionInsightsMotor {
       0,
       Math.min(100, Math.round(Math.min(t, 5) * 10 + Math.min(c, 5) * 7 + Math.min(activeDays, 7) * 5 - hard * 5 - behavior * 3))
     );
+  }
+
+  /** Timestamp (ms) da atividade mais recente: check-in OU treino. */
+  private static lastActivityMs(
+    summary: EvolutionSummary | null,
+    checkins: CheckinData[],
+    trainingLogs: any[]
+  ): number {
+    let ms = 0;
+    for (const c of checkins) {
+      const [y, m, d] = (c.date || '').split('-').map(Number);
+      if (y) ms = Math.max(ms, new Date(y, m - 1, d).getTime());
+    }
+    for (const l of trainingLogs) {
+      if (l.completedAt) ms = Math.max(ms, l.completedAt);
+    }
+    return Math.max(ms, summary?.lastCheckinAt || 0, summary?.lastTrainedAt || 0);
+  }
+
+  /** Fator de recência do Score: 1.0 até 3 dias sem atividade, decai até 0.35 aos 21+ dias. */
+  private static recencyFactor(daysSince: number): number {
+    if (daysSince <= 3) return 1;
+    if (daysSince >= 21) return 0.35;
+    const t = (daysSince - 3) / 18; // 0..1 entre 3 e 21 dias
+    return 1 - t * 0.65;
+  }
+
+  private static scoreLabel(score: number, daysSince: number): string {
+    if (daysSince >= 10) return 'Leitura esfriando — retome os registros';
+    if (score >= 75) return 'Excelente consistência';
+    if (score >= 55) return 'Boa consistência';
+    if (score >= 35) return 'Progresso em construção';
+    return 'Leitura inicial';
   }
 
   private static countActiveDays(checkins: CheckinData[], trainingLogs: any[]): number {

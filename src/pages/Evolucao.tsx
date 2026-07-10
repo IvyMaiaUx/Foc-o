@@ -48,6 +48,34 @@ export function Evolucao() {
       ) : (
         <main className="px-6 py-8 flex flex-col gap-6">
 
+          {/* Retomar — sensível à recência (some quando há atividade recente) */}
+          {insights && !insights.isEmpty && insights.daysSinceLastActivity >= 7 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="bg-[#FBF3E4] rounded-[20px] p-[18px] shadow-[0_8px_24px_rgba(45,74,58,0.08)]"
+            >
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#B07C3A] mb-2">
+                Sentimos sua falta
+              </p>
+              <p className="text-[15px] font-semibold text-[#4A3A22] leading-snug mb-1">
+                {insights.daysSinceLastActivity >= 900
+                  ? 'Que tal começar a acompanhar a evolução?'
+                  : `Faz ${insights.daysSinceLastActivity} dias sem um registro`}
+              </p>
+              <p className="text-[13px] text-[#9A6A2E] leading-relaxed mb-4">
+                Um check-in rápido já atualiza a leitura da evolução do seu cão.
+              </p>
+              <button
+                onClick={() => navigate('/checkin')}
+                className="h-[46px] px-5 rounded-full bg-[#C2703E] text-white text-[14px] font-medium active:scale-[0.97] transition-transform duration-150 ease-out"
+              >
+                Fazer check-in
+              </button>
+            </motion.div>
+          )}
+
           {/* Score de Evolução — destaque no topo */}
           {insights && !insights.isEmpty && insights.smartReading.hasEnoughData && (
             <motion.div

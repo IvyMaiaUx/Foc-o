@@ -514,7 +514,7 @@ export function Checkin() {
         </div>
       </div>
 
-      <main className="flex-1 px-6 pt-10 pb-32">
+      <main className="flex-1 px-6 pt-10 pb-48">
         <AnimatePresence mode="wait">
           {renderStep()}
         </AnimatePresence>
