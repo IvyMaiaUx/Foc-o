@@ -164,7 +164,7 @@ export function Home() {
               } else if (referralNotif.type === 'referral_reward_referee') {
                 const referrerName = referralNotif.referrerName || 'Tutor';
                 new Notification('🎉 Obrigado por apoiar o Focão!', {
-                  body: `Sua assinatura foi ativada com sucesso. Além disso, ${referrerName} (que te convidou) acabou de receber +7 dias Premium graças à sua indicação. 🐶💛`,
+                  body: `Sua assinatura está ativa. E tem mais: ${referrerName} (que te convidou) acabou de receber +7 dias Premium graças à sua indicação. 🐶💛`,
                   icon: '/icon-192.png',
                 });
               }
