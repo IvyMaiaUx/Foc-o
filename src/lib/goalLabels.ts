@@ -31,3 +31,19 @@ const GOAL_LABELS: Record<GoalId, string> = {
 export function goalLabel(goal: string): string | null {
   return GOAL_LABELS[goal as GoalId] ?? null;
 }
+
+// ---- Nível de treino (dogProfile.trainingBase) — mesmo padrão, mesmo risco de vazamento. ----
+
+export const TRAINING_LEVELS = ['beginner', 'intermediate', 'advanced'] as const;
+export type TrainingLevelId = (typeof TRAINING_LEVELS)[number];
+
+const TRAINING_LEVEL_LABELS: Record<TrainingLevelId, string> = {
+  beginner: 'Iniciante',
+  intermediate: 'Intermediário',
+  advanced: 'Avançado',
+};
+
+/** Nunca retorna a chave crua: sem rótulo → 'Não informado'. */
+export function trainingLevelLabel(level?: string): string {
+  return TRAINING_LEVEL_LABELS[level as TrainingLevelId] ?? 'Não informado';
+}

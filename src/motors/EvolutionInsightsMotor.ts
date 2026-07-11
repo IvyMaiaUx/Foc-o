@@ -577,9 +577,11 @@ export class EvolutionInsightsMotor {
             : 'Poucos registros nesta semana — acontece.';
 
     const body =
-      positiveTrainings >= hardTrainings
-        ? 'Os treinos desta semana foram concluídos sem marcar dificuldade nos registros. Repetir em sessões curtas ajuda a fixar.'
-        : 'Alguns treinos foram marcados como difíceis. Vale repetir em ambiente mais simples antes de avançar.';
+      totalTrainings === 0
+        ? 'Esta semana teve check-ins, mas nenhum treino registrado.'
+        : positiveTrainings >= hardTrainings
+          ? 'Os treinos desta semana foram concluídos.'
+          : 'Alguns treinos foram marcados como difíceis. Vale repetir em ambiente mais simples antes de avançar.';
 
     const attention =
       behaviorSignals > 0

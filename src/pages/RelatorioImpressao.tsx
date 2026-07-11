@@ -22,7 +22,7 @@ import { CheckinInsightsMotor, CheckinInsights } from '@/src/motors/CheckinInsig
 import { EvolutionInsightsMotor, EvolutionInsights } from '@/src/motors/EvolutionInsightsMotor';
 import { CustomEventRepository } from '@/src/repositories/CustomEventRepository';
 import { WeeklyReportOverride, WeeklyReportOverrideRepository } from '@/src/repositories/WeeklyReportOverrideRepository';
-import { goalLabel } from '@/src/lib/goalLabels';
+import { goalLabel, trainingLevelLabel } from '@/src/lib/goalLabels';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -50,19 +50,14 @@ function sessionFeedback(feedback?: string) {
 function foodTypeLabel(foodType?: string) {
   if (foodType === 'dry') return 'Ração seca';
   if (foodType === 'wet') return 'Alimento úmido';
+  if (foodType === 'dry') return 'Ração seca';
+  if (foodType === 'wet') return 'Ração úmida';
   if (foodType === 'natural') return 'Alimentação natural';
   if (foodType === 'mixed') return 'Alimentação mista';
-  return 'Não cadastrada';
+  return null; // não cadastrada de verdade → o render mostra convite-com-motivo
 }
 
-function trainingLevelLabel(level?: string) {
-  const labels: Record<string, string> = {
-    beginner: 'Iniciante',
-    intermediate: 'Intermediário',
-    advanced: 'Avançado',
-  };
-  return level ? labels[level] || level : 'Não informado';
-}
+// trainingLevelLabel foi extraído para src/lib/goalLabels.ts (fonte única + teste de CI).
 
 // goalLabel foi extraído para src/lib/goalLabels.ts (fonte única + teste de CI).
 
@@ -316,7 +311,7 @@ export function RelatorioImpressao() {
               <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Nutrição e rotina</h2>
             </div>
             <dl className="space-y-2.5 text-xs">
-              <div className="flex justify-between gap-4 border-b border-[#EEECE6] pb-2"><dt className="text-[#89918D]">Alimentação</dt><dd className="text-right font-semibold text-[#394641]">{foodTypeLabel(nutrition?.foodType)}</dd></div>
+              <div className="flex justify-between gap-4 border-b border-[#EEECE6] pb-2"><dt className="text-[#89918D]">Alimentação</dt><dd className="text-right font-semibold text-[#394641]">{foodTypeLabel(nutrition?.foodType) ?? 'Não cadastrada (impede calcular a porção)'}</dd></div>
               {nutrition?.foodBrand && <div className="flex justify-between gap-4 border-b border-[#EEECE6] pb-2"><dt className="text-[#89918D]">Marca / linha</dt><dd className="text-right font-semibold text-[#394641]">{nutrition.foodBrand}{nutrition.foodLine ? ` · ${nutrition.foodLine}` : ''}</dd></div>}
               <div className="flex justify-between gap-4"><dt className="text-[#89918D]">Rotina cadastrada</dt><dd className="max-w-[65%] text-right font-semibold text-[#394641]">{routineParts.length > 0 ? routineParts.join(' · ') : 'Ainda não informada'}</dd></div>
             </dl>
