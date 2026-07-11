@@ -580,7 +580,7 @@ export class EvolutionInsightsMotor {
       totalTrainings === 0
         ? 'Esta semana teve check-ins, mas nenhum treino registrado.'
         : positiveTrainings >= hardTrainings
-          ? 'Os treinos desta semana foram concluídos.'
+          ? 'Os treinos desta semana foram registrados.'
           : 'Alguns treinos foram marcados como difíceis. Vale repetir em ambiente mais simples antes de avançar.';
 
     const attention =

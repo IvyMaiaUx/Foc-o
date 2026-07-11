@@ -47,3 +47,37 @@ const TRAINING_LEVEL_LABELS: Record<TrainingLevelId, string> = {
 export function trainingLevelLabel(level?: string): string {
   return TRAINING_LEVEL_LABELS[level as TrainingLevelId] ?? 'Não informado';
 }
+
+// ---- Tipo de alimentação (dogProfile.nutrition.foodType) ----
+
+export const FOOD_TYPES = ['dry', 'wet', 'natural', 'mixed'] as const;
+export type FoodType = (typeof FOOD_TYPES)[number];
+
+const FOOD_TYPE_LABELS: Record<FoodType, string> = {
+  dry: 'Ração seca',
+  wet: 'Alimento úmido',
+  natural: 'Alimentação natural',
+  mixed: 'Alimentação mista',
+};
+
+/** Sem valor (não cadastrada de verdade) → null; o render mostra convite-com-motivo. */
+export function foodTypeLabel(foodType?: string): string | null {
+  return FOOD_TYPE_LABELS[foodType as FoodType] ?? null;
+}
+
+// ---- Feedback de treino (trainingLog.feedback) ----
+// 'failed' é um treino registrado, não concluído — o fallback nunca pode dizer "Concluído".
+
+export const TRAINING_FEEDBACKS = ['easy', 'medium', 'hard', 'failed'] as const;
+export type TrainingFeedback = (typeof TRAINING_FEEDBACKS)[number];
+
+const FEEDBACK_LABELS: Record<TrainingFeedback, string> = {
+  easy: 'Fluiu bem',
+  medium: 'Em adaptação',
+  hard: 'Pede reforço',
+  failed: 'Não concluído',
+};
+
+export function sessionFeedbackLabel(feedback?: string): string {
+  return FEEDBACK_LABELS[feedback as TrainingFeedback] ?? 'Registrado';
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { GOAL_IDS, goalLabel, TRAINING_LEVELS, trainingLevelLabel } from './goalLabels';
+import { GOAL_IDS, goalLabel, TRAINING_LEVELS, trainingLevelLabel, FOOD_TYPES, foodTypeLabel, TRAINING_FEEDBACKS, sessionFeedbackLabel } from './goalLabels';
 
 describe('goalLabels', () => {
   it('todo objetivo do onboarding tem rótulo em português', () => {
@@ -27,5 +27,30 @@ describe('trainingLevelLabel', () => {
   it('nível desconhecido vira "Não informado", nunca a chave crua', () => {
     expect(trainingLevelLabel('xyz')).toBe('Não informado');
     expect(trainingLevelLabel(undefined)).toBe('Não informado');
+  });
+});
+
+describe('foodTypeLabel', () => {
+  it('todo tipo de alimentação tem rótulo', () => {
+    for (const t of FOOD_TYPES) expect(foodTypeLabel(t)).toBeTruthy();
+  });
+
+  it('sem valor → null (nunca a chave crua; o render mostra o convite)', () => {
+    expect(foodTypeLabel(undefined)).toBeNull();
+    expect(foodTypeLabel('xyz')).toBeNull();
+  });
+});
+
+describe('sessionFeedbackLabel', () => {
+  it('todo feedback de treino tem rótulo', () => {
+    for (const f of TRAINING_FEEDBACKS) expect(sessionFeedbackLabel(f)).toBeTruthy();
+  });
+
+  it('"failed" nunca vira "Concluído" — um treino que falhou não foi concluído', () => {
+    expect(sessionFeedbackLabel('failed')).not.toBe('Concluído');
+  });
+
+  it('valor desconhecido vira "Registrado", nunca "Concluído"', () => {
+    expect(sessionFeedbackLabel('xyz')).toBe('Registrado');
   });
 });

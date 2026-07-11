@@ -22,7 +22,7 @@ import { CheckinInsightsMotor, CheckinInsights } from '@/src/motors/CheckinInsig
 import { EvolutionInsightsMotor, EvolutionInsights } from '@/src/motors/EvolutionInsightsMotor';
 import { CustomEventRepository } from '@/src/repositories/CustomEventRepository';
 import { WeeklyReportOverride, WeeklyReportOverrideRepository } from '@/src/repositories/WeeklyReportOverrideRepository';
-import { goalLabel, trainingLevelLabel } from '@/src/lib/goalLabels';
+import { goalLabel, trainingLevelLabel, foodTypeLabel, sessionFeedbackLabel } from '@/src/lib/goalLabels';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -40,22 +40,8 @@ function checkinTimestamp(date?: string): number {
   return date ? new Date(`${date}T00:00:00`).getTime() : 0;
 }
 
-function sessionFeedback(feedback?: string) {
-  if (feedback === 'easy') return 'Fluiu bem';
-  if (feedback === 'medium') return 'Em adaptação';
-  if (feedback === 'hard') return 'Pede reforço';
-  return 'Concluído';
-}
-
-function foodTypeLabel(foodType?: string) {
-  if (foodType === 'dry') return 'Ração seca';
-  if (foodType === 'wet') return 'Alimento úmido';
-  if (foodType === 'dry') return 'Ração seca';
-  if (foodType === 'wet') return 'Ração úmida';
-  if (foodType === 'natural') return 'Alimentação natural';
-  if (foodType === 'mixed') return 'Alimentação mista';
-  return null; // não cadastrada de verdade → o render mostra convite-com-motivo
-}
+// sessionFeedbackLabel e foodTypeLabel foram extraídos para src/lib/goalLabels.ts
+// (fonte única + property tests). 'failed' nunca vira "Concluído".
 
 // trainingLevelLabel foi extraído para src/lib/goalLabels.ts (fonte única + teste de CI).
 
@@ -399,7 +385,7 @@ export function RelatorioImpressao() {
                     <p className="text-sm font-semibold text-[#25312D]">{session.moduleTitle}</p>
                     <p className="mt-1 text-[11px] text-[#8A918D]">{sessionDate(session)} · {Math.max(1, Math.round((session.durationSeconds || 0) / 60))} min</p>
                   </div>
-                  <span className="rounded-full bg-[#F2F5F3] px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#527064]">{sessionFeedback(session.feedback)}</span>
+                  <span className="rounded-full bg-[#F2F5F3] px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#527064]">{sessionFeedbackLabel(session.feedback)}</span>
                 </div>
               ))}
             </div>
