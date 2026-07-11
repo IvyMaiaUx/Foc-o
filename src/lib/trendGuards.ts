@@ -3,21 +3,22 @@ import { CheckinData } from '@/src/repositories/CheckinRepository';
 /**
  * CORTES PROVISÓRIOS — palpites iniciais, NÃO MEDIDOS.
  *
- * Estes números decidem quando o app pode afirmar uma tendência de comportamento a partir
- * dos check-ins. Eles NÃO foram calibrados com dado — são o melhor palpite disponível hoje.
- * Ficam nomeados aqui, num lugar só, exatamente para que a instrumentação do item 3
- * (Metabase + distribuição real de muitos cães) os ENCONTRE e recalibre — não enterrados
- * inline num `if`. Ver a memória focao-metodo-e-pendencias.
+ * Decidem quando o app pode afirmar uma tendência de comportamento a partir dos check-ins.
+ * NÃO foram calibrados com dado. Ficam nomeados aqui, num lugar só, para que a instrumentação
+ * do item 3 (Metabase + distribuição real de muitos cães) os ENCONTRE e recalibre.
+ * Ver a memória focao-metodo-e-pendencias.
  */
 export const TREND_MIN_CHECKINS_PER_HALF = 3; // mínimo de check-ins em cada metade — provisório
 export const TREND_MIN_DENSITY_RATIO = 0.5;   // metade recente ≥ 50% da densidade da antiga — provisório
+export const TREND_MIN_CHANGE_PP = 10;        // mudança mínima (pontos %) p/ um sinal ser mencionado — provisório
 
-/**
- * PROXY GROSSEIRO de "o intervalo de confiança do % não cruza zero". NÃO é o teste de
- * significância — apenas o acompanha. Enquanto for proxy, tudo bem; o que não pode é
- * alguém confundi-lo com a coisa medida. (É a mesma distinção de "registrado" vs "concluído".)
+/*
+ * NOTA (v0.7.1): o percentual absoluto ("↓29%") foi REMOVIDO. Com 7 check-ins por metade,
+ * uma ocorrência a mais/menos movia vários pontos — precisão que a amostra não sustenta.
+ * No lugar, a manchete mostra DIREÇÃO ("menos latidos") + o DADO CRU que o tutor confere
+ * ("em 2 dos 7 check-ins recentes, contra 5 dos 7 anteriores"). O % só volta quando houver
+ * volume real pra calibrar significância — não por palpite.
  */
-export const TREND_MIN_CHECKINS_FOR_PERCENT = 6; // por metade — provisório
 
 interface Signal {
   key: keyof NonNullable<CheckinData['behaviors']>;
@@ -33,9 +34,13 @@ const SIGNALS: Signal[] = [
   { key: 'peeWrongPlace', noun: 'xixis fora do lugar', goodDir: 'down' },
 ];
 
+/**
+ * Duas camadas explícitas: a manchete NÃO é "esta semana". É a leitura AO LONGO DO TEMPO,
+ * datada (`window`), separada do bloco semanal. O sujeito é "nos seus registros", não "o cão".
+ */
 export type BehaviorTrend =
   | { kind: 'insufficient'; text: string }
-  | { kind: 'trend'; text: string; confidence: string; withPercent: boolean };
+  | { kind: 'trend'; headline: string; support: string; window: string };
 
 function checkinMs(c: CheckinData): number {
   const [y, m, d] = (c.date || '').split('-').map(Number);
@@ -48,19 +53,15 @@ function spanDays(list: CheckinData[]): number {
   return Math.max(1, (Math.max(...times) - Math.min(...times)) / 86_400_000 + 1);
 }
 
+function fmtDM(ms: number): string {
+  const d = new Date(ms);
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
 /**
- * A ÚNICA porta para uma conclusão de tendência comportamental.
- *
- * A Guarda 1 (densidade comparável entre as duas metades) está DENTRO desta função —
- * nenhum caminho produz `kind: 'trend'` sem passar por ela. O property test em
- * trendGuards.test.ts trava isso: para qualquer distribuição em que a metade recente é
- * rala demais, o resultado NUNCA é 'trend'. Assim, um branch futuro que tente afirmar
- * tendência pulando a densidade quebra o CI — foi o que teria pego o `?? 'Concluído'`.
- *
- * O sujeito é "nos seus registros", não "o cão": enquanto a Guarda 1 não garante que os
- * registros representam o animal, a frase é honesta sobre o que o TUTOR anotou, e silenciosa
- * sobre o cachorro. A distância entre "nos seus registros latiu menos" e "o cão melhorou" é
- * o viés de amostragem inteiro.
+ * A ÚNICA porta para uma conclusão de tendência comportamental. A Guarda 1 (densidade
+ * comparável entre as metades) está DENTRO — nenhum caminho produz `kind: 'trend'` sem
+ * passar por ela. O property test em trendGuards.test.ts trava isso.
  */
 export function behaviorTrendHeadline(
   checkins: CheckinData[],
@@ -74,7 +75,7 @@ export function behaviorTrendHeadline(
 
   // --- Guarda 1: densidade comparável (protege contra viés de amostragem) ---
   if (older.length < TREND_MIN_CHECKINS_PER_HALF || recent.length < TREND_MIN_CHECKINS_PER_HALF) {
-    return { kind: 'insufficient', text: 'Ainda não há check-ins suficientes para comparar com o início.' };
+    return { kind: 'insufficient', text: 'Ainda não há check-ins suficientes para uma leitura ao longo do tempo.' };
   }
   const olderDensity = older.length / spanDays(older);
   const recentDensity = recent.length / spanDays(recent);
@@ -82,41 +83,39 @@ export function behaviorTrendHeadline(
     return { kind: 'insufficient', text: 'Poucos registros recentes para comparar com o início.' };
   }
 
-  const moves = SIGNALS.map((s) => {
-    const oldRate = older.filter((c) => c.behaviors?.[s.key]).length / older.length;
-    const newRate = recent.filter((c) => c.behaviors?.[s.key]).length / recent.length;
-    const changePct = Math.round((newRate - oldRate) * 100);
-    return { ...s, oldRate, newRate, changePct, mag: Math.abs(changePct) };
-  })
-    .filter((m) => (m.oldRate > 0 || m.newRate > 0) && m.mag >= 10)
-    .sort((a, b) => b.mag - a.mag);
-
-  // Guarda 2: o % só entra quando a amostra o sustenta (proxy de significância).
-  const withPercent =
-    older.length >= TREND_MIN_CHECKINS_FOR_PERCENT && recent.length >= TREND_MIN_CHECKINS_FOR_PERCENT;
-
+  // Janela DATADA e explícita — a manchete não se confunde com a semana do relatório.
+  const times = withDate.map(checkinMs).filter((t) => t > 0);
+  const window = `${fmtDM(Math.min(...times))} a ${fmtDM(Math.max(...times))} · ${withDate.length} check-ins`;
   const artWord = art === 'a' ? 'a' : 'o';
+
+  const moves = SIGNALS.map((s) => {
+    const recentCount = recent.filter((c) => c.behaviors?.[s.key]).length;
+    const olderCount = older.filter((c) => c.behaviors?.[s.key]).length;
+    const oldRate = olderCount / older.length;
+    const newRate = recentCount / recent.length;
+    return { ...s, recentCount, olderCount, oldRate, newRate, mag: Math.abs(Math.round((newRate - oldRate) * 100)) };
+  })
+    .filter((m) => (m.oldRate > 0 || m.newRate > 0) && m.mag >= TREND_MIN_CHANGE_PP)
+    .sort((a, b) => b.mag - a.mag)
+    .slice(0, 2);
 
   if (moves.length === 0) {
     return {
       kind: 'trend',
-      text: `Nos seus registros, o comportamento ${art === 'a' ? 'da' : 'do'} ${dogName} se manteve estável em relação ao início.`,
-      confidence: `Baseado em ${withDate.length} check-ins.`,
-      withPercent: false,
+      headline: `Nos seus registros, o comportamento ${art === 'a' ? 'da' : 'do'} ${dogName} se manteve estável.`,
+      support: '',
+      window,
     };
   }
 
-  const phrase = (m: (typeof moves)[number]) => {
-    const dir = m.newRate < m.oldRate ? 'menos' : 'mais';
-    const pct = withPercent ? ` (${m.newRate < m.oldRate ? '↓' : '↑'}${m.mag}%)` : '';
-    return `${dir} ${m.noun}${pct}`;
-  };
+  const lead = moves.map((m) => `${m.newRate < m.oldRate ? 'menos' : 'mais'} ${m.noun}`).join(' e ');
+  const headline = `Nos seus registros, ${artWord} ${dogName} apareceu com ${lead}.`;
 
-  const lead = moves.slice(0, 2).map(phrase).join(', e ');
-  const text = `Nos seus registros, ${artWord} ${dogName} apareceu com ${lead} nas últimas semanas.`;
-  const confidence = withPercent
-    ? `Tendência com base em ${withDate.length} check-ins.`
-    : `Leitura inicial — ${withDate.length} check-ins. O número aparece quando houver mais registros.`;
+  // Dado cru, com denominador, para o tutor conferir — em vez de um % que parece medido.
+  const raw = moves
+    .map((m) => `${m.noun} em ${m.recentCount} dos ${recent.length} check-ins recentes, contra ${m.olderCount} dos ${older.length} anteriores`)
+    .join('; ');
+  const support = raw.charAt(0).toUpperCase() + raw.slice(1) + '.';
 
-  return { kind: 'trend', text, confidence, withPercent };
+  return { kind: 'trend', headline, support, window };
 }

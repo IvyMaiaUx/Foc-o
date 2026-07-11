@@ -199,9 +199,7 @@ export function RelatorioImpressao() {
   const smartReading = evolutionInsights?.smartReading;
   const hasEditorialNote = Boolean(adminReport && (adminReport.title || adminReport.summary || adminReport.recommendation));
   const recommendation = adminReport?.recommendation || smartReading?.recommendation || report.nextWeekSuggestion;
-  const executiveTitle = hasEnoughData
-    ? smartReading?.headline || 'Uma semana de evolução construída com consistência.'
-    : 'A leitura da jornada ainda está em construção.';
+  // executiveTitle removido: a manchete virou a leitura "Ao longo do tempo" (datada).
   const executiveBody = hasEnoughData
     ? smartReading?.body || 'Os registros desta semana já permitem acompanhar a rotina e orientar os próximos exercícios com mais precisão.'
     : `Ainda faltam registros para interpretar a evolução de ${dog.name} com segurança. Com check-ins em pelo menos três dias da semana, o Focão consegue transformar a rotina em recomendações mais precisas.`;
@@ -254,22 +252,32 @@ export function RelatorioImpressao() {
           </div>
         </header>
 
-        <section className="mb-7 rounded-lg border border-[#D8C3A5] bg-[#F8F3EB] p-6">
+        {/* AO LONGO DO TEMPO — a primeira conclusão real do app. Datada e separada da semana:
+            direção + dado cru (sem %), pra o tutor conferir a leitura contra os próprios registros. */}
+        <section className="mb-4 rounded-lg border border-[#D8C3A5] bg-[#F8F3EB] p-6">
           <div className="mb-3 flex items-center gap-2 text-[#7C684E]">
             <Sparkles className="h-4 w-4" />
-            <p className="text-[10px] font-black uppercase tracking-[0.2em]">Resumo da semana</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em]">Ao longo do tempo</p>
           </div>
-          <h2 className="mt-1 max-w-2xl font-serif text-2xl font-semibold leading-tight text-[#17221E]">{behaviorTrend?.text || executiveTitle}</h2>
-          {behaviorTrend?.kind === 'trend' && (
-            <p className="mt-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#8A918D]">{behaviorTrend.confidence}</p>
+          {behaviorTrend?.kind === 'trend' ? (
+            <>
+              <h2 className="mt-1 max-w-2xl font-serif text-2xl font-semibold leading-tight text-[#17221E]">{behaviorTrend.headline}</h2>
+              {behaviorTrend.support && (
+                <p className="mt-2 max-w-2xl text-[13px] leading-5 text-[#58635F]">{behaviorTrend.support}</p>
+              )}
+              <p className="mt-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#8A918D]">{behaviorTrend.window}</p>
+            </>
+          ) : (
+            <p className="mt-1 max-w-2xl font-serif text-xl font-semibold leading-tight text-[#17221E]">{behaviorTrend?.text || 'Ainda não há registros suficientes para uma leitura ao longo do tempo.'}</p>
           )}
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-[#58635F]">{executiveBody}</p>
         </section>
 
+        {/* ESTA SEMANA — janela curta de 7 dias, explicitamente distinta da leitura acima. */}
         <section className="mb-7 rounded-lg border border-[#E6E4DD] px-5 py-4">
           <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Esta semana</p>
           <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.activeDays} <span className="text-base font-medium text-[#8A918D]">de 7 dias com registro</span></p>
           <p className="mt-1 text-[11px] text-[#8A918D]">{report.totalTrainings} {report.totalTrainings === 1 ? 'treino' : 'treinos'} · {report.totalCheckins} {report.totalCheckins === 1 ? 'check-in' : 'check-ins'}</p>
+          {executiveBody && <p className="mt-3 max-w-3xl text-[13px] leading-5 text-[#58635F]">{executiveBody}</p>}
         </section>
 
         <section className="page-break-inside-avoid mb-7 rounded-lg border border-[#E6E4DD] p-5">
