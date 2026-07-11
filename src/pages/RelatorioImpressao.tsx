@@ -23,6 +23,7 @@ import { EvolutionInsightsMotor, EvolutionInsights } from '@/src/motors/Evolutio
 import { CustomEventRepository } from '@/src/repositories/CustomEventRepository';
 import { WeeklyReportOverride, WeeklyReportOverrideRepository } from '@/src/repositories/WeeklyReportOverrideRepository';
 import { goalLabel, trainingLevelLabel, foodTypeLabel, sessionFeedbackLabel } from '@/src/lib/goalLabels';
+import { behaviorTrendHeadline, BehaviorTrend } from '@/src/lib/trendGuards';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -57,6 +58,7 @@ export function RelatorioImpressao() {
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
   const [adminReport, setAdminReport] = useState<WeeklyReportOverride | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [behaviorTrend, setBehaviorTrend] = useState<BehaviorTrend | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -75,6 +77,16 @@ export function RelatorioImpressao() {
         setDog(dogProfile);
         setAdminReport(override);
         setRecentSessions(logs.slice(0, 10));
+
+        // Conclusão comportamental a partir dos check-ins (recente × início), com a
+        // Guarda 1 (densidade) dentro. Usa os 14 check-ins, não só a semana.
+        setBehaviorTrend(
+          behaviorTrendHeadline(
+            checkins,
+            dogProfile?.name || 'seu cão',
+            dogProfile?.gender === 'female' ? 'a' : 'o'
+          )
+        );
 
         const now = Date.now();
         const sevenDaysAgo = now - 7 * DAY_MS;
@@ -247,7 +259,10 @@ export function RelatorioImpressao() {
             <Sparkles className="h-4 w-4" />
             <p className="text-[10px] font-black uppercase tracking-[0.2em]">Resumo da semana</p>
           </div>
-          <h2 className="mt-1 max-w-2xl font-serif text-2xl font-semibold leading-tight text-[#17221E]">{executiveTitle}</h2>
+          <h2 className="mt-1 max-w-2xl font-serif text-2xl font-semibold leading-tight text-[#17221E]">{behaviorTrend?.text || executiveTitle}</h2>
+          {behaviorTrend?.kind === 'trend' && (
+            <p className="mt-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#8A918D]">{behaviorTrend.confidence}</p>
+          )}
           <p className="mt-3 max-w-3xl text-sm leading-6 text-[#58635F]">{executiveBody}</p>
         </section>
 
