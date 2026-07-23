@@ -4,6 +4,7 @@ import { enqueueAndSendWhatsappNotification } from './_whatsapp.js';
 const APP_URL = 'https://focao.web.app';
 const ALLOWED_ORIGINS = new Set([
   APP_URL,
+  'https://app.focaoapp.com.br',
   'https://focaoadm.web.app',
   'https://focao-beta.web.app',
   'https://foc-o.vercel.app',

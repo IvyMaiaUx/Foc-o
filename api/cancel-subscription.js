@@ -5,6 +5,7 @@ function setCors(req, res) {
     'https://focao.web.app',
     'https://focao-beta.web.app',
     'https://focaoadm.web.app',
+    'https://app.focaoapp.com.br',
     'https://foc-o.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173',

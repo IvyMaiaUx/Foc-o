@@ -4,6 +4,7 @@ import { clientIp, withinRateLimit } from './_rateLimit.js';
 const ALLOWED_ORIGINS = new Set([
   'https://focao.web.app',
   'https://focao-beta.web.app',
+  'https://app.focaoapp.com.br',
   'https://foc-o.vercel.app',
   'http://localhost:3000',
   'http://localhost:5173',

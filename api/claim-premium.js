@@ -11,6 +11,7 @@ function normalizeEmail(email) {
 function setCors(req, res) {
   const allowedOrigins = new Set([
     'https://focao.web.app',
+    'https://app.focaoapp.com.br',
     'https://foc-o.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173',
