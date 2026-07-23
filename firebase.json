@@ -80,6 +80,14 @@
         "destination": "/vsl-ansiedade.html"
       },
       {
+        "source": "/landing",
+        "destination": "/focao-landing.html"
+      },
+      {
+        "source": "/ebooks",
+        "destination": "/focao-ebooks.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
