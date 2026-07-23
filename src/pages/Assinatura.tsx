@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, CheckCircle2, Crown, Loader2, Sparkles, CreditCard } from 'lucide-react';
+import { ChevronLeft, CheckCircle2, Crown, Loader2, Sparkles, CreditCard, XCircle } from 'lucide-react';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { hasPremiumAccess } from '@/src/types';
 import { auth, db } from '@/src/lib/firebase';
@@ -23,6 +23,14 @@ export function Assinatura() {
   const [loading, setLoading] = useState(true);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [portalError, setPortalError] = useState('');
+
+  // Cancellation request form
+  const [showCancelForm, setShowCancelForm] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelFeedback, setCancelFeedback] = useState('');
+  const [isSubmittingCancel, setIsSubmittingCancel] = useState(false);
+  const [cancelSubmitError, setCancelSubmitError] = useState('');
+  const [cancelSubmitSuccess, setCancelSubmitSuccess] = useState(false);
 
   // Dynamic Stripe Checkout configuration
   const [checkoutUrl, setCheckoutUrl] = useState('');
@@ -89,6 +97,41 @@ export function Assinatura() {
       setPortalError(err.message || 'Erro ao carregar o portal. Tente novamente.');
     } finally {
       setIsOpeningPortal(false);
+    }
+  };
+
+  const handleSubmitCancellation = async () => {
+    hapticLightTap();
+    setIsSubmittingCancel(true);
+    setCancelSubmitError('');
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) return;
+
+      const token = await currentUser.getIdToken();
+      const apiUrl = import.meta.env.VITE_CANCEL_SUBSCRIPTION_API_URL ||
+        (apiBase ? `${apiBase}/api/cancel-subscription` : '/api/cancel-subscription');
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reason: cancelReason.trim(), feedback: cancelFeedback.trim() }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao registrar a solicitação. Tente novamente.');
+      }
+
+      setCancelSubmitSuccess(true);
+      await refreshProfile();
+    } catch (err: any) {
+      console.error(err);
+      setCancelSubmitError(err.message || 'Erro ao enviar solicitação. Tente novamente.');
+    } finally {
+      setIsSubmittingCancel(false);
     }
   };
 
@@ -262,6 +305,84 @@ export function Assinatura() {
             </div>
           </div>
         </motion.div>
+
+        {isPremium && !userProfile?.subscription?.cancelAtPeriodEnd && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="bg-white rounded-[2rem] p-6 shadow-sm shadow-[#055A43]/5 border border-[#055A43]/5"
+          >
+            {cancelSubmitSuccess ? (
+              <div className="flex flex-col items-center text-center gap-2 py-2">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+                <p className="font-serif text-[18px] text-[#055A43]">Solicitação registrada</p>
+                <p className="text-[13px] text-[#506352] leading-relaxed">
+                  Recebemos seu pedido de cancelamento. Você continua com acesso Premium até o fim do período já pago.
+                </p>
+              </div>
+            ) : showCancelForm ? (
+              <div className="flex flex-col gap-4">
+                <p className="text-[13px] font-semibold text-[#055A43]">Solicitar cancelamento</p>
+                <div>
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-[#055A43]/60 mb-1.5 block">
+                    Motivo do cancelamento (opcional)
+                  </label>
+                  <textarea
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    placeholder="Conte pra gente o que te fez decidir cancelar..."
+                    rows={3}
+                    className="w-full bg-[#F7F5EF] border border-[#055A43]/10 rounded-xl p-3 text-[14px] text-[#3A3F3B] focus:outline-none focus:border-[#055A43] transition-colors resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold uppercase tracking-wider text-[#055A43]/60 mb-1.5 block">
+                    Alguma sugestão pra gente melhorar? (opcional)
+                  </label>
+                  <textarea
+                    value={cancelFeedback}
+                    onChange={(e) => setCancelFeedback(e.target.value)}
+                    placeholder="O que poderia ter sido diferente?"
+                    rows={3}
+                    className="w-full bg-[#F7F5EF] border border-[#055A43]/10 rounded-xl p-3 text-[14px] text-[#3A3F3B] focus:outline-none focus:border-[#055A43] transition-colors resize-none"
+                  />
+                </div>
+                {cancelSubmitError && (
+                  <p className="text-red-500 text-[12px] font-medium">{cancelSubmitError}</p>
+                )}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { hapticLightTap(); setShowCancelForm(false); }}
+                    disabled={isSubmittingCancel}
+                    className="h-11 px-4 rounded-xl text-[13px] font-semibold text-[#6B7A6E] disabled:opacity-50 cursor-pointer"
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    onClick={handleSubmitCancellation}
+                    disabled={isSubmittingCancel}
+                    className="flex-1 h-11 rounded-xl bg-[#055A43] text-white text-[13px] font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSubmittingCancel ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      'Enviar solicitação'
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => { hapticLightTap(); setShowCancelForm(true); }}
+                className="w-full flex items-center justify-center gap-2 text-[13px] font-semibold text-[#6B7A6E] hover:text-[#055A43] transition-colors cursor-pointer"
+              >
+                <XCircle className="w-4 h-4" />
+                Solicitar cancelamento
+              </button>
+            )}
+          </motion.div>
+        )}
 
         <p className="text-center text-[12px] text-[#6B7A6E]/60 px-6 font-light">
           O acesso Premium é vinculado ao email usado na compra e nesta conta.

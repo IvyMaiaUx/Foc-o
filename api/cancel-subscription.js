@@ -49,10 +49,6 @@ export default async function cancelSubscription(req, res) {
     }
 
     const { reason, feedback } = req.body;
-    if (!reason) {
-      res.status(400).json({ error: 'Reason is required' });
-      return;
-    }
 
     const db = getDb();
     const userDoc = await db.collection('users').doc(decoded.uid).get();
@@ -92,7 +88,7 @@ export default async function cancelSubscription(req, res) {
       userEmail: email,
       userName: userName,
       dogName: dogName || 'Sem nome',
-      reason: reason,
+      reason: reason || 'Não informado',
       feedback: feedback || '',
       stripeSubscriptionId: stripeSubscriptionId || null,
       createdAt: Date.now(),

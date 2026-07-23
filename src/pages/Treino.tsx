@@ -18,6 +18,7 @@ import { PremiumGate } from '@/src/components/ui/PremiumGate';
 import { sanitizeText } from '@/src/lib/textSanitizer';
 import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
 import { toLocalDateKey } from '@/src/lib/dateKeys';
+import { getDailyTrainingLimit, countTrainingSessionsToday } from '@/src/lib/trainingLimits';
 
 export function Treino() {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ export function Treino() {
   const [feedbackScore, setFeedbackScore] = useState<string | null>(null);
   const [hasCheckinToday, setHasCheckinToday] = useState(false);
   const [shouldOfferCheckin, setShouldOfferCheckin] = useState(false);
+  const [trainingSessionsToday, setTrainingSessionsToday] = useState(0);
 
   const [timerRunning, setTimerRunning] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -72,16 +74,21 @@ export function Treino() {
         const user = auth.currentUser;
         if (user) {
           const todayKey = toLocalDateKey();
-          const [currentP, dogProf, evolution, checkinsList, todayCheckin] = await Promise.all([
+          const [currentP, dogProf, evolution, checkinsList, todayCheckin, recentLogs] = await Promise.all([
              TrainingRepository.getCurrentPlan(user.uid),
              DogRepository.getDogProfile(user.uid),
              EvolutionRepository.getSummary(user.uid),
              CheckinRepository.getRecentCheckins(user.uid, 5),
-             CheckinRepository.getCheckin(user.uid, todayKey)
+             CheckinRepository.getCheckin(user.uid, todayKey),
+             TrainingRepository.getTrainingLogs(user.uid, 30)
           ]);
           setPlan(currentP);
           setDogProfile(dogProf);
           setHasCheckinToday(!!todayCheckin);
+
+          const todayStart = new Date();
+          todayStart.setHours(0, 0, 0, 0);
+          setTrainingSessionsToday(countTrainingSessionsToday(recentLogs, todayStart.getTime()));
 
           let task = null;
           if (currentP && currentP.tasks.length > 0) {
@@ -408,6 +415,8 @@ export function Treino() {
   const isPremiumTrainingLocked = !isPremium && (
     currentTaskIndex >= 3 || activeTaskIndex >= 3
   );
+  const dailyTrainingLimit = getDailyTrainingLimit(isPremium);
+  const isDailyLimitReached = !isReview && trainingSessionsToday >= dailyTrainingLimit;
 
   if (isFutureTraining) {
     return (
@@ -422,6 +431,26 @@ export function Treino() {
           className="mt-7 h-12 rounded-full bg-[#055A43] px-6 text-sm font-bold text-white"
         >
           Voltar ao plano
+        </button>
+      </div>
+    );
+  }
+
+  if (isDailyLimitReached) {
+    return (
+      <div className="min-h-screen bg-[#F7F5EF] px-6 font-sans flex flex-col items-center justify-center text-center">
+        <Lock className="h-8 w-8 text-[#055A43]" />
+        <h1 className="mt-4 font-serif text-[28px] text-[#055A43]">Treinos de hoje concluídos</h1>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#6B7A6E]">
+          {isPremium
+            ? `Vocês já fizeram ${dailyTrainingLimit} treinos hoje. Um pouco de descanso também faz parte da evolução — amanhã tem mais.`
+            : 'Você já treinou hoje. Assine o Premium para treinar até 6 vezes por dia.'}
+        </p>
+        <button
+          onClick={() => navigate('/', { replace: true })}
+          className="mt-7 h-12 rounded-full bg-[#055A43] px-6 text-sm font-bold text-white"
+        >
+          Voltar ao início
         </button>
       </div>
     );
