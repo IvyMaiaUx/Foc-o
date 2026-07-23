@@ -41,6 +41,7 @@ const Analyzing = lazyPage(() => import('./pages/onboarding/Analyzing'), 'Analyz
 // Core app
 const Home = lazyPage(() => import('./pages/Home'), 'Home');
 const Treino = lazyPage(() => import('./pages/Treino'), 'Treino');
+const EscolherTreino = lazyPage(() => import('./pages/EscolherTreino'), 'EscolherTreino');
 const Plano = lazyPage(() => import('./pages/Plano'), 'Plano');
 const Checkin = lazyPage(() => import('./pages/Checkin'), 'Checkin');
 const Evolucao = lazyPage(() => import('./pages/Evolucao'), 'Evolucao');
@@ -154,6 +155,7 @@ export default function App() {
                   <Route path="/onboarding/goals" element={<RequireAuth><Goals /></RequireAuth>} />
                   <Route path="/onboarding/analyzing" element={<RequireAuth><Analyzing /></RequireAuth>} />
                   <Route path="/treino/:id?" element={<RequireAuth><Treino /></RequireAuth>} />
+                  <Route path="/escolher-treino" element={<RequireAuth><EscolherTreino /></RequireAuth>} />
 
                   {/* Core App */}
                   <Route element={<RequireAuth><MainLayout /></RequireAuth>}>

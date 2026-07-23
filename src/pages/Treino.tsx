@@ -11,6 +11,7 @@ import { DogRepository } from '@/src/repositories/DogRepository';
 import { CurrentPlan, TrainingTask, DogProfile } from '@/src/types';
 import confetti from 'canvas-confetti';
 import { TRAINING_TEMPLATES } from '@/src/lib/trainingTemplates';
+import { BLOCKS } from '@/src/lib/trainingTree';
 import { TrainingReasonMotor, TrainingReason } from '@/src/motors/TrainingReasonMotor';
 import { haptics } from '@/src/lib/haptics';
 import { useAuth } from '@/src/contexts/AuthContext';
@@ -90,15 +91,28 @@ export function Treino() {
           todayStart.setHours(0, 0, 0, 0);
           setTrainingSessionsToday(countTrainingSessionsToday(recentLogs, todayStart.getTime()));
 
-          let task = null;
-          if (currentP && currentP.tasks.length > 0) {
-            if (id) {
-              task = currentP.tasks.find(t => t.id === id);
-              setActiveTask(task || currentP.tasks[currentP.currentTaskIndex]);
-            } else {
-              task = currentP.tasks[currentP.currentTaskIndex] || currentP.tasks[0];
-              setActiveTask(task);
+          let task: TrainingTask | null = null;
+          if (id) {
+            task = currentP?.tasks.find(t => t.id === id) || null;
+            if (!task) {
+              // Not part of the user's plan: a catalog pick from /escolher-treino ("treino extra").
+              const template = TRAINING_TEMPLATES[id];
+              if (template) {
+                task = {
+                  id: template.id,
+                  title: template.name,
+                  duration: template.duration,
+                  module: template.blockId,
+                  moduleName: BLOCKS[template.blockId]?.name || '',
+                  description: template.objective,
+                  steps: template.steps,
+                };
+              }
             }
+            setActiveTask(task || currentP?.tasks[currentP?.currentTaskIndex ?? 0] || null);
+          } else if (currentP && currentP.tasks.length > 0) {
+            task = currentP.tasks[currentP.currentTaskIndex] || currentP.tasks[0];
+            setActiveTask(task);
           }
 
           if (task) {
@@ -145,8 +159,15 @@ export function Treino() {
         // Save completion record
         const elapsedMinutes = Math.max(1, Math.ceil(timeElapsed / 60)); // at least 1 minute
         const duration = timeElapsed > 0 ? elapsedMinutes : (parseInt(activeTask.duration) || 15);
+        // Only the literal next step in the plan sequence advances the plan. Reviewing a
+        // past step never counts toward the streak/session totals; an "extra" chosen from
+        // the catalog counts toward them (real practice) but still doesn't advance the plan.
         const activeTaskIndex = plan?.tasks.findIndex((task) => task.id === activeTask.id) ?? -1;
-        const isReview = activeTaskIndex >= 0 && activeTaskIndex < (plan?.currentTaskIndex ?? 0);
+        const currentIdx = plan?.currentTaskIndex ?? 0;
+        const isNextInSequence = activeTaskIndex === currentIdx;
+        const isPastReview = activeTaskIndex >= 0 && activeTaskIndex < currentIdx;
+        const isReview = !isNextInSequence;
+        const countsForEvolution = !isPastReview;
 
         await TrainingRepository.logTraining(user.uid, {
           trainingId: activeTask.id,
@@ -166,18 +187,18 @@ export function Treino() {
         });
 
         // Update sequence (streak) and total sessions
-        if (!isReview && score !== 'failed' && score !== 'hard') {
+        if (countsForEvolution && score !== 'failed' && score !== 'hard') {
           await EvolutionRepository.updateFromTraining(user.uid);
-          
-          if (plan) {
+
+          if (plan && isNextInSequence) {
             const nextIndex = Math.min(plan.currentTaskIndex + 1, plan.tasks.length);
             await TrainingRepository.updatePlanProgress(user.uid, nextIndex);
           }
-        } else if (!isReview && score === 'hard') {
+        } else if (countsForEvolution && score === 'hard') {
           await EvolutionRepository.updateFromTraining(user.uid);
         }
 
-        if (!isReview && score !== 'failed') {
+        if (isNextInSequence && score !== 'failed') {
           const todayKey = toLocalDateKey();
           const promptKey = `focao_post_training_checkin_prompted_${user.uid}_${todayKey}`;
           const alreadyPromptedToday = localStorage.getItem(promptKey) === 'true';
@@ -411,29 +432,18 @@ export function Treino() {
   const activeTaskIndex = plan?.tasks.findIndex((task) => task.id === activeTask.id) ?? -1;
   const currentTaskIndex = plan?.currentTaskIndex ?? 0;
   const isReview = activeTaskIndex >= 0 && activeTaskIndex < currentTaskIndex;
-  const isFutureTraining = activeTaskIndex > currentTaskIndex;
+  // "Extra": a training picked out of the plan's order (from the catalog, or a plan step
+  // ahead of the current one) — allowed for premium as bonus practice, never advances the plan.
+  const isNextInSequence = !id || activeTaskIndex === currentTaskIndex;
+  const isExtra = !isReview && !isNextInSequence;
   const isPremiumTrainingLocked = !isPremium && (
-    currentTaskIndex >= 3 || activeTaskIndex >= 3
+    currentTaskIndex >= 3 || (activeTaskIndex >= 0 && activeTaskIndex >= 3)
   );
   const dailyTrainingLimit = getDailyTrainingLimit(isPremium);
   const isDailyLimitReached = !isReview && trainingSessionsToday >= dailyTrainingLimit;
 
-  if (isFutureTraining) {
-    return (
-      <div className="min-h-screen bg-[#F7F5EF] px-6 font-sans flex flex-col items-center justify-center text-center">
-        <Lock className="h-8 w-8 text-[#055A43]" />
-        <h1 className="mt-4 font-serif text-[28px] text-[#055A43]">Esta etapa ainda não foi liberada.</h1>
-        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#6B7A6E]">
-          Conclua o treino atual para avançar pela trilha na ordem recomendada.
-        </p>
-        <button
-          onClick={() => navigate('/plano', { replace: true })}
-          className="mt-7 h-12 rounded-full bg-[#055A43] px-6 text-sm font-bold text-white"
-        >
-          Voltar ao plano
-        </button>
-      </div>
-    );
+  if ((isReview || isExtra) && !isPremium) {
+    return <PremiumGate featureName={isExtra ? 'Escolher treino' : 'Revisão de Treinos'} />;
   }
 
   if (isDailyLimitReached) {
@@ -454,10 +464,6 @@ export function Treino() {
         </button>
       </div>
     );
-  }
-
-  if (isReview && !isPremium) {
-    return <PremiumGate featureName="Revisão de Treinos" />;
   }
 
   if (isPremiumTrainingLocked) {
@@ -486,7 +492,7 @@ export function Treino() {
           <ChevronLeft className="w-6 h-6" />
         </button>
         <span className="bg-[#055A43]/10 px-3 py-1.5 rounded-full text-[#055A43] text-[10px] font-bold tracking-widest uppercase">
-          {isReview ? 'Modo revisão' : `Módulo ${activeTask.module}`}
+          {isReview ? 'Modo revisão' : isExtra ? 'Treino extra' : `Módulo ${activeTask.module}`}
         </span>
       </header>
 
