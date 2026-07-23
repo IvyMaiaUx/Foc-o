@@ -5,9 +5,10 @@ import { LeadRepository } from "../../../repositories/LeadRepository";
 
 interface LeadFormProps {
   formRef: RefObject<HTMLDivElement | null>;
+  contentName?: string;
 }
 
-export function LeadForm({ formRef }: LeadFormProps) {
+export function LeadForm({ formRef, contentName = "ebook_comportamento_e_rotina" }: LeadFormProps) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -21,7 +22,7 @@ export function LeadForm({ formRef }: LeadFormProps) {
       await LeadRepository.createMarketingLead(form);
       const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
       fbq?.("track", "Lead", {
-        content_name: "ebook_comportamento_e_rotina",
+        content_name: contentName,
         content_category: "ebook_free",
       });
       setSubmitted(true);
