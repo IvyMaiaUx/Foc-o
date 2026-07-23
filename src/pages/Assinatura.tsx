@@ -126,7 +126,6 @@ export function Assinatura() {
       }
 
       setCancelSubmitSuccess(true);
-      await refreshProfile();
     } catch (err: any) {
       console.error(err);
       setCancelSubmitError(err.message || 'Erro ao enviar solicitação. Tente novamente.');
@@ -318,7 +317,7 @@ export function Assinatura() {
                 <CheckCircle2 className="w-8 h-8 text-emerald-600" />
                 <p className="font-serif text-[18px] text-[#055A43]">Solicitação registrada</p>
                 <p className="text-[13px] text-[#506352] leading-relaxed">
-                  Recebemos seu pedido de cancelamento. Você continua com acesso Premium até o fim do período já pago.
+                  Recebemos seu pedido de cancelamento. Nossa equipe vai processar em breve — você continua com acesso Premium normalmente até lá.
                 </p>
               </div>
             ) : showCancelForm ? (

@@ -1,4 +1,3 @@
-import Stripe from 'stripe';
 import { admin, getDb } from './_firebase.js';
 
 function setCors(req, res) {
@@ -81,7 +80,9 @@ export default async function cancelSubscription(req, res) {
     
     const userName = userData?.name || userData?.userName || 'Sem nome';
 
-    // 1. Record the cancellation in the cancellations collection
+    // Record the cancellation request in the cancellations collection.
+    // This does NOT touch Stripe or the user's access — an admin reviews the
+    // request in the painel admin and cancels manually (Stripe stays source of truth).
     const cancellationRef = db.collection('cancellations').doc();
     await cancellationRef.set({
       userId: decoded.uid,
@@ -93,65 +94,6 @@ export default async function cancelSubscription(req, res) {
       stripeSubscriptionId: stripeSubscriptionId || null,
       createdAt: Date.now(),
     });
-
-    // 2. Process Stripe cancellation or local demotion
-    if (stripeSubscriptionId) {
-      const secretKey = process.env.STRIPE_SECRET_KEY;
-      if (!secretKey) {
-        res.status(500).json({ error: 'Stripe is not configured on the server.' });
-        return;
-      }
-
-      const stripe = new Stripe(secretKey);
-      
-      if (req.body.cancelImmediately) {
-        // Cancel subscription immediately in Stripe
-        await stripe.subscriptions.cancel(stripeSubscriptionId);
-
-        // Reset local subscription info immediately
-        await userDoc.ref.set({
-          subscriptionTier: 'free',
-          subscription: {
-            plan: 'free',
-            premiumAccess: false,
-            status: 'canceled',
-            updatedAt: Date.now(),
-          },
-          updatedAt: Date.now(),
-        }, { merge: true });
-      } else {
-        // We set cancel_at_period_end to true so they keep access until the end of the paid period
-        await stripe.subscriptions.update(stripeSubscriptionId, {
-          cancel_at_period_end: true,
-        });
-
-        // Update the user document locally as well.
-        // Mantém premiumAccess/plan explicitamente: o usuário pagou e conserva
-        // o acesso até o fim do período; a revogação real vem do webhook
-        // customer.subscription.deleted no fim do período.
-        await userDoc.ref.set({
-          subscription: {
-            plan: 'premium',
-            premiumAccess: true,
-            cancelAtPeriodEnd: true,
-            status: 'canceling',
-            updatedAt: Date.now(),
-          }
-        }, { merge: true });
-      }
-    } else {
-      // If they don't have a Stripe subscription (manual/trial/free), we cancel their access immediately
-      await userDoc.ref.set({
-        subscriptionTier: 'free',
-        subscription: {
-          plan: 'free',
-          premiumAccess: false,
-          status: 'canceled',
-          updatedAt: Date.now(),
-        },
-        updatedAt: Date.now(),
-      }, { merge: true });
-    }
 
     res.status(200).json({ success: true });
   } catch (error) {
