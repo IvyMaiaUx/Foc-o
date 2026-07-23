@@ -23,6 +23,7 @@ const ResetPassword = lazyPage(() => import('./pages/auth/ResetPassword'), 'Rese
 const EmailConfirmed = lazyPage(() => import('./pages/auth/EmailConfirmed'), 'EmailConfirmed');
 const Ativar = lazyPage(() => import('./pages/auth/Ativar'), 'Ativar');
 const EbookLanding = lazyPage(() => import('./pages/EbookLanding'), 'EbookLanding');
+const FimDaCulpaLanding = lazyPage(() => import('./pages/FimDaCulpaLanding'), 'FimDaCulpaLanding');
 const PresellFocao = lazyPage(() => import('./pages/PresellFocao'), 'PresellFocao');
 const PoliticaPrivacidade = lazyPage(() => import('./pages/PoliticaPrivacidade'), 'PoliticaPrivacidade');
 const BetaFocao = lazyPage(() => import('./pages/BetaFocao'), 'BetaFocao');
@@ -133,6 +134,7 @@ export default function App() {
                   <Route path="/welcome" element={<Welcome />} />
                   <Route path="/ebook" element={<Navigate to="/ebook-comportamento-e-rotina" replace />} />
                   <Route path="/ebook-comportamento-e-rotina" element={<EbookLanding />} />
+                  <Route path="/ebook-fim-da-culpa" element={<FimDaCulpaLanding />} />
                   <Route path="/presell" element={<PresellFocao />} />
                   <Route path="/rotina-cachorro" element={<PresellFocao />} />
                   <Route path="/register" element={<Register />} />
