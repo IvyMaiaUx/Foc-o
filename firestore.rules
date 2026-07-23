@@ -202,6 +202,11 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    match /avaliacoes/{reviewId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if false;
+    }
+
     match /adminAuditLogs/{logId} {
       allow read, create: if isAdmin();
       allow update, delete: if false;
