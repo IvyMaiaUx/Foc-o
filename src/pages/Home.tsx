@@ -503,8 +503,25 @@ export function Home() {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <h3 className="font-serif text-2xl text-[#055A43] mb-3">Tudo concluído!</h3>
-            <p className="text-[#6B7A6E] text-[15px] leading-relaxed max-w-[240px]">Estamos preparando o próximo plano de treinos. Já já ele aparece por aqui.</p>
+            <p className="text-[#6B7A6E] text-[15px] leading-relaxed max-w-[240px] mb-5">Estamos preparando o próximo plano de treinos. Já já ele aparece por aqui.</p>
+            {isPremium && (
+              <button
+                onClick={() => { hapticLightTap(); navigate('/escolher-treino'); }}
+                className="h-11 px-5 rounded-full bg-[#055A43] text-white text-sm font-semibold active:scale-[0.98] transition-all"
+              >
+                Escolher um treino extra
+              </button>
+            )}
           </motion.section>
+        )}
+
+        {isPremium && (activeTask && !homeState?.hasCompletedTrainingToday) && (
+          <button
+            onClick={() => { hapticLightTap(); navigate('/escolher-treino'); }}
+            className="self-center text-[13px] font-medium text-[#055A43]/70 underline underline-offset-2"
+          >
+            Ou escolha outro treino do catálogo
+          </button>
         )}
 
         {/* Gap Directive */}
