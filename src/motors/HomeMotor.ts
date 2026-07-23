@@ -4,6 +4,7 @@ import { CheckinData } from '../repositories/CheckinRepository';
 import { VaccineData } from '../repositories/VaccineRepository';
 import { NutritionMotor } from './NutritionMotor';
 import { TRAINING_TEMPLATES } from '../lib/trainingTemplates';
+import { getDailyTrainingLimit, countTrainingSessionsToday } from '../lib/trainingLimits';
 
 
 export interface HomeState {
@@ -47,9 +48,10 @@ export class HomeMotor {
     const art = dogProfile?.gender === 'female' ? 'da' : 'do';
     const pronoun = dogProfile?.gender === 'female' ? 'dela' : 'dele';
     
-    // Check if training completed today (and not failed)
-    const logsToday = trainingLogs.filter(log => log.completedAt >= todayStart.getTime());
-    const hasCompletedTrainingToday = logsToday.some(log => log.feedback !== 'failed');
+    // Check if today's training quota is used up (premium gets more sessions/day than free)
+    const dailyTrainingLimit = getDailyTrainingLimit(hasPremiumAccess(userProfile));
+    const trainingSessionsToday = countTrainingSessionsToday(trainingLogs, todayStart.getTime());
+    const hasCompletedTrainingToday = trainingSessionsToday >= dailyTrainingLimit;
     
     // Check trial
     const isTrialActive = userProfile?.subscription?.status === 'trialing'
