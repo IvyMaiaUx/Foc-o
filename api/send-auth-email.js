@@ -27,6 +27,7 @@ function appEmailVerificationUrl(firebaseActionUrl) {
 function setCors(req, res) {
   const allowedOrigins = new Set([
     APP_URL,
+    'https://app.focaoapp.com.br',
     'https://focao-beta.web.app',
     'https://focaoadm.web.app',
     'https://foc-o.vercel.app',
