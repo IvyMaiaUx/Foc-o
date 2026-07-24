@@ -202,9 +202,25 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    function isValidReviewCreate() {
+      return request.resource.data.keys().hasOnly(['nome', 'comentario', 'estrelas', 'aprovado', 'criadoEm'])
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() >= 2
+        && request.resource.data.nome.size() <= 80
+        && request.resource.data.comentario is string
+        && request.resource.data.comentario.size() >= 3
+        && request.resource.data.comentario.size() <= 1000
+        && request.resource.data.estrelas is int
+        && request.resource.data.estrelas >= 1
+        && request.resource.data.estrelas <= 5
+        && request.resource.data.aprovado == false
+        && request.resource.data.criadoEm == request.time;
+    }
+
     match /avaliacoes/{reviewId} {
-      allow read, update, delete: if isAdmin();
-      allow create: if false;
+      allow read: if isAdmin() || resource.data.aprovado == true;
+      allow create: if isValidReviewCreate();
+      allow update, delete: if isAdmin();
     }
 
     match /adminAuditLogs/{logId} {
