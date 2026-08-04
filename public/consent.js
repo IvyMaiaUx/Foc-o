@@ -2,9 +2,20 @@
  * Gate de consentimento LGPD para as landing pages estáticas do funil.
  * Substitui o carregamento direto do pixel próprio (FCT): só dispara após o aceite.
  * Usa a MESMA chave (lgpd_consent) do app React, então o consentimento é unificado
- * em todo o focao.web.app.
+ * dentro do mesmo domínio (app.focaoapp.com.br). Por isso os links internos do
+ * funil devem ser relativos — um link absoluto pro domínio antigo (focao.web.app)
+ * troca de origin e perde esse consentimento + a atribuição salva em fct_attr.
  */
 (function () {
+  // Domínio canônico: focao.web.app e app.focaoapp.com.br apontam pro MESMO
+  // Firebase Hosting site (sem isso o Firebase não tem como redirecionar um
+  // pro outro no firebase.json — ele não roteia por Host, só por path). Então
+  // o redirect é feito aqui, no client, antes de qualquer outra coisa rodar.
+  if (location.hostname === 'focao.web.app') {
+    location.replace('https://app.focaoapp.com.br' + location.pathname + location.search + location.hash);
+    return;
+  }
+
   var KEY = 'lgpd_consent';
 
   function getConsent() {
@@ -14,6 +25,19 @@
   function loadPixel() {
     if (window.__fctPixelLoaded) return;
     window.__fctPixelLoaded = true;
+
+    // Meta Pixel (mesmo pixel ID do app React em index.html — as páginas estáticas
+    // do funil pago nunca carregam index.html, então sem isso o Meta não recebia
+    // nenhum evento de quem entra pelo quiz/VSL/ebook/upsell/obrigado/landing).
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1623631332266427');
+    fbq('track', 'PageView');
+
+    // Pixel próprio (FCT)
     var s = document.createElement('script');
     s.src = 'https://track-up.vercel.app/pixel.js';
     s.setAttribute('data-pixel', 'FCT-6A28F5');

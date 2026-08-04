@@ -7,7 +7,7 @@ import {
 } from './_email.js';
 import { clientIp, withinRateLimit } from './_rateLimit.js';
 
-const APP_URL = 'https://focao.web.app';
+const APP_URL = 'https://app.focaoapp.com.br';
 const AUTH_EMAIL_COOLDOWN_MS = 60 * 1000;
 
 function normalizeEmail(email) {

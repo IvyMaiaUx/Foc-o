@@ -9,6 +9,33 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&amp;family=Lora:ital,wght@0,400;0,500;1,400;1,500&amp;display=swap" rel="stylesheet"/>
+<!-- Funil/UTM tracking (mesmo pixel do app) -->
+<script src="/consent.js"></script>
+<script>
+/* Funil: encaminha utm_* adiante E anexa client_reference_id (atribuição da venda) nos links Stripe */
+(function(){
+  function fctRef(){
+    try{
+      var a=JSON.parse(localStorage.getItem('fct_attr')||'{}'),v=localStorage.getItem('fct_vid')||'';
+      var q=new URLSearchParams();
+      if(a.utm_source)q.set('s',a.utm_source);if(a.utm_medium)q.set('m',a.utm_medium);
+      if(a.utm_campaign)q.set('c',a.utm_campaign);if(a.utm_content)q.set('ct',a.utm_content);
+      if(a.utm_term)q.set('t',a.utm_term);if(a.fbclid)q.set('fb',String(a.fbclid).slice(0,90));if(v)q.set('v',v);
+      var s=q.toString();if(!s)return'';
+      return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'').slice(0,180);
+    }catch(e){return'';}
+  }
+  document.addEventListener('click',function(ev){
+    var a=ev.target.closest?ev.target.closest('a[href]'):null;if(!a)return;
+    var h=a.getAttribute('href')||'';
+    var isStripe=/buy\.stripe\.com/.test(h),isFunnel=/app\.focaoapp\.com\.br/.test(h);
+    if(!isStripe&&!isFunnel)return;
+    if(location.search&&h.indexOf('utm_')<0){h=h+(h.indexOf('?')>=0?'&':'?')+location.search.substring(1);}
+    if(isStripe&&h.indexOf('client_reference_id=')<0){var r=fctRef();if(r)h=h+(h.indexOf('?')>=0?'&':'?')+'client_reference_id='+r;}
+    a.setAttribute('href',h);
+  },true);
+})();
+</script>
 <style>
   :root{
     --paper:#F5F2EB;        /* warm off-white */
