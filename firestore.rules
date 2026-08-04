@@ -244,7 +244,8 @@ service cloud.firestore {
           'createdAt',
           'updatedAt',
           'page',
-          'userAgent'
+          'userAgent',
+          'quizProfile'
         ])
         && request.resource.data.name is string
         && request.resource.data.name.size() >= 2
@@ -264,7 +265,11 @@ service cloud.firestore {
           request.resource.data.userAgent is string
           && request.resource.data.userAgent.size() <= 180
         ))
-        && request.resource.data.source in ['ebook', 'landing_ebook']
+        && (!('quizProfile' in request.resource.data) || (
+          request.resource.data.quizProfile is string
+          && request.resource.data.quizProfile.size() <= 80
+        ))
+        && request.resource.data.source in ['ebook', 'landing_ebook', 'presell_quiz']
         && request.resource.data.status == 'new'
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time;

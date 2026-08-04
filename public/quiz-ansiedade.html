@@ -46,7 +46,7 @@ document.addEventListener('click',function(ev){
 <script>
 (function(){
   "use strict";
-  var EBOOK_URL='https://focao.web.app/ebook';
+  var EBOOK_URL='/ebook';
   var LM=['Analisando os gatilhos','Avaliando o nível de apego','Cruzando os sinais físicos','Montando seu diagnóstico'];
   var QUESTIONS=[
     { id:'q1', type:'single', text:'O que mais te incomoda quando você sai de casa?',
@@ -136,6 +136,7 @@ document.addEventListener('click',function(ev){
     window.leadData={name:name,email:email,whats:whats,profile:profile,answers:state.answers};
     sendLead(window.leadData);
     try{if(window.fct&&window.fct.lead)window.fct.lead({source:'quiz_ansiedade',profile:profile});}catch(_){}
+    try{if(window.fbq)fbq('track','Lead',{content_name:'quiz_ansiedade',content_category:profile});}catch(_){}
     state.screen='result';render();
   }
   // Grava o lead direto na coleção marketingLeads do Firestore (admin focaoadm.web.app › /leads)
