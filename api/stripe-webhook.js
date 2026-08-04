@@ -1,8 +1,10 @@
 import Stripe from 'stripe';
 import { getDb, emailKey } from './_firebase.js';
 import { readRawBody } from './_rawBody.js';
+import { sendEmail, paymentFailedEmail, subscriptionCanceledEmail } from './_email.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const APP_URL = 'https://app.focaoapp.com.br';
 
 export const config = {
   api: {
@@ -167,12 +169,41 @@ async function getCustomerEmail(stripe, customerId) {
   return normalizeEmail(customer.email);
 }
 
-async function handleSubscriptionEvent(stripe, subscription, fallbackStatus) {
+async function lookupUserByEmail(db, email) {
+  if (!email) return null;
+  const snap = await db.collection('users').where('email', '==', email).limit(1).get();
+  return snap.empty ? null : snap.docs[0];
+}
+
+// E-mail de cobrança/cancelamento nunca deve derrubar o webhook — se o Resend falhar,
+// a Stripe não pode ficar re-tentando o evento por causa disso (o dado de assinatura
+// já foi salvo pelo upsertClaim antes dessa chamada).
+async function sendLifecycleEmailSafely(email, buildEmail) {
+  if (!email) return;
+  try {
+    const db = getDb();
+    const userDoc = await lookupUserByEmail(db, email);
+    const user = userDoc?.data();
+    if (user?.emailOptOut === true) return;
+    const dogProfileSnap = userDoc ? await userDoc.ref.collection('dog').doc('profile').get() : null;
+    const dogName = dogProfileSnap?.data()?.name || user?.dogName || 'seu cão';
+    await sendEmail({ to: email, ...buildEmail(dogName) });
+  } catch (error) {
+    console.error('[stripe-webhook] lifecycle email failed', error);
+  }
+}
+
+async function handleSubscriptionEvent(stripe, subscription, fallbackStatus, { notifyCancellation } = {}) {
   const customerId = typeof subscription.customer === 'string'
     ? subscription.customer
     : subscription.customer?.id;
   const email = await getCustomerEmail(stripe, customerId);
   await upsertClaim(subscriptionPayload({ email, customerId, subscription, fallbackStatus }));
+
+  if (notifyCancellation) {
+    await sendLifecycleEmailSafely(email, (dogName) =>
+      subscriptionCanceledEmail({ dogName, actionUrl: `${APP_URL}/assinatura` }));
+  }
 }
 
 async function handleInvoicePaymentFailed(stripe, invoice) {
@@ -195,6 +226,9 @@ async function handleInvoicePaymentFailed(stripe, invoice) {
     subscription: subscription || { id: subscriptionId, customer: customerId, status: 'past_due' },
     fallbackStatus: 'past_due',
   }));
+
+  await sendLifecycleEmailSafely(email, (dogName) =>
+    paymentFailedEmail({ dogName, actionUrl: `${APP_URL}/assinatura` }));
 }
 
 export default async function stripeWebhook(req, res) {
@@ -239,7 +273,7 @@ export default async function stripeWebhook(req, res) {
     }
 
     if (event.type === 'customer.subscription.deleted') {
-      await handleSubscriptionEvent(stripe, event.data.object, 'canceled');
+      await handleSubscriptionEvent(stripe, event.data.object, 'canceled', { notifyCancellation: true });
     }
 
     if (event.type === 'invoice.payment_failed') {

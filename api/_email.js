@@ -1,7 +1,9 @@
+import crypto from 'node:crypto';
 import { getDb } from './_firebase.js';
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const FROM_EMAIL = 'Focão <contato@focaoapp.com.br>';
+const APP_URL = 'https://app.focaoapp.com.br';
 
 const BRAND = {
   paper: '#F4F2EB',
@@ -73,7 +75,36 @@ export async function reserveDispatch({ email, kind, cooldownMs }) {
   }
 }
 
-function emailShell(bodyHtml) {
+/**
+ * Token de descadastro (HMAC do uid, sem precisar guardar nada extra no Firestore
+ * pra validar) — permite um link de "não quero mais receber" de 1 clique nos e-mails
+ * de ciclo de vida (inatividade/trial/progresso), sem exigir login. Requer
+ * EMAIL_UNSUB_SECRET configurada no ambiente (Vercel).
+ */
+export function signUnsubscribeToken(uid) {
+  const secret = process.env.EMAIL_UNSUB_SECRET;
+  if (!secret) return '';
+  return crypto.createHmac('sha256', secret).update(String(uid)).digest('hex').slice(0, 32);
+}
+
+export function verifyUnsubscribeToken(uid, token) {
+  const expected = signUnsubscribeToken(uid);
+  if (!expected || !token) return false;
+  const a = Buffer.from(expected);
+  const b = Buffer.from(String(token));
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+export function unsubscribeUrl(uid) {
+  const token = signUnsubscribeToken(uid);
+  if (!token) return '';
+  return `${APP_URL}/api/email-unsubscribe?uid=${encodeURIComponent(uid)}&token=${token}`;
+}
+
+// bodyHtml: conteúdo do e-mail. unsubUrl: se vier preenchido (e-mails de ciclo de vida —
+// inatividade/trial/progresso), mostra o rodapé de descadastro. E-mails puramente
+// transacionais (confirmação de conta, reset de senha, cobrança) não passam isso.
+function emailShell(bodyHtml, unsubUrl) {
   return `<!doctype html>
 <html lang="pt-BR">
   <body style="margin:0;padding:32px 16px;background:${BRAND.paper};font-family:Georgia,'Newsreader',serif;color:${BRAND.ink};">
@@ -85,6 +116,7 @@ function emailShell(bodyHtml) {
       <p style="margin-top:32px;font-size:12px;color:${BRAND.muted};">
         Focão — Rotina, treinos e evolução para cães<br />
         Dúvidas? <a href="mailto:contato@focaoapp.com.br" style="color:${BRAND.emerald};">contato@focaoapp.com.br</a>
+        ${unsubUrl ? `<br />Não quer mais receber esses avisos? <a href="${unsubUrl}" style="color:${BRAND.muted};">Cancelar</a>` : ''}
       </p>
     </div>
   </body>
@@ -121,5 +153,67 @@ export function passwordResetEmail({ actionUrl }) {
       <p style="font-size:13px;color:${BRAND.muted};">Se você não pediu isso, pode ignorar este e-mail — sua senha continua a mesma.</p>
     `),
     text: `Redefina sua senha no Focão: ${actionUrl}`,
+  };
+}
+
+export function inactivityEmail({ dogName, daysInactive, actionUrl, unsubUrl }) {
+  return {
+    subject: `${dogName} sentiu sua falta`,
+    html: emailShell(`
+      <h1 style="font-size:22px;margin:0 0 16px;">Faz ${daysInactive} dias que vocês não treinam</h1>
+      <p style="font-size:16px;line-height:1.5;color:${BRAND.inkSoft};">Sem pressão — mas a rotina do ${dogName} funciona melhor com constância. Que tal voltar hoje, só pro próximo passo do plano?</p>
+      ${ctaButton('Voltar pro treino', actionUrl)}
+    `, unsubUrl),
+    text: `Faz ${daysInactive} dias que você e o ${dogName} não treinam. Volte: ${actionUrl}`,
+  };
+}
+
+export function trialEndingEmail({ dogName, daysLeft, actionUrl, unsubUrl }) {
+  const dayWord = daysLeft === 1 ? 'dia' : 'dias';
+  return {
+    subject: `Seu teste grátis acaba em ${daysLeft} ${dayWord}`,
+    html: emailShell(`
+      <h1 style="font-size:22px;margin:0 0 16px;">Faltam ${daysLeft} ${dayWord} de teste grátis</h1>
+      <p style="font-size:16px;line-height:1.5;color:${BRAND.inkSoft};">Depois disso o acesso ao plano do ${dogName}, aos treinos e ao acompanhamento é só pra quem é assinante. Se está fazendo sentido pra vocês, dá pra continuar sem interrupção.</p>
+      ${ctaButton('Continuar assinando', actionUrl)}
+    `, unsubUrl),
+    text: `Faltam ${daysLeft} ${dayWord} pro fim do seu teste grátis do Focão. Continue: ${actionUrl}`,
+  };
+}
+
+export function weeklyProgressEmail({ dogName, trainingsCount, actionUrl, unsubUrl }) {
+  const trainingsWord = trainingsCount === 1 ? 'treino concluído' : 'treinos concluídos';
+  return {
+    subject: `Resumo da semana do ${dogName}`,
+    html: emailShell(`
+      <h1 style="font-size:22px;margin:0 0 16px;">Como foi a semana do ${dogName}</h1>
+      <p style="font-size:16px;line-height:1.5;color:${BRAND.inkSoft};">${trainingsCount} ${trainingsWord} nos últimos 7 dias. Veja o relatório completo e o próximo passo do plano.</p>
+      ${ctaButton('Ver relatório', actionUrl)}
+    `, unsubUrl),
+    text: `${dogName}: ${trainingsCount} ${trainingsWord} essa semana. Relatório: ${actionUrl}`,
+  };
+}
+
+export function paymentFailedEmail({ dogName, actionUrl }) {
+  return {
+    subject: 'Não conseguimos processar seu pagamento',
+    html: emailShell(`
+      <h1 style="font-size:22px;margin:0 0 16px;">Sua cobrança não passou</h1>
+      <p style="font-size:16px;line-height:1.5;color:${BRAND.inkSoft};">Tentamos cobrar a assinatura e o cartão recusou. Atualize os dados de pagamento pra não perder o acesso ao plano do ${dogName}.</p>
+      ${ctaButton('Atualizar pagamento', actionUrl)}
+    `),
+    text: `Sua cobrança do Focão não passou. Atualize o pagamento: ${actionUrl}`,
+  };
+}
+
+export function subscriptionCanceledEmail({ dogName, actionUrl }) {
+  return {
+    subject: 'Sua assinatura foi cancelada',
+    html: emailShell(`
+      <h1 style="font-size:22px;margin:0 0 16px;">Sentiremos falta do ${dogName}</h1>
+      <p style="font-size:16px;line-height:1.5;color:${BRAND.inkSoft};">Sua assinatura do Focão foi cancelada. Se mudar de ideia, o plano do ${dogName} e todo o histórico continuam esperando por vocês.</p>
+      ${ctaButton('Reativar assinatura', actionUrl)}
+    `),
+    text: `Sua assinatura do Focão foi cancelada. Reative quando quiser: ${actionUrl}`,
   };
 }
