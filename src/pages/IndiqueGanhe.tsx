@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowLeft, Copy, Check, Share2, Users, Award, Gift } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Share2, Award } from 'lucide-react';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { db, auth } from '@/src/lib/firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
@@ -102,68 +102,74 @@ export function IndiqueGanhe() {
 
   return (
     <div className="flex-1 bg-[#F7F5EF] font-sans pb-32 min-h-screen">
-      {/* Header */}
-      <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5 flex items-center justify-between sticky top-0 z-10">
-        <button 
-          onClick={() => navigate('/perfil')}
-          className="w-10 h-10 rounded-full bg-[#055A43]/5 flex items-center justify-center text-[#055A43] active:scale-95 transition-transform"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="font-serif text-xl text-[#055A43] font-bold">Indique e Ganhe</h1>
-        <div className="w-10" /> {/* Spacer */}
-      </header>
+      <div className="mx-auto max-w-md">
 
-      <main className="px-6 py-8 flex flex-col gap-6 max-w-md mx-auto">
-        {/* Banner Card */}
-        <div className="bg-[#055A43] text-white rounded-[2rem] p-6 shadow-xl shadow-[#055A43]/10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -translate-y-6 translate-x-6" />
-          <div className="flex items-start justify-between mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-2xl">
-              🎁
-            </div>
+        {/* Green metric header zone */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="relative overflow-hidden bg-[#055A43] px-6 pt-14 pb-9"
+        >
+          <div className="absolute -right-16 -bottom-16 w-56 h-56 rounded-full bg-white/[0.04] pointer-events-none" />
+          <div className="absolute right-10 top-6 w-20 h-20 rounded-full bg-white/[0.04] pointer-events-none" />
+
+          <div className="relative z-10 flex items-center justify-between mb-7">
+            <button
+              onClick={() => navigate('/perfil')}
+              className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/15 active:scale-95 transition-all"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
             {isLimitReached && (
               <span className="bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-medium px-3 py-1 rounded-full uppercase tracking-wider">
                 Limite atingido
               </span>
             )}
           </div>
-          <h2 className="font-serif text-2xl mb-2 leading-tight">Ganhe até 21 dias Premium</h2>
-          <p className="text-white/80 text-sm leading-relaxed">
-            Convide outros tutores e ganhe até 21 dias Premium. Cada tutor que concluir a jornada e se tornar Premium libera +7 dias para você.
+
+          <p className="relative z-10 mb-2.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
+            Indique e ganhe
           </p>
-        </div>
-
-        {/* Stats Grid */}
-        <section className="grid grid-cols-2 gap-4">
-          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col">
-            <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
-              <Users className="w-4 h-4" />
+          <div className="relative z-10 flex items-end justify-between gap-4">
+            <div>
+              <h1 className="font-serif text-[28px] font-semibold leading-tight text-white">
+                Ganhe até 21 dias Premium
+              </h1>
+              <p className="mt-1.5 text-[13px] text-white/50 leading-relaxed max-w-[220px]">
+                Cada tutor indicado que virar Premium libera +7 dias para você.
+              </p>
             </div>
-            <span className="text-[10px] font-medium text-[#6B7A6E]/60 uppercase tracking-wider">Indicações válidas</span>
-            <span className="font-serif text-2xl text-[#055A43] mt-1 font-bold">{validReferrals}/3</span>
+            <span className="shrink-0 font-serif text-[56px] font-semibold leading-none text-white/90">
+              {validReferrals}<span className="text-[24px] text-white/40">/3</span>
+            </span>
           </div>
+          <div className="relative z-10 mt-5 h-[5px] overflow-hidden rounded-full bg-white/15">
+            <div
+              className="h-full rounded-full bg-[#C2703E] transition-all duration-500"
+              style={{ width: `${Math.min(100, (validReferrals / 3) * 100)}%` }}
+            />
+          </div>
+          <p className="relative z-10 mt-3.5 flex items-center gap-1.5 text-[13px] font-semibold text-white/60">
+            <Award className="h-4 w-4" />
+            {referralRewardsDays} dias Premium conquistados
+          </p>
+        </motion.div>
 
-          <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col">
-            <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
-              <Award className="w-4 h-4" />
-            </div>
-            <span className="text-[10px] font-medium text-[#6B7A6E]/60 uppercase tracking-wider">Dias ganhos</span>
-            <span className="font-serif text-2xl text-[#055A43] mt-1 font-bold">{referralRewardsDays} dias</span>
-          </div>
-        </section>
+        {/* White drawer */}
+        <main className="relative -mt-6 flex flex-col gap-6 rounded-t-[26px] bg-[#F7F5EF] px-6 pb-8 pt-7">
 
         {/* Status Message */}
         <div className={`p-4 rounded-2xl border text-center text-xs font-semibold ${
-          isLimitReached 
-            ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+          isLimitReached
+            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
             : 'bg-amber-50/50 text-[#855D28] border-amber-100'
         }`}>
           {statusMessage}
         </div>
 
         {/* Badges de Reconhecimento */}
-        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]">
+        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_8px_24px_rgba(45,74,58,0.08)]">
           <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#6B7A6E]/60 mb-4 px-1">
             Badges de reconhecimento
           </h3>
@@ -256,7 +262,7 @@ export function IndiqueGanhe() {
         </section>
 
         {/* Code & Sharing Section */}
-        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col items-center">
+        <section className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_8px_24px_rgba(45,74,58,0.08)] flex flex-col items-center">
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B7A6E]/60 mb-2">Seu código de indicação</p>
           <div className="flex items-center gap-2 mb-6">
             <div className="bg-[#F7F5EF] border border-[#055A43]/10 rounded-2xl px-6 py-3 font-mono text-xl font-bold tracking-wider text-[#055A43]">
@@ -272,10 +278,10 @@ export function IndiqueGanhe() {
 
           <button
             onClick={handleCopyLink}
-            className={`w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-all active:scale-98 ${
-              copiedLink 
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' 
-                : 'bg-[#055A43] text-white hover:bg-[#044c38] shadow-lg shadow-[#055A43]/20'
+            className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all active:scale-98 ${
+              copiedLink
+                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
+                : 'bg-[#C2703E] text-white hover:brightness-105 shadow-lg shadow-[#C2703E]/20'
             }`}
           >
             {copiedLink ? (
@@ -297,7 +303,7 @@ export function IndiqueGanhe() {
           <h3 className="text-[10px] font-medium text-[#6B7A6E] tracking-[0.15em] uppercase mb-3 px-2">
             Status das indicações
           </h3>
-          <div className="bg-white rounded-[1.5rem] p-3 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] min-h-[100px] flex flex-col justify-center">
+          <div className="bg-white rounded-[1.75rem] p-3 border border-[#055A43]/5 shadow-[0_8px_24px_rgba(45,74,58,0.08)] min-h-[100px] flex flex-col justify-center">
             {loading ? (
               <div className="py-8 flex justify-center">
                 <div className="animate-spin w-6 h-6 border-2 border-[#055A43]/20 border-t-[#055A43] rounded-full" />
@@ -330,8 +336,8 @@ export function IndiqueGanhe() {
         </section>
 
         {/* Rules */}
-        <section className="bg-white rounded-[1.5rem] p-6 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)]">
-          <h4 className="font-serif text-sm text-[#055A43] mb-4 font-semibold">Regras do programa</h4>
+        <section className="bg-white rounded-[1.75rem] p-6 border border-[#055A43]/5 shadow-[0_8px_24px_rgba(45,74,58,0.08)]">
+          <h4 className="font-serif text-lg text-[#055A43] mb-4 font-semibold">Regras do programa</h4>
           <div className="text-xs text-[#6B7A6E]/80 space-y-3 leading-relaxed">
             <p>
               Todos os usuários do Focão podem fazer indicações, sejam usuários Free, Trial ou Premium.
@@ -359,7 +365,8 @@ export function IndiqueGanhe() {
             </p>
           </div>
         </section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

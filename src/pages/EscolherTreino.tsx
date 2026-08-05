@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Lock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 import { auth } from '@/src/lib/firebase';
 import { TrainingRepository } from '@/src/repositories/TrainingRepository';
 import { TRAINING_TEMPLATES } from '@/src/lib/trainingTemplates';
@@ -41,7 +41,7 @@ export function EscolherTreino() {
         <header className="px-6 pt-safe-top mt-6 pb-6 flex items-start justify-between z-10 relative">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#6B7A6E]"
+            className="w-10 h-10 rounded-full bg-white border border-[#E4E1D6] shadow-[0_4px_12px_rgba(45,74,58,0.06)] flex items-center justify-center text-[#6B7A6E]"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -65,7 +65,7 @@ export function EscolherTreino() {
       <header className="px-6 pt-safe-top mt-6 pb-4 flex items-center justify-between z-10 relative">
         <button
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#6B7A6E]"
+          className="w-10 h-10 rounded-full bg-white border border-[#E4E1D6] shadow-[0_4px_12px_rgba(45,74,58,0.06)] flex items-center justify-center text-[#6B7A6E]"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -75,15 +75,18 @@ export function EscolherTreino() {
       </header>
 
       <main className="flex-1 px-6 pb-32 overflow-y-auto">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#055A43]/60 mb-2.5">
+          Catálogo de treinos
+        </p>
         <h1 className="font-serif text-[32px] leading-[1.1] tracking-tight text-[#055A43] mb-3">
           Escolher treino
         </h1>
-        <p className="text-[#6B7A6E] text-[15px] font-light leading-relaxed mb-6">
+        <p className="text-[#6B7A6E] text-[15px] font-light leading-relaxed mb-7">
           Pratique qualquer treino do catálogo, além do plano do dia. Vale como treino extra e não muda a sequência do plano.
         </p>
 
         {limitReached && (
-          <div className="bg-[#055A43]/5 border border-[#055A43]/10 rounded-2xl p-4 mb-6 flex items-center gap-3">
+          <div className="bg-[#055A43]/5 border border-[#055A43]/10 rounded-[1.5rem] p-4 mb-7 flex items-center gap-3">
             <Lock className="w-4 h-4 text-[#055A43] shrink-0" />
             <p className="text-[#055A43] text-sm font-medium">
               Vocês já fizeram {dailyLimit} treinos hoje. Volte amanhã para escolher mais.
@@ -104,15 +107,18 @@ export function EscolherTreino() {
                       key={t.id}
                       onClick={() => !limitReached && navigate(`/treino/${t.id}`)}
                       disabled={limitReached}
-                      className="text-left bg-white rounded-2xl p-4 shadow-sm border border-[#E5E5E5] flex items-center justify-between gap-3 active:scale-[0.98] transition-all disabled:opacity-50"
+                      className="group text-left bg-white rounded-[1.5rem] p-4 shadow-[0_8px_20px_rgba(45,74,58,0.06)] border border-[#055A43]/8 flex items-center justify-between gap-3 active:scale-[0.98] transition-all disabled:opacity-50"
                     >
                       <div className="min-w-0">
-                        <p className="font-medium text-[#055A43] text-[15px] truncate">{sanitizeText(t.name)}</p>
+                        <p className="font-serif text-[17px] text-[#055A43] truncate">{sanitizeText(t.name)}</p>
                         <p className="text-[#6B7A6E] text-[13px] mt-0.5 line-clamp-1">{sanitizeText(t.objective)}</p>
                       </div>
-                      <span className="text-[11px] font-medium text-[#6B7A6E] bg-[#F7F5EF] px-2.5 py-1 rounded-full shrink-0">
-                        {t.duration}
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[11px] font-medium text-[#6B7A6E] bg-[#F7F5EF] px-2.5 py-1 rounded-full">
+                          {t.duration}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-[#055A43]/25 group-hover:text-[#055A43]/60 transition-colors" />
+                      </div>
                     </button>
                   ))}
                 </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface FAQ {
   id: string;
@@ -95,93 +95,98 @@ export function Ajuda() {
 
   return (
     <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
-      {/* Header */}
-      <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5 flex flex-col gap-4 sticky top-0 z-10">
-        <button 
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h1 className="font-serif text-[32px] text-[#055A43] tracking-tight leading-none mb-2">
-            Como podemos <br/> <span className="italic">ajudar?</span>
-          </h1>
-          <p className="text-[#6B7A6E] font-light text-[15px]">Encontre respostas rápidas ou fale conosco.</p>
-        </div>
-      </header>
+      <div className="mx-auto flex w-full max-w-xl flex-1 flex-col">
 
-      <main className="flex-1 px-6 py-8 overflow-y-auto pb-32">
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col gap-8"
-        >
-          
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 gap-4">
-            <button className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex items-center gap-4 active:scale-[0.98] transition-transform w-full">
-              <div className="w-12 h-12 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
-                <MessageCircle className="w-6 h-6" />
-              </div>
-              <div className="text-left flex-1">
-                <p className="font-medium text-[#055A43] text-[15px]">Falar com Suporte</p>
-                <p className="text-[#6B7A6E] text-[13px] font-light mt-0.5">Resposta em até 48h úteis</p>
-              </div>
-            </button>
+        {/* Header — kicker + serif title, plain background */}
+        <header className="px-6 pt-14 pb-8 flex flex-col gap-5">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-full bg-white border border-[#055A43]/8 shadow-[0_4px_16px_rgba(45,74,58,0.06)] flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#055A43]/70 mb-2.5">Central de ajuda</p>
+            <h1 className="font-serif text-[32px] text-[#055A43] tracking-tight leading-[1.1]">
+              Como podemos <br/> <span className="italic">ajudar?</span>
+            </h1>
+            <p className="mt-2.5 text-[#6B7A6E] font-light text-[15px] leading-relaxed">Encontre respostas rápidas ou fale conosco.</p>
           </div>
+        </header>
 
-          <div className="flex flex-col gap-8">
-             {faqData.map((category, catIdx) => (
-               <div key={catIdx}>
-                 <h3 className="font-medium text-[#055A43] text-[11px] tracking-[0.15em] uppercase mb-4 px-2 opacity-80">{category.title}</h3>
-                 
-                 <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col overflow-hidden">
-                   {category.faqs.map((faq) => {
-                     const isExpanded = expandedId === faq.id;
-                     
-                     return (
-                       <div key={faq.id} className="border-b border-[#055A43]/5 last:border-0 hover:bg-[#F7F5EF] transition-colors">
-                         <button 
-                           onClick={() => toggleFaq(faq.id)}
-                           className="w-full p-5 flex justify-between items-start text-left gap-4"
-                         >
-                           <p className={`font-medium text-[15px] transition-colors ${isExpanded ? 'text-[#055A43]' : 'text-[#506352]'}`}>
-                             {faq.q}
-                           </p>
-                           <div className="shrink-0 mt-0.5">
-                             {isExpanded ? (
-                               <ChevronUp className="w-5 h-5 text-[#055A43]" />
-                             ) : (
-                               <ChevronDown className="w-5 h-5 text-[#506352]/40" />
+        <main className="flex-1 px-6 pb-32 overflow-y-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col gap-8"
+          >
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 gap-4">
+              <button className="bg-white rounded-[1.75rem] p-5 border border-[#055A43]/8 shadow-[0_8px_24px_rgba(45,74,58,0.08)] flex items-center gap-4 active:scale-[0.98] transition-transform w-full">
+                <div className="w-12 h-12 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
+                  <MessageCircle className="w-6 h-6" />
+                </div>
+                <div className="text-left flex-1">
+                  <p className="font-semibold text-[#055A43] text-[15px]">Falar com Suporte</p>
+                  <p className="text-[#6B7A6E] text-[13px] font-light mt-0.5">Resposta em até 48h úteis</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-[#055A43]/40 shrink-0" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-8">
+               {faqData.map((category, catIdx) => (
+                 <div key={catIdx}>
+                   <h3 className="font-bold text-[#055A43]/70 text-[10px] tracking-[0.18em] uppercase mb-4 px-2">{category.title}</h3>
+
+                   <div className="bg-white rounded-[1.75rem] border border-[#055A43]/8 shadow-[0_8px_24px_rgba(45,74,58,0.08)] flex flex-col overflow-hidden">
+                     {category.faqs.map((faq) => {
+                       const isExpanded = expandedId === faq.id;
+
+                       return (
+                         <div key={faq.id} className="border-b border-[#055A43]/5 last:border-0 hover:bg-[#F7F5EF] transition-colors">
+                           <button
+                             onClick={() => toggleFaq(faq.id)}
+                             className="w-full p-5 flex justify-between items-start text-left gap-4"
+                           >
+                             <p className={`font-medium text-[15px] transition-colors ${isExpanded ? 'text-[#055A43]' : 'text-[#506352]'}`}>
+                               {faq.q}
+                             </p>
+                             <div className="shrink-0 mt-0.5">
+                               {isExpanded ? (
+                                 <ChevronUp className="w-5 h-5 text-[#055A43]" />
+                               ) : (
+                                 <ChevronDown className="w-5 h-5 text-[#506352]/40" />
+                               )}
+                             </div>
+                           </button>
+                           <AnimatePresence>
+                             {isExpanded && (
+                               <motion.div
+                                 initial={{ height: 0, opacity: 0 }}
+                                 animate={{ height: "auto", opacity: 1 }}
+                                 exit={{ height: 0, opacity: 0 }}
+                                 transition={{ duration: 0.2 }}
+                                 className="overflow-hidden"
+                               >
+                                 <div className="px-5 pb-5 pt-1 text-[#6B7A6E] text-[14px] font-light leading-relaxed">
+                                   {faq.a}
+                                 </div>
+                               </motion.div>
                              )}
-                           </div>
-                         </button>
-                         <AnimatePresence>
-                           {isExpanded && (
-                             <motion.div
-                               initial={{ height: 0, opacity: 0 }}
-                               animate={{ height: "auto", opacity: 1 }}
-                               exit={{ height: 0, opacity: 0 }}
-                               transition={{ duration: 0.2 }}
-                               className="overflow-hidden"
-                             >
-                               <div className="px-5 pb-5 pt-1 text-[#6B7A6E] text-[14px] font-light leading-relaxed">
-                                 {faq.a}
-                               </div>
-                             </motion.div>
-                           )}
-                         </AnimatePresence>
-                       </div>
-                     );
-                   })}
+                           </AnimatePresence>
+                         </div>
+                       );
+                     })}
+                   </div>
                  </div>
-               </div>
-             ))}
-          </div>
-        </motion.div>
-      </main>
+               ))}
+            </div>
+          </motion.div>
+        </main>
+      </div>
     </div>
   );
 }

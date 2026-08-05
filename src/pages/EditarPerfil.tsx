@@ -273,9 +273,9 @@ export function EditarPerfil() {
   };
 
   const TabButton = ({ id, label }: { id: any, label: string }) => (
-    <button 
+    <button
       onClick={() => setActiveTab(id)}
-      className={`flex-1 py-2 font-medium text-[13px] rounded-xl transition-all ${activeTab === id ? 'bg-white shadow-[0_2px_8px_rgba(45,74,58,0.08)] text-[#055A43]' : 'text-[#6B7A6E] hover:text-[#055A43]/70'}`}
+      className={`flex-1 py-2.5 font-medium text-[13px] rounded-lg transition-all ${activeTab === id ? 'bg-[#055A43] text-white shadow-sm' : 'text-[#6B7A6E] hover:text-[#055A43]/70'}`}
     >
       {label}
     </button>
@@ -331,91 +331,98 @@ export function EditarPerfil() {
         </div>
       )}
 
-      <header className="px-6 pt-16 pb-4 bg-white flex items-center gap-4 sticky top-0 z-10">
-        <button 
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <p className="text-[10px] font-medium text-[#506352] tracking-[0.15em] uppercase mb-0.5">
-            Configurações
+      <header className="relative overflow-hidden bg-[#055A43] px-6 pt-16 pb-10 shrink-0">
+        {/* Decorative ghost circles */}
+        <div className="absolute -right-10 -top-10 w-52 h-52 rounded-full bg-white/[0.04] pointer-events-none" />
+        <div className="absolute right-8 top-24 w-24 h-24 rounded-full bg-white/[0.04] pointer-events-none" />
+
+        <div className="relative z-10 flex items-center gap-4 mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 active:scale-[0.98] transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <p className="text-[10px] font-bold text-white/55 tracking-[0.15em] uppercase mb-0.5">
+              Configurações
+            </p>
+            <h1 className="font-serif text-[26px] text-white tracking-tight leading-none">
+              Editar Perfil
+            </h1>
+          </div>
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center">
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handlePhotoUpload}
+            className="hidden"
+          />
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            ref={cameraInputRef}
+            onChange={handlePhotoUpload}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPhotoOptions(true)}
+            disabled={isUploading}
+            className="relative w-24 h-24 rounded-[2rem] shadow-xl shadow-black/10 mb-4 border-2 border-white/20 bg-white/10 flex items-center justify-center active:scale-[0.98] transition-all"
+            aria-label="Alterar foto do cão"
+          >
+            <span className="absolute inset-0 rounded-[2rem] overflow-hidden flex items-center justify-center">
+            {formData.photoUrl ? (
+              <img src={formData.photoUrl} alt="Foto do cão" className="w-full h-full object-cover" />
+            ) : isUploading ? (
+              <span className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                <span className="font-serif text-white text-[40px] opacity-90">
+                  {formData.name?.charAt(0).toUpperCase() || 'C'}
+                </span>
+                <span className="absolute right-1.5 bottom-1.5 w-8 h-8 rounded-full bg-white text-[#055A43] shadow-md flex items-center justify-center">
+                  <Camera className="w-4 h-4" />
+                </span>
+              </>
+            )}
+            </span>
+          </button>
+
+          <h2 className="font-serif text-[28px] text-white tracking-tight leading-none mb-1 text-center">
+            {formData.name || 'Seu cão'}
+          </h2>
+          <p className="text-[12px] font-medium text-white/65 uppercase tracking-widest text-center">
+            Tutor(a): {tutorName.split(' ')[0] || 'Tutor'}
           </p>
-          <h1 className="font-serif text-[24px] text-[#055A43] tracking-tight leading-none">
-            Editar Perfil
-          </h1>
+
+          <button
+            type="button"
+            onClick={() => navigate('/assinatura')}
+            className={`mt-4 px-4 py-1.5 rounded-full flex items-center gap-2 border backdrop-blur-md ${planBadge.color} active:scale-95 transition-transform`}
+          >
+            {getSubscriptionPlan(userProfile) === 'premium' ? <Crown className="w-4 h-4" /> : <ShieldPlus className="w-4 h-4" />}
+            <span className="text-[10px] font-medium tracking-widest uppercase">{planBadge.text}</span>
+          </button>
         </div>
       </header>
 
-      <section className="px-6 pt-4 pb-10 bg-white border-b border-[#055A43]/5 flex flex-col items-center">
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handlePhotoUpload}
-          className="hidden"
-        />
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          ref={cameraInputRef}
-          onChange={handlePhotoUpload}
-          className="hidden"
-        />
-        <button
-          type="button"
-          onClick={() => setShowPhotoOptions(true)}
-          disabled={isUploading}
-          className="relative w-24 h-24 rounded-[2rem] shadow-xl shadow-[#055A43]/10 mb-4 border border-[#055A43]/10 bg-[#055A43] flex items-center justify-center active:scale-[0.98] transition-all"
-          aria-label="Alterar foto do cão"
-        >
-          <span className="absolute inset-0 rounded-[2rem] overflow-hidden flex items-center justify-center">
-          {formData.photoUrl ? (
-            <img src={formData.photoUrl} alt="Foto do cão" className="w-full h-full object-cover" />
-          ) : isUploading ? (
-            <span className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          ) : (
-            <>
-              <span className="font-serif text-white text-[40px] opacity-90">
-                {formData.name?.charAt(0).toUpperCase() || 'C'}
-              </span>
-              <span className="absolute right-1.5 bottom-1.5 w-8 h-8 rounded-full bg-white text-[#055A43] shadow-md flex items-center justify-center">
-                <Camera className="w-4 h-4" />
-              </span>
-            </>
-          )}
-          </span>
-        </button>
-
-        <h2 className="font-serif text-[28px] text-[#055A43] tracking-tight leading-none mb-1 text-center">
-          {formData.name || 'Seu cão'}
-        </h2>
-        <p className="text-sm font-medium text-[#506352]/70 uppercase tracking-widest text-center">
-          Tutor(a): {tutorName.split(' ')[0] || 'Tutor'}
-        </p>
-
-        <button
-          type="button"
-          onClick={() => navigate('/assinatura')}
-          className={`mt-4 px-4 py-1.5 rounded-full flex items-center gap-2 border ${planBadge.color} active:scale-95 transition-transform`}
-        >
-          {getSubscriptionPlan(userProfile) === 'premium' ? <Crown className="w-4 h-4" /> : <ShieldPlus className="w-4 h-4" />}
-          <span className="text-[10px] font-medium tracking-widest uppercase">{planBadge.text}</span>
-        </button>
-      </section>
-
-      <div className="px-6 pt-4 pb-4 bg-white border-b border-[#055A43]/5">
-        <div className="flex bg-[#F7F5EF] rounded-[1rem] p-1 border border-[#055A43]/5">
-          <TabButton id="basico" label="Básico" />
-          <TabButton id="rotina" label="Rotina" />
-          <TabButton id="comportamento" label="Perfil" />
-          <TabButton id="saude" label="Saúde" />
+      <div className="relative -mt-6 rounded-t-[26px] bg-[#F7F5EF] flex-1 min-h-0 flex flex-col overflow-hidden">
+        <div className="px-6 pt-6 pb-4 shrink-0">
+          <div className="flex bg-white rounded-xl p-1.5 gap-1 border border-[#055A43]/5 shadow-[0_2px_10px_rgba(45,74,58,0.05)]">
+            <TabButton id="basico" label="Básico" />
+            <TabButton id="rotina" label="Rotina" />
+            <TabButton id="comportamento" label="Perfil" />
+            <TabButton id="saude" label="Saúde" />
+          </div>
         </div>
-      </div>
 
-      <main className="flex-1 px-6 py-8 overflow-y-auto">
+        <main className="flex-1 px-6 pb-8 overflow-y-auto">
         {activeTab === 'basico' && (
           <div className="flex flex-col gap-6 animate-in slide-in-from-left-4 fade-in duration-300">
             <Input
@@ -435,7 +442,7 @@ export function EditarPerfil() {
             />
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Sexo</label>
+              <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Sexo</label>
               <div className="flex gap-2">
                 <button 
                   type="button" 
@@ -443,7 +450,7 @@ export function EditarPerfil() {
                   className={`flex-1 py-3.5 rounded-xl border text-sm font-medium transition-all ${
                     formData.gender === 'male' 
                       ? 'bg-[#055A43] text-white border-[#055A43]' 
-                      : 'bg-white text-[#506352] border-gray-200 hover:border-[#055A43]/30'
+                      : 'bg-white text-[#506352] border-[#E4E1D6] hover:border-[#055A43]/30'
                   }`}
                 >
                   Macho
@@ -454,7 +461,7 @@ export function EditarPerfil() {
                   className={`flex-1 py-3.5 rounded-xl border text-sm font-medium transition-all ${
                     formData.gender === 'female' 
                       ? 'bg-[#055A43] text-white border-[#055A43]' 
-                      : 'bg-white text-[#506352] border-gray-200 hover:border-[#055A43]/30'
+                      : 'bg-white text-[#506352] border-[#E4E1D6] hover:border-[#055A43]/30'
                   }`}
                 >
                   Fêmea
@@ -463,13 +470,13 @@ export function EditarPerfil() {
             </div>
             
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Raça</label>
+              <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Raça</label>
               <button
                 type="button"
                 onClick={() => setIsBreedModalOpen(true)}
-                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative"
+                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E4E1D6] rounded-2xl px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-4 focus:ring-[#055A43]/10 transition-all relative"
               >
-                {formData.breed || <span className="text-[#A0A4A1]">Selecione a raça</span>}
+                {formData.breed || <span className="text-[#8A9589]">Selecione a raça</span>}
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                   <ChevronDown className="w-5 h-5" />
                 </div>
@@ -477,13 +484,13 @@ export function EditarPerfil() {
             </div>
 
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Fase da vida</label>
+              <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Fase da vida</label>
               <button
                 type="button"
                 onClick={() => setIsLifeStageModalOpen(true)}
-                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative"
+                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E4E1D6] rounded-2xl px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-4 focus:ring-[#055A43]/10 transition-all relative"
               >
-                {formData.lifeStage || <span className="text-[#A0A4A1]">Selecione a fase</span>}
+                {formData.lifeStage || <span className="text-[#8A9589]">Selecione a fase</span>}
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                   <ChevronDown className="w-5 h-5" />
                 </div>
@@ -492,14 +499,14 @@ export function EditarPerfil() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#6B7A6E] text-sm font-medium ml-1">Idade aprox.</label>
+                <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Idade aprox.</label>
                 <button
                   type="button"
                   onClick={() => setIsAgeModalOpen(true)}
                   disabled={!formData.lifeStage}
-                  className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative disabled:opacity-60"
+                  className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E4E1D6] rounded-2xl px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-4 focus:ring-[#055A43]/10 transition-all relative disabled:opacity-60"
                 >
-                  {formData.age || <span className="text-[#A0A4A1]">Opcional</span>}
+                  {formData.age || <span className="text-[#8A9589]">Opcional</span>}
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                     <ChevronDown className="w-5 h-5" />
                   </div>
@@ -528,18 +535,18 @@ export function EditarPerfil() {
             />
             
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Convive com mais pessoas?</label>
+              <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Convive com mais pessoas?</label>
               <div className="flex gap-2">
-                <button onClick={() => setFormData(prev => ({ ...prev, livesWithPeople: true }))} className={`flex-1 py-3 rounded-xl border ${formData.livesWithPeople ? 'bg-[#055A43] text-white border-[#055A43]' : 'bg-white text-[#506352] border-gray-200'}`}>Sim</button>
-                <button onClick={() => setFormData(prev => ({ ...prev, livesWithPeople: false }))} className={`flex-1 py-3 rounded-xl border ${!formData.livesWithPeople ? 'bg-[#055A43] text-white border-[#055A43]' : 'bg-white text-[#506352] border-gray-200'}`}>Não</button>
+                <button onClick={() => setFormData(prev => ({ ...prev, livesWithPeople: true }))} className={`flex-1 py-3 rounded-xl border ${formData.livesWithPeople ? 'bg-[#055A43] text-white border-[#055A43]' : 'bg-white text-[#506352] border-[#E4E1D6]'}`}>Sim</button>
+                <button onClick={() => setFormData(prev => ({ ...prev, livesWithPeople: false }))} className={`flex-1 py-3 rounded-xl border ${!formData.livesWithPeople ? 'bg-[#055A43] text-white border-[#055A43]' : 'bg-white text-[#506352] border-[#E4E1D6]'}`}>Não</button>
               </div>
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Convive com outros animais?</label>
+              <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Convive com outros animais?</label>
               <div className="flex gap-2">
-                <button onClick={() => setFormData(prev => ({ ...prev, livesWithAnimals: true }))} className={`flex-1 py-3 rounded-xl border ${formData.livesWithAnimals ? 'bg-[#055A43] text-white border-[#055A43]' : 'bg-white text-[#506352] border-gray-200'}`}>Sim</button>
-                <button onClick={() => setFormData(prev => ({ ...prev, livesWithAnimals: false }))} className={`flex-1 py-3 rounded-xl border ${!formData.livesWithAnimals ? 'bg-[#055A43] text-white border-[#055A43]' : 'bg-white text-[#506352] border-gray-200'}`}>Não</button>
+                <button onClick={() => setFormData(prev => ({ ...prev, livesWithAnimals: true }))} className={`flex-1 py-3 rounded-xl border ${formData.livesWithAnimals ? 'bg-[#055A43] text-white border-[#055A43]' : 'bg-white text-[#506352] border-[#E4E1D6]'}`}>Sim</button>
+                <button onClick={() => setFormData(prev => ({ ...prev, livesWithAnimals: false }))} className={`flex-1 py-3 rounded-xl border ${!formData.livesWithAnimals ? 'bg-[#055A43] text-white border-[#055A43]' : 'bg-white text-[#506352] border-[#E4E1D6]'}`}>Não</button>
               </div>
             </div>
 
@@ -557,13 +564,13 @@ export function EditarPerfil() {
         {activeTab === 'comportamento' && (
           <div className="flex flex-col gap-6 animate-in slide-in-from-right-4 fade-in duration-300">
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Nível de Energia</label>
+              <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Nível de Energia</label>
               <button
                 type="button"
                 onClick={() => setIsEnergyModalOpen(true)}
-                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative"
+                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E4E1D6] rounded-2xl px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-4 focus:ring-[#055A43]/10 transition-all relative"
               >
-                {labelForValue(ENERGY_OPTIONS, formData.energyLevel) || <span className="text-[#A0A4A1]">Selecione</span>}
+                {labelForValue(ENERGY_OPTIONS, formData.energyLevel) || <span className="text-[#8A9589]">Selecione</span>}
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                   <ChevronDown className="w-5 h-5" />
                 </div>
@@ -571,13 +578,13 @@ export function EditarPerfil() {
             </div>
 
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Base de Treino Anterior</label>
+              <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Base de Treino Anterior</label>
               <button
                 type="button"
                 onClick={() => setIsTrainingBaseModalOpen(true)}
-                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative"
+                className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E4E1D6] rounded-2xl px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-4 focus:ring-[#055A43]/10 transition-all relative"
               >
-                {labelForValue(TRAINING_BASE_OPTIONS, formData.trainingBase) || <span className="text-[#A0A4A1]">Selecione</span>}
+                {labelForValue(TRAINING_BASE_OPTIONS, formData.trainingBase) || <span className="text-[#8A9589]">Selecione</span>}
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                   <ChevronDown className="w-5 h-5" />
                 </div>
@@ -589,12 +596,12 @@ export function EditarPerfil() {
         {activeTab === 'saude' && (
           <div className="flex flex-col gap-6 animate-in slide-in-from-right-4 fade-in duration-300">
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Alimentação base</label>
+              <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Alimentação base</label>
               <div className="relative">
                 <select
                   value={formData.diet}
                   onChange={(e) => setFormData(prev => ({ ...prev, diet: e.target.value }))}
-                  className="w-full text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] placeholder-[#A0A4A1] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all appearance-none"
+                  className="w-full text-base font-normal h-[52px] bg-white border border-[#E4E1D6] rounded-2xl px-4 text-[#055A43] placeholder-[#8A9589] focus:outline-none focus:border-[#055A43] focus:ring-4 focus:ring-[#055A43]/10 transition-all appearance-none"
                 >
                   <option value="" disabled>Selecione</option>
                   <option value="Ração seca">Ração Seca</option>
@@ -610,13 +617,13 @@ export function EditarPerfil() {
             
             {(formData.diet === 'Ração seca' || formData.diet === 'Ração úmida' || formData.diet === 'Mista') && (
               <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-[#6B7A6E] text-sm font-medium ml-1">Marca da ração (se aplicável)</label>
+                <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Marca da ração (se aplicável)</label>
                 <button
                   type="button"
                   onClick={() => setIsBrandModalOpen(true)}
-                  className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E5E5E5] rounded-[14px] px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all relative"
+                  className="w-full text-left text-base font-normal h-[52px] bg-white border border-[#E4E1D6] rounded-2xl px-4 text-[#055A43] focus:outline-none focus:border-[#055A43] focus:ring-4 focus:ring-[#055A43]/10 transition-all relative"
                 >
-                  {formData.foodBrand || <span className="text-[#A0A4A1]">Ex: Golden, Premier, etc</span>}
+                  {formData.foodBrand || <span className="text-[#8A9589]">Ex: Golden, Premier, etc</span>}
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6B7A6E]">
                     <ChevronDown className="w-5 h-5" />
                   </div>
@@ -646,22 +653,27 @@ export function EditarPerfil() {
             />
 
             <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-[#6B7A6E] text-sm font-medium ml-1">Observações de saúde</label>
+              <label className="text-[13px] font-semibold text-[#055A43] ml-1 tracking-wide uppercase">Observações de saúde</label>
               <textarea
                 value={formData.observations}
                 onChange={(e) => setFormData(prev => ({ ...prev, observations: e.target.value }))}
                 placeholder="Alergias, medicamentos, etc."
-                className="w-full text-base font-normal min-h-[100px] bg-white border border-[#E5E5E5] rounded-[14px] p-4 text-[#055A43] placeholder-[#A0A4A1] focus:outline-none focus:border-[#055A43] focus:ring-1 focus:ring-[#055A43] transition-all resize-none"
+                className="w-full text-base font-normal min-h-[100px] bg-white border border-[#E4E1D6] rounded-2xl p-4 text-[#055A43] placeholder-[#8A9589] focus:outline-none focus:border-[#055A43] focus:ring-4 focus:ring-[#055A43]/10 transition-all resize-none"
               />
             </div>
           </div>
         )}
 
         {error && <p className="text-red-500 text-sm ml-1 mt-6 text-center">{error}</p>}
-      </main>
+        </main>
+      </div>
 
-      <div className="p-6 bg-white border-t border-[#055A43]/5">
-        <Button onClick={handleSave} className="w-full" disabled={isSaving || isUploading}>
+      <div className="p-6 bg-white border-t border-[#055A43]/5 shrink-0">
+        <Button
+          onClick={handleSave}
+          className="w-full rounded-xl bg-[#C2703E] text-white shadow-[0_8px_20px_rgba(194,112,62,0.25)] hover:bg-[#C2703E]/90 active:bg-[#C2703E]/90"
+          disabled={isSaving || isUploading}
+        >
           {isSaving ? 'Salvando...' : 'Salvar alterações'}
         </Button>
       </div>

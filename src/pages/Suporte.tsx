@@ -113,49 +113,55 @@ export function Suporte() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
-      {/* Header */}
-      <header className="px-6 pt-16 pb-4 bg-white flex items-center justify-between sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-4">
-          <button 
+    <div className="min-h-screen bg-[#055A43] font-sans flex flex-col">
+      {/* Green header zone */}
+      <header className="relative overflow-hidden px-6 pt-16 pb-6 bg-[#055A43] flex items-center justify-between sticky top-0 z-10 shrink-0">
+        {/* Decorative ghost circle */}
+        <div className="absolute -right-8 -top-14 w-40 h-40 rounded-full bg-white/[0.04] pointer-events-none" />
+
+        <div className="relative z-10 flex items-center gap-4">
+          <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/10 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
+            className="w-10 h-10 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 active:scale-[0.98] transition-all"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="font-serif text-xl text-[#055A43]">Equipe Focão</h1>
-            <p className="text-xs text-[#6B7A6E]">Suporte</p>
+            <h1 className="font-serif text-xl text-white">Equipe Focão</h1>
+            <p className="text-xs text-white/55">Suporte</p>
           </div>
         </div>
       </header>
 
-      {/* Aviso de resposta */}
-      <div className="bg-[#055A43]/5 border-b border-[#055A43]/10 py-2.5 px-6 flex items-center justify-center gap-2">
-        <Info className="w-4 h-4 text-[#055A43]/70" />
-        <span className="text-[11px] text-[#055A43]/80 font-medium uppercase tracking-wide">Resposta em até 48h úteis</span>
-      </div>
+      {/* White drawer — sobrepõe a zona verde, contém aviso + thread de mensagens */}
+      <div className="relative flex-1 flex flex-col -mt-6 rounded-t-[26px] bg-[#F7F5EF] overflow-hidden">
 
-      <main 
-        ref={scrollRef}
-        className="flex-1 px-4 py-6 overflow-y-auto flex flex-col gap-4"
-        style={{ paddingBottom: '100px' }}
-      >
-        {loading ? (
-           <div className="flex justify-center items-center h-full">
-               <Loader2 className="w-6 h-6 text-[#055A43]/50 animate-spin" />
-           </div>
-        ) : messages.length === 0 ? (
-           <div className="flex flex-col items-center justify-center h-full text-center px-6">
-              <div className="w-16 h-16 bg-[#055A43]/10 rounded-full flex items-center justify-center mb-4">
-                 <span className="text-2xl">👋</span>
-              </div>
-              <p className="text-[#055A43] font-medium text-lg mb-2">Como podemos ajudar?</p>
-              <p className="text-[#6B7A6E] text-sm font-light">
-                 Envie suas dúvidas sobre treinamento, comportamento ou nutrição. Nossos especialistas responderão em breve.
-              </p>
-           </div>
-        ) : (
+        {/* Aviso de resposta */}
+        <div className="flex items-center justify-center gap-1.5 mx-auto mt-4 mb-1 px-3 py-1.5 rounded-full bg-[#EAF0E8] border border-[#055A43]/10">
+          <Info className="w-3.5 h-3.5 text-[#055A43]/70" />
+          <span className="text-[11px] text-[#055A43]/80 font-medium uppercase tracking-wide">Resposta em até 48h úteis</span>
+        </div>
+
+        <main
+          ref={scrollRef}
+          className="flex-1 px-4 py-6 overflow-y-auto flex flex-col gap-4"
+          style={{ paddingBottom: '100px' }}
+        >
+          {loading ? (
+             <div className="flex justify-center items-center h-full">
+                 <Loader2 className="w-6 h-6 text-[#055A43]/50 animate-spin" />
+             </div>
+          ) : messages.length === 0 ? (
+             <div className="flex flex-col items-center justify-center h-full text-center px-6">
+                <div className="w-16 h-16 bg-[#055A43]/10 rounded-full flex items-center justify-center mb-4">
+                   <span className="text-2xl">👋</span>
+                </div>
+                <p className="font-serif text-[#055A43] text-xl mb-2">Como podemos ajudar?</p>
+                <p className="text-[#6B7A6E] text-sm font-light">
+                   Envie suas dúvidas sobre treinamento, comportamento ou nutrição. Nossos especialistas responderão em breve.
+                </p>
+             </div>
+          ) : (
           messages.reduce((acc, msg, idx, arr) => {
             const dateStr = new Date(msg.createdAt).toLocaleDateString();
             const prevDateStr = idx > 0 ? new Date(arr[idx - 1].createdAt).toLocaleDateString() : null;
@@ -180,19 +186,19 @@ export function Suporte() {
               <React.Fragment key={msg.id}>
                 {showSeparator && (
                   <div className="flex justify-center my-4">
-                    <span className="text-[11px] font-medium text-[#6B7A6E]/60 bg-gray-100 px-3 py-1 rounded-full uppercase tracking-widest">
+                    <span className="text-[11px] font-medium text-[#6B7A6E]/60 bg-[#EAF0E8] px-3 py-1 rounded-full uppercase tracking-widest">
                       {formatDateSeparator(msg.createdAt)}
                     </span>
                   </div>
                 )}
-                <div 
+                <div
                   className={`flex w-full ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                   <div 
-                     className={`max-w-[80%] rounded-2xl px-4 py-3 text-[15px] ${
-                        msg.sender === 'user' 
-                          ? 'bg-[#055A43] text-white rounded-br-sm' 
-                          : 'bg-white border border-gray-100 text-[#6B7A6E] rounded-bl-sm shadow-sm'
+                   <div
+                     className={`max-w-[80%] rounded-[1.25rem] px-4 py-3 text-[15px] ${
+                        msg.sender === 'user'
+                          ? 'bg-[#055A43] text-white rounded-br-md'
+                          : 'bg-white border border-[#055A43]/5 text-[#6B7A6E] rounded-bl-md shadow-[0_4px_16px_rgba(45,74,58,0.06)]'
                      }`}
                    >
                      {msg.imageUrl && (
@@ -209,14 +215,15 @@ export function Suporte() {
             return acc;
           }, [] as React.ReactNode[])
         )}
-      </main>
+        </main>
+      </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-100 pb-safe">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-[#E4E1D6] pb-safe">
         <div className="flex flex-col gap-2 max-w-2xl mx-auto">
           {previewUrl && (
             <div className="relative self-start mb-2">
-              <img src={previewUrl} alt="Preview" className="h-20 w-auto rounded-xl object-cover border border-gray-200" />
+              <img src={previewUrl} alt="Preview" className="h-20 w-auto rounded-xl object-cover border border-[#E4E1D6]" />
               <button
                 onClick={removeImage}
                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md"
@@ -226,21 +233,21 @@ export function Suporte() {
             </div>
           )}
           <div className="flex items-end gap-2">
-            <button 
+            <button
                onClick={() => fileInputRef.current?.click()}
-               className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F7F5EF] border border-gray-200 text-[#6B7A6E] active:scale-[0.98] shrink-0"
+               className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F7F5EF] border border-[#E4E1D6] text-[#6B7A6E] active:scale-[0.98] shrink-0"
             >
                <Paperclip className="w-5 h-5" />
             </button>
-            <input 
-               type="file" 
-               accept="image/*" 
+            <input
+               type="file"
+               accept="image/*"
                ref={fileInputRef}
                className="hidden"
                onChange={handleFileChange}
             />
-            <div className="flex-1 bg-[#F7F5EF] border border-gray-200 rounded-2xl flex items-center px-4 py-1">
-               <textarea 
+            <div className="flex-1 bg-[#F7F5EF] border border-[#E4E1D6] rounded-2xl flex items-center px-4 py-1">
+               <textarea
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   placeholder="Digite sua mensagem..."
@@ -254,10 +261,10 @@ export function Suporte() {
                   }}
                />
             </div>
-            <button 
+            <button
                onClick={handleSend}
                disabled={(!inputText.trim() && !selectedImage) || sending}
-               className="w-12 h-12 rounded-full bg-[#055A43] text-white flex items-center justify-center disabled:opacity-50 active:scale-[0.98] transition-transform shrink-0"
+               className="w-12 h-12 rounded-xl bg-[#C2703E] text-white flex items-center justify-center disabled:opacity-50 active:scale-[0.98] transition-transform shrink-0"
             >
                {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5 ml-1" />}
             </button>

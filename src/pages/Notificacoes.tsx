@@ -155,18 +155,18 @@ export function Notificacoes() {
 
   return (
     <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
-      <header className="px-6 py-6 bg-white border-b border-[#055A43]/5 flex items-center justify-between sticky top-0 z-10">
+      <header className="px-6 pt-6 pb-6 bg-[#F7F5EF] sticky top-0 z-10">
         <button
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center active:bg-gray-100 transition-colors"
+          className="w-10 h-10 rounded-full bg-white border border-[#055A43]/5 shadow-sm flex items-center justify-center active:bg-gray-100 transition-colors mb-5"
         >
           <ChevronLeft className="w-5 h-5 text-[#506352]" />
         </button>
-        <span className="font-serif text-[18px] text-[#055A43] tracking-tight">Notificações</span>
-        <div className="w-10" />
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#6B7A6E]/70 mb-1.5">Preferências</p>
+        <h1 className="font-serif text-[28px] font-semibold text-[#055A43] tracking-tight leading-tight">Notificações &amp; lembretes</h1>
       </header>
 
-      <main className="flex-1 px-6 py-8 flex flex-col gap-8 max-w-md mx-auto w-full">
+      <main className="flex-1 px-6 pb-10 pt-1 flex flex-col gap-8 max-w-md mx-auto w-full">
         {saved && (
           <div className="flex items-center gap-2 rounded-2xl border border-[#055A43]/10 bg-white px-4 py-3 text-sm font-medium text-[#055A43] shadow-sm">
             <CheckCircle2 className="h-4 w-4" />
@@ -175,11 +175,9 @@ export function Notificacoes() {
         )}
 
         <section>
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-8 h-8 rounded-full bg-[#055A43]/10 text-[#055A43] flex items-center justify-center">
-              <Bell className="w-4 h-4" />
-            </div>
-            <h2 className="text-[14px] font-medium text-[#055A43] tracking-wide uppercase">Lembretes no App</h2>
+          <div className="flex items-center gap-2 mb-3 px-2">
+            <Bell className="w-3.5 h-3.5 text-[#055A43]/50" />
+            <h2 className="text-[10px] font-medium text-[#6B7A6E] tracking-[0.15em] uppercase">Lembretes no app</h2>
           </div>
 
           <div className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col gap-6">
@@ -208,18 +206,22 @@ export function Notificacoes() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden flex flex-col gap-4 pt-4 border-t border-[#055A43]/5"
+                  className="overflow-hidden flex flex-col gap-5 pt-5 border-t border-[#055A43]/5"
                 >
-                  <TimeRow label="Horário do treino" value={trainingTime} onChange={setTrainingTime} />
-                  <TimeRow label="Horário do check-in" value={checkinTime} onChange={setCheckinTime} />
-                  <TimeRow label="Horário de vacinas" value={vaccineTime} onChange={setVaccineTime} />
+                  <div className="flex flex-col gap-4">
+                    <TimeRow label="Horário do treino" value={trainingTime} onChange={setTrainingTime} />
+                    <TimeRow label="Horário do check-in" value={checkinTime} onChange={setCheckinTime} />
+                    <TimeRow label="Horário de vacinas" value={vaccineTime} onChange={setVaccineTime} />
+                  </div>
 
-                  <div className="flex flex-col gap-5 pt-4 border-t border-[#055A43]/5 mt-2">
-                    <h3 className="text-[13px] uppercase tracking-wider text-[#055A43] font-semibold mb-1">Tipos de lembretes</h3>
-                    <ReminderToggle label="Treino diário" active={reminders.training} onClick={() => setReminders((r) => ({ ...r, training: !r.training }))} />
-                    <ReminderToggle label="Check-in de rotina" active={reminders.checkin} onClick={() => setReminders((r) => ({ ...r, checkin: !r.checkin }))} />
-                    <ReminderToggle label="Vacinas e saúde" active={reminders.vaccines} onClick={() => setReminders((r) => ({ ...r, vaccines: !r.vaccines }))} />
-                    <ReminderToggle label="Relatório semanal" active={reminders.report} onClick={() => setReminders((r) => ({ ...r, report: !r.report }))} />
+                  <div className="flex flex-col gap-4 pt-5 border-t border-[#055A43]/5">
+                    <h3 className="text-[11px] uppercase tracking-[0.15em] text-[#055A43] font-semibold">Tipos de lembretes</h3>
+                    <div className="flex flex-col gap-4">
+                      <ReminderToggle label="Treino diário" active={reminders.training} onClick={() => setReminders((r) => ({ ...r, training: !r.training }))} />
+                      <ReminderToggle label="Check-in de rotina" active={reminders.checkin} onClick={() => setReminders((r) => ({ ...r, checkin: !r.checkin }))} />
+                      <ReminderToggle label="Vacinas e saúde" active={reminders.vaccines} onClick={() => setReminders((r) => ({ ...r, vaccines: !r.vaccines }))} />
+                      <ReminderToggle label="Relatório semanal" active={reminders.report} onClick={() => setReminders((r) => ({ ...r, report: !r.report }))} />
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -227,11 +229,10 @@ export function Notificacoes() {
           </div>
         </section>
 
-
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full bg-[#055A43] text-white h-14 rounded-2xl font-medium text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-[#055A43]/20 active:scale-[0.98] transition-all disabled:opacity-70 mt-auto"
+          className="w-full bg-[#C2703E] text-white h-14 rounded-xl font-medium text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-[#C2703E]/20 active:scale-[0.98] transition-all disabled:opacity-70 mt-auto"
         >
           {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Save className="w-5 h-5" /> Salvar preferências</>}
         </button>

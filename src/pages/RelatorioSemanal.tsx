@@ -132,125 +132,130 @@ export function RelatorioSemanal() {
 
   return (
     <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col relative selection:bg-[#055A43]/20">
-      <header className="px-6 pt-16 pb-6 bg-[#F7F5EF] border-b border-[#055A43]/5 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-white border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <p className="text-[10px] font-medium text-[#506352] tracking-[0.15em] uppercase mb-0.5">
-              Análise comportamental
-            </p>
-            <h1 className="font-serif text-[24px] text-[#055A43] tracking-tight leading-none">
-              Relatório semanal
-            </h1>
-          </div>
-        </div>
+      {/* Green metric header zone */}
+      <div className="relative overflow-hidden bg-[#055A43] px-6 pt-16 pb-9">
+        <div className="absolute -right-16 -bottom-16 w-56 h-56 rounded-full bg-white/[0.04] pointer-events-none" />
 
-        {report && gate?.unlocked && (
-          <button
-            onClick={() => navigate('/relatorio-impressao')}
-            className="flex items-center gap-1.5 rounded-full bg-[#055A43] text-white px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider shadow-sm active:scale-[0.98] transition-all hover:bg-[#044c38]"
-          >
-            <FileText className="w-3.5 h-3.5" /> PDF
-          </button>
-        )}
-      </header>
-
-      {loading ? (
-        <div className="flex-1 flex items-center justify-center">
-           <div className="w-8 h-8 border-2 border-[#055A43]/20 border-t-[#055A43] rounded-full animate-spin" />
-        </div>
-      ) : !report ? (
-        <div className="flex-1 flex items-center justify-center">
-           <p className="text-[#6B7A6E]">Erro ao carregar relatório.</p>
-        </div>
-      ) : (!gate?.unlocked) ? (
-        <main className="flex-1 px-6 py-6 overflow-y-auto pb-32 flex items-center justify-center">
-          <LockedReportState
-            result={gate}
-            dogName={dogName}
-            dogGender={dogGender}
-            onCheckin={() => navigate('/checkin')}
-            onTrain={() => navigate('/treino')}
-          />
-        </main>
-      ) : (
-        <main className="flex-1 px-6 py-6 overflow-y-auto pb-32">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="mb-8 pl-1">
-              <div className="flex items-center justify-between mb-3">
-                 <div className="flex items-center gap-2 text-[#055A43]">
-                   <Sparkles className="w-4 h-4 text-yellow-500" />
-                   <span className="text-[10px] font-bold tracking-[0.15em] uppercase">Últimos 7 dias</span>
-                 </div>
-              </div>
-              <p className="text-[#6B7A6E] text-[16px] font-light leading-relaxed max-w-[280px]">
-                {(() => {
-                  const art = dogGender === 'female' ? 'da' : 'do';
-                  return report.maturityLevel === 'empty' 
-                    ? `Precisamos de mais alguns dias de atividade para montar o relatório ${art} ${dogName}.` 
-                    : `Um olhar detalhado sobre o desenvolvimento ${art} ${dogName}.`;
-                })()}
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white/80 active:scale-[0.98] transition-all"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <p className="text-[10px] font-medium text-white/45 tracking-[0.15em] uppercase mb-0.5">
+                Análise comportamental
               </p>
+              <h1 className="font-serif text-[24px] text-white tracking-tight leading-none">
+                Relatório semanal
+              </h1>
+            </div>
+          </div>
+
+          {report && gate?.unlocked && (
+            <button
+              onClick={() => navigate('/relatorio-impressao')}
+              className="flex items-center gap-1.5 rounded-full bg-[#C2703E] text-white px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider shadow-sm active:scale-[0.98] transition-all hover:bg-[#a85f33]"
+            >
+              <FileText className="w-3.5 h-3.5" /> PDF
+            </button>
+          )}
+        </div>
+
+        {report && gate?.unlocked && report.maturityLevel !== 'empty' && (
+          <>
+            <div className="relative z-10 grid grid-cols-2 gap-6 mt-8">
+              <div>
+                <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.15em] mb-2 flex items-center gap-2">
+                  <CheckCircle2 className="w-3 h-3" /> Treinos
+                </p>
+                <p className="font-serif text-[42px] leading-none text-white/95">{report.totalTrainings}</p>
+              </div>
+              <div>
+                <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.15em] mb-2 flex items-center gap-2">
+                  <FileText className="w-3 h-3" /> Check-ins
+                </p>
+                <p className="font-serif text-[42px] leading-none text-white/95">{report.totalCheckins}</p>
+              </div>
             </div>
 
-            {report.maturityLevel === 'empty' ? (
-              <div className="bg-white rounded-[2rem] p-8 border border-[#055A43]/10 shadow-sm text-center flex flex-col items-center justify-center py-16">
-                 <div className="w-16 h-16 rounded-full bg-[#F7F5EF] flex items-center justify-center mb-6 border border-gray-100">
-                    <Info className="w-8 h-8 text-[#6B7A6E]/40" />
-                 </div>
-                 <h3 className="font-serif text-2xl text-[#055A43] mb-3">Relatório em construção</h3>
-                 <p className="text-[#6B7A6E] font-light leading-relaxed text-[15px] max-w-[240px]">
-                   Seu relatório semanal ficará mais completo conforme você registra treinos e check-ins.
-                 </p>
+            <div className="relative z-10 flex flex-wrap gap-3 mt-5">
+              <div className="bg-white/10 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
+                <span className="text-white/90 text-[11px] font-bold tracking-[0.15em] uppercase">
+                  {report.activeDays} de 7 dias com registros
+                </span>
               </div>
-            ) : (
-              <>
-                {/* Main Stats Card */}
-                <div className="bg-[#055A43] rounded-[2.5rem] p-8 text-white shadow-[0_20px_40px_-15px_rgb(5,90,67,0.4)] mb-10 relative overflow-hidden group border border-[#055A43]/20">
-                  <div className="absolute -top-20 -right-20 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl transition-transform duration-700 group-hover:scale-110 pointer-events-none" />
-                  <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-teal-800/40 rounded-full blur-3xl pointer-events-none" />
-                  
-                  <div className="grid grid-cols-2 gap-6 relative z-10 mb-8">
-                    <div>
-                      <p className="text-emerald-100/70 text-[10px] font-bold uppercase tracking-[0.15em] mb-2 flex items-center gap-2">
-                        <CheckCircle2 className="w-3 h-3" /> Treinos
-                      </p>
-                      <p className="font-serif text-[42px] leading-none drop-shadow-sm">{report.totalTrainings}</p>
-                    </div>
-                    <div>
-                      <p className="text-emerald-100/70 text-[10px] font-bold uppercase tracking-[0.15em] mb-2 flex items-center gap-2">
-                        <FileText className="w-3 h-3" /> Check-ins
-                      </p>
-                      <p className="font-serif text-[42px] leading-none drop-shadow-sm">{report.totalCheckins}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3 relative z-10">
-                    <div className="bg-white/10 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
-                      <span className="text-white/90 text-[11px] font-bold tracking-[0.15em] uppercase">
-                        {report.activeDays} de 7 dias com registros
-                      </span>
-                    </div>
-                    {report.streak > 0 && (
-                      <div className="bg-white/10 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
-                         <span className="text-white/90 text-[11px] font-bold tracking-[0.15em] uppercase">
-                           {report.streak === 1 ? '1 dia seguido' : `${report.streak} dias seguidos`}
-                         </span>
-                      </div>
-                    )}
-                  </div>
+              {report.streak > 0 && (
+                <div className="bg-white/10 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
+                   <span className="text-white/90 text-[11px] font-bold tracking-[0.15em] uppercase">
+                     {report.streak === 1 ? '1 dia seguido' : `${report.streak} dias seguidos`}
+                   </span>
                 </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
 
-                {evolutionInsights?.smartReading && (
+      {/* White drawer */}
+      <div className="relative -mt-6 flex-1 flex flex-col rounded-t-[26px] bg-[#F7F5EF]">
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center py-24">
+             <div className="w-8 h-8 border-2 border-[#055A43]/20 border-t-[#055A43] rounded-full animate-spin" />
+          </div>
+        ) : !report ? (
+          <div className="flex-1 flex items-center justify-center py-24">
+             <p className="text-[#6B7A6E]">Erro ao carregar relatório.</p>
+          </div>
+        ) : (!gate?.unlocked) ? (
+          <main className="flex-1 px-6 pt-7 pb-32 overflow-y-auto flex items-center justify-center">
+            <LockedReportState
+              result={gate}
+              dogName={dogName}
+              dogGender={dogGender}
+              onCheckin={() => navigate('/checkin')}
+              onTrain={() => navigate('/treino')}
+            />
+          </main>
+        ) : (
+          <main className="flex-1 px-6 pt-7 pb-32 overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="mb-8 pl-1">
+                <div className="flex items-center justify-between mb-3">
+                   <div className="flex items-center gap-2 text-[#055A43]">
+                     <Sparkles className="w-4 h-4 text-yellow-500" />
+                     <span className="text-[10px] font-bold tracking-[0.15em] uppercase">Últimos 7 dias</span>
+                   </div>
+                </div>
+                <p className="text-[#6B7A6E] text-[16px] font-light leading-relaxed max-w-[280px]">
+                  {(() => {
+                    const art = dogGender === 'female' ? 'da' : 'do';
+                    return report.maturityLevel === 'empty'
+                      ? `Precisamos de mais alguns dias de atividade para montar o relatório ${art} ${dogName}.`
+                      : `Um olhar detalhado sobre o desenvolvimento ${art} ${dogName}.`;
+                  })()}
+                </p>
+              </div>
+
+              {report.maturityLevel === 'empty' ? (
+                <div className="bg-white rounded-[2rem] p-8 border border-[#055A43]/10 shadow-sm text-center flex flex-col items-center justify-center py-16">
+                   <div className="w-16 h-16 rounded-full bg-[#F7F5EF] flex items-center justify-center mb-6 border border-gray-100">
+                      <Info className="w-8 h-8 text-[#6B7A6E]/40" />
+                   </div>
+                   <h3 className="font-serif text-2xl text-[#055A43] mb-3">Relatório em construção</h3>
+                   <p className="text-[#6B7A6E] font-light leading-relaxed text-[15px] max-w-[240px]">
+                     Seu relatório semanal ficará mais completo conforme você registra treinos e check-ins.
+                   </p>
+                </div>
+              ) : (
+                <>
+                  {evolutionInsights?.smartReading && (
                   <div className="bg-white rounded-[2rem] p-6 border border-[#055A43]/10 shadow-[0_8px_30px_rgb(0,0,0,0.03)] mb-8">
                     <div className="flex items-center gap-2 mb-4">
                       <Sparkles className="w-4 h-4 text-[#055A43]" />
@@ -476,12 +481,12 @@ export function RelatorioSemanal() {
                     </div>
                   )}
                 </div>
-              </>
-            )}
-          </motion.div>
-        </main>
-      )}
-
+                </>
+              )}
+            </motion.div>
+          </main>
+        )}
+      </div>
     </div>
   );
 }

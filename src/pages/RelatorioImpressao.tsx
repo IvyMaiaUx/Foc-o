@@ -233,12 +233,12 @@ export function RelatorioImpressao() {
         </button>
       </div>
 
-      <article className="report-sheet mx-auto my-6 max-w-4xl rounded-xl border border-[#E5E1D7] bg-white p-8 shadow-sm print:my-0 print:rounded-none print:border-0 print:p-0 print:shadow-none">
-        <header className="mb-8 border-b border-[#D8C3A5] pb-7">
-          <div className="mb-7 flex items-start justify-between gap-4">
+      <article className="report-sheet mx-auto my-10 max-w-4xl rounded-xl border border-[#E5E1D7] bg-white px-8 py-10 md:px-12 md:py-14 print:my-0 print:rounded-none print:border-0 print:p-0">
+        <header className="mb-10 border-b border-[#D8C3A5] pb-8">
+          <div className="mb-8 flex items-start justify-between gap-6">
             <div>
-              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.28em] text-[#055A43]">Focão · acompanhamento contínuo</p>
-              <h1 className="max-w-xl font-serif text-4xl font-semibold leading-[1.08] text-[#102019]">Relatório semanal de {dog.name}</h1>
+              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.28em] text-[#055A43]">Focão · acompanhamento contínuo</p>
+              <h1 className="max-w-xl font-serif text-4xl font-semibold leading-[1.08] text-[#102019] md:text-[2.75rem]">Relatório semanal de {dog.name}</h1>
             </div>
             <div className="text-right">
               <p className="font-serif text-2xl font-semibold tracking-[0.16em] text-[#055A43]">FOCÃO</p>
@@ -254,8 +254,8 @@ export function RelatorioImpressao() {
 
         {/* AO LONGO DO TEMPO — a primeira conclusão real do app. Datada e separada da semana:
             direção + dado cru (sem %), pra o tutor conferir a leitura contra os próprios registros. */}
-        <section className="mb-4 rounded-lg border border-[#D8C3A5] bg-[#F8F3EB] p-6">
-          <div className="mb-3 flex items-center gap-2 text-[#7C684E]">
+        <section className="mb-6 rounded-lg border border-[#D8C3A5] bg-[#F8F3EB] p-7">
+          <div className="mb-4 flex items-center gap-2 text-[#7C684E]">
             <Sparkles className="h-4 w-4" />
             <p className="text-[10px] font-black uppercase tracking-[0.2em]">Ao longo do tempo</p>
           </div>
@@ -273,14 +273,14 @@ export function RelatorioImpressao() {
         </section>
 
         {/* ESTA SEMANA — janela curta de 7 dias, explicitamente distinta da leitura acima. */}
-        <section className="mb-7 rounded-lg border border-[#E6E4DD] px-5 py-4">
+        <section className="mb-8 rounded-lg border border-[#E6E4DD] px-6 py-5">
           <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#89918D]">Esta semana</p>
-          <p className="mt-1.5 font-serif text-2xl font-semibold text-[#055A43]">{report.activeDays} <span className="text-base font-medium text-[#8A918D]">de 7 dias com registro</span></p>
+          <p className="mt-2 font-serif text-2xl font-semibold text-[#055A43]">{report.activeDays} <span className="text-base font-medium text-[#8A918D]">de 7 dias com registro</span></p>
           <p className="mt-1 text-[11px] text-[#8A918D]">{report.totalTrainings} {report.totalTrainings === 1 ? 'treino' : 'treinos'} · {report.totalCheckins} {report.totalCheckins === 1 ? 'check-in' : 'check-ins'}</p>
           {executiveBody && <p className="mt-3 max-w-3xl text-[13px] leading-5 text-[#58635F]">{executiveBody}</p>}
         </section>
 
-        <section className="page-break-inside-avoid mb-7 rounded-lg border border-[#E6E4DD] p-5">
+        <section className="page-break-inside-avoid mb-9 rounded-lg border border-[#E6E4DD] p-6">
           <div className="mb-3 flex items-center gap-2 text-[#055A43]">
             <Activity className="h-4 w-4" />
             <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Comparação entre semanas</h2>
@@ -302,8 +302,8 @@ export function RelatorioImpressao() {
           )}
         </section>
 
-        <section className="page-break-inside-avoid mb-7 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="rounded-lg border border-[#E6E4DD] p-4">
+        <section className="page-break-inside-avoid mb-9 grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="rounded-lg border border-[#E6E4DD] p-5">
             <div className="mb-4 flex items-center gap-2 text-[#055A43]">
               <Activity className="h-4 w-4" />
               <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Contexto de {dog.name}</h2>
@@ -314,7 +314,7 @@ export function RelatorioImpressao() {
               <div className="flex justify-between gap-4"><dt className="text-[#89918D]">Objetivo atual</dt><dd className="max-w-[65%] text-right font-semibold text-[#394641]">{goals}</dd></div>
             </dl>
           </div>
-          <div className="rounded-lg border border-[#E6E4DD] p-4">
+          <div className="rounded-lg border border-[#E6E4DD] p-5">
             <div className="mb-4 flex items-center gap-2 text-[#055A43]">
               <Calendar className="h-4 w-4" />
               <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Nutrição e rotina</h2>
@@ -328,7 +328,7 @@ export function RelatorioImpressao() {
         </section>
 
         {hasEditorialNote && (
-          <section className="page-break-inside-avoid mb-8 border-l-2 border-[#D8C3A5] pl-5">
+          <section className="page-break-inside-avoid mb-9 border-l-2 border-[#D8C3A5] pl-6">
             <div className="mb-2 flex items-center gap-2 text-[#8B7357]">
               <FileText className="h-4 w-4" />
               <p className="text-[10px] font-black uppercase tracking-[0.18em]">Orientação da equipe Focão</p>
@@ -339,8 +339,8 @@ export function RelatorioImpressao() {
         )}
 
         {hasEnoughData ? (
-          <section className="mb-7 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="rounded-lg border-l-2 border-[#178A5B] bg-[#F8FBF9] p-5">
+          <section className="mb-9 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="rounded-lg border-l-2 border-[#178A5B] bg-[#F8FBF9] p-6">
               <div className="mb-3 flex items-center gap-2 text-[#055A43]">
                 <CheckCircle2 className="h-4 w-4" />
                 <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">O que evoluiu</h2>
@@ -356,7 +356,7 @@ export function RelatorioImpressao() {
                 </ul>
               ) : null}
             </div>
-            <div className="rounded-lg border-l-2 border-[#D97706] bg-[#FFFBF5] p-5">
+            <div className="rounded-lg border-l-2 border-[#D97706] bg-[#FFFBF5] p-6">
               <div className="mb-3 flex items-center gap-2 text-[#9A743F]">
                 <AlertTriangle className="h-4 w-4" />
                 <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Ponto de atenção</h2>
@@ -365,7 +365,7 @@ export function RelatorioImpressao() {
             </div>
           </section>
         ) : (
-          <section className="mb-7 rounded-lg border border-[#E6E4DD] p-5">
+          <section className="mb-9 rounded-lg border border-[#E6E4DD] p-6">
             <div className="mb-3 flex items-center gap-2 text-[#055A43]">
               <Activity className="h-4 w-4" />
               <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Como construir uma leitura mais precisa</h2>
@@ -380,23 +380,23 @@ export function RelatorioImpressao() {
           </section>
         )}
 
-        <section className="page-break-inside-avoid mb-7 rounded-lg bg-[#055A43] p-6 text-white">
-          <div className="mb-3 flex items-center gap-2 text-[#D8C3A5]">
+        <section className="page-break-inside-avoid mb-9 border-t-2 border-[#055A43] pt-6">
+          <div className="mb-3 flex items-center gap-2 text-[#055A43]">
             <Target className="h-4 w-4" />
             <p className="text-[10px] font-black uppercase tracking-[0.2em]">Próxima semana</p>
           </div>
-          <h2 className="font-serif text-2xl font-semibold">Foco recomendado para {dog.name}</h2>
+          <h2 className="font-serif text-2xl font-semibold text-[#17221E]">Foco recomendado para {dog.name}</h2>
           <ul className="mt-4 space-y-2.5">
             {objectives.map((objective) => (
-              <li key={objective} className="flex gap-2.5 text-sm leading-5 text-white/90">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#D8C3A5]" /> {objective}
+              <li key={objective} className="flex gap-2.5 text-sm leading-5 text-[#58635F]">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#055A43]" /> {objective}
               </li>
             ))}
           </ul>
         </section>
 
         {recentSessions.length > 0 && (
-          <section className="page-break-inside-avoid mb-7 rounded-lg border border-[#E6E4DD] p-5">
+          <section className="page-break-inside-avoid mb-9 rounded-lg border border-[#E6E4DD] p-6">
             <div className="mb-4 flex items-center gap-2 text-[#055A43]">
               <Dumbbell className="h-4 w-4" />
               <h2 className="text-[10px] font-black uppercase tracking-[0.18em]">Treinos recentes</h2>
@@ -416,7 +416,7 @@ export function RelatorioImpressao() {
         )}
 
         {dog.health?.vaccines?.length > 0 && (
-          <section className="page-break-inside-avoid mb-8 border-t border-[#E6E4DD] pt-5">
+          <section className="page-break-inside-avoid mb-9 border-t border-[#E6E4DD] pt-6">
             <p className="mb-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#89918D]">Lembretes de saúde cadastrados</p>
             <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
               {dog.health.vaccines.slice(0, 4).map((vaccine: any, index: number) => (
@@ -429,7 +429,7 @@ export function RelatorioImpressao() {
           </section>
         )}
 
-        <footer className="mt-9 border-t border-[#E6E4DD] pt-5 text-[10px] leading-4 text-[#8A918D]">
+        <footer className="mt-10 border-t border-[#E6E4DD] pt-6 text-[10px] leading-4 text-[#8A918D]">
           <p>© {new Date().getFullYear()} Focão · acompanhamento contínuo da evolução do seu cão.</p>
           <p className="mt-1">Este resumo reflete os registros informados pelo tutor e não substitui avaliação veterinária ou comportamental presencial.</p>
         </footer>
@@ -443,7 +443,6 @@ export function RelatorioImpressao() {
           .print\\:border-0 { border: 0 !important; }
           .print\\:p-0 { padding: 0 !important; }
           .print\\:my-0 { margin: 0 !important; }
-          .print\\:shadow-none { box-shadow: none !important; }
           .page-break-inside-avoid { page-break-inside: avoid !important; }
         }
       `}</style>

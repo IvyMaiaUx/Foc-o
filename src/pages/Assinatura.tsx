@@ -187,121 +187,131 @@ export function Assinatura() {
 
   return (
     <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col items-center">
-      <header className="w-full max-w-lg px-6 pt-16 pb-4 flex items-center justify-between">
-        <button
-          onClick={() => { hapticLightTap(); navigate(-1); }}
-          className="w-10 h-10 rounded-full bg-white border border-[#055A43]/10 flex items-center justify-center text-[#6B7A6E] shadow-sm active:scale-[0.98] transition-all"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-      </header>
+      <div className="w-full max-w-lg">
 
-      <main className="flex-1 w-full max-w-lg px-6 pt-4 pb-32 flex flex-col gap-6">
-        <h1 className="font-serif text-[34px] tracking-tight text-[#055A43] mb-2 px-2">Seu plano</h1>
-
+        {/* Green header zone — hero: status da assinatura */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white rounded-[2rem] p-8 shadow-lg shadow-[#055A43]/5 border border-[#055A43]/5 relative overflow-hidden"
+          className="relative overflow-hidden bg-[#055A43] px-6 pt-16 pb-10"
         >
-          <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#055A43]/5 rounded-full blur-2xl pointer-events-none" />
+          {/* Decorative ghost circles */}
+          <div className="absolute -right-14 -top-14 w-56 h-56 rounded-full bg-white/[0.04] pointer-events-none" />
+          <div className="absolute right-6 top-24 w-24 h-24 rounded-full bg-white/[0.04] pointer-events-none" />
 
-          <div className="flex items-start gap-4">
-            <div className="w-16 h-16 rounded-[1.4rem] bg-emerald-50 flex items-center justify-center shrink-0">
-              {isPremium ? (
-                <Crown className="w-7 h-7 text-emerald-600" />
-              ) : (
-                <Sparkles className="w-7 h-7 text-[#506352]" />
-              )}
-            </div>
-
-            <div className="min-w-0">
-              <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest mb-3 ${
-                isPremium ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-[#506352]'
-              }`}>
-                {isPremium ? 'Premium ativo' : 'Premium não ativo'}
-              </span>
-              <h2 className="font-serif text-2xl text-[#055A43] leading-tight">
-                {isPremium ? 'Focão Premium' : 'Acesso gratuito'}
-              </h2>
-              <p className="mt-2 text-[14px] text-[#506352] leading-relaxed">
-                {isPremium
-                  ? `Ativo desde: ${formatDate(activeSince)}`
-                  : 'Quando seu Premium for liberado, os benefícios aparecem automaticamente nesta conta.'}
-              </p>
-              
-              {stripeCustomerId && (
-                <div className="mt-4">
-                  <button
-                    onClick={handleManageSubscription}
-                    disabled={isOpeningPortal}
-                    className="h-10 rounded-xl bg-[#055A43]/5 border border-[#055A43]/10 px-4 text-[12px] font-semibold text-[#055A43] flex items-center gap-2 active:scale-95 transition-all hover:bg-[#055A43]/10 disabled:opacity-50 cursor-pointer"
-                  >
-                    {isOpeningPortal ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <CreditCard className="w-3.5 h-3.5" />
-                    )}
-                    {isPremium ? 'Gerenciar assinatura' : 'Atualizar pagamento'}
-                  </button>
-                  {portalError && (
-                    <p className="text-red-500 text-[11px] mt-1.5 font-medium">{portalError}</p>
-                  )}
-                </div>
-              )}
-
-              {userProfile?.subscription?.cancelAtPeriodEnd && (
-                <div className="mt-4 p-4 rounded-2xl bg-amber-50/80 border border-amber-200/50 text-amber-900 text-[13px] leading-relaxed animate-fadeIn">
-                  Sua assinatura Premium está programada para ser cancelada. Você manterá o acesso Premium até{' '}
-                  <span className="font-semibold">{formatDate(userProfile?.subscription?.currentPeriodEnd)}</span>.
-                  Nenhuma nova cobrança será realizada.
-                </div>
-              )}
-
-
-
-            </div>
+          <div className="relative z-10 flex items-center justify-between mb-7">
+            <button
+              onClick={() => { hapticLightTap(); navigate(-1); }}
+              className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 active:scale-[0.98] transition-all"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
           </div>
 
-          {!isPremium && (
-            <div className="mt-6">
-              <a
-                href={checkoutUrl || import.meta.env.VITE_STRIPE_PAYMENT_LINK || '#'}
-                target={(checkoutUrl || import.meta.env.VITE_STRIPE_PAYMENT_LINK) ? "_blank" : "_self"}
-                rel="noreferrer"
-                onClick={(e) => {
-                  hapticLightTap();
-                  if (!checkoutUrl && !import.meta.env.VITE_STRIPE_PAYMENT_LINK) {
-                    e.preventDefault();
-                    alert('Link de pagamento não configurado no painel administrativo.');
-                  } else {
-                    AnalyticsRepository.logEvent('premium_clicked', {
-                      url: checkoutUrl || import.meta.env.VITE_STRIPE_PAYMENT_LINK
-                    });
-                  }
-                }}
-                className="w-full h-13 rounded-2xl bg-[#055A43] text-white text-[15px] font-semibold flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all hover:bg-[#044a37] shadow-sm shadow-[#055A43]/10 cursor-pointer"
-              >
-                <Crown className="w-4.5 h-4.5 text-emerald-300 animate-pulse" />
-                Seja Premium por R$ 47,00/mês
-              </a>
+          <p className="relative z-10 text-[13px] font-medium text-white/55 mb-1.5">Sua assinatura</p>
+          <h1 className="relative z-10 font-serif font-semibold text-[32px] text-white tracking-tight leading-[1.15] mb-6">
+            {isPremium ? 'Focão Premium' : 'Acesso gratuito'}
+          </h1>
+
+          {/* Hero status card, nested inside the green zone */}
+          <div className="relative z-10 rounded-[20px] border border-white/10 bg-white/[0.06] p-5">
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
+                {isPremium ? (
+                  <Crown className="w-6 h-6 text-white" />
+                ) : (
+                  <Sparkles className="w-6 h-6 text-white/70" />
+                )}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 border ${
+                  isPremium ? 'bg-emerald-400/15 text-emerald-200 border-emerald-300/25' : 'bg-white/10 text-white/60 border-white/10'
+                }`}>
+                  {isPremium ? 'Premium ativo' : 'Premium não ativo'}
+                </span>
+                <p className="text-[13px] text-white/55 leading-relaxed">
+                  {isPremium
+                    ? `Ativo desde: ${formatDate(activeSince)}`
+                    : 'Quando seu Premium for liberado, os benefícios aparecem automaticamente nesta conta.'}
+                </p>
+
+                {stripeCustomerId && (
+                  <div className="mt-4">
+                    <button
+                      onClick={handleManageSubscription}
+                      disabled={isOpeningPortal}
+                      className="h-10 rounded-xl bg-white/10 border border-white/15 px-4 text-[12px] font-semibold text-white flex items-center gap-2 active:scale-95 transition-all hover:bg-white/15 disabled:opacity-50 cursor-pointer"
+                    >
+                      {isOpeningPortal ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <CreditCard className="w-3.5 h-3.5" />
+                      )}
+                      {isPremium ? 'Gerenciar assinatura' : 'Atualizar pagamento'}
+                    </button>
+                    {portalError && (
+                      <p className="text-red-300 text-[11px] mt-1.5 font-medium">{portalError}</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
+          </div>
+        </motion.div>
+
+        {/* White drawer — resto do conteúdo, sobrepõe a zona verde */}
+        <main className="relative -mt-6 rounded-t-[26px] bg-[#F7F5EF] flex flex-col gap-6 pt-7 px-6 pb-32">
+
+        {userProfile?.subscription?.cancelAtPeriodEnd && (
+          <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/50 text-amber-900 text-[13px] leading-relaxed animate-fadeIn">
+            Sua assinatura Premium está programada para ser cancelada. Você manterá o acesso Premium até{' '}
+            <span className="font-semibold">{formatDate(userProfile?.subscription?.currentPeriodEnd)}</span>.
+            Nenhuma nova cobrança será realizada.
+          </div>
+        )}
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05 }}
+          className="bg-white rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(45,74,58,0.08)] border border-[#055A43]/5"
+        >
+          {!isPremium && (
+            <a
+              href={checkoutUrl || import.meta.env.VITE_STRIPE_PAYMENT_LINK || '#'}
+              target={(checkoutUrl || import.meta.env.VITE_STRIPE_PAYMENT_LINK) ? "_blank" : "_self"}
+              rel="noreferrer"
+              onClick={(e) => {
+                hapticLightTap();
+                if (!checkoutUrl && !import.meta.env.VITE_STRIPE_PAYMENT_LINK) {
+                  e.preventDefault();
+                  alert('Link de pagamento não configurado no painel administrativo.');
+                } else {
+                  AnalyticsRepository.logEvent('premium_clicked', {
+                    url: checkoutUrl || import.meta.env.VITE_STRIPE_PAYMENT_LINK
+                  });
+                }
+              }}
+              className="w-full h-13 rounded-xl bg-[#C2703E] text-white text-[15px] font-semibold flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all hover:brightness-105 shadow-sm cursor-pointer mb-7"
+            >
+              <Crown className="w-4.5 h-4.5 text-white animate-pulse" />
+              Seja Premium por R$ 47,00/mês
+            </a>
           )}
 
-          <div className="mt-7 pt-6 border-t border-[#055A43]/10">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#055A43]/60 mb-4">
-              Benefícios Premium
-            </p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#055A43]/60 mb-4">
+            Benefícios Premium
+          </p>
 
-            <div className="space-y-3">
-              {benefits.map((benefit) => (
-                <div key={benefit} className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                  <p className="text-[14px] leading-relaxed text-[#506352]">{benefit}</p>
-                </div>
-              ))}
-            </div>
+          <div className="space-y-3">
+            {benefits.map((benefit) => (
+              <div key={benefit} className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-[14px] leading-relaxed text-[#506352]">{benefit}</p>
+              </div>
+            ))}
           </div>
         </motion.div>
 
@@ -310,7 +320,7 @@ export function Assinatura() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white rounded-[2rem] p-6 shadow-sm shadow-[#055A43]/5 border border-[#055A43]/5"
+            className="bg-white rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(45,74,58,0.08)] border border-[#055A43]/5"
           >
             {cancelSubmitSuccess ? (
               <div className="flex flex-col items-center text-center gap-2 py-2">
@@ -386,7 +396,8 @@ export function Assinatura() {
         <p className="text-center text-[12px] text-[#6B7A6E]/60 px-6 font-light">
           O acesso Premium é vinculado ao email usado na compra e nesta conta.
         </p>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
