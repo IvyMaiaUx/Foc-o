@@ -136,7 +136,7 @@ export function Perfil() {
       }
       
       try {
-        if (userProfile) {
+        if (userProfile?.name) {
           setUserName(userProfile.name);
         } else {
           setUserName(user.displayName || 'Tutor');
@@ -352,7 +352,7 @@ export function Perfil() {
                   {dogData ? dogData.name : 'Seu cão'}
                 </h1>
                 <p className="mt-1.5 text-[12px] text-white/65 uppercase tracking-widest">
-                  Tutor(a): {userName.split(' ')[0] || 'Usuário'}
+                  Tutor(a): {(userName || '').split(' ')[0] || 'Usuário'}
                 </p>
               </div>
               <button
