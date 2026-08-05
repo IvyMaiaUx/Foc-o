@@ -175,7 +175,11 @@ export function EditarPerfil() {
       
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_SIZE = 300;
+        // 720px: grande o bastante pra não borrar no header full-bleed do Perfil
+        // (240px de altura x largura da tela, em telas retina), sem estourar o
+        // limite de 1MB por documento do Firestore (photoUrl fica junto com o
+        // resto do perfil do cão no mesmo doc).
+        const MAX_SIZE = 720;
         let width = img.width;
         let height = img.height;
         if (width > height) {
@@ -193,7 +197,7 @@ export function EditarPerfil() {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
         setFormData(prev => ({ ...prev, photoUrl: dataUrl }));
         URL.revokeObjectURL(objUrl);
         setIsUploading(false);

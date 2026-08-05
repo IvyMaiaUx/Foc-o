@@ -330,7 +330,7 @@ export function Perfil() {
               <img
                 src={dogData.photoUrl}
                 alt={dogData?.name ? `Foto de ${dogData.name}` : 'Foto do cão'}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-[50%_30%]"
               />
             ) : (
               <div className="w-full h-full bg-[#055A43] flex items-center justify-center">
