@@ -320,51 +320,48 @@ export function Perfil() {
 
   return (
     <div className="flex-1 bg-[#F7F5EF] font-sans pb-32">
-      {/* Header Profile Area */}
-      <header className="px-6 pt-16 pb-12 bg-white border-b border-[#055A43]/5 flex flex-col items-center">
+      {/* Full-bleed dog photo header */}
+      <header className="relative h-[240px] overflow-hidden">
         {loading ? (
-          <>
-            <div className="w-24 h-24 rounded-[2rem] bg-gray-200 animate-pulse mb-4" />
-            <div className="w-48 h-8 bg-gray-200 animate-pulse rounded-md mb-2" />
-            <div className="w-32 h-4 bg-gray-200 animate-pulse rounded-md" />
-          </>
+          <div className="w-full h-full bg-[#055A43]/10 animate-pulse" />
         ) : (
           <>
-            <div className="relative w-24 h-24 rounded-[2rem] shadow-xl shadow-[#055A43]/10 mb-4 border border-[#055A43]/10 bg-[#055A43] flex items-center justify-center">
-              <span className="absolute inset-0 rounded-[2rem] overflow-hidden flex items-center justify-center">
-                {dogData?.photoUrl ? (
-                  <img
-                    src={dogData.photoUrl}
-                    alt="Dog Profile"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="font-serif text-white text-[40px] opacity-90">
-                    {dogData?.name?.charAt(0).toUpperCase() || 'C'}
-                  </span>
-                )}
-              </span>
+            {dogData?.photoUrl ? (
+              <img
+                src={dogData.photoUrl}
+                alt={dogData?.name ? `Foto de ${dogData.name}` : 'Foto do cão'}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-[#055A43] flex items-center justify-center">
+                <span className="font-serif text-white text-[72px] opacity-20">
+                  {dogData?.name?.charAt(0).toUpperCase() || 'C'}
+                </span>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#055A43]/10 to-[#055A43]/75" />
+            <div className="absolute bottom-5 left-6 right-6 flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <h1 className="font-serif text-[34px] font-semibold text-white leading-none truncate">
+                  {dogData ? dogData.name : 'Seu cão'}
+                </h1>
+                <p className="mt-1.5 text-[12px] text-white/65 uppercase tracking-widest">
+                  Tutor(a): {userName.split(' ')[0] || 'Usuário'}
+                </p>
+              </div>
+              <button
+                onClick={() => navigate(isBeta ? '/beta' : '/assinatura')}
+                className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3.5 py-2 backdrop-blur-md active:scale-95 transition-transform ${planBadge.color}`}
+              >
+                {isBeta ? <ShieldPlus className="w-3.5 h-3.5" /> : getSubscriptionPlan(userProfile) === 'premium' ? <Crown className="w-3.5 h-3.5" /> : <ShieldPlus className="w-3.5 h-3.5" />}
+                <span className="text-[10px] font-bold tracking-widest uppercase whitespace-nowrap">{isBeta ? 'Beta gratuito' : planBadge.text}</span>
+              </button>
             </div>
-            <h1 className="font-serif text-[28px] text-[#055A43] tracking-tight mb-1">
-              {dogData ? dogData.name : 'Seu cão'}
-            </h1>
-            <p className="text-sm font-medium text-[#506352]/70 uppercase tracking-widest">
-              Tutor(a): {userName.split(' ')[0] || 'Usuário'}
-            </p>
           </>
         )}
-
-        {/* Subscription Badge */}
-        <button 
-          onClick={() => navigate(isBeta ? '/beta' : '/assinatura')}
-          className={`mt-4 px-4 py-1.5 rounded-full flex items-center gap-2 border ${planBadge.color} active:scale-95 transition-transform`}
-        >
-          {isBeta ? <ShieldPlus className="w-4 h-4" /> : getSubscriptionPlan(userProfile) === 'premium' ? <Crown className="w-4 h-4" /> : <ShieldPlus className="w-4 h-4" />}
-          <span className="text-[10px] font-medium tracking-widest uppercase">{isBeta ? 'Beta gratuito' : planBadge.text}</span>
-        </button>
       </header>
 
-      <main className="px-6 py-8 flex flex-col gap-8">
+      <main className="px-6 pt-7 pb-8 flex flex-col gap-8">
 
         
         {/* Desenvolvimento & Treinos */}

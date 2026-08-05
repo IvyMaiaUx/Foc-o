@@ -58,29 +58,29 @@ export function MainLayout() {
       </AnimatePresence>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[1.5rem] shadow-[0_-4px_24px_rgba(5,90,67,0.08)] px-5 py-2 pb-safe z-50 isolate">
+      <nav className="fixed bottom-0 left-0 right-0 bg-[#FFFEFB] border-t border-[#E4E1D6] px-5 py-2 pb-safe z-50 isolate">
         <div className="flex items-center justify-between max-w-md mx-auto">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
             const Icon = item.icon;
-            
+
             return (
-              <NavLink 
+              <NavLink
                 key={item.path}
                 to={item.path}
                 onClick={haptics.light}
                 className={cn(
-                  "relative flex flex-col items-center justify-center px-1 py-2 rounded-[1rem] w-[64px] min-h-[58px] transition-all duration-300 ease-out",
-                  isActive ? "bg-[#055A43] text-white shadow-md shadow-[#055A43]/20" : "text-[#7B827D] hover:bg-[#F7F5EF] active:scale-95"
+                  "relative flex flex-col items-center justify-center gap-1 px-1 py-2 rounded-[1rem] w-[64px] min-h-[58px] transition-all duration-300 ease-out",
+                  isActive ? "bg-[#EAF0E8] text-[#055A43]" : "text-[#8A9589] hover:bg-[#F7F5EF] active:scale-95"
                 )}
               >
                 <div className="relative">
-                  <Icon className={cn("w-[22px] h-[22px] mb-1", isActive ? "text-white" : "")} strokeWidth={isActive ? 2.5 : 2} />
+                  <Icon className="w-[21px] h-[21px]" strokeWidth={isActive ? 2.2 : 1.8} />
                   {item.hasBadge && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-400 rounded-full border-2 border-[#FFFEFB]" />
                   )}
                 </div>
-                <span className="text-[9px] font-bold tracking-[0.05em] uppercase text-center leading-tight">
+                <span className={cn("text-[9px] tracking-[0.03em] text-center leading-tight", isActive ? "font-bold" : "font-medium")}>
                   {item.label}
                 </span>
               </NavLink>

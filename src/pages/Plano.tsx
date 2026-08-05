@@ -116,54 +116,51 @@ export function Plano() {
 
   return (
     <div className="flex-1 bg-[#F7F5EF] pb-28 font-sans">
-      <header className="border-b border-[#055A43]/5 bg-white px-6 pb-7 pt-14">
+      <div className="mx-auto max-w-xl">
+
+        {/* Green metric header zone */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="mx-auto max-w-xl"
+          className="relative overflow-hidden bg-[#055A43] px-6 pt-14 pb-9"
         >
-          <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[#506352]">
+          <div className="absolute -right-16 -bottom-16 w-56 h-56 rounded-full bg-white/[0.04] pointer-events-none" />
+
+          <p className="relative z-10 mb-2.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
             Trilha de evolução personalizada
           </p>
-          <h1 className="font-serif text-[34px] leading-tight text-[#055A43]">
-            Plano de treino
-          </h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#6B7A6E]">
-            Acompanhe a evolução {dogGender === 'female' ? 'da' : 'do'} {dogName} passo a passo.
-          </p>
-
-          <div className="mt-6 rounded-2xl border border-[#055A43]/10 bg-[#F8FBF9] p-4">
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B7A6E]/70">
-                  Progresso geral
-                </p>
-                <p className="mt-1 text-sm font-semibold text-[#055A43]">
-                  {completedTasks.length} de {tasks.length} etapas do plano
-                </p>
-              </div>
-              <span className="font-serif text-2xl text-[#055A43]">{overallProgress}%</span>
+          <div className="relative z-10 flex items-end justify-between gap-4">
+            <div>
+              <h1 className="font-serif text-[28px] font-semibold leading-tight text-white">
+                Plano de treino
+              </h1>
+              <p className="mt-1.5 text-[13px] text-white/50">
+                {completedTasks.length} de {tasks.length} etapas concluídas
+              </p>
+              <p className="mt-1 text-[12px] text-white/40">
+                Acompanhe a evolução {dogGender === 'female' ? 'da' : 'do'} {dogName} passo a passo.
+              </p>
             </div>
-            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#055A43]/10">
-              <div
-                className="h-full rounded-full bg-[#055A43] transition-all duration-500"
-                style={{ width: `${overallProgress}%` }}
-              />
-            </div>
+            <span className="shrink-0 font-serif text-[56px] font-semibold leading-none text-white/90">{overallProgress}%</span>
           </div>
-
+          <div className="relative z-10 mt-5 h-[5px] overflow-hidden rounded-full bg-white/15">
+            <div
+              className="h-full rounded-full bg-[#C2703E] transition-all duration-500"
+              style={{ width: `${overallProgress}%` }}
+            />
+          </div>
           <button
             onClick={() => navigate('/agenda')}
-            className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#055A43]"
+            className="relative z-10 mt-3.5 flex items-center gap-1.5 text-[13px] font-semibold text-white/60"
           >
             <Calendar className="h-4 w-4" />
             Ver agenda completa
           </button>
         </motion.div>
-      </header>
 
-      <main className="mx-auto flex max-w-xl flex-col gap-9 px-6 py-8">
+        {/* White drawer */}
+        <main className="relative -mt-6 flex flex-col gap-9 rounded-t-[26px] bg-[#F7F5EF] px-6 pb-8 pt-7">
         {!currentTask ? (
           <section className="rounded-[1.75rem] border border-[#055A43]/10 bg-white p-7 text-center">
             <CheckCircle2 className="mx-auto h-8 w-8 text-[#055A43]" />
@@ -199,10 +196,10 @@ export function Plano() {
               </p>
               <button
                 onClick={() => navigate(`/treino/${currentTask.id}`)}
-                className="mt-7 flex h-13 w-full items-center justify-between rounded-xl bg-white px-5 text-sm font-bold text-[#055A43] transition-transform active:scale-[0.98]"
+                className="mt-7 flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#C2703E] px-5 text-sm font-bold text-white transition-transform active:scale-[0.98]"
               >
-                <span>Começar treino</span>
                 <Play className="h-4 w-4 fill-current" />
+                <span>Começar treino</span>
               </button>
             </motion.div>
           </section>
@@ -326,7 +323,8 @@ export function Plano() {
             Nível {translateLevel(trainingBase)} · {knownCommands.length} comandos consolidados
           </p>
         )}
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
