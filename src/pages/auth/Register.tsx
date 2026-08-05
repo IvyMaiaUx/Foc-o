@@ -3,8 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   createUserWithEmailAndPassword,
   User,
-  sendEmailVerification,
-  sendPasswordResetEmail,
   signOut,
   updateProfile,
 } from 'firebase/auth';
@@ -45,11 +43,6 @@ export function Register() {
   }, [searchParams]);
 
   const loginPath = redirectTo === '/ativar' ? '/login?redirect=ativar' : '/login';
-
-  const loginUrl = useMemo(() => {
-    const suffix = redirectTo === '/ativar' ? '?redirect=ativar' : '';
-    return `${window.location.origin}/login${suffix}`;
-  }, [redirectTo]);
 
   async function runWithRetry(task: () => Promise<void>, attempts = 3): Promise<void> {
     let lastError: unknown;
@@ -155,15 +148,7 @@ export function Register() {
       try {
         await AuthEmailService.sendVerification(userCredential.user);
       } catch (verificationError) {
-        console.warn('[Register] custom verification email failed, using Firebase fallback', verificationError);
-        try {
-          await sendEmailVerification(userCredential.user, {
-            url: `${window.location.origin}/email-confirmado`,
-            handleCodeInApp: true,
-          });
-        } catch (fallbackError) {
-          console.warn('[Register] Firebase verification email fallback failed', fallbackError);
-        }
+        console.warn('[Register] verification email failed', verificationError);
       }
 
       try {
@@ -190,15 +175,7 @@ export function Register() {
         const email = formData.email.trim().toLowerCase();
 
         try {
-          try {
-            await AuthEmailService.sendPasswordReset(email, redirectTo === '/ativar' ? 'ativar' : undefined);
-          } catch (customEmailError) {
-            console.warn('[Register] custom password reset failed, using Firebase fallback', customEmailError);
-            await sendPasswordResetEmail(auth, email, {
-              url: loginUrl,
-              handleCodeInApp: false,
-            });
-          }
+          await AuthEmailService.sendPasswordReset(email, redirectTo === '/ativar' ? 'ativar' : undefined);
           setInfo(
             redirectTo === '/ativar'
               ? 'Este e-mail já possui conta. Enviamos um link de recuperação para você concluir a ativação.'

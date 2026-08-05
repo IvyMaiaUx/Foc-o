@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '@/src/lib/firebase';
 import { AuthLayout } from '@/src/components/layout/AuthLayout';
 import { Input } from '@/src/components/ui/Input';
 import { Button } from '@/src/components/ui/Button';
@@ -25,11 +23,6 @@ export function ForgotPassword() {
   const isActivationFlow = redirectTo === '/ativar';
   const isSubscriptionFlow = redirectTo === '/assinatura';
 
-  const loginUrl = useMemo(() => {
-    const suffix = isActivationFlow ? '?redirect=ativar' : isSubscriptionFlow ? '?redirect=assinatura' : '';
-    return `${window.location.origin}/login${suffix}`;
-  }, [isActivationFlow, isSubscriptionFlow]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
@@ -41,18 +34,10 @@ export function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      try {
-        await AuthEmailService.sendPasswordReset(
-          email,
-          isActivationFlow ? 'ativar' : isSubscriptionFlow ? 'assinatura' : undefined
-        );
-      } catch (customEmailError) {
-        console.warn('[ForgotPassword] custom email failed, using Firebase fallback', customEmailError);
-        await sendPasswordResetEmail(auth, email.trim().toLowerCase(), {
-          url: loginUrl,
-          handleCodeInApp: false,
-        });
-      }
+      await AuthEmailService.sendPasswordReset(
+        email,
+        isActivationFlow ? 'ativar' : isSubscriptionFlow ? 'assinatura' : undefined
+      );
       setSuccess(true);
     } catch (err: any) {
       console.error('[ForgotPassword] failed', err);
