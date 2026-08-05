@@ -20,8 +20,7 @@ export function Checkin() {
   const [saveErrorMsg, setSaveErrorMsg] = useState('Não foi possível salvar seu check-in. Verifique a conexão e tente de novo.');
   const [dogName, setDogName] = useState('seu cão');
   const [dogGender, setDogGender] = useState('male');
-  const [isEditing, setIsEditing] = useState(false);
-  
+
   const [data, setData] = useState<CheckinData>({
     energia: '',
     alimentacao: '',
@@ -42,29 +41,9 @@ export function Checkin() {
         if (dog.name) setDogName(dog.name);
         setDogGender(dog.gender || 'male');
       }
-      // Se já existe check-in de hoje, pré-preenche o formulário (edição de verdade).
-      try {
-        const existing = await CheckinRepository.getCheckin(user.uid, toLocalDateKey());
-        if (existing) {
-          setIsEditing(true);
-          setData({
-            energia: existing.energia || '',
-            alimentacao: existing.alimentacao || '',
-            comportamento: existing.comportamento || '',
-            context: {
-              walked: existing.context?.walked,
-              walkDurationMinutes: existing.context?.walkDurationMinutes,
-              environment: existing.context?.environment,
-              incidents: existing.context?.incidents ?? [],
-              triggers: existing.context?.triggers ?? [],
-              intensity: existing.context?.intensity,
-              notes: existing.context?.notes ?? '',
-            },
-          });
-        }
-      } catch {
-        /* sem check-in de hoje ou erro → começa em branco */
-      }
+      // O check-in sempre abre em branco, mesmo se já existir um salvo hoje —
+      // salvar de novo sobrescreve o anterior (saveCheckin faz merge do
+      // documento do dia inteiro, então isso não deixa dado velho pra trás).
     };
     load();
   }, []);
