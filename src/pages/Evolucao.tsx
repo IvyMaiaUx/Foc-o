@@ -383,7 +383,7 @@ export function Evolucao() {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-            className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-[2rem] p-6 shadow-2xl"
+            className="fixed inset-x-0 bottom-0 z-[60] bg-white rounded-t-[2rem] p-6 shadow-2xl"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}
           >
             <div className="flex items-center justify-between mb-5">

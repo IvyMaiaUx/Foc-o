@@ -174,25 +174,28 @@ export function Perfil() {
     const plan = getSubscriptionPlan(userProfile);
     const status = getSubscriptionStatus(userProfile);
     
+    // Cores claras (texto quase branco) — esse badge fica sobre a foto do cão /
+    // fundo verde-escuro do header, não sobre um card branco. Variante escura de
+    // texto (ex.: text-red-600) fica ilegível ali.
     if (status === 'past_due') {
-      return { text: 'Pagamento pendente', color: 'bg-red-400/20 text-red-600 border-red-400/30' };
+      return { text: 'Pagamento pendente', color: 'bg-red-400/20 text-red-100 border-red-300/30' };
     }
 
     if (status === 'canceled') {
-      return { text: 'Cancelado', color: 'bg-[#6B7A6E]/10 text-[#6B7A6E] border-[#6B7A6E]/20' };
+      return { text: 'Cancelado', color: 'bg-white/10 text-white/70 border-white/15' };
     }
-    
-    if (plan === 'premium' && hasPremiumAccess(userProfile)) return { text: 'Premium', color: 'bg-emerald-400/20 text-emerald-600 border-emerald-400/30' };
-    
+
+    if (plan === 'premium' && hasPremiumAccess(userProfile)) return { text: 'Premium', color: 'bg-emerald-400/15 text-emerald-200 border-emerald-300/25' };
+
     if (plan === 'trial') {
       const trialEndsAt = userProfile?.subscription?.trialEndsAt ?? userProfile?.trialEndsAt;
       if (trialEndsAt && trialEndsAt > Date.now()) {
         const daysLeft = Math.ceil((trialEndsAt - Date.now()) / (1000 * 60 * 60 * 24));
-        return { text: `Trial (${daysLeft} dias)`, color: 'bg-orange-400/20 text-orange-600 border-orange-400/30' };
+        return { text: `Trial (${daysLeft} dias)`, color: 'bg-orange-400/20 text-orange-100 border-orange-300/30' };
       }
     }
     
-    return { text: 'Plano Grátis', color: 'bg-[#6B7A6E]/10 text-[#6B7A6E] border-[#6B7A6E]/20' };
+    return { text: 'Plano Grátis', color: 'bg-white/10 text-white/70 border-white/15' };
   };
 
   const planBadge = getSubscriptionDisplay();
@@ -339,7 +342,10 @@ export function Perfil() {
                 </span>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#055A43]/10 to-[#055A43]/75" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#055A43]/15 to-[#055A43]/80" />
+            {/* Reforço de contraste atrás do nome/badge — sem isso, foto de cão clara/branca
+                pode deixar o texto quase ilegível mesmo com o gradiente verde acima. */}
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
             <div className="absolute bottom-5 left-6 right-6 flex items-end justify-between gap-3">
               <div className="min-w-0">
                 <h1 className="font-serif text-[34px] font-semibold text-white leading-none truncate">

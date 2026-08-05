@@ -134,7 +134,7 @@ export function Suporte() {
       </header>
 
       {/* White drawer — sobrepõe a zona verde, contém aviso + thread de mensagens */}
-      <div className="relative flex-1 flex flex-col -mt-6 rounded-t-[26px] bg-[#F7F5EF] overflow-hidden">
+      <div className="relative flex-1 min-h-0 flex flex-col -mt-6 rounded-t-[26px] bg-[#F7F5EF] overflow-hidden">
 
         {/* Aviso de resposta */}
         <div className="flex items-center justify-center gap-1.5 mx-auto mt-4 mb-1 px-3 py-1.5 rounded-full bg-[#EAF0E8] border border-[#055A43]/10">

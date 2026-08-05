@@ -222,7 +222,7 @@ export function Vacinas() {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 bg-white z-50 flex flex-col"
+            className="fixed inset-0 bg-white z-[60] flex flex-col"
           >
             <header className="px-6 pt-16 flex items-center justify-between">
               <button 

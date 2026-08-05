@@ -111,6 +111,21 @@ export function Analyzing() {
           return;
         }
 
+        // Trava de segurança: se essa conta já tem cão/plano cadastrados, NÃO deixa o
+        // batch abaixo rodar de novo — ele sobrescreve tudo sem merge (perfil do cão,
+        // plano atual e resumo de evolução voltam a zero). Isso pode acontecer se o
+        // usuário for mandado de volta pro onboarding por engano (ver Home.tsx) e
+        // conseguir chegar até aqui com o rascunho antigo salvo no localStorage.
+        const existingDog = await DogRepository.getDogProfile(user.uid);
+        if (existingDog?.name) {
+          console.warn('[Analyzing] Conta já tem cão cadastrado — pulando a gravação destrutiva e só confirmando onboardingComplete.');
+          await UserRepository.markOnboardingComplete(user.uid);
+          clearOnboardingDraft();
+          await refreshProfile();
+          navigate("/");
+          return;
+        }
+
         // Progresso suave de 0 a 100 (~3s), contando de forma fluida (1 a 1).
         const totalMs = 3000;
         const tickMs = 30;
@@ -228,7 +243,10 @@ export function Analyzing() {
           createdAt: now,
           updatedAt: now,
         };
-        batch.set(dogRef, finalDogProfile);
+        // merge:true por segurança extra — a trava acima já impede reentrada numa
+        // conta com cão existente, mas isso evita que qualquer outro caminho futuro
+        // apague campos do perfil sem querer.
+        batch.set(dogRef, finalDogProfile, { merge: true });
 
         // 2. Generate Plan
         // Use the generated dog profile directly to avoid an extra read
@@ -237,7 +255,7 @@ export function Analyzing() {
           ...finalDogProfile,
         } as DogProfile);
         const planRef = doc(db, "users", user.uid, "plan", "current");
-        batch.set(planRef, generatedPlan);
+        batch.set(planRef, generatedPlan, { merge: true });
 
         // 3. Initialize Evolution
         const evolutionRef = doc(db, "users", user.uid, "evolution", "summary");
@@ -248,7 +266,7 @@ export function Analyzing() {
           averageBehaviorScore: 0,
           lastTrainedAt: null,
           lastCheckinAt: null,
-        });
+        }, { merge: true });
 
         // 4. Mark Onboarding Complete
         const userRef = doc(db, "users", user.uid);

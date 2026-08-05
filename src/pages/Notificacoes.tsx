@@ -151,7 +151,13 @@ export function Notificacoes() {
     }
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="flex-1 bg-[#F7F5EF] flex items-center justify-center min-h-screen">
+        <div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">

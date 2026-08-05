@@ -101,26 +101,26 @@ export function EditarPerfil() {
     const status = getSubscriptionStatus(userProfile);
 
     if (status === 'past_due') {
-      return { text: 'Pagamento pendente', color: 'bg-red-400/20 text-red-600 border-red-400/30' };
+      return { text: 'Pagamento pendente', color: 'bg-red-400/20 text-red-100 border-red-300/30' };
     }
 
     if (status === 'canceled') {
-      return { text: 'Cancelado', color: 'bg-[#6B7A6E]/10 text-[#6B7A6E] border-[#6B7A6E]/20' };
+      return { text: 'Cancelado', color: 'bg-white/10 text-white/70 border-white/15' };
     }
 
     if (plan === 'premium' && hasPremiumAccess(userProfile)) {
-      return { text: 'Premium', color: 'bg-emerald-400/20 text-emerald-600 border-emerald-400/30' };
+      return { text: 'Premium', color: 'bg-emerald-400/15 text-emerald-200 border-emerald-300/25' };
     }
 
     if (plan === 'trial') {
       const trialEndsAt = userProfile?.subscription?.trialEndsAt ?? userProfile?.trialEndsAt;
       if (trialEndsAt && trialEndsAt > Date.now()) {
         const daysLeft = Math.ceil((trialEndsAt - Date.now()) / (1000 * 60 * 60 * 24));
-        return { text: `Trial (${daysLeft} dias)`, color: 'bg-orange-400/20 text-orange-600 border-orange-400/30' };
+        return { text: `Trial (${daysLeft} dias)`, color: 'bg-orange-400/20 text-orange-100 border-orange-300/30' };
       }
     }
 
-    return { text: 'Plano Grátis', color: 'bg-[#6B7A6E]/10 text-[#6B7A6E] border-[#6B7A6E]/20' };
+    return { text: 'Plano Grátis', color: 'bg-white/10 text-white/70 border-white/15' };
   };
 
   const planBadge = getSubscriptionDisplay();

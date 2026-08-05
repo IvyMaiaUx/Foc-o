@@ -100,12 +100,21 @@ export function Home() {
         if (!user) return;
 
         const profile = await UserRepository.getUserProfile(user.uid);
-        if (!profile || profile.onboardingComplete === false) {
+        // Só manda pro onboarding quando o perfil respondeu e disse explicitamente
+        // que está incompleto — igual o guard do App.tsx (RequireAuth). Uma leitura
+        // que falhou/voltou vazia (rede instável, sem cache local nesse dispositivo)
+        // NÃO é sinal de onboarding pendente: mandar de volta pra anamnese nesse caso
+        // já mandou usuário com conta pronta pra refazer tudo do zero.
+        if (profile?.onboardingComplete === false) {
            navigate('/onboarding/intro');
            return;
         }
-        setUserProfile(profile);
-        setUserName(profile.name || 'Tutor');
+        if (profile) {
+          setUserProfile(profile);
+          setUserName(profile.name || 'Tutor');
+        } else {
+          console.warn('[Home] Leitura do perfil voltou vazia nesta sessão — seguindo sem redirecionar pro onboarding.');
+        }
 
         const todayStr = toLocalDateKey();
         const [dog, plan, evol, todayCheckin, logs, vaccines, recentCheckins, activeNotifs, completedMissionIds] = await Promise.all([
@@ -246,20 +255,20 @@ export function Home() {
           <div className="absolute right-8 top-20 w-24 h-24 rounded-full bg-white/[0.04] pointer-events-none" />
 
           {/* Header row */}
-          <header className="relative z-10 flex justify-between items-start mb-7">
-            <div className="flex flex-col">
+          <header className="relative z-10 flex justify-between items-start mb-7 gap-3">
+            <div className="flex flex-col min-w-0">
               <p className="text-[13px] font-medium text-white/55 mb-1.5">
                 Olá, {userName?.split(' ')[0] || 'Tutor'}
               </p>
-              <h1 className="font-serif font-semibold text-[32px] text-white tracking-tight leading-[1.15]">
+              <h1 className="font-serif font-semibold text-[32px] text-white tracking-tight leading-[1.15] break-words">
                 {dogProfile?.name ? (
-                  <>Como está<br />{dogArticle} {dogName}?</>
+                  <>Como está<br /><span className="line-clamp-1">{dogArticle} {dogName}?</span></>
                 ) : (
                   <>Resumo<br />de hoje</>
                 )}
               </h1>
             </div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 shrink-0">
               <button
                 onClick={toggleNotifications}
                 className="w-[38px] h-[38px] rounded-xl bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 transition-all cursor-pointer relative"

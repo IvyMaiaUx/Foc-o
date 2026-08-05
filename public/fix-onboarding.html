@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Corrigir onboarding — Focão</title>
+<style>
+  body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#F7F5EF;color:#2E3830;max-width:480px;margin:0 auto;padding:32px 20px;line-height:1.5;}
+  h1{font-size:1.3rem;color:#055A43;}
+  .card{background:#FFFEFB;border:1px solid #E4E1D6;border-radius:16px;padding:20px;margin-top:16px;}
+  button{background:#C2703E;color:#fff;border:none;border-radius:10px;padding:14px 20px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-top:12px;}
+  button:disabled{opacity:.5;cursor:default;}
+  .muted{color:#6B7A6E;font-size:13px;}
+  .ok{color:#0B6E57;font-weight:600;}
+  .err{color:#B42318;font-weight:600;}
+  code{background:#EAF0E8;padding:2px 6px;border-radius:6px;font-size:13px;}
+</style>
+</head>
+<body>
+  <h1>Corrigir marcação de onboarding</h1>
+  <p class="muted">Página temporária de diagnóstico — só funciona na sua própria conta (as regras do Firestore não deixam mexer em conta de outra pessoa).</p>
+  <div class="card" id="status">Carregando sessão…</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      projectId: "gen-lang-client-0545403021",
+      appId: "1:571374099277:web:d8ea2677b875e5bab9b504",
+      apiKey: "AIzaSyDl_VPN4UPjJEztuhDvR04gLQVJUDau-oM",
+      authDomain: "gen-lang-client-0545403021.firebaseapp.com",
+      storageBucket: "gen-lang-client-0545403021.firebasestorage.app",
+      messagingSenderId: "571374099277",
+    };
+    const DB_ID = "ai-studio-ececf2d5-e671-43f3-8f2c-ce258672a8e7";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app, DB_ID);
+    const statusEl = document.getElementById('status');
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        statusEl.innerHTML = '<p class="err">Não encontrei sua sessão logada aqui.</p><p class="muted">Abre o app normal (app.focaoapp.com.br), faz login, e SÓ DEPOIS abre esta página de novo na mesma aba/navegador.</p>';
+        return;
+      }
+
+      const ref = doc(db, 'users', user.uid);
+      let snap;
+      try {
+        snap = await getDoc(ref);
+      } catch (e) {
+        statusEl.innerHTML = '<p class="err">Erro ao ler seu perfil: ' + e.message + '</p>';
+        return;
+      }
+
+      if (!snap.exists()) {
+        statusEl.innerHTML = '<p class="err">Não achei o documento do seu perfil (users/' + user.uid + ').</p>';
+        return;
+      }
+
+      const data = snap.data();
+      statusEl.innerHTML =
+        '<p>Logado como <code>' + (user.email || user.uid) + '</code></p>' +
+        '<p>Nome: <b>' + (data.name || '—') + '</b></p>' +
+        '<p><code>onboardingComplete</code> atual: <b>' + String(data.onboardingComplete) + '</b></p>';
+
+      if (data.onboardingComplete === true) {
+        statusEl.innerHTML += '<p class="ok">Já está true — não precisa fazer nada. Se ainda estiver caindo na anamnese, é outra causa, me avisa.</p>';
+        return;
+      }
+
+      const btn = document.createElement('button');
+      btn.textContent = 'Marcar onboarding como concluído';
+      btn.onclick = async () => {
+        btn.disabled = true;
+        btn.textContent = 'Salvando…';
+        try {
+          await setDoc(ref, { onboardingComplete: true, updatedAt: Date.now() }, { merge: true });
+          statusEl.innerHTML += '<p class="ok">Pronto! Marcado como true. Pode voltar pro app normal agora (app.focaoapp.com.br) — seus dados de cão/plano/evolução não foram tocados por esta página.</p>';
+        } catch (e) {
+          statusEl.innerHTML += '<p class="err">Falhou: ' + e.message + '</p>';
+          btn.disabled = false;
+          btn.textContent = 'Tentar de novo';
+        }
+      };
+      statusEl.appendChild(btn);
+    });
+  </script>
+</body>
+</html>

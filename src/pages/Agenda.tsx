@@ -320,7 +320,7 @@ export function Agenda() {
           <p className="relative z-10 mb-2.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
             Compromissos & rotina diária
           </p>
-          <h1 className="relative z-10 font-serif text-[32px] font-semibold text-white tracking-tight leading-none mb-2">
+          <h1 className="relative z-10 font-serif text-[32px] font-semibold text-white tracking-tight leading-none mb-2 truncate">
             Agenda de {dogName}
           </h1>
           <p className="relative z-10 text-white/55 text-[14px] font-light leading-relaxed max-w-[300px]">
@@ -611,7 +611,7 @@ export function Agenda() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsEventModalOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 animate-in fade-in duration-200"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] animate-in fade-in duration-200"
             />
             {/* Bottom Sheet */}
             <motion.div
@@ -619,7 +619,7 @@ export function Agenda() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-              className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-[2rem] shadow-2xl z-50 flex flex-col overflow-hidden max-h-[90vh]"
+              className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-[2rem] shadow-2xl z-[60] flex flex-col overflow-hidden max-h-[90vh]"
             >
               {/* Drag Handle */}
               <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto my-3 shrink-0" />
