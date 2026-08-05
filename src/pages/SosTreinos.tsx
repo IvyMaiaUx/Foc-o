@@ -118,36 +118,40 @@ export function SosTreinos() {
 
   return (
     <div className="min-h-screen bg-[#F7F5EF] font-sans pb-10">
-      <header className="px-6 pt-[calc(env(safe-area-inset-top,0px)+3rem)] pb-7 bg-white border-b border-[#055A43]/5">
-        <div className="max-w-lg mx-auto">
+      {/* Green header zone */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+        className="relative overflow-hidden bg-[#055A43] px-6 pt-[calc(env(safe-area-inset-top,0px)+3rem)] pb-10"
+      >
+        <div className="absolute -right-10 -top-10 w-52 h-52 rounded-full bg-white/[0.04] pointer-events-none" />
+        <div className="absolute right-8 top-24 w-24 h-24 rounded-full bg-white/[0.04] pointer-events-none" />
+
+        <div className="relative z-10 max-w-lg mx-auto">
           <button
             onClick={() => navigate(-1)}
-            className="w-11 h-11 rounded-full bg-[#F7F5EF] border border-[#055A43]/10 text-[#506352] flex items-center justify-center mb-8 active:scale-95 transition-transform"
+            className="w-11 h-11 rounded-full bg-white/10 border border-white/15 text-white flex items-center justify-center mb-8 active:scale-95 transition-transform"
             aria-label="Voltar"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-          >
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#055A43]/10 bg-[#055A43]/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#055A43]">
-              <AlertTriangle className="w-4 h-4" />
-              Treinos SOS
-            </span>
-            <h1 className="mt-5 font-serif text-[34px] leading-[1.05] tracking-tight text-[#055A43]">
-              O que está acontecendo agora?
-            </h1>
-            <p className="mt-4 text-[#6B7A6E] text-[15px] leading-relaxed max-w-sm">
-              Escolha a situação e siga só o primeiro movimento. O objetivo é baixar a intensidade, não resolver tudo de uma vez.
-            </p>
-          </motion.div>
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/80">
+            <AlertTriangle className="w-4 h-4" />
+            Treinos SOS
+          </span>
+          <h1 className="mt-5 font-serif text-[34px] leading-[1.05] tracking-tight text-white">
+            O que está acontecendo agora?
+          </h1>
+          <p className="mt-4 text-white/55 text-[15px] leading-relaxed max-w-sm">
+            Escolha a situação e siga só o primeiro movimento. O objetivo é baixar a intensidade, não resolver tudo de uma vez.
+          </p>
         </div>
-      </header>
+      </motion.div>
 
-      <main className="px-6 py-7 max-w-lg mx-auto flex flex-col gap-6">
+      {/* White drawer — sobrepõe a zona verde */}
+      <main className="relative -mt-6 rounded-t-[26px] bg-[#F7F5EF] px-6 pt-7 pb-10 max-w-lg mx-auto flex flex-col gap-6">
         <section className="grid grid-cols-2 gap-3">
           {SOS_PROTOCOLS.map((protocol) => {
             const Icon = protocol.icon;
@@ -160,7 +164,7 @@ export function SosTreinos() {
                 className={`min-h-[116px] rounded-[1.5rem] border p-4 text-left transition-all active:scale-[0.98] ${
                   selected
                     ? 'bg-[#055A43] text-white border-[#055A43] shadow-[0_8px_24px_rgba(5,90,67,0.16)]'
-                    : 'bg-white text-[#506352] border-[#055A43]/10 shadow-[0_8px_20px_rgba(45,74,58,0.08)]'
+                    : 'bg-white text-[#506352] border-[#055A43]/10 shadow-[0_8px_24px_rgba(45,74,58,0.08)]'
                 }`}
               >
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-4 ${
@@ -182,45 +186,45 @@ export function SosTreinos() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35 }}
-          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(45,74,58,0.08)]"
+          className="overflow-hidden rounded-[1.75rem] bg-[#055A43] p-6 text-white shadow-[0_14px_32px_rgba(5,90,67,0.2)]"
         >
           <div className="flex items-center justify-between gap-4 mb-5">
-            <div className="w-14 h-14 rounded-2xl bg-[#055A43]/5 text-[#055A43] flex items-center justify-center border border-[#055A43]/10">
+            <div className="w-14 h-14 rounded-2xl bg-white/10 text-white flex items-center justify-center border border-white/10">
               <ActiveIcon className="w-7 h-7" />
             </div>
-            <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-[#055A43] bg-[#055A43]/5 rounded-full px-3 py-1.5">
+            <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-white bg-[#C2703E] rounded-full px-3 py-1.5">
               <Clock className="w-3.5 h-3.5" />
               {active.duration}
             </span>
           </div>
 
-          <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#6B7A6E]/55 mb-2">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-white/45 mb-2">
             Primeiro movimento
           </p>
-          <h2 className="font-serif text-[29px] leading-tight text-[#055A43] mb-5">
+          <h2 className="font-serif text-[29px] leading-tight text-white mb-5">
             {active.firstMove}
           </h2>
 
-          <div className="rounded-[1.5rem] bg-[#F7F5EF] border border-[#055A43]/8 p-4 mb-5">
-            <p className="text-[13px] font-bold uppercase tracking-widest text-[#055A43] mb-3">Depois disso</p>
+          <div className="rounded-[1.5rem] bg-black/15 border border-white/10 p-4 mb-5">
+            <p className="text-[13px] font-bold uppercase tracking-widest text-white/70 mb-3">Depois disso</p>
             <div className="flex flex-col gap-3">
               {active.steps.map((step) => (
                 <div key={step} className="flex gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#055A43] shrink-0 mt-0.5" />
-                  <p className="text-[#506352] text-[14px] leading-relaxed">{step}</p>
+                  <CheckCircle2 className="w-5 h-5 text-white/70 shrink-0 mt-0.5" />
+                  <p className="text-white/80 text-[14px] leading-relaxed">{step}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-2xl bg-[#055A43]/[0.04] border border-[#055A43]/10 px-4 py-3">
-            <p className="text-[12px] text-[#506352] leading-relaxed">
+          <div className="rounded-2xl bg-white/[0.06] border border-white/10 px-4 py-3">
+            <p className="text-[12px] text-white/60 leading-relaxed">
               Siga apenas estes passos agora. Quando a situação estiver mais calma, retome o plano normalmente pela Home.
             </p>
           </div>
         </motion.section>
 
-        <section className="rounded-[1.5rem] border border-[#055A43]/10 bg-white p-5 flex gap-4 shadow-[0_8px_20px_rgba(45,74,58,0.08)]">
+        <section className="rounded-[1.5rem] border border-[#055A43]/10 bg-white p-5 flex gap-4 shadow-[0_8px_24px_rgba(45,74,58,0.08)]">
           <ShieldCheck className="w-5 h-5 text-[#055A43] shrink-0 mt-0.5" />
           <p className="text-[13px] text-[#506352] leading-relaxed">
             Se houver risco de mordida, fuga, dor, engasgo, intoxicação ou machucado, procure ajuda veterinária ou presencial imediatamente.

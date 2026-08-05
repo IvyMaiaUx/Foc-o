@@ -80,55 +80,75 @@ export function Vacinas() {
   today.setHours(0, 0, 0, 0); // comparar por DIA local (dose de hoje conta como próxima)
   const upcoming = vaccines.filter(v => v.nextDose && parseLocalDateKey(v.nextDose) >= today).sort((a,b) => parseLocalDateKey(a.nextDose!).getTime() - parseLocalDateKey(b.nextDose!).getTime());
   const history = vaccines.filter(v => !upcoming.some(u => u.id === v.id)).sort((a, b) => parseLocalDateKey(b.dateApplied).getTime() - parseLocalDateKey(a.dateApplied).getTime());
+  const hasUrgentDose = upcoming.length > 0 && parseLocalDateKey(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000;
 
   return (
     <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col relative">
-      {/* Header */}
-      <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5 flex items-center gap-4 sticky top-0 z-10">
-        <button 
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <p className="text-[10px] font-medium text-[#506352] tracking-[0.15em] uppercase mb-0.5">
-            Módulo de Saúde
-          </p>
-          <h1 className="font-serif text-[24px] text-[#055A43] tracking-tight leading-none">
-            Vacinas
-          </h1>
-        </div>
-      </header>
+      {/* Green header zone — full-bleed hero: title + status */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative overflow-hidden bg-[#055A43] px-6 pt-16 pb-9"
+      >
+        {/* Decorative ghost circles */}
+        <div className="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-white/[0.04] pointer-events-none" />
+        <div className="absolute right-10 bottom-4 w-24 h-24 rounded-full bg-white/[0.04] pointer-events-none" />
 
-      <main className="flex-1 px-6 py-8 overflow-y-auto pb-32">
+        <header className="relative z-10 flex items-center gap-4 mb-7">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 transition-all active:scale-[0.98]"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/45 mb-1">
+              Módulo de Saúde
+            </p>
+            <h1 className="font-serif font-semibold text-[28px] text-white tracking-tight leading-none">
+              Vacinas
+            </h1>
+          </div>
+        </header>
+
+        {/* Status hero card, nested inside the green zone */}
+        {!loading && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className={`relative z-10 rounded-[20px] p-5 border border-white/10 overflow-hidden ${hasUrgentDose ? 'bg-orange-500 shadow-lg shadow-orange-500/20' : 'bg-black/15'}`}
+          >
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+
+            <div className="flex items-start gap-4 relative z-10">
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md shrink-0">
+                <CheckCircle2 className="w-6 h-6 text-white" />
+              </div>
+              <div className="pt-1">
+                <h2 className="font-serif text-[20px] text-white tracking-tight leading-tight mb-1">
+                  {hasUrgentDose ? 'Atenção às Doses' : 'Proteção em dia'}
+                </h2>
+                <p className="text-white/70 font-light text-[13px] leading-relaxed">
+                  {hasUrgentDose ? 'Há vacinas que vencem este mês.' : 'Não há doses críticas pendentes.'}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </motion.div>
+
+      {/* White drawer — resto do conteúdo, sobrepõe a zona verde */}
+      <main className="relative -mt-6 rounded-t-[26px] bg-[#F7F5EF] flex-1 px-6 pt-7 pb-32 overflow-y-auto">
         {loading ? (
           <div className="flex justify-center p-10"><div className="w-8 h-8 rounded-full border-2 border-[#055A43]/30 border-t-[#055A43] animate-spin" /></div>
         ) : (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Status Card */}
-            <div className={`rounded-[2rem] p-6 text-white shadow-lg mb-8 relative overflow-hidden ${upcoming.length > 0 && parseLocalDateKey(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000 ? 'bg-orange-500 shadow-orange-500/20' : 'bg-[#055A43] shadow-[0_20px_40px_-15px_rgb(5,90,67,0.5)]'}`}>
-              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
-              
-              <div className="flex items-start gap-4 relative z-10">
-                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
-                  <CheckCircle2 className="w-6 h-6 text-white" />
-                </div>
-                <div className="pt-1">
-                  <h2 className="font-serif text-[22px] tracking-tight leading-tight mb-1">
-                    {upcoming.length > 0 && parseLocalDateKey(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000 ? 'Atenção às Doses' : 'Proteção em dia'}
-                  </h2>
-                  <p className="text-white/80 font-light text-sm max-w-[200px] leading-relaxed">
-                    {upcoming.length > 0 && parseLocalDateKey(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000 ? 'Há vacinas que vencem este mês.' : 'Não há doses críticas pendentes.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
             {upcoming.length > 0 && (
               <>
                 <h3 className="font-medium text-[#055A43] text-sm tracking-widest uppercase mb-4 px-2">Próximas doses</h3>
@@ -189,7 +209,7 @@ export function Vacinas() {
       <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent z-10" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
         <button
           onClick={() => setShowAddForm(true)}
-          className="w-full bg-white text-[#055A43] border border-[#055A43]/20 h-14 rounded-2xl font-medium text-base shadow-[0_8px_30px_rgba(45,74,58,0.08)] active:scale-[0.98] transition-transform"
+          className="w-full bg-[#C2703E] text-white h-14 rounded-2xl font-semibold text-base shadow-[0_8px_30px_rgba(45,74,58,0.08)] active:scale-[0.98] transition-transform"
         >
           Registrar nova dose
         </button>

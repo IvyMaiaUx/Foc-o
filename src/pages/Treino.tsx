@@ -275,7 +275,7 @@ export function Treino() {
                  key={opt.id}
                  disabled={isSaving}
                  onClick={() => submitFeedback(opt.id)}
-                 className="flex flex-col w-full text-left p-4 rounded-2xl border-2 border-gray-100 bg-white hover:border-[#055A43]/30 transition-all active:scale-[0.98]"
+                 className="flex flex-col w-full text-left p-5 rounded-2xl border border-[#055A43]/8 bg-white hover:border-[#055A43]/30 transition-all active:scale-[0.98]"
                >
                  <span className="font-semibold text-[#055A43] text-[15px]">{opt.label}</span>
                  <span className="text-[#6B7A6E] text-sm mt-0.5">{opt.desc}</span>
@@ -376,7 +376,7 @@ export function Treino() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
             onClick={() => navigate(shouldOfferCheckin ? '/checkin' : '/')}
-            className="bg-white text-[#055A43] w-full max-w-[280px] h-14 rounded-full font-medium text-[15px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] active:scale-[0.98] transition-transform"
+            className="bg-[#C2703E] text-white w-full max-w-[280px] h-14 rounded-full font-medium text-[15px] shadow-[0_8px_30px_rgba(194,112,62,0.35)] active:scale-[0.98] transition-transform"
           >
             {shouldOfferCheckin ? 'Fazer check-in de hoje' : 'Voltar ao início'}
           </motion.button>
@@ -421,7 +421,7 @@ export function Treino() {
         </p>
         <button
           onClick={() => navigate('/evolucao', { replace: true })}
-          className="mt-7 h-12 rounded-full bg-[#055A43] px-6 text-sm font-bold text-white"
+          className="mt-7 h-12 rounded-full bg-[#C2703E] px-6 text-sm font-bold text-white shadow-[0_8px_24px_rgba(194,112,62,0.25)]"
         >
           Ver evolução
         </button>
@@ -458,7 +458,7 @@ export function Treino() {
         </p>
         <button
           onClick={() => navigate('/', { replace: true })}
-          className="mt-7 h-12 rounded-full bg-[#055A43] px-6 text-sm font-bold text-white"
+          className="mt-7 h-12 rounded-full bg-[#C2703E] px-6 text-sm font-bold text-white shadow-[0_8px_24px_rgba(194,112,62,0.25)]"
         >
           Voltar ao início
         </button>
@@ -472,7 +472,7 @@ export function Treino() {
         <header className="px-6 pt-safe-top mt-6 pb-6 flex items-start justify-between z-10 relative">
           <button 
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#6B7A6E]"
+            className="w-10 h-10 rounded-full bg-white border border-[#055A43]/10 flex items-center justify-center text-[#6B7A6E] shadow-[0_2px_10px_rgba(45,74,58,0.06)]"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -487,7 +487,7 @@ export function Treino() {
       <header className="px-6 pt-safe-top mt-6 pb-6 flex items-start justify-between z-10 relative">
         <button 
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#6B7A6E]"
+          className="w-10 h-10 rounded-full bg-white border border-[#055A43]/10 flex items-center justify-center text-[#6B7A6E] shadow-[0_2px_10px_rgba(45,74,58,0.06)]"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -523,19 +523,19 @@ export function Treino() {
           </div>
         )}
 
-        <h1 className="font-serif text-[32px] leading-[1.1] tracking-tight text-[#055A43] mb-4">
+        <h1 className="font-serif text-[34px] leading-[1.1] tracking-tight text-[#055A43] mb-5">
           {sanitizeText(activeTask.title)}
         </h1>
-        <p className="text-[#6B7A6E] text-[15px] font-light leading-relaxed mb-6">
+        <p className="text-[#6B7A6E] text-[15px] font-light leading-relaxed mb-8">
           {sanitizeText(TRAINING_TEMPLATES[activeTask.id]?.objective || activeTask.description)}
         </p>
 
         {/* Intelligence Reason Card */}
         {trainingReason && (
-          <motion.div 
+          <motion.div
              initial={{ opacity: 0, y: 10 }}
              animate={{ opacity: 1, y: 0 }}
-             className="bg-[#055A43]/[0.03] border border-[#055A43]/10 rounded-2xl p-5 mb-8 flex flex-col gap-3"
+             className="bg-[#055A43]/[0.03] border border-[#055A43]/8 rounded-[1.75rem] p-6 mb-8 shadow-[0_8px_24px_rgba(45,74,58,0.06)] flex flex-col gap-3"
           >
              <div className="flex items-center gap-2">
                <Lightbulb className="w-5 h-5 text-[#055A43]" />
@@ -559,7 +559,7 @@ export function Treino() {
           </motion.div>
         )}
 
-        <div className="bg-[#055A43]/5 rounded-[1.5rem] p-5 mb-8 border border-[#055A43]/10">
+        <div className="bg-[#055A43]/5 rounded-[1.75rem] p-6 mb-8 border border-[#055A43]/10">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-8 h-8 rounded-full bg-[#055A43]/10 flex items-center justify-center">
               <Award className="w-4 h-4 text-[#055A43]" />
@@ -571,7 +571,7 @@ export function Treino() {
           </p>
         </div>
 
-        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-[#E5E5E5] mb-12">
+        <div className="bg-white rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(45,74,58,0.08)] border border-[#055A43]/5 mb-8">
           <h3 className="font-medium text-[#506352] text-sm tracking-widest uppercase mb-6 flex items-center justify-between">
             <span>Passo a passo</span>
             <span className="text-[10px] text-[#A0A4A1]">{activeTask.duration}</span>
@@ -596,14 +596,19 @@ export function Treino() {
           </div>
         </div>
 
-        {/* Timer Section — "momento de treino": card suave verde */}
-        <div className="flex flex-col items-center justify-center mb-8 bg-[#EAF0E8] rounded-[20px] p-6">
-          <div className="text-[64px] font-mono tracking-tighter text-[#055A43] mb-6 font-light tabular-nums">
+        {/* Timer Section — "momento de treino": hero card verde-escuro, mesmo padrão das outras telas */}
+        <div className="relative overflow-hidden flex flex-col items-center justify-center mb-8 bg-[#055A43] rounded-[1.75rem] p-8">
+          <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-white/[0.04] pointer-events-none" />
+          <div className="absolute left-6 bottom-2 w-20 h-20 rounded-full bg-white/[0.04] pointer-events-none" />
+          <span className="relative z-10 text-[10px] font-bold tracking-[0.18em] uppercase text-white/45 mb-4">
+            {timerRunning ? 'Cronômetro em andamento' : 'Cronômetro do treino'}
+          </span>
+          <div className="relative z-10 text-[64px] font-mono tracking-tighter text-white mb-6 font-light tabular-nums">
             {formatTime(timeElapsed)}
           </div>
           <button
             onClick={handleToggleTimer}
-            className={`w-20 h-20 rounded-full flex items-center justify-center shadow-[0_8px_24px_rgba(45,74,58,0.08)] transform transition-transform duration-150 ease-out active:scale-95 border-4 border-[#FFFEFB] ${timerRunning ? 'bg-[#506352] text-white' : 'bg-[#055A43] text-white shadow-[#055A43]/20'}`}
+            className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-[0_8px_24px_rgba(0,0,0,0.2)] transform transition-transform duration-150 ease-out active:scale-95 border-4 border-white/10 ${timerRunning ? 'bg-white/15 text-white' : 'bg-white text-[#055A43]'}`}
           >
             {timerRunning ? (
               <Pause className="w-8 h-8" fill="currentColor" />
@@ -616,10 +621,10 @@ export function Treino() {
 
       {/* Bottom Action */}
       <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
-        <button 
+        <button
           onClick={handleCompleteRequest}
           disabled={isSaving}
-          className="w-full bg-[#055A43] text-white h-14 rounded-2xl font-medium text-base flex items-center justify-center gap-2 shadow-[0_8px_30px_rgb(5,90,67,0.2)] active:scale-[0.98] transition-transform disabled:opacity-70"
+          className="w-full bg-[#C2703E] text-white h-14 rounded-xl font-medium text-base flex items-center justify-center gap-2 shadow-[0_8px_30px_rgba(194,112,62,0.3)] active:scale-[0.98] transition-transform disabled:opacity-70"
         >
           {isSaving ? (
             <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

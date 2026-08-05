@@ -185,87 +185,101 @@ export function Nutricao() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col">
-      {/* Header */}
-      <header className="px-6 pt-16 pb-6 bg-white border-b border-[#055A43]/5 flex items-center gap-4 sticky top-0 z-10">
-        <button 
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-[#F7F5EF] border border-[#055A43]/5 flex items-center justify-center text-[#6B7A6E] active:scale-[0.98] transition-all"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <p className="text-[10px] font-medium text-[#506352] tracking-[0.15em] uppercase mb-0.5">
-            Módulo de Saúde
-          </p>
-          <h1 className="font-serif text-[24px] text-[#055A43] tracking-tight leading-none">
-            Nutrição
-          </h1>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#F7F5EF] font-sans">
+      {/* Green header zone — full-bleed hero: ração diária */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+        className="relative overflow-hidden bg-[#055A43] px-6 pt-14 pb-10"
+      >
+        <div className="absolute -right-14 -top-14 w-56 h-56 rounded-full bg-white/[0.04] pointer-events-none" />
+        <div className="absolute right-6 top-28 w-24 h-24 rounded-full bg-white/[0.04] pointer-events-none" />
 
-      <main className="flex-1 px-6 py-8 overflow-y-auto pb-32">
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          {/* Main Card */}
-          <div className="bg-[#055A43] rounded-[2rem] p-6 text-white shadow-lg shadow-[#055A43]/10 relative overflow-hidden mb-6">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-            
-            <div className="flex items-center justify-between mb-6 relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
-                  <Utensils className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-medium text-white/70 uppercase tracking-widest">Plano diário</p>
-                  <p className="text-white text-[15px] font-medium">{dogData?.name || 'Seu cão'}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                {foodInfo.fallsback ? (
-                  <span className="bg-white/10 text-white border border-white/20 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Recomendado</span>
-                ) : foodInfo.meta.confidence === 'high' ? (
-                  <span className="bg-[#4ADE80]/20 text-[#4ADE80] border border-[#4ADE80]/30 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Alta precisão</span>
-                ) : foodInfo.meta.confidence === 'medium' ? (
-                  <span className="bg-[#FBBF24]/20 text-[#FBBF24] border border-[#FBBF24]/30 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Boa precisão</span>
-                ) : (
-                  <span className="bg-white/10 text-white border border-white/20 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium">Aproximado</span>
-                )}
+        <div className="relative z-10 flex items-center gap-4 mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 active:scale-[0.98] transition-all shrink-0"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/45 mb-1">
+              Módulo de saúde
+            </p>
+            <h1 className="font-serif text-[26px] font-semibold text-white tracking-tight leading-none">
+              Nutrição
+            </h1>
+          </div>
+        </div>
+
+        <div className="relative z-10 flex items-end justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10 shrink-0">
+              <Utensils className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-[11px] font-medium text-white/55 uppercase tracking-widest mb-1.5">
+                Plano diário de {dogData?.name || 'seu cão'}
+              </p>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-serif text-[52px] font-semibold leading-none text-white">
+                  {foodInfo.daily > 0 ? foodInfo.daily : '--'}
+                </span>
+                <span className="text-white/55 text-sm font-medium">g / dia</span>
               </div>
             </div>
+          </div>
+          <div className="shrink-0">
+            {foodInfo.fallsback ? (
+              <span className="bg-white/10 text-white border border-white/20 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Recomendado</span>
+            ) : foodInfo.meta.confidence === 'high' ? (
+              <span className="bg-[#4ADE80]/20 text-[#4ADE80] border border-[#4ADE80]/30 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Alta precisão</span>
+            ) : foodInfo.meta.confidence === 'medium' ? (
+              <span className="bg-[#FBBF24]/20 text-[#FBBF24] border border-[#FBBF24]/30 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Boa precisão</span>
+            ) : (
+              <span className="bg-white/10 text-white border border-white/20 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Aproximado</span>
+            )}
+          </div>
+        </div>
+      </motion.div>
 
-            <div className="flex justify-between items-end relative z-10 mb-4 border-b border-white/10 pb-6">
+      {/* White drawer — resto do conteúdo, sobrepõe a zona verde */}
+      <main className="relative -mt-6 rounded-t-[26px] bg-[#F7F5EF] px-6 pt-7 pb-32">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05 }}
+        >
+          {/* Detail hero card — nested, solid dark green */}
+          <div className="bg-[#055A43] rounded-[1.75rem] p-6 text-white shadow-[0_14px_32px_rgba(5,90,67,0.2)] mb-6">
+            <div className="flex justify-between items-end mb-4 pb-4 border-b border-white/10">
               <div>
-                <p className="font-serif text-[42px] leading-none mb-1">{foodInfo.daily > 0 ? foodInfo.daily : '--'}g</p>
-                <p className="text-sm text-white/80 font-light">Recomendado por dia</p>
-                {dogData?.foodBrand && <p className="text-[11px] text-white/60 lowercase tracking-widest uppercase mt-2">{dogData.foodBrand}</p>}
+                <p className="text-[11px] text-white/55 font-medium mb-1">Por refeição</p>
+                <p className="font-serif text-[28px] leading-none text-white">{foodInfo.perMeal > 0 ? foodInfo.perMeal : '--'}g</p>
               </div>
-              <div className="text-right flex flex-col items-end">
-                <p className="font-serif text-[24px] leading-none text-white/90 mb-1">{foodInfo.perMeal > 0 ? foodInfo.perMeal : '--'}g</p>
-                <p className="text-sm text-white/80 font-light">Por refeição</p>
-              </div>
+              {dogData?.foodBrand && (
+                <p className="text-[11px] text-white/55 uppercase tracking-widest text-right">{dogData.foodBrand}</p>
+              )}
             </div>
 
             {dogData?.foodQuantity && (
-              <div className="flex justify-between items-center relative z-10 mb-4 bg-black/10 rounded-xl p-3 border border-white/5">
-                <p className="text-sm text-white/80 font-light">Quantidade atual (informada):</p>
-                <p className="font-medium text-white">{dogData.foodQuantity}g / dia</p>
+              <div className="flex justify-between items-center mb-4 bg-black/15 rounded-xl p-3 border border-white/5">
+                <p className="text-sm text-white/70 font-light">Quantidade atual (informada):</p>
+                <p className="font-medium text-white text-sm">{dogData.foodQuantity}g / dia</p>
               </div>
             )}
 
-            <div className="mt-4 flex flex-col gap-3 relative z-10">
+            <div className="flex flex-col gap-3">
               <div className="flex flex-wrap gap-2 text-[10px] text-white/70 uppercase tracking-widest">
                 <span className="bg-white/10 px-2 py-1 rounded-md">{foodInfo.meta.weightUsed > 0 ? foodInfo.meta.weightUsed : '--'} kg</span>
                 <span className="bg-white/10 px-2 py-1 rounded-md">Atividade: {foodInfo.meta.activityLevel}</span>
                 <span className="bg-white/10 px-2 py-1 rounded-md">{foodInfo.meta.mealsPerDay} refeições/dia</span>
               </div>
-              
-              <div className="flex items-start gap-2">
-                <Info className="w-5 h-5 text-white/60 shrink-0 mt-0.5" />
-                <p className="text-[11px] text-white/60 leading-relaxed font-light">
+
+              <div className="flex items-start gap-2 pt-1">
+                <Info className="w-4 h-4 text-white/45 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-white/55 leading-relaxed font-light">
                   {dogData?.foodBrand ? (
                     `Essa recomendação foi calculada com base no peso informado (${foodInfo.meta.weightUsed} kg), nível de energia (${foodInfo.meta.activityLevel}) e alimentação cadastrada.`
                   ) : (
@@ -277,11 +291,11 @@ export function Nutricao() {
           </div>
 
           {/* Tips / Info */}
-          <h3 className="font-medium text-[#506352] text-sm tracking-widest uppercase mb-4 px-2">Orientações</h3>
-          
-          <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] overflow-hidden flex flex-col mb-4">
-            <div className="p-4 px-5 flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
+          <h3 className="font-serif text-[20px] text-[#506352] mb-4 px-1">Orientações</h3>
+
+          <div className="bg-white rounded-[1.5rem] border border-[#055A43]/5 shadow-[0_8px_24px_rgba(45,74,58,0.08)] overflow-hidden flex flex-col mb-6">
+            <div className="p-5 flex gap-4">
+              <div className="w-9 h-9 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
                 <Droplets className="w-4 h-4" />
               </div>
               <div>
@@ -291,11 +305,11 @@ export function Nutricao() {
                 </p>
               </div>
             </div>
-            
-            <div className="mx-5 h-px bg-gray-100" />
-            
-            <div className="p-4 px-5 flex gap-4">
-               <div className="w-8 h-8 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
+
+            <div className="mx-5 h-px bg-[#E4E1D6]" />
+
+            <div className="p-5 flex gap-4">
+               <div className="w-9 h-9 rounded-full bg-[#055A43]/5 text-[#055A43] flex items-center justify-center shrink-0">
                 <Utensils className="w-4 h-4" />
               </div>
               <div>
@@ -307,9 +321,9 @@ export function Nutricao() {
             </div>
           </div>
 
-          <button 
+          <button
             onClick={() => setIsModalOpen(true)}
-            className="w-full bg-white p-4 rounded-xl border border-[#055A43]/10 text-[#055A43] font-medium text-sm flex items-center justify-between active:scale-[0.98] transition-transform"
+            className="w-full bg-[#C2703E] text-white p-4 rounded-xl font-semibold text-sm flex items-center justify-between active:scale-[0.98] transition-transform shadow-[0_8px_20px_rgba(194,112,62,0.25)]"
           >
             Cadastrar ração atual
             <ArrowRight className="w-4 h-4" />
