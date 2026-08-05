@@ -232,69 +232,150 @@ export function Home() {
 
   return (
     <div className="flex-1 bg-[#F7F5EF] font-sans pb-24 overflow-x-hidden selection:bg-[#055A43]/20">
-      <main className="flex flex-col gap-6 pt-8 px-5 max-w-lg mx-auto w-full">
-        
-        {/* Header - Minimal & Elegant */}
-        <motion.header 
+      <div className="max-w-lg mx-auto w-full">
+
+        {/* Green header zone — full-bleed hero: greeting + treino do dia */}
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="flex justify-between items-center"
+          className="relative overflow-hidden bg-[#055A43] px-5 pt-8 pb-10"
         >
-          <div className="flex flex-col">
-            <p className="text-[13px] font-medium text-[#6B7A6E]/80 mb-1 uppercase tracking-widest pl-1">
-              Olá, {userName?.split(' ')[0] || 'Tutor'}
-            </p>
-            <h1 className="font-serif text-[36px] text-[#055A43] tracking-tighter leading-none">
-              {dogProfile?.name ? (
-                <>
-                  Como está <br />
-                  <span className="italic font-light text-[#506352]">{dogArticle} {dogName}?</span>
-                </>
-              ) : (
-                <>
-                  Resumo <br />
-                  <span className="italic font-light text-[#506352]">de hoje</span>
-                </>
-              )}
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={toggleNotifications}
-              className="w-10 h-10 rounded-full bg-white border border-[#055A43]/10 shadow-[0_4px_10px_rgba(5,90,67,0.05)] flex items-center justify-center text-[#6B7A6E] hover:text-[#055A43] hover:border-[#055A43]/30 transition-all cursor-pointer relative"
-              aria-label="Notificações"
-            >
-              {notifications.some(n => n.isNew) && (
-                <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-orange-400 rounded-full border border-white" />
-              )}
-              <Bell className="w-[18px] h-[18px]" strokeWidth={2.5} />
-            </button>
-            <button onClick={() => navigate('/perfil')} className="relative active:scale-95 transition-transform text-left">
-              <div className="w-[68px] h-[68px] rounded-full overflow-hidden border-2 border-white shadow-[0_8px_20px_rgb(5,90,67,0.1)] bg-white/50 backdrop-blur-md">
-                {dogProfile?.photoUrl ? (
-                  <img 
-                    src={dogProfile.photoUrl} 
-                    alt="Avatar do cão" 
-                    className="w-full h-full object-cover"
-                  />
+          {/* Decorative ghost circles */}
+          <div className="absolute -right-10 -top-10 w-52 h-52 rounded-full bg-white/[0.04] pointer-events-none" />
+          <div className="absolute right-8 top-20 w-24 h-24 rounded-full bg-white/[0.04] pointer-events-none" />
+
+          {/* Header row */}
+          <header className="relative z-10 flex justify-between items-start mb-7">
+            <div className="flex flex-col">
+              <p className="text-[13px] font-medium text-white/55 mb-1.5">
+                Olá, {userName?.split(' ')[0] || 'Tutor'}
+              </p>
+              <h1 className="font-serif font-semibold text-[32px] text-white tracking-tight leading-[1.15]">
+                {dogProfile?.name ? (
+                  <>Como está<br />{dogArticle} {dogName}?</>
                 ) : (
-                  <div className="w-full h-full bg-[#055A43] flex items-center justify-center">
-                    <span className="font-serif text-white text-3xl opacity-90">
-                      {dogProfile?.name?.charAt(0).toUpperCase() || 'C'}
-                    </span>
+                  <>Resumo<br />de hoje</>
+                )}
+              </h1>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={toggleNotifications}
+                className="w-[38px] h-[38px] rounded-xl bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 transition-all cursor-pointer relative"
+                aria-label="Notificações"
+              >
+                {notifications.some(n => n.isNew) && (
+                  <div className="absolute top-0.5 right-0.5 w-2 h-2 bg-orange-400 rounded-full border border-[#055A43]" />
+                )}
+                <Bell className="w-[17px] h-[17px]" strokeWidth={2} />
+              </button>
+              <button onClick={() => navigate('/perfil')} className="relative active:scale-95 transition-transform text-left">
+                <div className="w-[46px] h-[46px] rounded-2xl overflow-hidden border-2 border-white/20 bg-white/10">
+                  {dogProfile?.photoUrl ? (
+                    <img
+                      src={dogProfile.photoUrl}
+                      alt="Avatar do cão"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="font-serif text-white text-xl opacity-90">
+                        {dogProfile?.name?.charAt(0).toUpperCase() || 'C'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {streak > 0 && (
+                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-[#C2703E] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-[#055A43] whitespace-nowrap flex items-center gap-0.5">
+                    <Flame className="w-2.5 h-2.5" />
+                    {streak}
                   </div>
                 )}
-              </div>
-              {streak > 0 && (
-                <div className="absolute -bottom-2 -left-2 bg-gradient-to-r from-orange-400 to-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-[#F7F5EF] shadow-sm flex items-center gap-1">
-                  <Flame className="w-3 h-3" />
-                  {streak}
+              </button>
+            </div>
+          </header>
+
+          {/* Daily Training Card - Hero, nested inside the green zone */}
+          {(activeTask || homeState?.hasCompletedTrainingToday) ? (
+            <motion.section
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="relative z-10 rounded-[20px] p-5 border border-white/10 bg-black/15 cursor-pointer group"
+              onClick={() => {
+                hapticLightTap();
+                if (homeState?.isPremiumLocked) {
+                  navigate('/assinatura');
+                  return;
+                }
+                homeState?.hasCompletedTrainingToday ? navigate('/evolucao') : navigate('/treino')
+              }}
+            >
+              <div className="flex flex-col text-white">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/45">
+                    {homeState?.hasCompletedTrainingToday ? 'Concluído' : 'Treino do dia'}
+                  </span>
+                  {!homeState?.hasCompletedTrainingToday && activeTask && (
+                    <span className="text-white/45 text-[11px] font-medium">
+                      {activeTask.duration}
+                    </span>
+                  )}
+                  {homeState?.hasCompletedTrainingToday && (
+                    <CheckCircle2 className="w-5 h-5 text-white/50" />
+                  )}
                 </div>
+
+                <h3 className="font-sans text-[20px] font-semibold leading-[1.3] mb-2">
+                  {homeState?.heroTitle}
+                </h3>
+                <p className="text-white/55 text-[13px] leading-relaxed mb-[18px] line-clamp-2">
+                  {homeState?.heroSubtitle}
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 bg-[#C2703E] rounded-[10px] px-[18px] py-[11px] text-[13px] font-semibold group-hover:brightness-105 transition-all">
+                    {homeState?.isPremiumLocked ? <Lock className="w-3.5 h-3.5" /> : (homeState?.hasCompletedTrainingToday ? <Activity className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" fill="currentColor" />)}
+                    {homeState?.heroCta}
+                  </span>
+                  {isPremium && (activeTask && !homeState?.hasCompletedTrainingToday) && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); hapticLightTap(); navigate('/escolher-treino'); }}
+                      className="text-[12px] text-white/35 underline underline-offset-2"
+                    >
+                      Ver catálogo
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.section>
+          ) : (
+            <motion.section
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="relative z-10 flex flex-col items-center justify-center bg-white/[0.06] border border-white/10 rounded-[20px] p-6 text-center"
+            >
+              <div className="w-14 h-14 bg-white/10 text-white rounded-full flex items-center justify-center mb-4">
+                <CheckCircle2 className="w-8 h-8" />
+              </div>
+              <h3 className="font-serif text-2xl text-white mb-3">Tudo concluído!</h3>
+              <p className="text-white/55 text-[15px] leading-relaxed max-w-[240px] mb-5">Estamos preparando o próximo plano de treinos. Já já ele aparece por aqui.</p>
+              {isPremium && (
+                <button
+                  onClick={() => { hapticLightTap(); navigate('/escolher-treino'); }}
+                  className="h-11 px-5 rounded-full bg-[#C2703E] text-white text-sm font-semibold active:scale-[0.98] transition-all"
+                >
+                  Escolher um treino extra
+                </button>
               )}
-            </button>
-          </div>
-        </motion.header>
+            </motion.section>
+          )}
+        </motion.div>
+
+        {/* White drawer — resto do conteúdo, sobrepõe a zona verde */}
+        <main className="relative -mt-6 rounded-t-[26px] bg-[#F7F5EF] flex flex-col gap-6 pt-7 px-5">
 
         {isBeta && (
           <motion.section
@@ -439,90 +520,6 @@ export function Home() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Daily Training Card - Hero */}
-        {(activeTask || homeState?.hasCompletedTrainingToday) ? (
-          <motion.section 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className={`relative rounded-[2rem] p-6 overflow-hidden shadow-[0_20px_40px_-15px_rgb(5,90,67,0.5)] cursor-pointer group bg-[#055A43]`}
-            onClick={() => {
-               hapticLightTap();
-               if (homeState?.isPremiumLocked) {
-                 navigate('/assinatura');
-                 return;
-               }
-               homeState?.hasCompletedTrainingToday ? navigate('/evolucao') : navigate('/treino')
-            }}
-          >
-            {/* Ambient Background Glows */}
-            <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 transition-transform duration-700 group-hover:scale-110 bg-emerald-400/20`} />
-            <div className={`absolute bottom-0 left-0 w-48 h-48 rounded-full blur-2xl translate-y-1/4 -translate-x-1/4 bg-teal-600/30`} />
-            
-            <div className="relative z-10 flex flex-col text-white h-[208px]">
-              <div className="flex justify-between items-center mb-auto pt-1">
-                <span className={`text-[10px] font-bold tracking-[0.15em] uppercase border px-4 py-1.5 rounded-full backdrop-blur-md text-emerald-100/90 border-emerald-100/20 bg-black/10`}>
-                  {homeState?.hasCompletedTrainingToday ? 'Concluído' : 'Treino do dia'}
-                </span>
-                {!homeState?.hasCompletedTrainingToday && activeTask && (
-                  <span className="text-emerald-100/90 text-[12px] font-semibold bg-black/10 px-3 py-1 rounded-full backdrop-blur-md">
-                    {activeTask.duration}
-                  </span>
-                )}
-                {homeState?.hasCompletedTrainingToday && (
-                  <CheckCircle2 className="w-5 h-5 text-white/50" />
-                )}
-              </div>
-              
-              <div className="mt-auto mb-4">
-                <h3 className="font-serif text-[28px] tracking-tight leading-[1.05] mb-3 text-white drop-shadow-sm">
-                  {homeState?.heroTitle}
-                </h3>
-                <p className={`text-emerald-50/80 text-[16px] font-light leading-snug line-clamp-2 max-w-[90%]`}>
-                  {homeState?.heroSubtitle}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-full bg-white text-[#055A43] flex items-center justify-center shadow-[0_8px_20px_rgb(0,0,0,0.15)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_12px_25px_rgb(0,0,0,0.2)]`}>
-                  {homeState?.isPremiumLocked ? <Lock className="w-5 h-5 ml-0" /> : (homeState?.hasCompletedTrainingToday ? <Activity className="w-5 h-5 ml-0" /> : <Play className="w-5 h-5 ml-1" fill="currentColor" />)}
-                </div>
-                <span className="text-sm font-semibold tracking-wide text-white drop-shadow-sm">{homeState?.heroCta}</span>
-              </div>
-            </div>
-          </motion.section>
-        ) : (
-          <motion.section 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex flex-col items-center justify-center bg-white border border-[#055A43]/10 rounded-[2rem] p-6 text-center shadow-[0_8px_30px_rgb(0,0,0,0.03)]"
-          >
-            <div className="w-14 h-14 bg-[#055A43]/5 text-[#055A43] rounded-full flex items-center justify-center mb-4">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
-            <h3 className="font-serif text-2xl text-[#055A43] mb-3">Tudo concluído!</h3>
-            <p className="text-[#6B7A6E] text-[15px] leading-relaxed max-w-[240px] mb-5">Estamos preparando o próximo plano de treinos. Já já ele aparece por aqui.</p>
-            {isPremium && (
-              <button
-                onClick={() => { hapticLightTap(); navigate('/escolher-treino'); }}
-                className="h-11 px-5 rounded-full bg-[#055A43] text-white text-sm font-semibold active:scale-[0.98] transition-all"
-              >
-                Escolher um treino extra
-              </button>
-            )}
-          </motion.section>
-        )}
-
-        {isPremium && (activeTask && !homeState?.hasCompletedTrainingToday) && (
-          <button
-            onClick={() => { hapticLightTap(); navigate('/escolher-treino'); }}
-            className="self-center text-[13px] font-medium text-[#055A43]/70 underline underline-offset-2"
-          >
-            Ou escolha outro treino do catálogo
-          </button>
-        )}
 
         {/* Gap Directive */}
         {gapDirective && (
@@ -752,7 +749,8 @@ export function Home() {
           </motion.section>
         )}
 
-      </main>
+        </main>
+      </div>
 
       {/* Notifications Panel */}
       <AnimatePresence>
