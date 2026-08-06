@@ -172,8 +172,19 @@ export function EditarPerfil() {
     try {
       const img = new Image();
       const objUrl = URL.createObjectURL(file);
-      
+
+      // Trava de segurança: alguns formatos não suportados (ex.: HEIC em certos
+      // navegadores) nem chegam a disparar onerror -- ficam pendurados pra sempre
+      // com o spinner girando. Sem isso, "não consigo upar" nunca vira um erro
+      // visível, só uma tela travada.
+      const stallTimeout = window.setTimeout(() => {
+        URL.revokeObjectURL(objUrl);
+        setError('A foto demorou demais pra abrir. Tenta um JPEG/PNG, ou um print da foto.');
+        setIsUploading(false);
+      }, 8000);
+
       img.onload = () => {
+        window.clearTimeout(stallTimeout);
         const canvas = document.createElement('canvas');
         // 720px: grande o bastante pra não borrar no header full-bleed do Perfil
         // (240px de altura x largura da tela, em telas retina), sem estourar o
@@ -204,8 +215,12 @@ export function EditarPerfil() {
       };
       
       img.onerror = () => {
+        window.clearTimeout(stallTimeout);
         URL.revokeObjectURL(objUrl);
-        setError('Falha ao processar a imagem.');
+        // Causa mais comum: foto em HEIC/HEIF (padrão do iPhone), que a maioria
+        // dos navegadores não consegue abrir em canvas -- orienta a trocar de
+        // formato em vez de só dizer "falhou" sem explicar o porquê.
+        setError('Não consegui abrir essa foto. Se for do iPhone, tenta mudar as Configurações > Câmera > Formatos para "Mais compatível", ou envie um print/JPEG da foto.');
         setIsUploading(false);
       }
       
@@ -397,6 +412,9 @@ export function EditarPerfil() {
             )}
             </span>
           </button>
+          {error && (
+            <p className="relative z-10 text-red-200 text-[12px] text-center max-w-[240px] mt-1 mb-1">{error}</p>
+          )}
 
           <h2 className="font-serif text-[28px] text-white tracking-tight leading-none mb-1 text-center">
             {formData.name || 'Seu cão'}
