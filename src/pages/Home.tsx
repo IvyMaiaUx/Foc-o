@@ -260,7 +260,7 @@ export function Home() {
               <p className="text-[13px] font-medium text-white/55 mb-1.5">
                 Olá, {userName?.split(' ')[0] || 'Tutor'}
               </p>
-              <h1 className="font-serif font-semibold text-[32px] text-white tracking-tight leading-[1.15] break-words">
+              <h1 className="font-serif font-bold text-[32px] text-white tracking-tight leading-[1.15] break-words">
                 {dogProfile?.name ? (
                   <>Como está<br /><span className="line-clamp-1">{dogArticle} {dogName}?</span></>
                 ) : (
@@ -596,46 +596,30 @@ export function Home() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-2 gap-3"
+          className="grid grid-cols-2 gap-[11px]"
         >
           {/* Check-in */}
-          <button 
+          <button
             onClick={() => { hapticLightTap(); navigate('/checkin'); }}
-            className={`group relative overflow-hidden flex flex-col p-5 rounded-[2rem] border shadow-[0_8px_20px_rgba(45,74,58,0.08)] items-start text-left gap-4 transition-all duration-300 hover:-translate-y-1 ${homeState?.hasCheckedInToday ? 'bg-[#055A43]/[0.02] border-[#055A43]/20 hover:border-[#055A43]/40' : (homeState?.priorityAction === 'checkin' ? 'bg-[#055A43]/10 border-[#055A43]/30' : 'bg-white border-[#055A43]/10 hover:border-[#055A43]/30')}`}
+            className={`flex flex-col items-start text-left p-[18px_16px] rounded-[18px] shadow-[0_4px_16px_rgba(45,74,58,0.06)] transition-colors ${homeState?.priorityAction === 'checkin' && !homeState?.hasCheckedInToday ? 'bg-[#055A43]/10' : 'bg-white'}`}
           >
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <CheckCircle2 className="w-16 h-16 text-[#055A43] -mr-4 -mt-4" />
-            </div>
-            <div className={`relative w-12 h-12 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${homeState?.hasCheckedInToday ? 'bg-[#055A43] text-white' : 'bg-[#055A43]/5 text-[#055A43]'}`}>
-              <CheckCircle2 className="w-6 h-6" />
-            </div>
-            <div className="relative">
-              <p className="font-bold text-gray-900 text-[16px] mb-1">Check-in</p>
-              <p className={`text-[13px] font-medium leading-tight ${homeState?.hasCheckedInToday ? 'text-[#055A43]' : 'text-[#6B7A6E]'}`}>
-                {homeState?.hasCheckedInToday ? "✓ Feito hoje · toque para editar" : "Pendente hoje"}
-              </p>
-            </div>
+            <CheckCircle2 className={`w-[18px] h-[18px] mb-3.5 ${homeState?.hasCheckedInToday ? 'text-[#055A43]' : 'text-[#055A43]'}`} strokeWidth={1.7} />
+            <p className="font-semibold text-[#2E3830] text-[14px] mb-0.5">Check-in</p>
+            <p className="text-[12px] text-[#8A9589]">
+              {homeState?.hasCheckedInToday ? "Feito hoje" : "Pendente hoje"}
+            </p>
           </button>
 
           {/* Nutrição */}
-          <button 
+          <button
             onClick={() => { hapticLightTap(); navigate('/nutricao'); }}
-            className={`group relative overflow-hidden flex flex-col p-5 rounded-[2rem] border shadow-[0_8px_20px_rgba(45,74,58,0.08)] items-start text-left gap-4 hover:-translate-y-1 transition-all duration-300 ${homeState?.nutritionIsPending && homeState?.priorityAction === 'nutrition' ? 'bg-[#506352]/10 border-[#506352]/30' : 'bg-white border-[#055A43]/10 hover:border-[#506352]/30'}`}
+            className={`flex flex-col items-start text-left p-[18px_16px] rounded-[18px] shadow-[0_4px_16px_rgba(45,74,58,0.06)] transition-colors ${homeState?.nutritionIsPending && homeState?.priorityAction === 'nutrition' ? 'bg-[#506352]/10' : 'bg-white'}`}
           >
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Utensils className="w-16 h-16 text-[#506352] -mr-4 -mt-4" />
-            </div>
-            <div className="relative w-12 h-12 rounded-full bg-[#506352]/5 text-[#506352] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <Utensils className="w-6 h-6" />
-            </div>
-            <div className="relative">
-              <p className="font-bold text-gray-900 text-[16px] mb-1">Alimentação</p>
-              {homeState?.nutritionIsPending ? (
-                <p className="text-[13px] text-orange-600 font-medium leading-tight">Configuração<br />pendente</p>
-              ) : (
-                <p className="text-[13px] text-[#6B7A6E] font-medium leading-tight">Sugestão <br />consciente</p>
-              )}
-            </div>
+            <Utensils className="w-[18px] h-[18px] mb-3.5 text-[#055A43]" strokeWidth={1.7} />
+            <p className="font-semibold text-[#2E3830] text-[14px] mb-0.5">Alimentação</p>
+            <p className={`text-[12px] ${homeState?.nutritionIsPending ? 'text-orange-600' : 'text-[#8A9589]'}`}>
+              {homeState?.nutritionIsPending ? 'Configuração pendente' : 'Sugestão consciente'}
+            </p>
           </button>
 
         </motion.section>
@@ -645,98 +629,78 @@ export function Home() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.28 }}
-          className="bg-[#055A43] text-white rounded-[2rem] p-5 shadow-[0_14px_30px_rgba(5,90,67,0.18)] flex items-center justify-between cursor-pointer group transition-all duration-300"
+          className="bg-[#EAF0E8] border border-[#E4E1D6] rounded-2xl p-4 flex items-center gap-[13px] cursor-pointer"
           onClick={() => { hapticLightTap(); navigate('/sos'); }}
         >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white border border-white/10">
-              <AlertTriangle className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-[15px] font-bold mb-0.5">Treinos SOS</h4>
-              <p className="text-[13px] font-medium text-white/70">Ajuda rápida para crise</p>
-            </div>
+          <AlertTriangle className="w-[18px] h-[18px] text-[#055A43] shrink-0" strokeWidth={1.7} />
+          <div className="flex-1">
+            <p className="text-[14px] font-semibold text-[#2E3830]">Treinos SOS</p>
+            <p className="text-[12px] text-[#8A9589]">Ajuda rápida para crise</p>
           </div>
-          <ChevronRight className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
+          <ChevronRight className="w-4 h-4 text-[#055A43]" />
         </motion.section>
 
-        {/* Agenda Mini Card */}
-        <motion.section 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="bg-white border border-[#055A43]/10 rounded-[2rem] p-5 shadow-[0_8px_20px_rgba(45,74,58,0.08)] flex items-center justify-between cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
-          onClick={() => { hapticLightTap(); navigate('/agenda'); }}
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 group-hover:text-[#055A43] group-hover:bg-[#055A43]/5 transition-colors">
-              <Calendar className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-[15px] font-bold text-gray-900 mb-0.5">Agenda do cão</h4>
-              <p className="text-[13px] font-medium text-[#6B7A6E]">Ver próximos treinos</p>
-            </div>
-          </div>
-          <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#055A43] transition-colors" />
-        </motion.section>
-
-        {/* Evolução / Progresso */}
+        {/* Agenda + Evolução — linhas simples, sem card, como no mockup */}
         <motion.section
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="relative overflow-hidden bg-gradient-to-br from-[#055A43]/[0.06] to-[#506352]/[0.03] border border-[#055A43]/10 rounded-[2rem] p-5 shadow-[0_8px_20px_rgba(45,74,58,0.08)] cursor-pointer group hover:border-[#055A43]/30 transition-all duration-300"
-          onClick={() => { hapticLightTap(); navigate('/evolucao'); }}
+          transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 bg-[#055A43]/10 rounded-full flex items-center justify-center text-[#055A43] group-hover:scale-105 transition-transform">
-                <Activity className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-[15px] font-bold text-gray-900 leading-tight">Evolução geral</h4>
-                <p className="text-[12px] font-medium text-[#6B7A6E]">{evolution?.totalSessions || 0} treinos realizados</p>
-              </div>
+          <button
+            onClick={() => { hapticLightTap(); navigate('/agenda'); }}
+            className="w-full flex items-center gap-[13px] py-[15px] border-b border-[#E4E1D6] text-left"
+          >
+            <div className="w-9 h-9 rounded-[10px] bg-[#EAF0E8] flex items-center justify-center shrink-0">
+              <Calendar className="w-[18px] h-[18px] text-[#055A43]" strokeWidth={1.7} />
             </div>
-            {streak > 0 && (
-              <div className="flex items-center gap-1.5 bg-white/70 border border-orange-200/60 rounded-full px-3 py-1.5 shadow-sm">
-                <Flame className="w-4 h-4 text-orange-500" />
-                <span className="text-[13px] font-bold text-orange-600">{streak}</span>
-                <span className="text-[11px] font-medium text-[#6B7A6E]">dias</span>
-              </div>
-            )}
-          </div>
-
-          {planTotalTasks > 0 ? (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B7A6E]/80">Progresso do plano</span>
-                <span className="text-[13px] font-bold text-[#055A43]">{planProgressPct}%</span>
-              </div>
-              <div className="h-2.5 w-full rounded-full bg-[#055A43]/10 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${planProgressPct}%` }}
-                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-                  className="h-full rounded-full bg-gradient-to-r from-[#055A43] to-[#0a7a5c]"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-[12px] font-medium text-[#6B7A6E]">
-                  Etapa {planDoneTasks} de {planTotalTasks}
-                </p>
-                <span className="flex items-center gap-1 text-[12px] font-semibold text-[#055A43] group-hover:gap-1.5 transition-all">
-                  Ver detalhes <ChevronRight className="w-4 h-4" />
-                </span>
-              </div>
+            <div className="flex-1">
+              <p className="text-[14px] font-medium text-[#2E3830]">Agenda do cão</p>
+              <p className="text-[12px] text-[#8A9589]">Ver próximos treinos</p>
             </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <p className="text-[13px] font-medium text-[#6B7A6E]">Acompanhe a evolução {dogArticle} {dogName}</p>
-              <ChevronRight className="w-5 h-5 text-[#055A43]/50 group-hover:text-[#055A43] transition-colors" />
+            <ChevronRight className="w-4 h-4 text-[#8A9589]" />
+          </button>
+          <button
+            onClick={() => { hapticLightTap(); navigate('/evolucao'); }}
+            className="w-full flex items-center gap-[13px] py-[15px] text-left"
+          >
+            <div className="w-9 h-9 rounded-[10px] bg-[#EAF0E8] flex items-center justify-center shrink-0">
+              <Activity className="w-[18px] h-[18px] text-[#6B7A6E]" strokeWidth={1.7} />
             </div>
-          )}
+            <div className="flex-1">
+              <p className="text-[14px] font-medium text-[#2E3830]">Evolução geral</p>
+              <p className="text-[12px] text-[#8A9589]">{evolution?.totalSessions || 0} treinos realizados{streak > 0 ? ` · ${streak} dias seguidos` : ''}</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#8A9589]" />
+          </button>
         </motion.section>
+
+        {/* Progresso do plano — número grande serifado, como no Plano.tsx */}
+        {planTotalTasks > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="bg-white rounded-[18px] p-5 shadow-[0_4px_16px_rgba(45,74,58,0.06)] cursor-pointer"
+            onClick={() => { hapticLightTap(); navigate('/plano'); }}
+          >
+            <div className="flex items-end justify-between mb-3.5">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A9589] mb-1">Progresso do plano</p>
+                <p className="text-[13px] text-[#6B7A6E]">Etapa {planDoneTasks} de {planTotalTasks}</p>
+              </div>
+              <span className="font-serif text-[44px] font-bold text-[#2E3830] leading-none">{planProgressPct}%</span>
+            </div>
+            <div className="h-[5px] bg-[#E4E1D6] rounded-full overflow-hidden mb-3.5">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${planProgressPct}%` }}
+                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+                className="h-full rounded-full bg-[#C2703E]"
+              />
+            </div>
+            <span className="text-[13px] font-semibold text-[#055A43] underline underline-offset-2">Ver detalhes →</span>
+          </motion.section>
+        )}
 
         {/* Checkin Insights */}
         {checkinInsights?.hasEnoughData && isPremium && (
