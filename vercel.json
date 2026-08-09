@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    {
+      "source": "/api/process-referral",
+      "destination": "/api/create-user-profile?mode=referral"
+    }
+  ],
   "crons": [
     {
       "path": "/api/run-whatsapp-reminders",

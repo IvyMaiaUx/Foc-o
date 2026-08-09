@@ -1,4 +1,5 @@
 import { admin, getDb } from './_firebase.js';
+import { checkAndProcessReferral } from './_referralHelper.js';
 
 // Esse endpoint nunca existiu (404 em produção) — src/services/UserProfileService.ts
 // chama ele como reparo quando a leitura do perfil de um usuário JÁ AUTENTICADO
@@ -9,6 +10,13 @@ import { admin, getDb } from './_firebase.js';
 // Idempotente de propósito: se o doc já existe, retorna 409 (sucesso do ponto de
 // vista do chamador, ver UserProfileService.ensureProfile) e NUNCA sobrescreve
 // um perfil existente.
+//
+// Esse arquivo também atende /api/process-referral (via rewrite em vercel.json) —
+// esse endpoint também nunca existiu (mesmo sintoma: 404 lido como erro de CORS
+// pelo navegador, ver Checkin.tsx/Analyzing.tsx/Register.tsx). Juntamos os dois
+// no mesmo arquivo pra não estourar o limite de 12 funções serverless do plano
+// (adicionar um api/process-referral.js separado fazia o deploy inteiro falhar
+// silenciosamente, sem erro nenhum no log de build).
 
 function setCors(req, res) {
   const allowedOrigins = new Set([
@@ -76,6 +84,22 @@ export default async function createUserProfile(req, res) {
   const decoded = await verifyUser(req);
   if (!decoded?.uid) {
     res.status(401).json({ error: 'Unauthenticated' });
+    return;
+  }
+
+  // Chegou via /api/process-referral (rewrite em vercel.json manda pra cá com
+  // ?mode=referral) — chamador é sempre o "amigo" que acabou de se registrar,
+  // concluir onboarding ou fazer check-in; checkAndProcessReferral olha o
+  // referredBy do próprio perfil dele pra achar quem indicou.
+  if (req.query?.mode === 'referral') {
+    try {
+      const db = getDb();
+      const result = await checkAndProcessReferral(db, decoded.uid);
+      res.status(200).json({ ok: true, result });
+    } catch (error) {
+      console.error('[process-referral] failed', error);
+      res.status(500).json({ error: 'Internal error' });
+    }
     return;
   }
 
