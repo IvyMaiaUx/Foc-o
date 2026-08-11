@@ -5,6 +5,14 @@
       "destination": "/api/create-user-profile?mode=referral"
     }
   ],
+  "redirects": [
+    {
+      "source": "/:path((?!api/).*)",
+      "has": [{ "type": "host", "value": "app.focaoapp.com.br" }],
+      "destination": "https://focaoapp.com.br/:path",
+      "permanent": false
+    }
+  ],
   "crons": [
     {
       "path": "/api/run-whatsapp-reminders",
