@@ -286,7 +286,7 @@ export function Perfil() {
     setIsDeleting(true);
     try {
       const token = await user.getIdToken();
-      const response = await fetch('https://foc-o.vercel.app/api/delete-account', {
+      const response = await fetch('https://app.focaoapp.com.br/api/delete-account', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

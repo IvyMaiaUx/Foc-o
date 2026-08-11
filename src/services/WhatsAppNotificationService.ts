@@ -115,7 +115,7 @@ export interface WhatsappNotificationDoc {
 
 export class WhatsAppNotificationService {
   private static provider: WhatsAppProvider = new MockWhatsAppProvider();
-  private static apiEndpoint = import.meta.env.VITE_WHATSAPP_SEND_API_URL || 'https://foc-o.vercel.app/api/send-whatsapp-message';
+  private static apiEndpoint = import.meta.env.VITE_WHATSAPP_SEND_API_URL || 'https://app.focaoapp.com.br/api/send-whatsapp-message';
 
   static setProvider(newProvider: WhatsAppProvider) {
     this.provider = newProvider;

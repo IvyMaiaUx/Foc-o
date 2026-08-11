@@ -7,7 +7,7 @@ import {
 } from './_email.js';
 import { clientIp, withinRateLimit } from './_rateLimit.js';
 
-const APP_URL = 'https://app.focaoapp.com.br';
+const APP_URL = 'https://focaoapp.com.br';
 const AUTH_EMAIL_COOLDOWN_MS = 60 * 1000;
 
 function normalizeEmail(email) {
@@ -27,7 +27,7 @@ function appEmailVerificationUrl(firebaseActionUrl) {
 function setCors(req, res) {
   const allowedOrigins = new Set([
     APP_URL,
-    'https://app.focaoapp.com.br',
+    'https://app.focaoapp.com.br', // domínio antigo do front, agora é a própria API — mantido por segurança na transição
     'https://focao-beta.web.app',
     'https://focaoadm.web.app',
     'https://foc-o.vercel.app',

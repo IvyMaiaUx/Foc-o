@@ -2,17 +2,18 @@
  * Gate de consentimento LGPD para as landing pages estáticas do funil.
  * Substitui o carregamento direto do pixel próprio (FCT): só dispara após o aceite.
  * Usa a MESMA chave (lgpd_consent) do app React, então o consentimento é unificado
- * dentro do mesmo domínio (app.focaoapp.com.br). Por isso os links internos do
+ * dentro do mesmo domínio (focaoapp.com.br). Por isso os links internos do
  * funil devem ser relativos — um link absoluto pro domínio antigo (focao.web.app)
  * troca de origin e perde esse consentimento + a atribuição salva em fct_attr.
  */
 (function () {
-  // Domínio canônico: focao.web.app e app.focaoapp.com.br apontam pro MESMO
-  // Firebase Hosting site (sem isso o Firebase não tem como redirecionar um
-  // pro outro no firebase.json — ele não roteia por Host, só por path). Então
-  // o redirect é feito aqui, no client, antes de qualquer outra coisa rodar.
-  if (location.hostname === 'focao.web.app') {
-    location.replace('https://app.focaoapp.com.br' + location.pathname + location.search + location.hash);
+  // Domínio canônico: focaoapp.com.br (raiz). focao.web.app/firebaseapp.com são os
+  // domínios antigos do Firebase e app.focaoapp.com.br era o domínio do front antes
+  // de virar o domínio da engine/API — sem esse redirect, quem cair num link antigo
+  // fica preso no domínio errado (o Firebase não roteia por Host, só por path).
+  var LEGACY_HOSTS = ['focao.web.app', 'focao.firebaseapp.com', 'app.focaoapp.com.br'];
+  if (LEGACY_HOSTS.indexOf(location.hostname) !== -1) {
+    location.replace('https://focaoapp.com.br' + location.pathname + location.search + location.hash);
     return;
   }
 

@@ -1,6 +1,6 @@
 import type { User } from 'firebase/auth';
 
-const AUTH_EMAIL_ENDPOINT = 'https://foc-o.vercel.app/api/send-auth-email';
+const AUTH_EMAIL_ENDPOINT = 'https://app.focaoapp.com.br/api/send-auth-email';
 
 async function request(body: Record<string, string>, token?: string) {
   const response = await fetch(AUTH_EMAIL_ENDPOINT, {

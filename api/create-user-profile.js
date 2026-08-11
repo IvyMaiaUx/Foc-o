@@ -21,7 +21,8 @@ import { checkAndProcessReferral } from './_referralHelper.js';
 function setCors(req, res) {
   const allowedOrigins = new Set([
     'https://focao.web.app',
-    'https://app.focaoapp.com.br',
+    'https://focaoapp.com.br',
+    'https://app.focaoapp.com.br', // domínio antigo do front, agora é a própria API — mantido por segurança na transição
     'https://focao-beta.web.app',
     'https://focaoadm.web.app',
     'https://foc-o.vercel.app',

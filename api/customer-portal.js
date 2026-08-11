@@ -4,7 +4,8 @@ import { admin, getDb } from './_firebase.js';
 function setCors(req, res) {
   const allowedOrigins = new Set([
     'https://focao.web.app',
-    'https://app.focaoapp.com.br',
+    'https://focaoapp.com.br',
+    'https://app.focaoapp.com.br', // domínio antigo do front, agora é a própria API — mantido por segurança na transição
     'https://foc-o.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173',

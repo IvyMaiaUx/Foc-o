@@ -118,7 +118,7 @@ export function Checkin() {
       // Referral é best-effort: não bloqueia nem invalida o check-in.
       try {
         const token = await user.getIdToken();
-        await fetch('https://foc-o.vercel.app/api/process-referral', {
+        await fetch('https://app.focaoapp.com.br/api/process-referral', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

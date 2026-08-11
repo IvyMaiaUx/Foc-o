@@ -43,7 +43,7 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        statusEl.innerHTML = '<p class="err">Não encontrei sua sessão logada aqui.</p><p class="muted">Abre o app normal (app.focaoapp.com.br), faz login, e SÓ DEPOIS abre esta página de novo na mesma aba/navegador.</p>';
+        statusEl.innerHTML = '<p class="err">Não encontrei sua sessão logada aqui.</p><p class="muted">Abre o app normal (focaoapp.com.br), faz login, e SÓ DEPOIS abre esta página de novo na mesma aba/navegador.</p>';
         return;
       }
 
@@ -79,7 +79,7 @@
         btn.textContent = 'Salvando…';
         try {
           await setDoc(ref, { onboardingComplete: true, updatedAt: Date.now() }, { merge: true });
-          statusEl.innerHTML += '<p class="ok">Pronto! Marcado como true. Pode voltar pro app normal agora (app.focaoapp.com.br) — seus dados de cão/plano/evolução não foram tocados por esta página.</p>';
+          statusEl.innerHTML += '<p class="ok">Pronto! Marcado como true. Pode voltar pro app normal agora (focaoapp.com.br) — seus dados de cão/plano/evolução não foram tocados por esta página.</p>';
         } catch (e) {
           statusEl.innerHTML += '<p class="err">Falhou: ' + e.message + '</p>';
           btn.disabled = false;

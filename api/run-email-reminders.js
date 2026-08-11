@@ -10,7 +10,7 @@ import {
 } from './_email.js';
 import { todayKey, currentMinutes, isDueTime, diffDaysFromToday, isMonday } from './_reminderHelpers.js';
 
-const APP_URL = 'https://app.focaoapp.com.br';
+const APP_URL = 'https://focaoapp.com.br';
 const EMAIL_COOLDOWN_MS = 6 * 60 * 60 * 1000; // 6h — trava reprocessamento em reruns do cron no mesmo dia
 
 const INACTIVITY_DAYS = 4; // um pouco mais tolerante que o WhatsApp (3d) pra não duplicar o nudge

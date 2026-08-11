@@ -4,7 +4,7 @@ import { readRawBody } from './_rawBody.js';
 import { sendEmail, paymentFailedEmail, subscriptionCanceledEmail } from './_email.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-const APP_URL = 'https://app.focaoapp.com.br';
+const APP_URL = 'https://focaoapp.com.br';
 
 export const config = {
   api: {

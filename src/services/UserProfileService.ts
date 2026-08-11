@@ -1,6 +1,6 @@
 import type { User } from 'firebase/auth';
 
-const CREATE_PROFILE_ENDPOINT = 'https://foc-o.vercel.app/api/create-user-profile';
+const CREATE_PROFILE_ENDPOINT = 'https://app.focaoapp.com.br/api/create-user-profile';
 
 export const UserProfileService = {
   async ensureProfile(user: User, name?: string, referredBy?: string) {

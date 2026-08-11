@@ -300,7 +300,7 @@ export function Analyzing() {
           // Process referral if user was referred by someone
           try {
             const token = await user.getIdToken();
-            const response = await fetch('https://foc-o.vercel.app/api/process-referral', {
+            const response = await fetch('https://app.focaoapp.com.br/api/process-referral', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
