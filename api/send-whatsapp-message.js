@@ -1,5 +1,6 @@
 import { admin } from './_firebase.js';
 import { enqueueAndSendWhatsappNotification } from './_whatsapp.js';
+import { withinRateLimit } from './_rateLimit.js';
 
 const APP_URL = 'https://focao.web.app';
 const ALLOWED_ORIGINS = new Set([
@@ -99,6 +100,15 @@ export default async function sendWhatsappMessage(req, res) {
     const isVerifiedAdmin = isAdminEmail(decoded.email) && decoded.email_verified === true;
     if (!isSelf && !isVerifiedAdmin) {
       res.status(403).json({ error: 'Forbidden' });
+      return;
+    }
+
+    // Trava por conta autenticada (uid), não por IP: sem isso, uma conta válida podia
+    // chamar este endpoint em loop com type:'test' (isento do dedupe em _whatsapp.js)
+    // e disparar WhatsApp real sem limite. Admin tem um teto mais alto para uso do painel.
+    const rateLimitMax = isVerifiedAdmin ? 60 : 10;
+    if (!(await withinRateLimit('wpp-send', decoded.uid, rateLimitMax, 60 * 60 * 1000))) {
+      res.status(429).json({ error: 'Too Many Requests' });
       return;
     }
 
