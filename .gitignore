@@ -43,3 +43,4 @@ credentials.json
 # Scripts temporários de investigação
 scratch/
 
+.env*
