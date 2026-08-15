@@ -32,7 +32,7 @@ export function MainLayout() {
   }, [user]);
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Home' },
+    { path: '/inicio', icon: Home, label: 'Home' },
     isBeta
       ? { path: '/beta', icon: Sparkles, label: 'Beta' }
       : { path: '/plano', icon: ClipboardList, label: 'Plano' },

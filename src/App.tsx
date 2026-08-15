@@ -96,7 +96,7 @@ function RequireAppAdmin({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   if (isLoading) return <div className="min-h-screen bg-[#F7F5EF] flex items-center justify-center"><div className="animate-pulse w-8 h-8 rounded-full bg-[#055A43]/20" /></div>;
   if (!user) return <Navigate to="/welcome" replace />;
-  if (!user.email || !APP_ADMIN_EMAILS.has(user.email.toLowerCase())) return <Navigate to="/" replace />;
+  if (!user.email || !APP_ADMIN_EMAILS.has(user.email.toLowerCase())) return <Navigate to="/inicio" replace />;
   return <>{children}</>;
 }
 
@@ -159,9 +159,15 @@ export default function App() {
                   <Route path="/treino/:id?" element={<RequireAuth><Treino /></RequireAuth>} />
                   <Route path="/escolher-treino" element={<RequireAuth><EscolherTreino /></RequireAuth>} />
 
+                  {/* "/" é a landing pública estática (public/index.html), servida direto
+                      pelo Firebase Hosting antes de chegar no React (o app React foi
+                      renomeado pra app.html — ver vite.config.ts). Essa rota só existe
+                      como rede de segurança (dev local, links antigos etc.). */}
+                  <Route path="/" element={<Navigate to="/inicio" replace />} />
+
                   {/* Core App */}
                   <Route element={<RequireAuth><MainLayout /></RequireAuth>}>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/inicio" element={<Home />} />
                     <Route path="/plano" element={<Plano />} />
                     <Route path="/checkin" element={<Checkin />} />
                     <Route path="/evolucao" element={<Evolucao />} />
@@ -193,7 +199,7 @@ export default function App() {
                     </>
                   )}
 
-                  <Route path="*" element={<Navigate to="/" replace />} />
+                  <Route path="*" element={<Navigate to="/inicio" replace />} />
                 </Routes>
               </Suspense>
               <LgpdBanner />

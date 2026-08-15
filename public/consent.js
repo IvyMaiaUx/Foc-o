@@ -11,7 +11,10 @@
   // domínios antigos do Firebase e app.focaoapp.com.br era o domínio do front antes
   // de virar o domínio da engine/API — sem esse redirect, quem cair num link antigo
   // fica preso no domínio errado (o Firebase não roteia por Host, só por path).
-  var LEGACY_HOSTS = ['focao.web.app', 'focao.firebaseapp.com', 'app.focaoapp.com.br'];
+  // focao.web.app fica de fora de propósito: é o domínio padrão do próprio site de
+  // Hosting (firebase.json > hosting.site = "focao"), serve o mesmo dist/ e é usado
+  // como ambiente de teste. Redirecionar ele mandava o teste embora na hora.
+  var LEGACY_HOSTS = ['focao.firebaseapp.com', 'app.focaoapp.com.br'];
   if (LEGACY_HOSTS.indexOf(location.hostname) !== -1) {
     location.replace('https://focaoapp.com.br' + location.pathname + location.search + location.hash);
     return;
@@ -27,8 +30,8 @@
     if (window.__fctPixelLoaded) return;
     window.__fctPixelLoaded = true;
 
-    // Meta Pixel (mesmo pixel ID do app React em index.html — as páginas estáticas
-    // do funil pago nunca carregam index.html, então sem isso o Meta não recebia
+    // Meta Pixel (mesmo pixel ID do app React em app.html — as páginas estáticas
+    // do funil pago nunca carregam app.html, então sem isso o Meta não recebia
     // nenhum evento de quem entra pelo quiz/VSL/ebook/upsell/obrigado/landing).
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;

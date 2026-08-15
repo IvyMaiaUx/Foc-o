@@ -122,7 +122,7 @@ export function Analyzing() {
           await UserRepository.markOnboardingComplete(user.uid);
           clearOnboardingDraft();
           await refreshProfile();
-          navigate("/");
+          navigate("/inicio");
           return;
         }
 
@@ -323,11 +323,11 @@ export function Analyzing() {
         // senão o guard de onboarding rebateria o usuário de volta pro fluxo.
         clearOnboardingDraft(); // onboarding concluído: descarta o rascunho
         await refreshProfile();
-        navigate("/"); // Go to Home
+        navigate("/inicio"); // Go to Home
       } catch (error: any) {
         console.error("Error saving onboarding data:", error?.message);
         alert('Não foi possível salvar seus dados agora. Verifique a conexão e tente de novo.');
-        navigate("/");
+        navigate("/inicio");
       }
     };
 

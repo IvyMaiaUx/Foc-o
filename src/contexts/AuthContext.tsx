@@ -30,6 +30,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      // Flag lida pela landing pública (public/index.html) em "/": permite
+      // mandar quem já está logado direto pro dashboard sem montar o app React ali.
+      try {
+        if (user) localStorage.setItem('focao_session', '1');
+        else localStorage.removeItem('focao_session');
+      } catch { /* localStorage indisponível (modo privado etc.) — sem problema */ }
       try {
         if (user) {
           let profile = await UserRepository.getUserProfile(user.uid);

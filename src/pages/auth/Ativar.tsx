@@ -35,7 +35,7 @@ export function Ativar() {
     if (isPremium) {
       setStatus('already-active');
       const timer = setTimeout(() => {
-        navigate('/');
+        navigate('/inicio');
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -117,7 +117,7 @@ export function Ativar() {
               Seu acesso completo foi liberado. Aproveite todos os treinos personalizados e recursos exclusivos.
             </p>
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/inicio')}
               className="mt-4 w-full h-12 rounded-2xl bg-[#055A43] text-white text-[14px] font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all hover:bg-[#044a37]"
             >
               Começar jornada <ArrowRight className="w-4 h-4" />
@@ -196,7 +196,7 @@ export function Ativar() {
                 <KeyRound className="w-4 h-4" /> Recuperar senha
               </button>
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/inicio')}
                 className="w-full h-12 rounded-2xl border border-gray-200 text-gray-700 text-[14px] font-semibold flex items-center justify-center active:scale-[0.98] transition-all bg-white"
               >
                 Ir para a home grátis

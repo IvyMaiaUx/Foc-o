@@ -3,9 +3,40 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
+<script>
+  // Sessão ativa (setada pelo app em src/contexts/AuthContext.tsx): manda quem já
+  // está logado direto pro dashboard, em vez de mostrar a landing pública de novo.
+  try {
+    if (localStorage.getItem('focao_session') === '1') { location.replace('/inicio'); }
+  } catch (e) {}
+</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Focão: um plano de treino que evolui com o seu cão</title>
 <meta content="O Focão transforma as dificuldades do seu cão em um plano de treino progressivo, com o próximo passo sempre claro, check-in diário e evolução acompanhada na rotina." name="description"/>
+<meta content="index, follow" name="robots"/>
+<link href="https://focaoapp.com.br/" rel="canonical"/>
+<!-- Open Graph -->
+<meta content="website" property="og:type"/>
+<meta content="Focão" property="og:site_name"/>
+<meta content="https://focaoapp.com.br/" property="og:url"/>
+<meta content="pt_BR" property="og:locale"/>
+<meta content="Focão: um plano de treino que evolui com o seu cão" property="og:title"/>
+<meta content="O Focão transforma as dificuldades do seu cão em um plano de treino progressivo, com o próximo passo sempre claro, check-in diário e evolução acompanhada na rotina." property="og:description"/>
+<meta content="https://focaoapp.com.br/og-image.png" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<meta content="image/png" property="og:image:type"/>
+<meta content="Focão — um plano de treino que evolui com o seu cão" property="og:image:alt"/>
+<!-- Twitter Card -->
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Focão: um plano de treino que evolui com o seu cão" name="twitter:title"/>
+<meta content="O Focão transforma as dificuldades do seu cão em um plano de treino progressivo, com o próximo passo sempre claro, check-in diário e evolução acompanhada na rotina." name="twitter:description"/>
+<meta content="https://focaoapp.com.br/og-image.png" name="twitter:image"/>
+<meta content="Focão — um plano de treino que evolui com o seu cão" name="twitter:image:alt"/>
+<link href="/favicon.svg?v=5" rel="icon" type="image/svg+xml"/>
+<link href="/favicon-32x32.png?v=5" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/favicon-16x16.png?v=5" rel="icon" sizes="16x16" type="image/png"/>
+<link href="/apple-touch-icon.png?v=5" rel="apple-touch-icon" sizes="180x180"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&amp;family=Lora:ital,wght@0,400;0,500;1,400;1,500&amp;display=swap" rel="stylesheet"/>
@@ -436,6 +467,65 @@
 </style>
 </head>
 <body>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://focaoapp.com.br/#organization",
+      "name": "Focão",
+      "url": "https://focaoapp.com.br/",
+      "logo": "https://focaoapp.com.br/icon-512.png"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://focaoapp.com.br/#website",
+      "name": "Focão",
+      "url": "https://focaoapp.com.br/",
+      "publisher": { "@id": "https://focaoapp.com.br/#organization" },
+      "inLanguage": "pt-BR"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Focão",
+      "url": "https://focaoapp.com.br/",
+      "description": "O Focão transforma as dificuldades do seu cão em um plano de treino progressivo, com o próximo passo sempre claro, check-in diário e evolução acompanhada na rotina.",
+      "applicationCategory": "LifestyleApplication",
+      "operatingSystem": "Android, iOS, Web",
+      "inLanguage": "pt-BR",
+      "offers": {
+        "@type": "Offer",
+        "price": "67",
+        "priceCurrency": "BRL",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "67",
+          "priceCurrency": "BRL",
+          "billingDuration": "P1M"
+        },
+        "description": "7 dias grátis para testar. Depois, R$67/mês. Cancele quando quiser."
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Preciso entender de adestramento?", "acceptedAnswer": { "@type": "Answer", "text": "Não. O Focão foi feito justamente para quem não quer estudar comportamento canino. Você segue o próximo passo indicado para o seu caso. A ordem e a explicação já vêm prontas." } },
+        { "@type": "Question", "name": "Funciona para filhotes e para cães adultos?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. O plano parte do perfil do cão, então filhote e adulto seguem caminhos diferentes. Com filhotes, o foco costuma ser construir a base certa; com adultos, reorganizar hábitos já existentes. O que não fazemos é tratar todos os casos como se tivessem a mesma causa." } },
+        { "@type": "Question", "name": "Quanto tempo preciso por dia?", "acceptedAnswer": { "@type": "Answer", "text": "Os treinos são curtos e pensados para caber na rotina. A ideia central é constância, não sessões longas: pouca prática todos os dias rende mais do que muito esforço de vez em quando." } },
+        { "@type": "Question", "name": "O plano é igual para todos os cães?", "acceptedAnswer": { "@type": "Answer", "text": "Não. O onboarding reúne os dados do seu cão e gera um primeiro plano de acordo com o perfil e a dificuldade apresentada. O caminho se ajusta conforme você registra a evolução." } },
+        { "@type": "Question", "name": "O Focão substitui um adestrador ou veterinário?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Ele é uma orientação responsável e progressiva para o dia a dia. Casos mais intensos, como automutilação, agressividade consistente ou quadros que não evoluem com constância, devem ser acompanhados por um profissional qualificado." } },
+        { "@type": "Question", "name": "Serve para ansiedade de separação?", "acceptedAnswer": { "@type": "Answer", "text": "Ajuda a organizar o trabalho de forma gradual, com dessensibilização e rotina, respeitando o limite do cão. Não prometemos “fim da ansiedade”: casos mais profundos podem exigir acompanhamento profissional, e o Focão sinaliza quando esse é o caminho." } },
+        { "@type": "Question", "name": "Preciso pagar para começar?", "acceptedAnswer": { "@type": "Answer", "text": "Você testa o Focão completo por 7 dias sem pagar nada. Para ativar o teste, é preciso cadastrar um cartão — mas nenhuma cobrança acontece durante os 7 primeiros dias. Depois desse período, a assinatura é R$67/mês, e você pode cancelar quando quiser, direto pelo app, antes disso." } },
+        { "@type": "Question", "name": "Como funciona o Premium? Posso cancelar?", "acceptedAnswer": { "@type": "Answer", "text": "O Focão custa R$67/mês, com 7 dias grátis para testar. A assinatura libera tudo: plano de treino adaptativo que se atualiza conforme a evolução do cão, perfil comportamental refinado, ajustes automáticos a cada check-in, relatórios de evolução, histórico completo e a biblioteca completa de exercícios e técnicas. Você pode cancelar quando quiser, direto pelo app." } },
+        { "@type": "Question", "name": "E se meu cão não evoluir?", "acceptedAnswer": { "@type": "Answer", "text": "Faz parte. O método prevê recuos: quando um passo não firma, você repete ou volta um bloco antes de avançar. E quando os sinais indicam que o caso pede ajuda especializada, o Focão orienta a procurar um profissional." } },
+        { "@type": "Question", "name": "O método usa punição?", "acceptedAnswer": { "@type": "Answer", "text": "Nunca. Toda a metodologia é baseada em reforço positivo, rotinas previsíveis e comunicação clara, sem gritos, sem violência e sem punição física." } },
+        { "@type": "Question", "name": "Em quais dispositivos funciona?", "acceptedAnswer": { "@type": "Answer", "text": "O Focão funciona no celular (Android e iOS) e no computador (desktop). Você pode treinar pelo celular no dia a dia e acompanhar a evolução de onde preferir, e seu progresso fica sincronizado." } }
+      ]
+    }
+  ]
+}
+</script>
 <!-- NAV -->
 <header class="nav" id="nav">
 <div class="wrap nav-in">
@@ -470,8 +560,8 @@
 <!-- phone: treino do dia -->
 </div>
 </section>
-<!-- IDENTIFICATION -->
-<section id="identificacao">
+<!-- PROBLEMA (identificação + causa raiz) -->
+<section id="problema">
 <div class="wrap">
 <div class="section-head reveal">
 <span class="eyebrow">Talvez soe familiar</span>
@@ -484,13 +574,7 @@
 <div class="id-card reveal"><span class="ic"><svg fill="none" viewbox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM19 5a9 9 0 010 14M16 8a5 5 0 010 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg></span><p>Chega mais uma reclamação de latido, e a culpa aperta toda vez que você precisa sair.</p></div>
 <div class="id-card reveal"><span class="ic"><svg fill="none" viewbox="0 0 24 24"><path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"></path></svg></span><p>Tenta um vídeo hoje, outro método amanhã, e nunca sabe se algo está funcionando.</p></div>
 </div>
-<p class="kicker-quote narrow reveal" style="text-align:center;margin-top:44px">“É exatamente o que acontece aqui em casa.”</p>
-</div>
-</section>
-<!-- THE REAL PROBLEM -->
-<section id="problema">
-<div class="wrap">
-<div class="villain reveal">
+<div class="villain reveal" style="margin-top:36px">
 <span class="eyebrow">O verdadeiro problema</span>
 <h2>O inimigo não é o seu cão. É a informação solta.</h2>
 <p style="max-width:620px;margin-top:14px">Dica de rede social, vídeo aleatório, palpite do vizinho. Cada fonte manda em uma direção, e nenhuma diz por onde começar, quando avançar ou como saber se deu certo. Técnicas isoladas falham quando:</p>
@@ -503,13 +587,21 @@
 </div>
 </div>
 </section>
-<!-- NEW SOLUTION -->
+<!-- SOLUÇÃO (proposta de valor + mecanismo) -->
 <section id="solucao">
-<div class="wrap narrow" style="text-align:center">
-<div class="reveal">
+<div class="wrap">
+<div class="wrap narrow reveal" style="text-align:center;padding:0">
 <span class="eyebrow center">A virada</span>
 <h2>Em vez de mais uma biblioteca para explorar sozinho, o Focão mostra o próximo passo.</h2>
 <p class="lede" style="margin-top:16px">Ele parte do perfil do seu cão, organiza o treino em blocos e conduz um passo por vez. Você não precisa aprender tudo sobre comportamento canino. Precisa saber o que fazer hoje, e quando avançar.</p>
+</div>
+<div class="mech-grid">
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Perfil do cão</b></div><p>O treino parte de quem é o seu cão (idade, rotina e dificuldade), em vez de uma receita única.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Plano personalizado</b></div><p>Você começa pelo que faz sentido para aquele cão, não por técnicas desconectadas.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Evolução em blocos</b></div><p>Nada de informação demais de uma vez. Você avança conforme cria uma base consistente.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Check-in diário</b></div><p>O progresso deixa de depender da memória. Você enxerga padrões, não impressões.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Progresso visual</b></div><p>Dias, etapas e marcos que tornam a consistência visível, e mais fácil de manter.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Ajustes</b></div><p>O plano acompanha o comportamento: quando avançar, quando repetir, quando recuar um passo.</p></div>
 </div>
 </div>
 </section>
@@ -568,56 +660,7 @@
 </div>
 </div>
 </section>
-<!-- MECHANISM -->
-<section id="mecanismo" style="background:var(--paper-2)">
-<div class="wrap">
-<div class="section-head reveal">
-<span class="eyebrow">Por que funciona diferente</span>
-<h2>O valor não está só no conteúdo. Está em saber o próximo passo.</h2>
-<p class="lede">Seis engrenagens que transformam informação solta em um caminho com começo, ordem e medida.</p>
-</div>
-<div class="mech-grid">
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Perfil do cão</b></div><p>O treino parte de quem é o seu cão (idade, rotina e dificuldade), em vez de uma receita única.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Plano personalizado</b></div><p>Você começa pelo que faz sentido para aquele cão, não por técnicas desconectadas.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Evolução em blocos</b></div><p>Nada de informação demais de uma vez. Você avança conforme cria uma base consistente.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Check-in diário</b></div><p>O progresso deixa de depender da memória. Você enxerga padrões, não impressões.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Progresso visual</b></div><p>Dias, etapas e marcos que tornam a consistência visível, e mais fácil de manter.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Ajustes</b></div><p>O plano acompanha o comportamento: quando avançar, quando repetir, quando recuar um passo.</p></div>
-</div>
-</div>
-</section>
-<!-- DEMO / TRILHA -->
-<section id="demonstracao" style="background:var(--paper-2)">
-<div class="wrap">
-<div class="section-head reveal">
-<span class="eyebrow">Por dentro do Focão</span>
-<h2>Do treino do dia à evolução do bloco.</h2>
-<p class="lede">Cada parte do app existe para você saber o próximo passo, registrar o que aconteceu e enxergar o cão avançar, sem se perder no caminho.</p>
-</div>
-<div class="dcard-grid">
-<div class="dcard reveal">
-<span class="ico"><svg fill="none" viewbox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0" stroke="currentColor" stroke-width="1.8"></path></svg></span>
-<h3>Perfil do cão</h3>
-<p>O ponto de partida de todo o plano, o que muda tudo dali para a frente.</p>
-</div>
-<div class="dcard reveal">
-<span class="ico"><svg fill="none" viewbox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path></svg></span>
-<h3>Treino do dia</h3>
-<p>Uma atividade curta e clara. Sem menu de vídeos para escolher. Só o que fazer hoje.</p>
-</div>
-<div class="dcard reveal">
-<span class="ico"><svg fill="none" viewbox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg></span>
-<h3>Check-in diário</h3>
-<p>Você registra como foi. É assim que o progresso deixa de ser impressão e vira dado.</p>
-</div>
-<div class="dcard reveal">
-<span class="ico"><svg fill="none" viewbox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg></span>
-<h3>Evolução em blocos</h3>
-<p>Marcos que mostram o quanto você já avançou, e o que vem no próximo bloco.</p>
-</div>
-</div>
-</div>
-</section>
+<!-- (mecanismo incorporado à seção "solução" acima; demonstração removida por redundância com "como funciona") -->
 <!-- SAFETY -->
 <section id="responsabilidade" style="background:var(--paper-2)">
 <div class="wrap">
@@ -672,15 +715,20 @@
 <div class="section-head center-head reveal" style="text-align:center">
 <span class="eyebrow center">Avaliações</span>
 <h2>O que os tutores estão dizendo</h2>
-<div class="rv-summary" hidden="" id="rv-summary">
-<span aria-hidden="true" class="rv-stars-big" id="rv-avg-stars"></span>
-<span class="rv-avg-num" id="rv-avg-num"></span>
-<span class="rv-count" id="rv-count"></span>
+<div class="rv-summary" id="rv-summary">
+<span aria-hidden="true" class="rv-stars-big" id="rv-avg-stars"><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg></span>
+<span class="rv-avg-num" id="rv-avg-num">5.0</span>
+<span class="rv-count" id="rv-count">· 1 avaliação</span>
 </div>
 </div>
-<div class="rv-grid" id="rv-list"></div>
-<p class="rv-empty" hidden="" id="rv-empty">Ainda não há avaliações publicadas por aqui. Que tal ser o primeiro a contar como foi?</p>
-<p class="rv-empty" hidden="" id="rv-error">Não foi possível carregar as avaliações agora.</p>
+<div class="rv-grid" id="rv-list">
+<div class="rv-card">
+<div class="rv-stars" aria-label="5 de 5 estrelas"><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg></div>
+<p>Me ajudou muito com o meu cachorro, através da rotina que o focão montou para mim hoje meu pet é muito mais equilibrado</p>
+<span class="rv-name">Ana Maia</span>
+</div>
+</div>
+<p class="rv-empty" hidden="" id="rv-error">Não foi possível atualizar as avaliações agora.</p>
 <div class="rv-cta-wrap reveal">
 <button class="btn btn-ghost" id="rv-open" type="button">Deixar minha avaliação</button>
 </div>
@@ -765,6 +813,7 @@
 <a href="#como-funciona">Como funciona</a>
 <a href="#planos">Planos</a><a href="focao-ebooks.html">E-books</a>
 <a href="#avaliacoes">Avaliações</a><a href="#faq">Dúvidas</a>
+<a href="/privacidade">Privacidade</a>
 </div>
 </div>
 <p class="disclaimer">O Focão é uma orientação responsável e progressiva sobre comportamento e rotina canina, baseada em princípios modernos de comportamento. Não substitui a avaliação de um médico-veterinário ou adestrador qualificado. Casos graves ou que não evoluem com constância devem ser acompanhados por um profissional.</p>
@@ -810,7 +859,9 @@
       const items = [];
       snap.forEach(d=>items.push(d.data()));
       items.sort((a,b)=> (b.criadoEm?.seconds||0) - (a.criadoEm?.seconds||0));
-      if(items.length===0){ document.getElementById('rv-empty').hidden=false; return; }
+      // Sem avaliações aprovadas ainda: mantém o card estático já presente no HTML
+      // (não sobrescreve com uma lista vazia).
+      if(items.length===0){ return; }
       // summary
       const avg = items.reduce((s,r)=>s+(r.estrelas||0),0)/items.length;
       document.getElementById('rv-avg-stars').innerHTML = starsRow(avg);

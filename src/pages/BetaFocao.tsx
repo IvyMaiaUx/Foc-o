@@ -108,7 +108,7 @@ export function BetaFocao() {
           </button>
         </section>
 
-        <Button onClick={() => (user ? navigate('/') : navigate('/register'))} className="w-full">
+        <Button onClick={() => (user ? navigate('/inicio') : navigate('/register'))} className="w-full">
           {user ? 'Continuar usando' : 'Entendi, quero testar'}
         </Button>
       </main>

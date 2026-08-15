@@ -20,7 +20,7 @@ export function Login() {
     const redirect = searchParams.get('redirect');
     if (redirect === 'ativar') return '/ativar';
     if (redirect === 'assinatura') return '/assinatura';
-    return '/';
+    return '/inicio';
   }, [searchParams]);
 
   const isActivationFlow = redirectTo === '/ativar';

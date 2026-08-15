@@ -1,0 +1,63 @@
+# Focão — https://focaoapp.com.br/
+# Rastreamento liberado por padrão. As regras abaixo só recortam áreas sem
+# conteúdo público pra indexar (app autenticado e páginas utilitárias de auth),
+# pra não desperdiçar crawl budget em redirects. Nada aqui bloqueia o site.
+
+User-agent: *
+Allow: /
+
+# App autenticado: sem conteúdo indexável, e fica atrás de login mesmo que um
+# crawler tente acessar (RequireAuth redireciona tudo pra /welcome).
+Disallow: /inicio
+Disallow: /onboarding/
+Disallow: /treino/
+Disallow: /escolher-treino
+Disallow: /plano
+Disallow: /checkin
+Disallow: /evolucao
+Disallow: /perfil
+Disallow: /editar-perfil
+Disallow: /nutricao
+Disallow: /vacinas
+Disallow: /agenda
+Disallow: /sos
+Disallow: /historico
+Disallow: /relatorio
+Disallow: /relatorio-impressao
+Disallow: /assinatura
+Disallow: /notificacoes
+Disallow: /ajuda
+Disallow: /suporte
+Disallow: /indique
+Disallow: /manutencao
+Disallow: /dev-tools
+Disallow: /admin/
+
+# Páginas utilitárias de autenticação: funcionais, não são conteúdo.
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /redefinir-senha
+Disallow: /email-confirmado
+Disallow: /ativar
+
+# Crawlers de IA: sem motivo pra bloquear — permitidos explicitamente.
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://focaoapp.com.br/sitemap.xml

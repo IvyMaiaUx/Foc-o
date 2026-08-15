@@ -168,7 +168,7 @@ export function Checkin() {
             Check-in de hoje registrado. Cuidar também é observar. Hoje vocês deram mais um passo na jornada.
           </p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/inicio')}
             className="w-full bg-[#055A43] text-white h-14 rounded-2xl font-medium shadow-lg hover:bg-[#044735] active:scale-[0.98] transition-all"
           >
             Voltar ao início

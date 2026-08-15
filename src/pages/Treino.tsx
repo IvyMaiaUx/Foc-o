@@ -382,7 +382,7 @@ export function Treino() {
           </motion.button>
           {shouldOfferCheckin && (
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/inicio')}
               className="mt-4 h-10 rounded-full px-5 text-sm font-medium text-white/80 transition-colors hover:text-white"
             >
               Agora não

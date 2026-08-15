@@ -301,7 +301,7 @@ export function Perfil() {
       await signOut(auth).catch(() => undefined);
 
       alert("Sua conta e todos os seus dados foram excluídos, em conformidade com a LGPD.");
-      navigate('/');
+      navigate('/welcome');
     } catch (err: any) {
       console.error("Erro ao excluir conta:", err);
       if (err?.code === 'auth/requires-recent-login') {
@@ -318,7 +318,7 @@ export function Perfil() {
 
   const handleSignOut = async () => {
     await signOut(auth);
-    navigate('/');
+    navigate('/welcome');
   };
 
   return (

@@ -14,6 +14,10 @@ export default defineConfig(() => {
     build: {
       sourcemap: false,
       rollupOptions: {
+        // O app React não é mais "index.html": esse nome agora pertence à landing
+        // pública estática (public/index.html), que o Firebase Hosting serve
+        // direto na raiz do domínio, antes até de consultar firebase.json#rewrites.
+        input: path.resolve(__dirname, 'app.html'),
         output: {
           // Separa as libs pesadas em chunks próprios para o navegador baixá-las em
           // paralelo e reaproveitá-las do cache entre deploys (o hash só muda quando

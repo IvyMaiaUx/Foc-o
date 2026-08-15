@@ -81,7 +81,7 @@
       },
       {
         "source": "/landing",
-        "destination": "/focao-landing.html"
+        "destination": "/index.html"
       },
       {
         "source": "/ebooks",
@@ -89,7 +89,7 @@
       },
       {
         "source": "**",
-        "destination": "/index.html"
+        "destination": "/app.html"
       }
     ]
   }
