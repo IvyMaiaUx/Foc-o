@@ -245,7 +245,9 @@ service cloud.firestore {
           'updatedAt',
           'page',
           'userAgent',
-          'quizProfile'
+          'quizProfile',
+          'dogName',
+          'emailPermission'
         ])
         && request.resource.data.name is string
         && request.resource.data.name.size() >= 2
@@ -264,6 +266,13 @@ service cloud.firestore {
         && (!('userAgent' in request.resource.data) || (
           request.resource.data.userAgent is string
           && request.resource.data.userAgent.size() <= 180
+        ))
+        && (!('dogName' in request.resource.data) || (
+          request.resource.data.dogName is string
+          && request.resource.data.dogName.size() <= 80
+        ))
+        && (!('emailPermission' in request.resource.data) || (
+          request.resource.data.emailPermission is bool
         ))
         && (!('quizProfile' in request.resource.data) || (
           request.resource.data.quizProfile is string

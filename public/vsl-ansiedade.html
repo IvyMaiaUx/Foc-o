@@ -75,11 +75,11 @@
     <div style="text-align:center;margin-bottom:26px;"><a href="/welcome" style="display:inline-flex;flex-direction:column;align-items:center;text-decoration:none;line-height:.82;"><span style="font-family:'Lora',Georgia,serif;font-weight:400;font-size:24px;letter-spacing:.22em;color:#055A43;padding-left:.22em;">FOCÃO</span><span style="height:1px;width:78%;background:linear-gradient(to right,transparent,rgba(11,106,81,.75),transparent);margin-top:7px;display:block;"></span></a></div>
     <div class="kicker"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg> Seu diagnóstico — próximo passo</div>
     <h1 class="hook">Por que seu cão entra em pânico quando você sai — e como reverter sem grito.</h1>
-    <p class="sub">Assista ao vídeo até o fim: em poucos minutos você entende a causa real e o passo a passo pra resolver em casa.</p>
+    <p class="sub" id="sub">Em poucos minutos você entende a causa real e o passo a passo pra resolver em casa.</p>
 
-    <div class="video" id="video"></div>
+    <div class="video" id="video" hidden></div>
 
-    <div class="wait" id="wait">⏳ Assista o vídeo — sua oferta libera em instantes</div>
+    <div class="wait" id="wait" hidden>⏳ Assista o vídeo — sua oferta libera em instantes</div>
 
     <div class="offer" id="offer" hidden>
       <div class="offer-card">
@@ -106,16 +106,25 @@
   /* ============================================ */
 
   var vid = document.getElementById('video');
+  var wait = document.getElementById('wait');
+  var offer = document.getElementById('offer');
+  var sub = document.getElementById('sub');
+
   if (VIDEO_EMBED) {
+    // Com vídeo: mostra o player, pede pra assistir e libera a oferta no tempo certo.
     vid.innerHTML = VIDEO_EMBED;
+    vid.hidden = false;
+    wait.hidden = false;
+    sub.textContent = 'Assista ao vídeo até o fim: em poucos minutos você entende a causa real e o passo a passo pra resolver em casa.';
+    setTimeout(function () {
+      offer.hidden = false;
+      wait.style.display = 'none';
+    }, Math.max(0, CTA_DELAY_SECONDS) * 1000);
   } else {
-    vid.innerHTML = '<div class="ph"><b>▶</b> o vídeo da mini VSL entra aqui<small>cole o embed em VIDEO_EMBED (topo do script)</small></div>';
+    // Sem vídeo: não faz sentido pedir pra assistir nada nem segurar a oferta atrás
+    // de um cronômetro. O player e o aviso ficam ocultos e a oferta aparece direto.
+    offer.hidden = false;
   }
-  setTimeout(function () {
-    var o = document.getElementById('offer'); var w = document.getElementById('wait');
-    if (o) o.hidden = false;
-    if (w) w.style.display = 'none';
-  }, Math.max(0, CTA_DELAY_SECONDS) * 1000);
 </script>
 </body>
 </html>

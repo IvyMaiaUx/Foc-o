@@ -209,14 +209,13 @@ export function LeadForm({ formRef, contentName = "ebook_comportamento_e_rotina"
                     letterSpacing: "0.04em",
                   }}
                 >
-                  WhatsApp
+                  WhatsApp <span style={{ fontWeight: 400, color: "#999" }}>(opcional)</span>
                 </label>
                 <input
                   type="tel"
                   inputMode="tel"
                   placeholder="(00) 00000-0000"
                   value={form.whatsapp}
-                  required
                   maxLength={32}
                   onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
                   style={inputStyle}
