@@ -24,16 +24,27 @@ export default async function emailUnsubscribe(req, res) {
     return;
   }
 
+  const recipient = String(req.query?.recipient || '');
   const uid = String(req.query?.uid || '');
   const token = String(req.query?.token || '');
 
-  if (!uid || !verifyUnsubscribeToken(uid, token)) {
+  const target = recipient || uid;
+  if (!target || !verifyUnsubscribeToken(target, token)) {
     res.status(400).setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(page('Link inválido', 'Esse link de descadastro não é válido ou expirou.'));
     return;
   }
 
   try {
+    if (recipient.startsWith('marketing_')) {
+      await getDb().collection('marketingEmailPreferences').doc(recipient).set(
+        { emailOptOut: true, emailOptOutAt: Date.now(), updatedAt: Date.now() },
+        { merge: true },
+      );
+      res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(page('Você foi descadastrado', 'Não vamos mais te mandar comunicações de campanha por e-mail.'));
+      return;
+    }
     await getDb().collection('users').doc(uid).set(
       { emailOptOut: true, emailOptOutAt: Date.now() },
       { merge: true },

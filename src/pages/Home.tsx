@@ -241,21 +241,21 @@ export function Home() {
 
   return (
     <div className="flex-1 bg-[#F7F5EF] font-sans pb-24 overflow-x-hidden selection:bg-[#055A43]/20">
-      <div className="max-w-lg mx-auto w-full">
+      <div className="mx-auto w-full max-w-6xl lg:px-6">
 
         {/* Green header zone — full-bleed hero: greeting + treino do dia */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="relative overflow-hidden bg-[#055A43] px-5 pt-8 pb-10"
+          className="relative overflow-hidden bg-[#055A43] px-5 pb-10 pt-8 lg:rounded-b-[34px] lg:px-10"
         >
           {/* Decorative ghost circles */}
           <div className="absolute -right-10 -top-10 w-52 h-52 rounded-full bg-white/[0.04] pointer-events-none" />
           <div className="absolute right-8 top-20 w-24 h-24 rounded-full bg-white/[0.04] pointer-events-none" />
 
           {/* Header row */}
-          <header className="relative z-10 flex justify-between items-start mb-7 gap-3">
+          <header className="relative z-10 flex items-start justify-between gap-3 lg:mx-auto lg:w-full lg:max-w-5xl">
             <div className="flex flex-col min-w-0">
               <p className="text-[13px] font-medium text-white/55 mb-1.5">
                 Olá, {userName?.split(' ')[0] || 'Tutor'}
@@ -305,13 +305,28 @@ export function Home() {
             </div>
           </header>
 
+          <section className="relative z-10 mb-6 mt-7 grid grid-cols-3 gap-2 lg:mx-auto lg:w-full lg:max-w-5xl lg:max-w-3xl">
+            <button onClick={() => { hapticLightTap(); navigate('/checkin'); }} className="rounded-2xl border border-white/10 bg-white/[0.08] px-3 py-3 text-left transition hover:bg-white/[0.13] active:scale-[0.98]">
+              <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/50">Check-in</p>
+              <p className="mt-1 text-sm font-bold text-white">{homeState?.hasCheckedInToday ? 'Feito' : 'Pendente'}</p>
+            </button>
+            <button onClick={() => { hapticLightTap(); navigate('/evolucao'); }} className="rounded-2xl border border-white/10 bg-white/[0.08] px-3 py-3 text-left transition hover:bg-white/[0.13] active:scale-[0.98]">
+              <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/50">Sequência</p>
+              <p className="mt-1 flex items-center gap-1 text-sm font-bold text-white"><Flame className="h-3.5 w-3.5 text-[#E8D7A8]" />{streak || 0} dias</p>
+            </button>
+            <button onClick={() => { hapticLightTap(); navigate('/plano'); }} className="rounded-2xl border border-white/10 bg-white/[0.08] px-3 py-3 text-left transition hover:bg-white/[0.13] active:scale-[0.98]">
+              <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/50">Plano</p>
+              <p className="mt-1 text-sm font-bold text-white">{planTotalTasks ? `${planProgressPct}% concluído` : 'Em preparo'}</p>
+            </button>
+          </section>
+
           {/* Daily Training Card - Hero, nested inside the green zone */}
           {(activeTask || homeState?.hasCompletedTrainingToday) ? (
             <motion.section
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="relative z-10 rounded-[20px] p-5 border border-white/10 bg-black/15 cursor-pointer group"
+              className="relative z-10 rounded-[20px] border border-white/10 bg-black/15 p-5 group cursor-pointer lg:mx-auto lg:w-full lg:max-w-3xl"
               onClick={() => {
                 hapticLightTap();
                 if (homeState?.isPremiumLocked) {
@@ -364,7 +379,7 @@ export function Home() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="relative z-10 flex flex-col items-center justify-center bg-white/[0.06] border border-white/10 rounded-[20px] p-6 text-center"
+              className="relative z-10 flex flex-col items-center justify-center rounded-[20px] border border-white/10 bg-white/[0.06] p-6 text-center lg:mx-auto lg:w-full lg:max-w-3xl"
             >
               <div className="w-14 h-14 bg-white/10 text-white rounded-full flex items-center justify-center mb-4">
                 <CheckCircle2 className="w-8 h-8" />
@@ -384,7 +399,7 @@ export function Home() {
         </motion.div>
 
         {/* White drawer — resto do conteúdo, sobrepõe a zona verde */}
-        <main className="relative -mt-6 rounded-t-[26px] bg-[#F7F5EF] flex flex-col gap-6 pt-7 px-5">
+        <main className="relative -mt-6 flex flex-col gap-6 rounded-t-[26px] bg-[#F7F5EF] px-5 pt-7 lg:mx-auto lg:max-w-5xl lg:rounded-t-[30px] lg:px-8">
 
         {isBeta && (
           <motion.section
@@ -910,5 +925,4 @@ export function Home() {
     </div>
   );
 }
-
 

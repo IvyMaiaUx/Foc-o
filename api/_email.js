@@ -101,6 +101,13 @@ export function unsubscribeUrl(uid) {
   return `${APP_URL}/api/email-unsubscribe?uid=${encodeURIComponent(uid)}&token=${token}`;
 }
 
+export function marketingUnsubscribeUrl(email) {
+  const recipient = `marketing_${Buffer.from(String(email).trim().toLowerCase()).toString('base64url')}`;
+  const token = signUnsubscribeToken(recipient);
+  if (!token) return '';
+  return `${APP_URL}/api/email-unsubscribe?recipient=${encodeURIComponent(recipient)}&token=${token}`;
+}
+
 // bodyHtml: conteúdo do e-mail. unsubUrl: se vier preenchido (e-mails de ciclo de vida —
 // inatividade/trial/progresso), mostra o rodapé de descadastro. E-mails puramente
 // transacionais (confirmação de conta, reset de senha, cobrança) não passam isso.
@@ -215,5 +222,31 @@ export function subscriptionCanceledEmail({ dogName, actionUrl }) {
       ${ctaButton('Reativar assinatura', actionUrl)}
     `),
     text: `Sua assinatura do Focão foi cancelada. Reative quando quiser: ${actionUrl}`,
+  };
+}
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char]));
+}
+
+export function leadMagnetFimDaCulpaEmail({ name, materialUrl, unsubUrl }) {
+  const firstName = escapeHtml(String(name || 'Tutor').trim().split(/\s+/)[0] || 'Tutor');
+  const safeMaterialUrl = escapeHtml(materialUrl);
+  return {
+    subject: 'Seu e-book gratuito está aqui — Guia: O Fim da Culpa',
+    html: emailShell(`
+      <p style="margin:0 0 10px;font-family:Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;color:${BRAND.emerald};">E-BOOK GRATUITO</p>
+      <h1 style="font-size:27px;line-height:1.18;margin:0 0 14px;">Guia Gratuito: O Fim da Culpa</h1>
+      <p style="font-size:16px;line-height:1.6;color:${BRAND.inkSoft};">Oi, ${firstName}!</p>
+      <p style="font-size:16px;line-height:1.6;color:${BRAND.inkSoft};">Aqui está o material que você pediu: um guia para entender por que seu cão sofre quando você sai — e o que fazer a respeito, sem se culpar no processo.</p>
+      ${ctaButton('Baixar meu material gratuito', safeMaterialUrl)}
+      <div style="margin:28px 0;padding:20px;border:1px solid ${BRAND.rule};border-radius:14px;background:${BRAND.paper};">
+        <p style="margin:0 0 10px;font-size:14px;font-weight:700;color:${BRAND.ink};">Neste guia, você encontra duas partes:</p>
+        <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:${BRAND.inkSoft};"><strong>Primeiro:</strong> o que realmente está acontecendo com seu cão — e por que a culpa que você sente faz sentido, mas não precisa te paralisar.</p>
+        <p style="margin:0;font-size:15px;line-height:1.55;color:${BRAND.inkSoft};"><strong>Depois:</strong> ações práticas para começar hoje mesmo, com mais clareza e menos peso.</p>
+      </div>
+      <p style="font-size:16px;line-height:1.6;color:${BRAND.inkSoft};">Este guia é um ponto de partida. Se o quadro for mais intenso ou se você quiser um protocolo completo, dia a dia e com progressão estruturada, conheça <strong>A Volta Pra Casa Sem Estresse</strong>.</p>
+    `, unsubUrl),
+    text: `Oi, ${String(name || 'Tutor').trim().split(/\s+/)[0] || 'Tutor'}!\n\nSeu e-book gratuito “Guia: O Fim da Culpa” está aqui: ${materialUrl}\n\nVocê vai entender o que está acontecendo com seu cão e encontrar ações práticas para começar hoje.\n\nEquipe Focão`,
   };
 }

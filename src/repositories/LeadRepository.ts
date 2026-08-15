@@ -8,6 +8,7 @@ export type LeadPayload = {
   source?: 'landing_ebook' | 'ebook' | 'presell_quiz';
   dogName?: string;
   quizProfile?: string;
+  emailPermission?: boolean;
 };
 
 export class LeadRepository {
@@ -19,6 +20,7 @@ export class LeadRepository {
       source: payload.source || 'landing_ebook',
       ...(payload.dogName ? { dogName: payload.dogName.trim().slice(0, 80) } : {}),
       ...(payload.quizProfile ? { quizProfile: payload.quizProfile.trim().slice(0, 80) } : {}),
+      emailPermission: payload.emailPermission === true,
       status: 'new',
       page: window.location.pathname,
       userAgent: window.navigator.userAgent.slice(0, 160),

@@ -4,6 +4,7 @@ import { CheckCircle2, ChevronRight, ClipboardList, LineChart, Mail, ShieldCheck
 import { LeadRepository } from '@/src/repositories/LeadRepository';
 import { getDefaultPresellConfig, PresellConfig } from '@/src/lib/presellConfig';
 import { PresellConfigRepository } from '@/src/repositories/PresellConfigRepository';
+import { sendFimDaCulpaEmail } from '@/src/services/LeadMagnetEmailService';
 
 type QuizAnswer = {
   routine?: string;
@@ -27,7 +28,7 @@ export function PresellFocao() {
   const [config, setConfig] = useState<PresellConfig>(() => getDefaultPresellConfig());
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer>({});
-  const [lead, setLead] = useState({ name: '', dogName: '', email: '', whatsapp: '' });
+  const [lead, setLead] = useState({ name: '', dogName: '', email: '', whatsapp: '', emailPermission: false });
   const [showCapture, setShowCapture] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [error, setError] = useState('');
@@ -74,7 +75,11 @@ export function PresellFocao() {
         dogName: lead.dogName,
         source: 'presell_quiz',
         quizProfile: diagnosis.key,
+        emailPermission: lead.emailPermission,
       });
+      if (lead.emailPermission) {
+        sendFimDaCulpaEmail({ name, email, consent: true }).catch((deliveryError) => console.warn('[PresellFocao] lead magnet delivery failed', deliveryError));
+      }
       localStorage.setItem('focao_presell_email', email);
       if (lead.dogName.trim()) localStorage.setItem('focao_presell_dog_name', lead.dogName.trim());
       setShowResult(true);
@@ -127,6 +132,11 @@ export function PresellFocao() {
               {config.heroCta}
               <ChevronRight className="h-4 w-4" />
             </button>
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-semibold text-white/72">
+              <span className="rounded-full border border-white/15 bg-black/10 px-3 py-1.5">Diagnóstico rápido</span>
+              <span className="rounded-full border border-white/15 bg-black/10 px-3 py-1.5">Cerca de 2 minutos</span>
+              <span className="rounded-full border border-white/15 bg-black/10 px-3 py-1.5">Sem compromisso</span>
+            </div>
           </div>
         </div>
       </section>
@@ -179,6 +189,13 @@ export function PresellFocao() {
       </section>
 
       <section id="diagnostico" className="mx-auto w-full max-w-3xl px-6 pb-16 pt-4">
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#055A43]">Diagnóstico de rotina</p>
+            <p className="mt-1 text-sm leading-6 text-[#59645E]">Responda com sinceridade. No fim, mostramos um próximo passo prático para vocês.</p>
+          </div>
+          <span className="shrink-0 rounded-full bg-[#EAF0E8] px-3 py-1.5 text-[11px] font-bold text-[#055A43]">{showCapture || showResult ? 'Final' : `${currentStep + 1}/${quizSteps.length}`}</span>
+        </div>
         <div className="mb-5 overflow-hidden rounded-full bg-[#E2DCCF]">
           <div className="h-2 rounded-full bg-[#055A43] transition-all" style={{ width: `${Math.max(progress, 8)}%` }} />
         </div>
@@ -214,6 +231,11 @@ export function PresellFocao() {
             <p className="mt-3 text-[15px] leading-7 text-[#59645E]">
               {config.captureText}
             </p>
+            <div className="mt-5 grid gap-2 rounded-2xl bg-[#055A43]/[0.045] p-4 text-sm text-[#506352]">
+              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-[#055A43]" />Seu diagnóstico personalizado</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-[#055A43]" />Um próximo passo possível para hoje</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-[#055A43]" />Acesso ao Focão quando fizer sentido</div>
+            </div>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <input
                 value={lead.name}
@@ -242,14 +264,19 @@ export function PresellFocao() {
                 className="h-14 rounded-2xl border border-[#E2DCCF] bg-[#FAF9F5] px-4 text-[15px] font-semibold text-[#102019] outline-none focus:border-[#055A43] sm:col-span-2"
               />
             </div>
+            <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E2DCCF] bg-[#FAF9F5] p-4 text-[12px] leading-5 text-[#59645E]">
+              <input type="checkbox" checked={lead.emailPermission} onChange={(event) => setLead((current) => ({ ...current, emailPermission: event.target.checked }))} className="mt-0.5 h-4 w-4 accent-[#055A43]" />
+              <span>Quero receber o e-book gratuito e comunicações relacionadas ao Focão. Posso sair quando quiser.</span>
+            </label>
             {error && <p className="mt-3 text-sm font-semibold text-rose-600">{error}</p>}
             <button
-              disabled={isSubmitting}
+              disabled={isSubmitting || !lead.emailPermission}
               className="mt-5 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#055A43] text-sm font-black uppercase tracking-[0.12em] text-white disabled:opacity-60"
             >
               {isSubmitting ? 'Salvando...' : config.captureButton}
               <ChevronRight className="h-4 w-4" />
             </button>
+            <p className="mt-3 text-center text-[11px] leading-5 text-[#7B847F]">Seus dados são usados apenas para preparar sua experiência no Focão.</p>
           </form>
         )}
 
@@ -268,6 +295,10 @@ export function PresellFocao() {
                   {config.resultSupportText}
                 </p>
               </div>
+            </div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <div className="rounded-2xl border border-[#E2DCCF] bg-[#FAF9F5] p-4"><p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7B847F]">Agora</p><p className="mt-1 text-sm font-bold text-[#27342E]">Organize o primeiro passo</p></div>
+              <div className="rounded-2xl border border-[#E2DCCF] bg-[#FAF9F5] p-4"><p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7B847F]">Depois</p><p className="mt-1 text-sm font-bold text-[#27342E]">Acompanhe a evolução com leveza</p></div>
             </div>
             <button
               onClick={startRegister}
