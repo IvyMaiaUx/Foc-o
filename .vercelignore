@@ -1,0 +1,5 @@
+# Cada arquivo em api/ SEM o prefixo "_" vira uma função serverless, e o plano Hobby da
+# Vercel permite no máximo 12 — que é exatamente quantas o projeto já tem. Os arquivos de
+# teste ficam fora do deploy pra não estourar esse limite.
+api/**/*.test.js
+api/_fakeFirestore.js

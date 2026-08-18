@@ -7,6 +7,18 @@
     {
       "source": "/api/send-lead-magnet",
       "destination": "/api/send-auth-email?type=lead_magnet"
+    },
+    {
+      "source": "/api/billing-charges",
+      "destination": "/api/customer-portal?mode=charges"
+    },
+    {
+      "source": "/api/refund-request",
+      "destination": "/api/customer-portal?mode=refund-request"
+    },
+    {
+      "source": "/api/admin-refund",
+      "destination": "/api/customer-portal?mode=admin-refund"
     }
   ],
   "redirects": [

@@ -187,7 +187,11 @@ service cloud.firestore {
           'premium_viewed',
           'premium_clicked',
           'premium_subscribed',
-          'premium_cancelled'
+          'premium_cancelled',
+          'refund_page_viewed',
+          'refund_request_started',
+          'refund_status_viewed',
+          'subscription_canceled'
         ]
         && request.resource.data.timestamp is number
         && (!('metadata' in request.resource.data) || request.resource.data.metadata is map);
@@ -226,6 +230,22 @@ service cloud.firestore {
     match /adminAuditLogs/{logId} {
       allow read, create: if isAdmin();
       allow update, delete: if false;
+    }
+
+    // Reembolsos: o cliente NUNCA escreve. Criação, aprovação, recusa e sincronização com
+    // a Stripe passam pelo backend (Admin SDK, que ignora estas regras). Aqui só definimos
+    // quem enxerga o quê — o dono da solicitação e os admins.
+    // O usuário NÃO lê esta coleção direto: o doc guarda campo interno (e-mail do admin que
+    // decidiu, id do reembolso na Stripe, erro técnico). A tela de acompanhamento recebe uma
+    // versão filtrada pela API. Aqui, leitura só pro painel.
+    match /refundRequests/{protocol} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /refundRequests/{protocol}/events/{eventId} {
+      allow read: if isAdmin();
+      allow write: if false;
     }
 
     match /cancellations/{cancellationId} {
