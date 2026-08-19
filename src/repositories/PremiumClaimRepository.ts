@@ -1,6 +1,8 @@
 import { User } from 'firebase/auth';
+import { apiUrl } from '@/src/lib/apiBase';
 
-const claimEndpoint = import.meta.env.VITE_PREMIUM_CLAIM_API_URL || '';
+// Sem a env configurada isto ficava string vazia e o claim inteiro virava no-op silencioso.
+const claimEndpoint = apiUrl('/api/claim-premium', import.meta.env.VITE_PREMIUM_CLAIM_API_URL);
 
 export class PremiumClaimRepository {
   static async claimForUser(user: User): Promise<boolean> {
