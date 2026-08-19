@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toLocalDateKey } from '@/src/lib/dateKeys';
 import { hapticLightTap } from '@/src/lib/haptic';
+import { WHATSAPP_OPT_IN_ENABLED } from '@/src/lib/featureFlags';
 import { auth, db } from '@/src/lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import { Play, CheckCircle2, Flame, Utensils, Bell, FileText, ChevronRight, Sparkles, Activity, X, Lock, Calendar, Syringe, AlertTriangle, MessageSquareText } from 'lucide-react';
@@ -447,8 +448,8 @@ export function Home() {
           )}
         </AnimatePresence>
 
-        {/* WhatsApp Connection Banner */}
-        {userProfile?.whatsappEnabled !== true && (
+        {/* WhatsApp Connection Banner — oculto enquanto o envio por WhatsApp está pausado */}
+        {WHATSAPP_OPT_IN_ENABLED && userProfile?.whatsappEnabled !== true && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
