@@ -9,10 +9,9 @@ import { doc, getDoc } from 'firebase/firestore';
 import { hapticLightTap } from '@/src/lib/haptic';
 import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
 import { REFUND_STATUS_LABEL, RefundRepository, formatCurrency } from '@/src/repositories/RefundRepository';
+import { apiUrl, readJson } from '@/src/lib/apiBase';
 import type { BillingCharge } from '@/src/types';
 
-const claimApiUrl = import.meta.env.VITE_PREMIUM_CLAIM_API_URL || '';
-const apiBase = claimApiUrl.includes('/api/') ? claimApiUrl.substring(0, claimApiUrl.indexOf('/api/')) : '';
 
 function formatDate(ts?: number) {
   if (!ts) return '--/--/----';
@@ -92,10 +91,9 @@ export function Assinatura() {
       if (!currentUser) return;
 
       const token = await currentUser.getIdToken();
-      const apiUrl = import.meta.env.VITE_CUSTOMER_PORTAL_API_URL || 
-        (apiBase ? `${apiBase}/api/customer-portal` : '/api/customer-portal');
-      
-      const response = await fetch(apiUrl, {
+      const url = apiUrl('/api/customer-portal', import.meta.env.VITE_CUSTOMER_PORTAL_API_URL);
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -108,7 +106,7 @@ export function Assinatura() {
         throw new Error('Falha ao abrir portal de gerenciamento.');
       }
 
-      const data = await response.json();
+      const data = await readJson<{ url?: string }>(response);
       if (data?.url) {
         window.location.href = data.url;
       } else {
@@ -131,10 +129,9 @@ export function Assinatura() {
       if (!currentUser) return;
 
       const token = await currentUser.getIdToken();
-      const apiUrl = import.meta.env.VITE_CANCEL_SUBSCRIPTION_API_URL ||
-        (apiBase ? `${apiBase}/api/cancel-subscription` : '/api/cancel-subscription');
+      const url = apiUrl('/api/cancel-subscription', import.meta.env.VITE_CANCEL_SUBSCRIPTION_API_URL);
 
-      const response = await fetch(apiUrl, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -146,6 +143,8 @@ export function Assinatura() {
       if (!response.ok) {
         throw new Error('Falha ao registrar a solicitação. Tente novamente.');
       }
+      // Confirma que quem respondeu foi a API, e não o app.html do Hosting com 200.
+      await readJson<{ success?: boolean }>(response);
 
       setCancelSubmitSuccess(true);
       AnalyticsRepository.logEvent('subscription_canceled');

@@ -1,17 +1,9 @@
 import { auth } from '@/src/lib/firebase';
+import { apiUrl, readJson } from '@/src/lib/apiBase';
 import type { BillingCharge, RefundEventView, RefundRequestView, RefundStatus } from '@/src/types';
 
-// Mesma derivação de base usada em Assinatura/PremiumClaim: em produção o app é servido
-// pelo Firebase Hosting e a API roda na Vercel, então a URL completa vem do .env.
-const claimApiUrl = import.meta.env.VITE_PREMIUM_CLAIM_API_URL || '';
-const apiBase = claimApiUrl.includes('/api/') ? claimApiUrl.substring(0, claimApiUrl.indexOf('/api/')) : '';
-
-function endpoint(path: string, override?: string) {
-  return override || (apiBase ? `${apiBase}${path}` : path);
-}
-
-const CHARGES_URL = endpoint('/api/billing-charges', import.meta.env.VITE_BILLING_CHARGES_API_URL);
-const REFUND_URL = endpoint('/api/refund-request', import.meta.env.VITE_REFUND_REQUEST_API_URL);
+const CHARGES_URL = apiUrl('/api/billing-charges', import.meta.env.VITE_BILLING_CHARGES_API_URL);
+const REFUND_URL = apiUrl('/api/refund-request', import.meta.env.VITE_REFUND_REQUEST_API_URL);
 
 export const REFUND_STATUS_LABEL: Record<RefundStatus, string> = {
   requested: 'Solicitação recebida',
@@ -67,7 +59,12 @@ async function post<T>(url: string, body: Record<string, unknown>): Promise<T> {
     body: JSON.stringify(body),
   });
 
-  const data = await response.json().catch(() => ({}));
+  // readJson recusa resposta que não seja JSON: um HTML 200 (o app.html do Hosting, quando
+  // a URL da API está errada) não pode passar por sucesso.
+  const data = await readJson<any>(response).catch((error) => {
+    if (response.ok) throw error;
+    return {};
+  });
   if (!response.ok) {
     throw new Error(data?.error || 'Não conseguimos concluir a operação. Tente de novo.');
   }
