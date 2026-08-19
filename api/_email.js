@@ -225,6 +225,35 @@ export function subscriptionCanceledEmail({ dogName, actionUrl }) {
   };
 }
 
+// Reembolso: o protocolo e o link de acompanhamento são os únicos dados que entram no
+// e-mail — nada de valor da cobrança, últimos dígitos do cartão ou id da Stripe (o e-mail
+// trafega e fica armazenado fora do nosso controle).
+export function refundRequestedEmail({ protocol, actionUrl }) {
+  return {
+    subject: `Recebemos seu pedido de reembolso (${protocol})`,
+    html: emailShell(`
+      <h1 style="font-size:22px;margin:0 0 16px;">Pedido de reembolso recebido</h1>
+      <p style="font-size:16px;line-height:1.5;color:${BRAND.inkSoft};">Registramos sua solicitação com o protocolo <strong>${escapeHtml(protocol)}</strong>. Agora ela entra na fila de análise da nossa equipe.</p>
+      <p style="font-size:16px;line-height:1.5;color:${BRAND.inkSoft};">Receber o pedido não significa que o reembolso foi aprovado — avisamos por e-mail assim que a análise terminar.</p>
+      ${ctaButton('Acompanhar solicitação', actionUrl)}
+    `),
+    text: `Recebemos seu pedido de reembolso (protocolo ${protocol}). Acompanhe: ${actionUrl}`,
+  };
+}
+
+export function refundStatusEmail({ protocol, statusLabel, message, actionUrl }) {
+  return {
+    subject: `${statusLabel} — reembolso ${protocol}`,
+    html: emailShell(`
+      <h1 style="font-size:22px;margin:0 0 16px;">${escapeHtml(statusLabel)}</h1>
+      <p style="font-size:16px;line-height:1.5;color:${BRAND.inkSoft};">${escapeHtml(message)}</p>
+      <p style="font-size:14px;line-height:1.5;color:${BRAND.muted};">Protocolo: <strong>${escapeHtml(protocol)}</strong></p>
+      ${ctaButton('Ver detalhes', actionUrl)}
+    `),
+    text: `${statusLabel} — reembolso ${protocol}. ${message} Detalhes: ${actionUrl}`,
+  };
+}
+
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char]));
 }

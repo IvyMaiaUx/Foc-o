@@ -12,7 +12,14 @@ export type AnalyticsEventType =
   | 'premium_viewed'
   | 'premium_clicked'
   | 'premium_subscribed'
-  | 'premium_cancelled';
+  | 'premium_cancelled'
+  // Reembolso: só os eventos disparados pelo app. Os do fluxo administrativo
+  // (approved/rejected/processing/completed/failed) são gravados pelo backend, que usa o
+  // Admin SDK — se estivessem aqui, qualquer cliente conseguiria forjá-los.
+  | 'refund_page_viewed'
+  | 'refund_request_started'
+  | 'refund_status_viewed'
+  | 'subscription_canceled';
 
 export class AnalyticsRepository {
   /**

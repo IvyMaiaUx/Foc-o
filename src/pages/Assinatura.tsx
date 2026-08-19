@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, CheckCircle2, Crown, Loader2, Sparkles, CreditCard, XCircle } from 'lucide-react';
+import { ChevronLeft, CheckCircle2, Crown, Loader2, Sparkles, CreditCard, XCircle, ChevronRight, ReceiptText } from 'lucide-react';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { hasPremiumAccess } from '@/src/types';
 import { auth, db } from '@/src/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { hapticLightTap } from '@/src/lib/haptic';
 import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
+import { REFUND_STATUS_LABEL, RefundRepository, formatCurrency } from '@/src/repositories/RefundRepository';
+import type { BillingCharge } from '@/src/types';
 
 const claimApiUrl = import.meta.env.VITE_PREMIUM_CLAIM_API_URL || '';
 const apiBase = claimApiUrl.includes('/api/') ? claimApiUrl.substring(0, claimApiUrl.indexOf('/api/')) : '';
@@ -35,6 +37,11 @@ export function Assinatura() {
   // Dynamic Stripe Checkout configuration
   const [checkoutUrl, setCheckoutUrl] = useState('');
 
+  // Histórico de cobranças (vem da Stripe pela API — o app não guarda cobrança no Firestore)
+  const [charges, setCharges] = useState<BillingCharge[]>([]);
+  const [chargesLoading, setChargesLoading] = useState(true);
+  const [chargesError, setChargesError] = useState('');
+
   useEffect(() => {
     const fetchConfig = async () => {
       try {
@@ -50,6 +57,21 @@ export function Assinatura() {
       }
     };
     fetchConfig();
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    RefundRepository.getCharges()
+      .then((data) => {
+        if (mounted) setCharges(data.charges || []);
+      })
+      .catch((err: Error) => {
+        if (mounted) setChargesError(err.message);
+      })
+      .finally(() => {
+        if (mounted) setChargesLoading(false);
+      });
+    return () => { mounted = false; };
   }, []);
 
   useEffect(() => {
@@ -126,6 +148,7 @@ export function Assinatura() {
       }
 
       setCancelSubmitSuccess(true);
+      AnalyticsRepository.logEvent('subscription_canceled');
     } catch (err: any) {
       console.error(err);
       setCancelSubmitError(err.message || 'Erro ao enviar solicitação. Tente novamente.');
@@ -315,6 +338,66 @@ export function Assinatura() {
           </div>
         </motion.div>
 
+        {/* Cobranças e reembolsos — "solicitar reembolso" é sobre uma cobrança JÁ feita, e
+            não se confunde com "solicitar cancelamento" (que só impede cobranças futuras). */}
+        {(chargesLoading || charges.length > 0 || chargesError) && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.08 }}
+            className="bg-white rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(45,74,58,0.08)] border border-[#055A43]/5"
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#055A43]/60 mb-4">
+              Cobranças e reembolsos
+            </p>
+
+            {chargesLoading ? (
+              <div className="flex justify-center py-6">
+                <Loader2 className="w-5 h-5 text-[#055A43] animate-spin" />
+              </div>
+            ) : chargesError ? (
+              <p className="text-[13px] text-[#6B7A6E] leading-relaxed">{chargesError}</p>
+            ) : (
+              <div className="flex flex-col divide-y divide-[#055A43]/8">
+                {charges.map((charge) => (
+                  <div key={charge.chargeId} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                    <div className="min-w-0">
+                      <p className="text-[14px] font-semibold text-[#3A3F3B]">
+                        {formatCurrency(charge.amount, charge.currency)}
+                      </p>
+                      <p className="text-[12px] text-[#6B7A6E] truncate">
+                        {formatDate(charge.createdAt)}
+                        {charge.cardLast4 ? ` · ${charge.cardBrand || 'cartão'} ••••${charge.cardLast4}` : ''}
+                        {charge.refunded ? ' · reembolsada' : ''}
+                      </p>
+                    </div>
+
+                    {charge.request ? (
+                      <button
+                        onClick={() => { hapticLightTap(); navigate(`/reembolso/${charge.request!.protocol}`); }}
+                        className="flex items-center gap-1 text-[12px] font-semibold text-[#055A43] shrink-0 cursor-pointer"
+                      >
+                        {REFUND_STATUS_LABEL[charge.request.status]}
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    ) : charge.eligible ? (
+                      <button
+                        onClick={() => { hapticLightTap(); navigate(`/reembolso/solicitar?cobranca=${charge.chargeId}`); }}
+                        className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-[#055A43]/15 text-[12px] font-semibold text-[#055A43] shrink-0 active:scale-95 transition-all hover:bg-[#055A43]/5 cursor-pointer"
+                      >
+                        <ReceiptText className="w-3.5 h-3.5" />
+                        Solicitar reembolso
+                      </button>
+                    ) : (
+                      <span className="text-[11.5px] text-[#6B7A6E]/70 shrink-0">Fora do prazo</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+
         {isPremium && !userProfile?.subscription?.cancelAtPeriodEnd && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -382,13 +465,19 @@ export function Assinatura() {
                 </div>
               </div>
             ) : (
-              <button
-                onClick={() => { hapticLightTap(); setShowCancelForm(true); }}
-                className="w-full flex items-center justify-center gap-2 text-[13px] font-semibold text-[#6B7A6E] hover:text-[#055A43] transition-colors cursor-pointer"
-              >
-                <XCircle className="w-4 h-4" />
-                Solicitar cancelamento
-              </button>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => { hapticLightTap(); setShowCancelForm(true); }}
+                  className="w-full flex items-center justify-center gap-2 text-[13px] font-semibold text-[#6B7A6E] hover:text-[#055A43] transition-colors cursor-pointer"
+                >
+                  <XCircle className="w-4 h-4" />
+                  Cancelar próxima renovação
+                </button>
+                <p className="text-center text-[11.5px] text-[#6B7A6E]/70 leading-relaxed">
+                  Impede cobranças futuras. Para pedir de volta um valor já cobrado, use
+                  &ldquo;Solicitar reembolso&rdquo; na lista de cobranças.
+                </p>
+              </div>
             )}
           </motion.div>
         )}

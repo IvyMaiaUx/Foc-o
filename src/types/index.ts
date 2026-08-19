@@ -267,3 +267,58 @@ export interface CustomEvent {
   date?: string; // "YYYY-MM-DD"
   createdAt: number;
 }
+
+// --- Reembolsos -------------------------------------------------------------
+// Os nomes de status são os mesmos gravados pelo backend em `refundRequests`.
+
+export type RefundStatus =
+  | 'requested'
+  | 'under_review'
+  | 'needs_information'
+  | 'rejected'
+  | 'approved'
+  | 'processing'
+  | 'refunded'
+  | 'failed'
+  | 'canceled';
+
+export interface BillingCharge {
+  chargeId: string;
+  amount: number; // em centavos, como a Stripe devolve
+  currency: string;
+  createdAt: number;
+  paid: boolean;
+  refunded: boolean;
+  cardBrand: string | null;
+  cardLast4: string | null;
+  description: string | null;
+  eligible: boolean;
+  ineligibleReason: 'not_paid' | 'already_refunded' | 'window_expired' | 'has_request' | null;
+  request: { protocol: string; status: RefundStatus; createdAt: number } | null;
+}
+
+export interface RefundRequestView {
+  protocol: string;
+  status: RefundStatus;
+  statusUpdatedAt: number;
+  amount: number;
+  currency: string;
+  chargeCreatedAt: number;
+  cardBrand: string | null;
+  cardLast4: string | null;
+  reason: string | null;
+  reasonLabel: string | null;
+  description: string;
+  rejectionReason: string | null;
+  pendingInformation: string | null;
+  createdAt: number;
+  resolvedAt: number | null;
+}
+
+export interface RefundEventView {
+  id: string;
+  toStatus: RefundStatus;
+  actorType: 'user' | 'admin' | 'system' | 'stripe';
+  note: string | null;
+  createdAt: number;
+}

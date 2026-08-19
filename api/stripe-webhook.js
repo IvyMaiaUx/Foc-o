@@ -2,8 +2,18 @@ import Stripe from 'stripe';
 import { getDb, emailKey } from './_firebase.js';
 import { readRawBody } from './_rawBody.js';
 import { sendEmail, paymentFailedEmail, subscriptionCanceledEmail } from './_email.js';
+import { handleRefundWebhookEvent } from './_refunds.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Nomes conferidos no SDK instalado (stripe 22.1.1, API 2026-04-22.dahlia).
+const REFUND_EVENT_TYPES = new Set([
+  'refund.created',
+  'refund.updated',
+  'refund.failed',
+  'charge.refund.updated',
+  'charge.refunded',
+]);
 const APP_URL = 'https://focaoapp.com.br';
 
 export const config = {
@@ -278,6 +288,13 @@ export default async function stripeWebhook(req, res) {
 
     if (event.type === 'invoice.payment_failed') {
       await handleInvoicePaymentFailed(stripe, event.data.object);
+    }
+
+    // Reembolso: o webhook NUNCA inicia o estorno (quem cria é o admin, pelo painel) —
+    // aqui só confirmamos o resultado e sincronizamos a solicitação. `charge.refund.updated`
+    // é o nome legado do mesmo evento e continua chegando em integrações antigas.
+    if (REFUND_EVENT_TYPES.has(event.type)) {
+      await handleRefundWebhookEvent(getDb(), event);
     }
 
     res.status(200).json({ received: true });

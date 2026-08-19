@@ -52,6 +52,8 @@ const Perfil = lazyPage(() => import('./pages/Perfil'), 'Perfil');
 const Nutricao = lazyPage(() => import('./pages/Nutricao'), 'Nutricao');
 const Vacinas = lazyPage(() => import('./pages/Vacinas'), 'Vacinas');
 const Assinatura = lazyPage(() => import('./pages/Assinatura'), 'Assinatura');
+const SolicitarReembolso = lazyPage(() => import('./pages/SolicitarReembolso'), 'SolicitarReembolso');
+const AcompanharReembolso = lazyPage(() => import('./pages/AcompanharReembolso'), 'AcompanharReembolso');
 const Ajuda = lazyPage(() => import('./pages/Ajuda'), 'Ajuda');
 const Agenda = lazyPage(() => import('./pages/Agenda'), 'Agenda');
 const HistoricoTreinos = lazyPage(() => import('./pages/HistoricoTreinos'), 'HistoricoTreinos');
@@ -183,6 +185,8 @@ export default function App() {
                   <Route path="/relatorio" element={<RequireAuth><RelatorioSemanal /></RequireAuth>} />
                   <Route path="/relatorio-impressao" element={<RequireAuth><RelatorioImpressao /></RequireAuth>} />
                   <Route path="/assinatura" element={<RequireAuth><Assinatura /></RequireAuth>} />
+                  <Route path="/reembolso/solicitar" element={<RequireAuth><SolicitarReembolso /></RequireAuth>} />
+                  <Route path="/reembolso/:protocol" element={<RequireAuth><AcompanharReembolso /></RequireAuth>} />
                   <Route path="/notificacoes" element={<RequireAuth><Notificacoes /></RequireAuth>} />
                   <Route path="/ajuda" element={<RequireAuth><Ajuda /></RequireAuth>} />
                   <Route path="/suporte" element={<RequireAuth><Suporte /></RequireAuth>} />
