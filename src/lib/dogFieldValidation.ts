@@ -46,8 +46,18 @@ export const validateDogBasics = (fields: { name: string; age: string; weight: s
   const name = fields.name.trim();
   const weight = Number(fields.weight);
 
-  if (!name || !fields.weight) {
-    return 'Preencha nome e peso do cão.';
+  // Mensagem por campo: a versão anterior citava nome e peso juntos, então quem tinha só o
+  // peso em branco lia que o nome também estava errado.
+  if (!name && !fields.weight) {
+    return 'Preencha o nome e o peso do cão.';
+  }
+
+  if (!name) {
+    return 'Preencha o nome do cão.';
+  }
+
+  if (!fields.weight) {
+    return 'Preencha o peso do cão.';
   }
 
   if (name.length > DOG_NAME_MAX_LENGTH) {
