@@ -100,6 +100,9 @@
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
   .narrow{max-width:760px;margin-inline:auto}
   section{padding:76px 0}
+  /* bloco que veio de outra secao: separa sem custar o padding de uma secao inteira */
+  .merged-block{margin-top:56px;padding-top:40px;border-top:1px solid var(--line,rgba(0,0,0,.08))}
+  @media (max-width:640px){section{padding:52px 0}.merged-block{margin-top:40px;padding-top:32px}}
   h1,h2,h3{line-height:1.1;letter-spacing:-.02em;font-weight:800}
   h2{font-size:clamp(28px,5vw,42px)}
   h3{font-size:clamp(20px,3vw,24px);font-weight:700;letter-spacing:-.01em}
@@ -571,7 +574,6 @@
 <div class="id-grid">
 <div class="id-card reveal"><span class="ic"><svg fill="none" viewbox="0 0 24 24"><path d="M15 7a3 3 0 11-6 0M6 21v-2a6 6 0 0112 0v2" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path></svg></span><p>Você pega a chave e o cão já entra em alerta, antes mesmo de a porta abrir.</p></div>
 <div class="id-card reveal"><span class="ic"><svg fill="none" viewbox="0 0 24 24"><path d="M4 20h16M6 20V10l6-5 6 5v10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg></span><p>Limpa xixi fora do lugar de novo, sem saber se é falta de treino, ansiedade ou tédio.</p></div>
-<div class="id-card reveal"><span class="ic"><svg fill="none" viewbox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM19 5a9 9 0 010 14M16 8a5 5 0 010 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg></span><p>Chega mais uma reclamação de latido, e a culpa aperta toda vez que você precisa sair.</p></div>
 <div class="id-card reveal"><span class="ic"><svg fill="none" viewbox="0 0 24 24"><path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"></path></svg></span><p>Tenta um vídeo hoje, outro método amanhã, e nunca sabe se algo está funcionando.</p></div>
 </div>
 <div class="villain reveal" style="margin-top:36px">
@@ -584,24 +586,6 @@
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"></path></svg> Não respeitam o limite do cão, e o que era para acalmar acaba reforçando o problema.</li>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"></path></svg> Não têm como medir evolução: sem registro, tudo depende da impressão do dia.</li>
 </ul>
-</div>
-</div>
-</section>
-<!-- SOLUÇÃO (proposta de valor + mecanismo) -->
-<section id="solucao">
-<div class="wrap">
-<div class="wrap narrow reveal" style="text-align:center;padding:0">
-<span class="eyebrow center">A virada</span>
-<h2>Em vez de mais uma biblioteca para explorar sozinho, o Focão mostra o próximo passo.</h2>
-<p class="lede" style="margin-top:16px">Ele parte do perfil do seu cão, organiza o treino em blocos e conduz um passo por vez. Você não precisa aprender tudo sobre comportamento canino. Precisa saber o que fazer hoje, e quando avançar.</p>
-</div>
-<div class="mech-grid">
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Perfil do cão</b></div><p>O treino parte de quem é o seu cão (idade, rotina e dificuldade), em vez de uma receita única.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Plano personalizado</b></div><p>Você começa pelo que faz sentido para aquele cão, não por técnicas desconectadas.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Evolução em blocos</b></div><p>Nada de informação demais de uma vez. Você avança conforme cria uma base consistente.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Check-in diário</b></div><p>O progresso deixa de depender da memória. Você enxerga padrões, não impressões.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Progresso visual</b></div><p>Dias, etapas e marcos que tornam a consistência visível, e mais fácil de manter.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Ajustes</b></div><p>O plano acompanha o comportamento: quando avançar, quando repetir, quando recuar um passo.</p></div>
 </div>
 </div>
 </section>
@@ -640,8 +624,29 @@
 </div>
 </div>
 </section>
+<section id="planos">
+<div class="wrap">
+<div class="section-head center-head reveal" style="text-align:center">
+<span class="eyebrow center">Comece hoje</span>
+<h2>7 dias grátis. Depois, R$67/mês.</h2>
+<p class="lede">Teste o Focão completo por uma semana, sem custo. Monte o plano do seu cão, faça os primeiros treinos e veja a evolução acontecer. Só é cobrado se você decidir continuar.</p>
+</div>
+<div class="plan-single reveal">
+<div class="plan prem">
+<div class="ptag">Assinatura Focão</div>
+<div class="trial-price">
+<b>7 dias grátis</b>
+<span>depois R$67/mês</span>
+</div>
+<ul><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Perfil comportamental completo do seu cão</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Plano de treino adaptativo, que evolui com ele</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Treino diário com o próximo passo sempre claro</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Check-in diário com ajustes automáticos</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Evolução em blocos e progresso visual</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Relatórios e insights de evolução</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Histórico completo de treinos</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Biblioteca completa de exercícios e técnicas</li></ul>
+<a class="btn btn-primary" href="https://buy.stripe.com/bJe9AVgIB83qcVzfjzbo404" rel="noopener noreferrer" target="_blank">Começar meus 7 dias grátis</a>
+<p class="micro" style="margin-top:14px;color:#AFC1B7">Sem cobrança nos primeiros 7 dias. Cancele quando quiser, direto pelo app.</p>
+</div>
+</div>
+</div>
+</section>
 <!-- PROBLEMS IT ORGANIZES -->
-<section id="ajuda">
+<section id="ajuda" style="background:var(--paper-2)">
 <div class="wrap">
 <div class="section-head reveal">
 <span class="eyebrow">O que o Focão ajuda a organizar</span>
@@ -655,18 +660,15 @@
 <div class="prob reveal"><div class="ph"><svg fill="none" viewbox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM8 12l3 3 5-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"></path></svg><b>Comandos básicos</b></div><p>Vem, espera, solta: os comandos que importam para a convivência e a segurança.</p></div>
 <div class="prob reveal"><div class="ph"><svg fill="none" viewbox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"></path></svg><b>Agitação</b></div><p>Canalizar energia com gasto físico e mental antes de cobrar calma.</p></div>
 <div class="prob reveal"><div class="ph"><svg fill="none" viewbox="0 0 24 24"><path d="M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M4 12H2M22 12h-2" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"></path></svg><b>Adaptação de filhotes</b></div><p>A base dos primeiros meses, quando prevenir é muito mais simples que reverter.</p></div>
-<div class="prob reveal"><div class="ph"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"></path></svg><b>Consistência do tutor</b></div><p>O check-in diário transforma boa intenção em prática que se sustenta.</p></div>
-<div class="prob reveal"><div class="ph"><svg fill="none" viewbox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"></path></svg><b>Prevenção de maus hábitos</b></div><p>Construir a base certa antes que o comportamento indesejado vire rotina.</p></div>
 </div>
 </div>
-</section>
-<!-- (mecanismo incorporado à seção "solução" acima; demonstração removida por redundância com "como funciona") -->
-<!-- SAFETY -->
-<section id="responsabilidade" style="background:var(--paper-2)">
+
+<!-- responsabilidade: fundida aqui, era secao propria -->
+<div class="merged-block">
 <div class="wrap">
 <div class="section-head reveal">
 <span class="eyebrow">Segurança e responsabilidade</span>
-<h2>Educar é cuidar. Sem gritos, sem violência, sem promessa mágica.</h2>
+<h3>Educar é cuidar. Sem gritos, sem violência, sem promessa mágica.</h3>
 <p class="lede">O método é baseado em princípios modernos de comportamento canino: reforço positivo, rotinas previsíveis, comunicação clara e progressão gradual.</p>
 </div>
 <div class="safe-grid">
@@ -676,13 +678,30 @@
 <div class="safe reveal"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><p><b>Casos graves pedem um profissional.</b> O Focão não substitui a avaliação de um veterinário ou adestrador qualificado.</p></div>
 </div>
 </div>
+</div>
 </section>
-<!-- FIT: FOR / NOT FOR -->
-<section id="para-quem">
+<!-- SOLUÇÃO (proposta de valor + mecanismo) -->
+<section id="solucao">
+<div class="wrap">
+<div class="wrap narrow reveal" style="text-align:center;padding:0">
+<span class="eyebrow center">A virada</span>
+<h2>Em vez de mais uma biblioteca para explorar sozinho, o Focão mostra o próximo passo.</h2>
+<p class="lede" style="margin-top:16px">Ele parte do perfil do seu cão, organiza o treino em blocos e conduz um passo por vez. Você não precisa aprender tudo sobre comportamento canino. Precisa saber o que fazer hoje, e quando avançar.</p>
+</div>
+<div class="mech-grid">
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Perfil do cão</b></div><p>O treino parte de quem é o seu cão (idade, rotina e dificuldade), em vez de uma receita única.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Evolução em blocos</b></div><p>Nada de informação demais de uma vez. Você avança conforme cria uma base consistente.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Check-in diário</b></div><p>O progresso deixa de depender da memória. Você enxerga padrões, não impressões.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Ajustes</b></div><p>O plano acompanha o comportamento: quando avançar, quando repetir, quando recuar um passo.</p></div>
+</div>
+</div>
+
+<!-- para-quem: fundida aqui, era secao propria -->
+<div class="merged-block">
 <div class="wrap">
 <div class="section-head reveal">
 <span class="eyebrow">É para você?</span>
-<h2>Feito para quem quer entender antes de corrigir.</h2>
+<h3>Feito para quem quer entender antes de corrigir.</h3>
 </div>
 <div class="fit-grid">
 <div class="fit yes reveal">
@@ -691,7 +710,6 @@
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Quer uma rotina mais tranquila em casa.</li>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Está cansado de improvisar com dicas soltas.</li>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Deseja educar com consistência, sem punição.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Prefere entender a causa antes de corrigir.</li>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Precisa de orientação clara sobre por onde começar.</li>
 </ul>
 </div>
@@ -700,17 +718,17 @@
 <ul>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg> Quem procura resultado instantâneo.</li>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg> Quem quer usar punição para “resolver” rápido.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg> Quem não pretende aplicar os treinos na rotina.</li>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg> Quem espera que o app faça tudo sozinho.</li>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg> Quem precisa de atendimento veterinário de urgência.</li>
 </ul>
 </div>
 </div>
 </div>
+</div>
 </section>
 <!-- APP SHOWCASE -->
 <!-- PLANS -->
-<section id="avaliacoes">
+<section id="avaliacoes" style="background:var(--paper-2)">
 <div class="wrap">
 <div class="section-head center-head reveal" style="text-align:center">
 <span class="eyebrow center">Avaliações</span>
@@ -748,27 +766,6 @@
 </div>
 </div>
 </section>
-<section id="planos">
-<div class="wrap">
-<div class="section-head center-head reveal" style="text-align:center">
-<span class="eyebrow center">Comece hoje</span>
-<h2>7 dias grátis. Depois, R$67/mês.</h2>
-<p class="lede">Teste o Focão completo por uma semana, sem custo. Monte o plano do seu cão, faça os primeiros treinos e veja a evolução acontecer. Só é cobrado se você decidir continuar.</p>
-</div>
-<div class="plan-single reveal">
-<div class="plan prem">
-<div class="ptag">Assinatura Focão</div>
-<div class="trial-price">
-<b>7 dias grátis</b>
-<span>depois R$67/mês</span>
-</div>
-<ul><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Perfil comportamental completo do seu cão</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Plano de treino adaptativo, que evolui com ele</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Treino diário com o próximo passo sempre claro</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Check-in diário com ajustes automáticos</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Evolução em blocos e progresso visual</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Relatórios e insights de evolução</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Histórico completo de treinos</li><li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Biblioteca completa de exercícios e técnicas</li></ul>
-<a class="btn btn-primary" href="https://buy.stripe.com/bJe9AVgIB83qcVzfjzbo404" rel="noopener noreferrer" target="_blank">Começar meus 7 dias grátis</a>
-<p class="micro" style="margin-top:14px;color:#AFC1B7">Sem cobrança nos primeiros 7 dias. Cancele quando quiser, direto pelo app.</p>
-</div>
-</div>
-</div>
-</section>
 <!-- FAQ -->
 <section id="faq">
 <div class="wrap narrow">
@@ -780,14 +777,8 @@
 <details><summary>Preciso entender de adestramento?</summary><div class="fa">Não. O Focão foi feito justamente para quem não quer estudar comportamento canino. Você segue o próximo passo indicado para o seu caso. A ordem e a explicação já vêm prontas.</div></details>
 <details><summary>Funciona para filhotes e para cães adultos?</summary><div class="fa">Sim. O plano parte do perfil do cão, então filhote e adulto seguem caminhos diferentes. Com filhotes, o foco costuma ser construir a base certa; com adultos, reorganizar hábitos já existentes. O que não fazemos é tratar todos os casos como se tivessem a mesma causa.</div></details>
 <details><summary>Quanto tempo preciso por dia?</summary><div class="fa">Os treinos são curtos e pensados para caber na rotina. A ideia central é constância, não sessões longas: pouca prática todos os dias rende mais do que muito esforço de vez em quando.</div></details>
-<details><summary>O plano é igual para todos os cães?</summary><div class="fa">Não. O onboarding reúne os dados do seu cão e gera um primeiro plano de acordo com o perfil e a dificuldade apresentada. O caminho se ajusta conforme você registra a evolução.</div></details>
 <details><summary>O Focão substitui um adestrador ou veterinário?</summary><div class="fa">Não. Ele é uma orientação responsável e progressiva para o dia a dia. Casos mais intensos, como automutilação, agressividade consistente ou quadros que não evoluem com constância, devem ser acompanhados por um profissional qualificado.</div></details>
-<details><summary>Serve para ansiedade de separação?</summary><div class="fa">Ajuda a organizar o trabalho de forma gradual, com dessensibilização e rotina, respeitando o limite do cão. Não prometemos “fim da ansiedade”: casos mais profundos podem exigir acompanhamento profissional, e o Focão sinaliza quando esse é o caminho.</div></details>
 <details><summary>Preciso pagar para começar?</summary><div class="fa">Você testa o Focão completo por 7 dias sem pagar nada. Para ativar o teste, é preciso cadastrar um cartão — mas nenhuma cobrança acontece durante os 7 primeiros dias. Depois desse período, a assinatura é R$67/mês, e você pode cancelar quando quiser, direto pelo app, antes disso.</div></details>
-<details><summary>Como funciona o Premium? Posso cancelar?</summary><div class="fa">O Focão custa <b>R$67/mês</b>, com <b>7 dias grátis</b> para testar. A assinatura libera tudo: plano de treino adaptativo que se atualiza conforme a evolução do cão, perfil comportamental refinado, ajustes automáticos a cada check-in, relatórios de evolução, histórico completo e a biblioteca completa de exercícios e técnicas. Você pode cancelar quando quiser, direto pelo app.</div></details>
-<details><summary>E se meu cão não evoluir?</summary><div class="fa">Faz parte. O método prevê recuos: quando um passo não firma, você repete ou volta um bloco antes de avançar. E quando os sinais indicam que o caso pede ajuda especializada, o Focão orienta a procurar um profissional.</div></details>
-<details><summary>O método usa punição?</summary><div class="fa">Nunca. Toda a metodologia é baseada em reforço positivo, rotinas previsíveis e comunicação clara, sem gritos, sem violência e sem punição física.</div></details>
-<details><summary>Em quais dispositivos funciona?</summary><div class="fa">O Focão funciona no celular (Android e iOS) e no computador (desktop). Você pode treinar pelo celular no dia a dia e acompanhar a evolução de onde preferir, e seu progresso fica sincronizado.</div></details>
 </div>
 </div>
 </section>
