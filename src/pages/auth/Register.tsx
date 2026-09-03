@@ -33,6 +33,9 @@ export function Register() {
     dogName: localStorage.getItem('focao_presell_dog_name') || '',
     dogAge: '',
   }));
+  // Opt-in de WhatsApp: comeca desmarcado de proposito. Informar o numero e
+  // uma coisa; aceitar receber lembrete automatico e outra.
+  const [whatsappOptIn, setWhatsappOptIn] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -65,6 +68,7 @@ export function Register() {
       await UserProfileService.ensureProfile(user, name, referredBy);
       await UserRepository.updateBetaSignupDetails(user.uid, {
         whatsappPhone: formData.whatsapp.trim(),
+        whatsappOptIn,
         ...getBetaRegistrationMetadata(),
       });
       await DogRepository.saveDogProfile(user.uid, {
@@ -234,6 +238,18 @@ export function Register() {
               value={formData.whatsapp}
               onChange={(e) => setFormData((prev) => ({ ...prev, whatsapp: e.target.value }))}
             />
+            <label className="flex items-start gap-2.5 px-1 -mt-1 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={whatsappOptIn}
+                onChange={(e) => setWhatsappOptIn(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[#055A43]"
+              />
+              <span className="text-[12.5px] leading-[1.5] text-[#6B7A6E]">
+                Quero receber lembretes de treino e avisos da conta por WhatsApp.
+                Voce pode desligar quando quiser em Perfil &rarr; Notificacoes.
+              </span>
+            </label>
             <Input
               label="Nome do cachorro"
               placeholder="Ex: Bento"

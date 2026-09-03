@@ -149,6 +149,13 @@ export class UserRepository {
 
   static async updateBetaSignupDetails(userId: string, data: {
     whatsappPhone?: string;
+    /**
+     * Aceite explícito de receber mensagem no WhatsApp. Ter o telefone NÃO é
+     * consentimento: a pessoa informa o número para a conta, não para virar
+     * destinatária de lembrete automático. Sem isto marcado, o número é
+     * guardado e o canal fica desligado.
+     */
+    whatsappOptIn?: boolean;
     registrationSource?: string;
     acquisitionSource?: string;
     betaCohort?: string;
@@ -163,11 +170,18 @@ export class UserRepository {
       acquisitionSource: data.acquisitionSource || 'beta',
       betaCohort: data.betaCohort || 'wave_1',
       betaVersion: data.betaVersion || 'v1',
-      ...(data.whatsappPhone && {
-        whatsappPhone: data.whatsappPhone,
-        whatsappEnabled: true,
-        whatsappStatus: 'active',
-      }),
+      ...(data.whatsappPhone && { whatsappPhone: data.whatsappPhone }),
+      ...(data.whatsappOptIn === true
+        ? {
+            whatsappEnabled: true,
+            whatsappStatus: data.whatsappPhone ? 'active' : 'missing_phone',
+            whatsappOptInAt: now,
+            whatsappOptInSource: 'cadastro',
+          }
+        : {
+            whatsappEnabled: false,
+            whatsappStatus: 'disabled',
+          }),
       updatedAt: now,
     });
   }

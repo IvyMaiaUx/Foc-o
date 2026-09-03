@@ -281,11 +281,12 @@ export function Analyzing() {
           },
         };
 
+        // Guarda o telefone, mas NÃO liga o canal: informar o número não é
+        // consentir em receber mensagem. O aceite é dado no cadastro e gravado
+        // por UserRepository.updateBetaSignupDetails, ou depois em
+        // Perfil → Notificações. Ligar aqui sobrescreveria uma recusa.
         if (dogData?.whatsappPhone) {
-          userUpdate.whatsappEnabled = true;
           userUpdate.whatsappPhone = dogData.whatsappPhone;
-          userUpdate.whatsappOptInAt = now;
-          userUpdate.whatsappStatus = 'active';
         }
 
         // set(merge) em vez de update: cria-ou-mescla o doc do usuário, evitando que o

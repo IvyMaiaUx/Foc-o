@@ -13,13 +13,21 @@ export function LeadForm({ formRef, contentName = "ebook_comportamento_e_rotina"
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ name: "", email: "", whatsapp: "" });
+  // Dois aceites separados: um nao cobre o outro. E-mail entrega o material
+  // pedido; WhatsApp e canal de mensagem ativa e comeca desmarcado.
+  const [consentEmail, setConsentEmail] = useState(false);
+  const [consentWhatsapp, setConsentWhatsapp] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setSubmitting(true);
     try {
-      await LeadRepository.createMarketingLead(form);
+      await LeadRepository.createMarketingLead({
+        ...form,
+        emailPermission: consentEmail,
+        whatsappPermission: consentWhatsapp && form.whatsapp.trim().length > 0,
+      });
       const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
       fbq?.("track", "Lead", {
         content_name: contentName,
@@ -32,6 +40,36 @@ export function LeadForm({ formRef, contentName = "ebook_comportamento_e_rotina"
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const consentRowStyle: CSSProperties = {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "10px",
+    cursor: "pointer",
+    textAlign: "left",
+  };
+
+  const checkboxStyle: CSSProperties = {
+    marginTop: "3px",
+    width: "16px",
+    height: "16px",
+    flexShrink: 0,
+    accentColor: "#055A43",
+  };
+
+  const consentTextStyle: CSSProperties = {
+    fontFamily: "var(--font-sans)",
+    fontSize: "0.78rem",
+    lineHeight: 1.5,
+    fontWeight: 300,
+    color: "#6B7A6E",
+  };
+
+  const consentLinkStyle: CSSProperties = {
+    color: "#055A43",
+    textDecoration: "underline",
+    textUnderlineOffset: "2px",
   };
 
   const inputStyle: CSSProperties = {
@@ -223,6 +261,36 @@ export function LeadForm({ formRef, contentName = "ebook_comportamento_e_rotina"
                   onBlur={(e) => (e.currentTarget.style.borderColor = "#E7E3DA")}
                 />
               </div>
+
+              <label style={consentRowStyle}>
+                <input
+                  type="checkbox"
+                  checked={consentEmail}
+                  onChange={(e) => setConsentEmail(e.target.checked)}
+                  required
+                  style={checkboxStyle}
+                />
+                <span style={consentTextStyle}>
+                  Concordo em receber o material por e-mail e li a{" "}
+                  <a href="/privacidade" target="_blank" rel="noopener noreferrer" style={consentLinkStyle}>
+                    Politica de Privacidade
+                  </a>
+                  .
+                </span>
+              </label>
+
+              <label style={consentRowStyle}>
+                <input
+                  type="checkbox"
+                  checked={consentWhatsapp}
+                  onChange={(e) => setConsentWhatsapp(e.target.checked)}
+                  style={checkboxStyle}
+                />
+                <span style={consentTextStyle}>
+                  Quero receber lembretes e novidades do Focao por WhatsApp.{" "}
+                  <span style={{ opacity: 0.7 }}>Opcional.</span>
+                </span>
+              </label>
 
               {error && (
                 <p

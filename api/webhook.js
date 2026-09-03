@@ -77,6 +77,12 @@ async function collectMarketingLead(req, res) {
       referrer: cleanString(req.body?.referrer, 220),
       userAgent: cleanString(req.headers['user-agent'], 180),
       utm: req.body?.utm && typeof req.body.utm === 'object' ? req.body.utm : {},
+      // Consentimento vem explícito ou não vem: o padrão é false. Um lead criado
+      // por aqui sem marcar nada não pode virar destinatário de e-mail nem de
+      // WhatsApp só por ter chegado ao banco.
+      emailPermission: req.body?.emailPermission === true,
+      whatsappPermission: req.body?.whatsappPermission === true,
+      privacidadeVersao: cleanString(req.body?.privacidadeVersao, 12) || null,
       status: 'new',
       createdAt: now,
       updatedAt: now,
