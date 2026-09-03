@@ -26,7 +26,34 @@ export function useDeleteAccount() {
 
   async function deleteUserSubcollections(uid: string) {
     const db = getFirestore();
-    const subcollections = ['dogs', 'sessions', 'checkins', 'notifications'];
+    // O Firestore NÃO apaga subcoleção junto com o documento pai: o que não
+    // estiver nesta lista fica órfão no banco depois que a conta some. A lista
+    // anterior tinha quatro nomes, dois deles inexistentes ('dogs', 'sessions')
+    // e o de perfil do cão no plural errado — na prática vacinas, treinos,
+    // check-ins e eventos sobreviviam a um "excluir todos os meus dados".
+    //
+    // A fonte desta lista é o firestore.rules, que declara toda subcoleção que
+    // pode existir sob /users/{uid}. Ao criar uma subcoleção nova lá, acrescente
+    // aqui também, senão ela passa a escapar da exclusão em silêncio.
+    const subcollections = [
+      'adminReports',
+      'checkins',
+      'completedTrainings',
+      'customEventCompletions',
+      'customEvents',
+      'dailyCheckins',
+      'dog',
+      'dogs',
+      'evolution',
+      'missions',
+      'notifications',
+      'plan',
+      'sessions',
+      'trainingHistory',
+      'trainingLogs',
+      'trainingSessions',
+      'vaccines',
+    ];
 
     for (const sub of subcollections) {
       const colRef = collection(db, 'users', uid, sub);

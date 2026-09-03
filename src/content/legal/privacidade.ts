@@ -97,7 +97,7 @@ Você pode alterar sua escolha a qualquer momento em **\`Perfil → Privacidade 
 | Dado | Prazo |
 |---|---|
 | Conta, perfil do cão, treinos e registros | Enquanto a conta estiver ativa |
-| Após exclusão da conta | Eliminação em até **{{prazoEliminacao}}**, salvo exceções abaixo |
+| Após exclusão da conta | Eliminação **{{prazoEliminacao}}**, salvo exceções abaixo |
 | Registros de acesso (IP, data/hora) | **6 meses** (art. 15, Marco Civil) |
 | Dados fiscais e de pagamento | **5 anos** (legislação fiscal e art. 27 do CDC) |
 | Registro de consentimento | **5 anos** após a revogação, como prova do aceite |

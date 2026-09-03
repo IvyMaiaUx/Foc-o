@@ -57,8 +57,12 @@ export const EMPRESA = {
  * escrito, então preencha com o que a operação consegue cumprir de verdade.
  */
 export const PRAZOS = {
-  /** Eliminação dos dados após a exclusão da conta. */
-  eliminacao: PENDENTE,
+  /**
+   * Eliminação dos dados após a exclusão da conta. É síncrona: o app apaga as
+   * 17 subcoleções, o documento do usuário, os arquivos do Storage e a conta no
+   * Auth, nessa ordem, antes de retornar.
+   */
+  eliminacao: 'imediata',
   /** Retenção de lead de e-book sem interação. */
   leads: PENDENTE,
   /** Antecedência do aviso de mudança nos Termos. */
@@ -66,11 +70,11 @@ export const PRAZOS = {
   /** Novas tentativas de cobrança antes de suspender o acesso. */
   tentativasCobranca: PENDENTE,
   /** Análise de um pedido de reembolso. */
-  analiseReembolso: PENDENTE,
+  analiseReembolso: '3 dias úteis',
   /** Processamento do estorno, após o pedido ser aprovado. */
   estorno: PENDENTE,
   /** Resposta do suporte. */
-  respostaSuporte: PENDENTE,
+  respostaSuporte: '2 dias úteis',
   /** Sobrescrita dos backups. */
   backup: PENDENTE,
 } as const;
