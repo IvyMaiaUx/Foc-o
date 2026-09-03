@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { auth, db } from '@/src/lib/firebase';
 import { doc, getDoc, collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { Settings, ShieldPlus, ChevronRight, HelpCircle, LogOut, Utensils, Syringe, Crown, CalendarClock, Bell, AlertTriangle, FileText, Sparkles } from 'lucide-react';
+import { Settings, ShieldPlus, ChevronRight, HelpCircle, LogOut, Utensils, Syringe, Crown, CalendarClock, Bell, AlertTriangle, FileText, Sparkles, Cookie } from 'lucide-react';
 import { useAuth } from '@/src/contexts/AuthContext';
+import { abrirPreferenciasCookies } from '@/src/components/LgpdBanner';
 import { getSubscriptionPlan, getSubscriptionStatus, hasPremiumAccess } from '@/src/types';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { TrainingRepository } from '@/src/repositories/TrainingRepository';
@@ -604,6 +605,22 @@ export function Perfil() {
             Privacidade & LGPD
           </h3>
           <div className="bg-white rounded-[1.5rem] p-2 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] flex flex-col gap-1">
+            <button
+              onClick={abrirPreferenciasCookies}
+              className="flex items-center justify-between p-4 px-3 active:bg-gray-50 rounded-xl transition-colors text-left"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#055A43]/5 flex items-center justify-center text-[#055A43]">
+                  <Cookie className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="font-medium text-[#506352] text-sm">Preferências de cookies</p>
+                  <p className="text-[#6B7A6E]/70 text-[11px] font-light mt-0.5">Aceitar ou recusar os cookies de marketing</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#506352]/40" />
+            </button>
+            <div className="h-px w-[85%] bg-gray-100 self-end" />
             <button 
               onClick={handleExportData}
               disabled={isExporting}

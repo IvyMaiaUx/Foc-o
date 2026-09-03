@@ -3,9 +3,28 @@ import { Link } from 'react-router-dom';
 
 const STORAGE_KEY = 'lgpd_consent';
 
+/**
+ * Evento que reabre o banner. Quem quiser oferecer "Preferências de cookies"
+ * — o rodapé, a tela de Perfil — dispara isto em vez de duplicar a lógica.
+ */
+export const EVENTO_PREFERENCIAS = 'focao:preferencias-cookies';
+
+export function abrirPreferenciasCookies() {
+  window.dispatchEvent(new CustomEvent(EVENTO_PREFERENCIAS));
+}
+
 declare global {
   interface Window {
     __loadFocaoTrackers?: () => void;
+  }
+}
+
+function lerConsentimento(): { marketing?: unknown } | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
   }
 }
 
@@ -13,27 +32,37 @@ export function LgpdBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const consent = raw ? JSON.parse(raw) : null;
-      // Mostra se nunca respondeu OU se o consentimento é do formato antigo (sem o campo marketing).
-      if (!consent || typeof consent.marketing !== 'boolean') setVisible(true);
-    } catch {
-      setVisible(true);
-    }
+    const consent = lerConsentimento();
+    // Mostra se nunca respondeu OU se o consentimento é do formato antigo (sem o campo marketing).
+    if (!consent || typeof consent.marketing !== 'boolean') setVisible(true);
+  }, []);
+
+  // Reabertura sob demanda: a LGPD exige que revogar seja tão fácil quanto consentir.
+  useEffect(() => {
+    const reabrir = () => setVisible(true);
+    window.addEventListener(EVENTO_PREFERENCIAS, reabrir);
+    return () => window.removeEventListener(EVENTO_PREFERENCIAS, reabrir);
   }, []);
 
   function save(marketing: boolean) {
+    const anterior = lerConsentimento();
+    const revogou = anterior?.marketing === true && !marketing;
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       accepted: true,
       marketing,
       date: new Date().toISOString(),
     }));
     setVisible(false);
+
     // Só dispara os trackers de marketing se o usuário consentiu.
     if (marketing && typeof window !== 'undefined' && window.__loadFocaoTrackers) {
       window.__loadFocaoTrackers();
+      return;
     }
+    // Revogação depois de ter aceitado: os scripts já estão na página e não têm
+    // como ser desligados em memória, então recarregamos para que não subam de novo.
+    if (revogou) window.location.reload();
   }
 
   if (!visible) return null;

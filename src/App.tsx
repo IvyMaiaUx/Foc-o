@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AppLaunchSplash } from './components/branding/AppLaunchSplash';
 import { MainLayout } from './components/layout/MainLayout';
 import { LgpdBanner } from './components/LgpdBanner';
+import { LegalFooterPublico } from './components/LegalFooter';
 import { InstallPrompt } from './components/InstallPrompt';
 import { Manutencao } from './pages/Manutencao';
 
@@ -26,6 +27,8 @@ const EbookLanding = lazyPage(() => import('./pages/EbookLanding'), 'EbookLandin
 const FimDaCulpaLanding = lazyPage(() => import('./pages/FimDaCulpaLanding'), 'FimDaCulpaLanding');
 const PresellFocao = lazyPage(() => import('./pages/PresellFocao'), 'PresellFocao');
 const PoliticaPrivacidade = lazyPage(() => import('./pages/PoliticaPrivacidade'), 'PoliticaPrivacidade');
+const TermosDeUso = lazyPage(() => import('./pages/TermosDeUso'), 'TermosDeUso');
+const PoliticaCookies = lazyPage(() => import('./pages/PoliticaCookies'), 'PoliticaCookies');
 const BetaFocao = lazyPage(() => import('./pages/BetaFocao'), 'BetaFocao');
 
 // Onboarding
@@ -146,6 +149,8 @@ export default function App() {
                   <Route path="/email-confirmado" element={<EmailConfirmed />} />
                   <Route path="/ativar" element={<Ativar />} />
                   <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+                  <Route path="/termos" element={<TermosDeUso />} />
+                  <Route path="/cookies" element={<PoliticaCookies />} />
                   <Route path="/beta" element={<BetaFocao />} />
 
                   {/* Onboarding */}
@@ -206,6 +211,7 @@ export default function App() {
                   <Route path="*" element={<Navigate to="/inicio" replace />} />
                 </Routes>
               </Suspense>
+              <LegalFooterPublico />
               <LgpdBanner />
               <InstallPrompt />
             </>

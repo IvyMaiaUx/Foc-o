@@ -51,6 +51,8 @@
   }
 
   function save(marketing) {
+    var anterior = getConsent();
+    var jaAceitouMarketing = !!(anterior && anterior.marketing === true);
     try {
       localStorage.setItem(KEY, JSON.stringify({
         accepted: true,
@@ -60,7 +62,10 @@
     } catch (e) {}
     var el = document.getElementById('focao-lgpd-banner');
     if (el) el.parentNode.removeChild(el);
-    if (marketing) loadPixel();
+    if (marketing) { loadPixel(); return; }
+    // Revogacao depois de ter aceitado: os scripts ja estao na pagina e nao tem
+    // como ser desligados em memoria, entao recarregamos para nao subirem de novo.
+    if (jaAceitouMarketing) location.reload();
   }
 
   function showBanner() {
@@ -82,6 +87,42 @@
     document.body.appendChild(wrap);
     document.getElementById('focao-lgpd-accept').addEventListener('click', function () { save(true); });
     document.getElementById('focao-lgpd-reject').addEventListener('click', function () { save(false); });
+  }
+
+  // Reabre o banner sob demanda. A LGPD exige que revogar seja tao facil quanto
+  // consentir, e o banner some depois da primeira resposta.
+  function abrirPreferencias() {
+    var atual = document.getElementById('focao-lgpd-banner');
+    if (atual) atual.parentNode.removeChild(atual);
+    showBanner();
+  }
+  window.__focaoAbrirPreferencias = abrirPreferencias;
+
+  // Rodape com os documentos legais. Sem ele, depois que o banner sai o visitante
+  // perde o caminho tanto para os documentos quanto para mudar de ideia.
+  function montarRodape() {
+    if (document.getElementById('focao-legal-footer')) return;
+    var rodape = document.createElement('footer');
+    rodape.id = 'focao-legal-footer';
+    rodape.setAttribute('aria-label', 'Documentos legais');
+    rodape.style.cssText = 'padding:28px 20px 34px;text-align:center;font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:12.5px;line-height:1.9;border-top:1px solid rgba(0,0,0,0.06)';
+    var estiloLink = 'color:#055A43;text-decoration:underline;text-underline-offset:2px';
+    rodape.innerHTML =
+      '<a href="/privacidade" style="' + estiloLink + '">Política de Privacidade</a>' +
+      '<span aria-hidden="true" style="opacity:.3;padding:0 8px">·</span>' +
+      '<a href="/termos" style="' + estiloLink + '">Termos de Uso</a>' +
+      '<span aria-hidden="true" style="opacity:.3;padding:0 8px">·</span>' +
+      '<a href="/cookies" style="' + estiloLink + '">Cookies</a>' +
+      '<span aria-hidden="true" style="opacity:.3;padding:0 8px">·</span>' +
+      '<button type="button" id="focao-legal-prefs" style="' + estiloLink + ';background:none;border:none;padding:0;font:inherit;cursor:pointer">Preferências de cookies</button>';
+    document.body.appendChild(rodape);
+    document.getElementById('focao-legal-prefs').addEventListener('click', abrirPreferencias);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', montarRodape);
+  } else {
+    montarRodape();
   }
 
   var c = getConsent();
