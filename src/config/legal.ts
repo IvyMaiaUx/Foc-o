@@ -71,8 +71,12 @@ export const PRAZOS = {
   tentativasCobranca: PENDENTE,
   /** Análise de um pedido de reembolso. */
   analiseReembolso: '3 dias úteis',
-  /** Processamento do estorno, após o pedido ser aprovado. */
-  estorno: PENDENTE,
+  /**
+   * Prazo para acionarmos o estorno depois de aprovar o pedido. Não confundir
+   * com o tempo até o valor aparecer no extrato: esse depende da operadora do
+   * cartão de cada pessoa e está numa linha separada do documento.
+   */
+  estorno: '1 dia útil',
   /** Resposta do suporte. */
   respostaSuporte: '2 dias úteis',
   /** Sobrescrita dos backups. */
