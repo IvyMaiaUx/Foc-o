@@ -64,7 +64,7 @@ export const PRAZOS = {
    */
   eliminacao: 'imediata',
   /** Retenção de lead de e-book sem interação. */
-  leads: PENDENTE,
+  leads: '24 meses',
   /** Antecedência do aviso de mudança nos Termos. */
   avisoMudanca: PENDENTE,
   /** Novas tentativas de cobrança antes de suspender o acesso. */
@@ -89,9 +89,14 @@ export const HORARIO_ATENDIMENTO = PENDENTE;
 /** Pontos que dependem de confirmação externa. */
 export const TERCEIROS = {
   /** País de tratamento da Kirvano. */
-  kirvanoPais: PENDENTE,
-  /** Quem figura como fornecedor perante o consumidor na venda dos e-books. */
-  kirvanoPapel: PENDENTE,
+  kirvanoPais: 'Brasil',
+  /**
+   * Quem responde perante o consumidor na venda dos e-books. Se a fatura da
+   * Kirvano passar a trazer outra empresa como vendedora, esta frase muda.
+   */
+  kirvanoPapel:
+    'O Focão é o fornecedor perante você: a Kirvano apenas processa o pagamento. '
+    + 'Pedidos de reembolso e questões sobre a compra devem ser dirigidos a nós.',
   /** Região onde o projeto Supabase está hospedado. */
   supabaseRegiao: PENDENTE,
   /** Endereço do regulamento do Indique e Ganhe. */
