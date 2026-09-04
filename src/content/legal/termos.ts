@@ -118,7 +118,7 @@ A solicitação é registrada imediatamente, com confirmação na tela e por e-m
 - **Não há reembolso proporcional** de ciclos já iniciados, salvo nos casos dos itens 9 e 10 ou por determinação legal.
 
 ### 11.4 Excluir a conta
-Cancelar a assinatura **não exclui** sua conta nem seus dados. Para excluir, use \`Perfil → Excluir conta\`. A exclusão é definitiva e apaga o histórico de treinos, registros e o perfil do seu cão. Ver item 8 da Política de Privacidade sobre prazos de retenção legal.
+Cancelar a assinatura **não exclui** sua conta nem seus dados. Para excluir, use \`Perfil → Privacidade & LGPD → Excluir Minha Conta\`. A exclusão é definitiva e apaga o histórico de treinos, registros e o perfil do seu cão. Ver item 8 da Política de Privacidade sobre prazos de retenção legal.
 
 ## 12. E-books e materiais complementares
 
