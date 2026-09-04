@@ -1,4 +1,3 @@
-import Stripe from 'stripe';
 import { admin, getDb } from './_firebase.js';
 
 function setCors(req, res) {
@@ -83,54 +82,9 @@ export default async function cancelSubscription(req, res) {
     
     const userName = userData?.name || userData?.userName || 'Sem nome';
 
-    // Cancela de fato na Stripe. Antes daqui isto só gravava um pedido e alguém
-    // precisava cancelar à mão no painel — quem clicava em cancelar via a
-    // confirmação e continuava sendo cobrado até alguém lembrar de olhar. O
-    // Decreto 11.034/2022 exige cancelamento pelo mesmo meio da contratação, e é
-    // isso que os Termos §11.1 afirmam.
-    //
-    // cancel_at_period_end em vez de cancelamento imediato: os Termos §11.3 dizem
-    // que o acesso continua até o fim do período já pago, e tirar na hora seria
-    // retirar acesso que a pessoa pagou.
-    let canceladoNaStripe = false;
-    let erroStripe = null;
-
-    if (stripeSubscriptionId && process.env.STRIPE_SECRET_KEY) {
-      try {
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-        const assinatura = await stripe.subscriptions.update(stripeSubscriptionId, {
-          cancel_at_period_end: true,
-          cancellation_details: { comment: reason || 'Cancelamento solicitado pelo app' },
-        });
-        canceladoNaStripe = assinatura.cancel_at_period_end === true;
-
-        await db.collection('users').doc(decoded.uid).set(
-          {
-            subscription: {
-              cancelAtPeriodEnd: true,
-              canceledAt: Date.now(),
-              currentPeriodEnd: assinatura.current_period_end
-                ? assinatura.current_period_end * 1000
-                : userData?.subscription?.currentPeriodEnd || null,
-            },
-            updatedAt: Date.now(),
-          },
-          { merge: true },
-        );
-      } catch (err) {
-        // Não engolir: se a Stripe recusou, a pessoa NÃO está cancelada e
-        // precisa saber disso em vez de ver uma confirmação falsa.
-        erroStripe = err?.message || 'falha ao cancelar na Stripe';
-        console.error('[cancel-subscription] Stripe update falhou', err);
-      }
-    } else if (!stripeSubscriptionId) {
-      erroStripe = 'usuário sem stripeSubscriptionId';
-    } else {
-      erroStripe = 'STRIPE_SECRET_KEY não configurada';
-    }
-
-    // A coleção continua existindo como registro e trilha de auditoria — ela só
-    // deixou de ser o mecanismo do cancelamento.
+    // Record the cancellation request in the cancellations collection.
+    // This does NOT touch Stripe or the user's access — an admin reviews the
+    // request in the painel admin and cancels manually (Stripe stays source of truth).
     const cancellationRef = db.collection('cancellations').doc();
     await cancellationRef.set({
       userId: decoded.uid,
@@ -140,21 +94,10 @@ export default async function cancelSubscription(req, res) {
       reason: reason || 'Não informado',
       feedback: feedback || '',
       stripeSubscriptionId: stripeSubscriptionId || null,
-      canceladoNaStripe,
-      erroStripe,
       createdAt: Date.now(),
     });
 
-    if (!canceladoNaStripe) {
-      res.status(502).json({
-        error: 'stripe_cancel_failed',
-        message: 'Registramos seu pedido, mas não conseguimos concluir o cancelamento agora. '
-          + 'Nossa equipe vai finalizar e confirmar por e-mail.',
-      });
-      return;
-    }
-
-    res.status(200).json({ success: true, cancelAtPeriodEnd: true });
+    res.status(200).json({ success: true });
   } catch (error) {
     console.error('[cancel-subscription] failed', error);
     res.status(500).json({ error: 'Internal error' });
