@@ -16,7 +16,7 @@
  * de forma relevante, suba a versão aqui.
  */
 export const LEGAL_VERSIONS = {
-  termos: '1.0',
+  termos: '1.1',
   privacidade: '2.0',
   cookies: '1.0',
 } as const;

@@ -105,19 +105,31 @@ Após o reembolso integral, o acesso aos recursos pagos é encerrado.
 
 ## 11. Cancelamento
 
-### 11.1 Como cancelar
-O cancelamento é feito **diretamente pelo aplicativo**, em \`Perfil → Assinatura\`, sem necessidade de contato com atendimento — conforme o **Decreto nº 11.034/2022**, que garante o cancelamento pelo mesmo meio da contratação.
+### 11.1 Como solicitar
+O pedido de cancelamento é feito **pelo próprio aplicativo**, em \`Perfil → Assinatura\`. Você não precisa ligar, enviar e-mail nem falar com atendimento para solicitar.
 
-### 11.2 Solicitação e efetivação
-A solicitação é registrada imediatamente, com confirmação na tela e por e-mail. O **status da assinatura é atualizado** no seu perfil, junto com a data em que o acesso termina.
+### 11.2 Análise e efetivação
+O cancelamento passa por **conferência da nossa equipe** antes de ser efetivado.
 
-### 11.3 Efeitos
-- A **cobrança recorrente é interrompida** — não haverá novas cobranças.
-- Cancelamento **durante o teste**: acesso encerrado ao fim do 7º dia, sem qualquer cobrança.
-- Cancelamento **com assinatura ativa**: acesso mantido **até o fim do período já pago**.
-- **Não há reembolso proporcional** de ciclos já iniciados, salvo nos casos dos itens 9 e 10 ou por determinação legal.
+- A solicitação é registrada **imediatamente**, com **número de protocolo** exibido na tela e enviado por e-mail.
+- Analisamos e efetivamos em até **5 dias úteis** contados da solicitação.
+- Você acompanha o andamento pelo protocolo, dentro do app.
+- Concluída a análise, o status da assinatura é atualizado no seu perfil, junto com a data em que o acesso termina, e você recebe a confirmação por e-mail.
 
-### 11.4 Excluir a conta
+Enquanto a análise não termina, a assinatura permanece com status de **cancelamento solicitado** — não de cancelada.
+
+### 11.3 A data que vale é a do seu pedido
+**Nenhuma cobrança será mantida por causa do tempo da nossa análise.**
+
+Se uma renovação ocorrer entre a data da sua solicitação e a data da efetivação, ela será **integralmente devolvida**, sem necessidade de pedido de reembolso e sem análise de mérito. O estorno é feito no mesmo meio de pagamento.
+
+### 11.4 Efeitos do cancelamento
+- A **cobrança recorrente é interrompida** — não haverá novas cobranças após a efetivação.
+- Cancelamento solicitado **durante o teste**: acesso encerrado ao fim do 7º dia, sem qualquer cobrança.
+- Cancelamento solicitado **com assinatura ativa**: acesso mantido **até o fim do período já pago**.
+- **Não há reembolso proporcional** de ciclos já iniciados, salvo no caso do item 11.3 e nos itens 9 e 10, ou por determinação legal.
+
+### 11.5 Excluir a conta
 Cancelar a assinatura **não exclui** sua conta nem seus dados. Para excluir, use \`Perfil → Privacidade & LGPD → Excluir Minha Conta\`. A exclusão é definitiva e apaga o histórico de treinos, registros e o perfil do seu cão. Ver item 8 da Política de Privacidade sobre prazos de retenção legal.
 
 ## 12. E-books e materiais complementares
@@ -200,7 +212,7 @@ Nada nestes Termos afasta as garantias legais do Código de Defesa do Consumidor
 
 Podemos suspender ou encerrar contas que violem estes Termos, com aviso quando possível. Em caso de fraude, ataque à plataforma ou ilegalidade, o encerramento pode ser imediato.
 
-Você pode encerrar sua conta a qualquer momento (item 11.4).
+Você pode encerrar sua conta a qualquer momento (item 11.5).
 
 ## 21. Alterações destes Termos
 
