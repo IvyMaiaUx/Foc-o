@@ -44,3 +44,8 @@ credentials.json
 scratch/
 
 .env*
+
+# Credenciais de servico e dumps de backup nunca entram no repositorio
+*firebase-adminsdk*.json
+credencial.json
+focao-backup/

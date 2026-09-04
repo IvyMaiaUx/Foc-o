@@ -17,7 +17,7 @@
  */
 export const LEGAL_VERSIONS = {
   termos: '1.1',
-  privacidade: '2.0',
+  privacidade: '2.1',
   cookies: '1.0',
 } as const;
 

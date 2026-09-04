@@ -103,12 +103,17 @@ Você pode alterar sua escolha a qualquer momento em **\`Perfil → Privacidade 
 | Registro de consentimento | **5 anos** após a revogação, como prova do aceite |
 | Leads do formulário de e-book | **{{prazoLeads}}** sem interação, ou até pedido de exclusão |
 | Dados para defesa em processo | Até o fim do prazo prescricional |
+| Cópia de segurança (backup) | **14 dias**, em rodízio: a cópia mais antiga é apagada a cada nova |
 
 Vencidos os prazos, os dados são **eliminados ou anonimizados**.
+
+Sobre as cópias de segurança: quando você exclui a conta, os dados saem do sistema no prazo acima, mas **podem permanecer por até 14 dias nas cópias de segurança** já geradas, até que o rodízio as substitua. Essas cópias não são consultadas no dia a dia — servem apenas para restaurar o serviço em caso de perda de dados.
 
 ## 9. Segurança
 
 Adotamos criptografia em trânsito (HTTPS/TLS), senhas armazenadas com *hash*, controle de acesso por perfil, regras de autorização no banco de dados, registro de atividades e revisão periódica de fornecedores.
+
+Mantemos **cópia de segurança diária** do banco de dados, guardada fora do ambiente do aplicativo, em equipamento sob controle exclusivo da controladora e com acesso restrito a ela. A cópia existe para restaurar o serviço em caso de perda de dados.
 
 Nenhum sistema é totalmente seguro. Havendo incidente com risco relevante, **comunicaremos você e a ANPD** nos prazos legais (art. 48 da LGPD).
 
