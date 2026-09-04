@@ -16,6 +16,7 @@ import { AuthEmailService } from '@/src/services/AuthEmailService';
 import { UserProfileService } from '@/src/services/UserProfileService';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { UserRepository } from '@/src/repositories/UserRepository';
+import { registrarAceite } from '@/src/lib/aceiteLegal';
 import { getAppBaseType, getBetaRegistrationMetadata } from '@/src/lib/beta';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -36,6 +37,9 @@ export function Register() {
   // Opt-in de WhatsApp: comeca desmarcado de proposito. Informar o numero e
   // uma coisa; aceitar receber lembrete automatico e outra.
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
+  // Aceite dos documentos: obrigatorio, nunca pre-marcado. Aceite tacito
+  // ("ao continuar voce concorda") e fragil justamente quando se precisa dele.
+  const [aceitouLegal, setAceitouLegal] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -87,6 +91,11 @@ export function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     hapticLightTap();
+    if (!aceitouLegal) {
+      setError('É preciso aceitar os Termos de Uso e a Política de Privacidade para criar a conta.');
+      return;
+    }
+
     if (!formData.name || !formData.email || !formData.password || (isBeta && (!formData.whatsapp || !formData.dogName || !formData.dogAge))) {
       setError('Preencha todos os campos para continuar.');
       setInfo('');
@@ -128,6 +137,14 @@ export function Register() {
       } else {
         try {
         await UserProfileService.ensureProfile(userCredential.user, formData.name, referredBy);
+        // Depois de a conta existir: o aceite precisa de um uid para pendurar.
+        // Falha aqui nao derruba o cadastro, mas fica no log — conta criada sem
+        // registro de aceite e exatamente o buraco que isto veio fechar.
+        try {
+          await registrarAceite('cadastro');
+        } catch (erroAceite) {
+          console.error('Falha ao registrar aceite legal', erroAceite);
+        }
         if (referredBy) {
           localStorage.removeItem('focao_referred_by');
 
@@ -276,7 +293,26 @@ export function Register() {
         {info && <p className="text-[#055A43] text-sm ml-1">{info}</p>}
 
         <div className="mt-auto pt-6 pb-4">
-          <Button type="submit" className="w-full" isLoading={isLoading}>
+          <label className="flex items-start gap-2.5 px-1 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={aceitouLegal}
+              onChange={(e) => setAceitouLegal(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#055A43]"
+            />
+            <span className="text-[12.5px] leading-[1.5] text-[#6B7A6E]">
+              Li e concordo com os{' '}
+              <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
+                Termos de Uso
+              </a>{' '}
+              e a{' '}
+              <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
+                Política de Privacidade
+              </a>
+              .
+            </span>
+          </label>
+          <Button type="submit" className="w-full" isLoading={isLoading} disabled={!aceitouLegal}>
             {isBeta ? 'Entrar no Beta' : 'Continuar'}
           </Button>
           {isBeta && (

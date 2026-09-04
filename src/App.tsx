@@ -5,6 +5,7 @@ import { AppLaunchSplash } from './components/branding/AppLaunchSplash';
 import { MainLayout } from './components/layout/MainLayout';
 import { LgpdBanner } from './components/LgpdBanner';
 import { LegalFooterPublico } from './components/LegalFooter';
+import { AceiteNovaVersao } from './components/AceiteNovaVersao';
 import { InstallPrompt } from './components/InstallPrompt';
 import { Manutencao } from './pages/Manutencao';
 
@@ -212,6 +213,7 @@ export default function App() {
                 </Routes>
               </Suspense>
               <LegalFooterPublico />
+              <AceiteNovaVersao />
               <LgpdBanner />
               <InstallPrompt />
             </>
