@@ -103,7 +103,6 @@ Você pode alterar sua escolha a qualquer momento em **\`Perfil → Privacidade 
 | Registro de consentimento | **5 anos** após a revogação, como prova do aceite |
 | Leads do formulário de e-book | **{{prazoLeads}}** sem interação, ou até pedido de exclusão |
 | Dados para defesa em processo | Até o fim do prazo prescricional |
-| Backups | Sobrescritos em até **{{prazoBackup}}** |
 
 Vencidos os prazos, os dados são **eliminados ou anonimizados**.
 

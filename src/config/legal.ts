@@ -87,8 +87,6 @@ export const PRAZOS = {
   estorno: '1 dia útil',
   /** Resposta do suporte. */
   respostaSuporte: '2 dias úteis',
-  /** Sobrescrita dos backups. */
-  backup: PENDENTE,
 } as const;
 
 /** Horário de atendimento do suporte, como aparece nos Termos. */
@@ -134,7 +132,6 @@ export const LEGAL_VALORES: Record<string, string> = {
   prazoAnaliseReembolso: PRAZOS.analiseReembolso,
   prazoEstorno: PRAZOS.estorno,
   prazoRespostaSuporte: PRAZOS.respostaSuporte,
-  prazoBackup: PRAZOS.backup,
   horarioAtendimento: HORARIO_ATENDIMENTO,
   kirvanoPais: TERCEIROS.kirvanoPais,
   kirvanoPapel: TERCEIROS.kirvanoPapel,
