@@ -43,8 +43,8 @@ const PENDENTE = '[PREENCHER]';
  * antes de publicar — são os campos que só a operação do Focão tem.
  */
 export const EMPRESA = {
-  razaoSocial: PENDENTE,
-  cnpj: PENDENTE,
+  razaoSocial: 'Isabelle Vitoria Maia de Souza - ME',
+  cnpj: '63.141.608/0001-56',
   endereco: PENDENTE,
   /** Pessoa encarregada pelo tratamento de dados (art. 41 da LGPD). */
   encarregada: PENDENTE,
@@ -97,8 +97,11 @@ export const TERCEIROS = {
   kirvanoPapel:
     'O Focão é o fornecedor perante você: a Kirvano apenas processa o pagamento. '
     + 'Pedidos de reembolso e questões sobre a compra devem ser dirigidos a nós.',
-  /** Região onde o projeto Supabase está hospedado. */
-  supabaseRegiao: PENDENTE,
+  /**
+   * País de tratamento do Supabase. Projeto UTMCamp, região us-east-2
+   * (East US, Ohio) — por isso entra na seção de transferência internacional.
+   */
+  supabaseRegiao: 'EUA',
   /** Endereço do regulamento do Indique e Ganhe. */
   urlRegulamentoIndique: PENDENTE,
 } as const;

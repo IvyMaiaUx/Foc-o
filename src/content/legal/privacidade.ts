@@ -79,7 +79,7 @@ Também podemos compartilhar dados: (i) por **ordem judicial** ou requisição d
 
 ## 6. Transferência internacional
 
-Parte dos nossos operadores — incluindo Google, Stripe e Meta — está sediada fora do Brasil. Essas transferências ocorrem com base no **art. 33 da LGPD**, mediante cláusulas contratuais padrão e garantias de proteção equivalentes às da legislação brasileira.
+Parte dos nossos operadores — incluindo Google, Stripe, Meta e Supabase — está sediada fora do Brasil. Essas transferências ocorrem com base no **art. 33 da LGPD**, mediante cláusulas contratuais padrão e garantias de proteção equivalentes às da legislação brasileira.
 
 ## 7. Cookies e armazenamento no navegador
 
