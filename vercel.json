@@ -5,6 +5,10 @@
       "destination": "/api/create-user-profile?mode=referral"
     },
     {
+      "source": "/api/registrar-aceite",
+      "destination": "/api/create-user-profile?mode=aceite"
+    },
+    {
       "source": "/api/send-lead-magnet",
       "destination": "/api/send-auth-email?type=lead_magnet"
     },

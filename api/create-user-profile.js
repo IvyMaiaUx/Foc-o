@@ -1,5 +1,6 @@
 import { admin, getDb } from './_firebase.js';
 import { checkAndProcessReferral } from './_referralHelper.js';
+import { registrarAceite } from './_aceite.js';
 
 // Esse endpoint nunca existiu (404 em produção) — src/services/UserProfileService.ts
 // chama ele como reparo quando a leitura do perfil de um usuário JÁ AUTENTICADO
@@ -99,6 +100,19 @@ export default async function createUserProfile(req, res) {
       res.status(200).json({ ok: true, result });
     } catch (error) {
       console.error('[process-referral] failed', error);
+      res.status(500).json({ error: 'Internal error' });
+    }
+    return;
+  }
+
+  // Chegou via /api/registrar-aceite (rewrite em vercel.json manda pra ca com
+  // ?mode=aceite). Mesmo motivo do referral acima: arquivo proprio em api/ estoura
+  // o limite de 12 funcoes serverless do plano Hobby e derruba o deploy inteiro.
+  if (req.query?.mode === 'aceite') {
+    try {
+      await registrarAceite(req, res, getDb(), decoded.uid);
+    } catch (error) {
+      console.error('[registrar-aceite] failed', error);
       res.status(500).json({ error: 'Internal error' });
     }
     return;
