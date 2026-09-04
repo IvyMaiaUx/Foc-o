@@ -232,6 +232,23 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Aceite dos documentos legais. Escrita SÓ pelo backend (Admin SDK, que ignora
+    // estas regras) — o cliente nunca escreve, e principalmente nunca apaga.
+    //
+    // A regra é explícita mesmo estando coberta pelo catch-all `if false` lá embaixo:
+    // o valor dela é declarar de quem esta coleção depende. É a única prova de que a
+    // pessoa aceitou os documentos, a política promete retê-la por 5 anos, e ela mora
+    // fora de /users/{uid} justamente para sobreviver à exclusão da conta. Fechada por
+    // omissão, some no dia em que alguém afrouxar o catch-all sem saber o que dependia
+    // dele — e quem some é o titular apagando a prova a respeito dele mesmo.
+    //
+    // Leitura só pelo painel: o app não lê esta coleção: o que ele consulta para saber
+    // se precisa pedir aceite é o espelho em users/{uid}.aceiteAtual.
+    match /aceitesLegais/{aceiteId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // Reembolsos: o cliente NUNCA escreve. Criação, aprovação, recusa e sincronização com
     // a Stripe passam pelo backend (Admin SDK, que ignora estas regras). Aqui só definimos
     // quem enxerga o quê — o dono da solicitação e os admins.

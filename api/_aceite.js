@@ -46,23 +46,47 @@ export async function registrarAceite(req, res, db, uid) {
     }
   }
 
-  const aceito_em = Date.now();
-
   // Coleção de topo, não subcoleção do usuário: a política de privacidade retém
   // registro de consentimento por 5 anos como prova do aceite, e a exclusão de
   // conta apaga tudo que está sob /users/{uid}. Guardar aqui é o que faz a prova
   // sobreviver à exclusão, como o documento declara.
-  const aceiteRef = db.collection('aceitesLegais').doc();
-  await aceiteRef.set({
-    uid,
-    origem,
-    termos_versao,
-    privacidade_versao,
-    cookies_versao,
-    aceito_em,
-    ip,
-    user_agent: String(req.headers['user-agent'] || '').slice(0, 200),
-  });
+  //
+  // Id determinístico (uid + as três versões), e `create()` em vez de `set()`. O
+  // botão do modal volta a ficar clicável depois de um erro, e o endpoint pode
+  // responder falha DEPOIS de já ter gravado — com id aleatório, cada nova tentativa
+  // viraria mais um registro do mesmo aceite. A coleção existe para ser consultada
+  // como prova; uma pessoa com seis linhas idênticas é uma prova pior, não melhor.
+  //
+  // Quando já existe, o registro antigo é mantido de propósito: o que vale como
+  // prova é a primeira vez que a pessoa aceitou aquelas versões, não a última
+  // tentativa de gravar. Por isso `create()`, que falha, e não `set()`, que
+  // sobrescreveria data, IP e user-agent originais.
+  const docId = `${uid}_${[termos_versao, privacidade_versao, cookies_versao]
+    .map((v) => v.replace(/\./g, '-'))
+    .join('_')}`;
+  const aceiteRef = db.collection('aceitesLegais').doc(docId);
+
+  let aceito_em = Date.now();
+  try {
+    await aceiteRef.create({
+      uid,
+      origem,
+      termos_versao,
+      privacidade_versao,
+      cookies_versao,
+      aceito_em,
+      ip,
+      user_agent: String(req.headers['user-agent'] || '').slice(0, 200),
+    });
+  } catch (error) {
+    // 6 = ALREADY_EXISTS. Repetição não é erro: a pessoa já aceitou essas versões,
+    // e o chamador precisa ver sucesso — senão o modal continua barrando alguém
+    // cujo aceite já está gravado.
+    if (error?.code !== 6) throw error;
+    const existente = await aceiteRef.get();
+    // O espelho passa a apontar para a data do registro que vale, não para agora.
+    aceito_em = existente.data()?.aceito_em ?? aceito_em;
+  }
 
   // Espelha o aceite mais recente no documento do usuário: é o que o app lê no
   // login para decidir se precisa pedir aceite de uma versão nova, sem varrer a
