@@ -32,6 +32,7 @@ export function Assinatura() {
   const [isSubmittingCancel, setIsSubmittingCancel] = useState(false);
   const [cancelSubmitError, setCancelSubmitError] = useState('');
   const [cancelSubmitSuccess, setCancelSubmitSuccess] = useState(false);
+  const [cancelProtocolo, setCancelProtocolo] = useState('');
 
   // Dynamic Stripe Checkout configuration
   const [checkoutUrl, setCheckoutUrl] = useState('');
@@ -149,8 +150,9 @@ export function Assinatura() {
         );
       }
       // Confirma que quem respondeu foi a API, e não o app.html do Hosting com 200.
-      await readJson<{ success?: boolean }>(response);
+      const dados = await readJson<{ success?: boolean; protocolo?: string }>(response);
 
+      setCancelProtocolo(dados?.protocolo || '');
       setCancelSubmitSuccess(true);
       AnalyticsRepository.logEvent('subscription_canceled');
     } catch (err: any) {
@@ -414,8 +416,21 @@ export function Assinatura() {
                 <CheckCircle2 className="w-8 h-8 text-emerald-600" />
                 <p className="font-serif text-[18px] text-[#055A43]">Solicitação registrada</p>
                 <p className="text-[13px] text-[#506352] leading-relaxed">
-                  Recebemos seu pedido de cancelamento. Nossa equipe vai processar em breve — você continua com acesso Premium normalmente até lá.
+                  Recebemos seu pedido de cancelamento. Analisamos em até <strong>5 dias úteis</strong> — você continua com acesso Premium normalmente até lá.
                 </p>
+                {cancelProtocolo && (
+                  <div className="mt-1 rounded-xl border border-[#055A43]/10 bg-[#055A43]/[0.04] px-3 py-2.5">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[#055A43]/60">
+                      Protocolo
+                    </p>
+                    <p className="font-mono text-[14px] text-[#055A43] tracking-wide select-all">
+                      {cancelProtocolo}
+                    </p>
+                    <p className="mt-1 text-[11px] text-[#506352]/80">
+                      Guarde este número: é por ele que acompanhamos seu pedido no suporte.
+                    </p>
+                  </div>
+                )}
               </div>
             ) : showCancelForm ? (
               <div className="flex flex-col gap-4">

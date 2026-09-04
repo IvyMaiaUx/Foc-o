@@ -211,12 +211,12 @@ export function assertProtocol(value) {
  * FOC-AAAAMMDD-XXXXX. Não é sequencial (não entrega o volume de pedidos) e não carrega
  * nenhum dado pessoal — só a data e 5 caracteres aleatórios (32^5 ≈ 33 milhões).
  */
-export function generateProtocol(date = new Date()) {
+export function generateProtocol(date = new Date(), prefix = 'FOC') {
   let suffix = '';
   for (let i = 0; i < 5; i += 1) {
     suffix += PROTOCOL_ALPHABET[crypto.randomInt(0, PROTOCOL_ALPHABET.length)];
   }
-  return `FOC-${saoPauloDateStamp(date)}-${suffix}`;
+  return `${prefix}-${saoPauloDateStamp(date)}-${suffix}`;
 }
 
 // ---------------------------------------------------------------------------

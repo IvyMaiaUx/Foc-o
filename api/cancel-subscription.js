@@ -1,4 +1,5 @@
 import { admin, getDb } from './_firebase.js';
+import { generateProtocol } from './_refunds.js';
 
 function setCors(req, res) {
   const allowedOrigins = new Set([
@@ -85,8 +86,31 @@ export default async function cancelSubscription(req, res) {
     // Record the cancellation request in the cancellations collection.
     // This does NOT touch Stripe or the user's access — an admin reviews the
     // request in the painel admin and cancels manually (Stripe stays source of truth).
-    const cancellationRef = db.collection('cancellations').doc();
+    // Prefixo CAN-, não FOC-: cancelamento e reembolso costumam acontecer na mesma
+    // semana, com a mesma pessoa. Dois protocolos de formato idêntico em coleções
+    // diferentes fariam o suporte não saber, pelo número, do que se trata — e o
+    // assertProtocol do reembolso só aceita FOC-, então um CAN- digitado no
+    // acompanhamento de reembolso é recusado na hora em vez de dar "não encontrado".
+    //
+    // O alfabeto não tem I, O, 0 nem 1: o protocolo é lido em voz alta.
+    // create() em vez de set(): são 32^5 combinações por dia, mas colisão existe —
+    // e sobrescrever o pedido de outra pessoa em silêncio é pior do que falhar.
+    let protocolo = '';
+    let cancellationRef = null;
+    for (let tentativa = 0; tentativa < 3; tentativa += 1) {
+      protocolo = generateProtocol(new Date(), 'CAN');
+      cancellationRef = db.collection('cancellations').doc(protocolo);
+      try {
+        await cancellationRef.create({ protocolo, criadoEm: Date.now() });
+        break;
+      } catch (err) {
+        cancellationRef = null;
+        if (tentativa === 2) throw err;
+      }
+    }
+
     await cancellationRef.set({
+      protocolo,
       userId: decoded.uid,
       userEmail: email,
       userName: userName,
@@ -95,9 +119,9 @@ export default async function cancelSubscription(req, res) {
       feedback: feedback || '',
       stripeSubscriptionId: stripeSubscriptionId || null,
       createdAt: Date.now(),
-    });
+    }, { merge: true });
 
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, protocolo });
   } catch (error) {
     console.error('[cancel-subscription] failed', error);
     res.status(500).json({ error: 'Internal error' });

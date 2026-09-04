@@ -23,6 +23,7 @@ const {
   cancelRefundRequest,
   createRefundRequest,
   generateProtocol,
+  assertProtocol,
   getUserRefundRequest,
   handleRefundWebhookEvent,
   isWithinRefundWindow,
@@ -99,6 +100,14 @@ describe('protocolo', () => {
     const protocol = generateProtocol(new Date('2026-08-18T15:00:00Z'));
     expect(protocol).toMatch(/^FOC-\d{8}-[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{5}$/);
     expect(protocol).not.toBe(generateProtocol(new Date('2026-08-18T15:00:00Z')));
+  });
+
+  it('aceita prefixo proprio, para o numero dizer de que fluxo ele e', () => {
+    const cancelamento = generateProtocol(new Date('2026-08-18T15:00:00Z'), 'CAN');
+    expect(cancelamento).toMatch(/^CAN-\d{8}-[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{5}$/);
+    // O acompanhamento de reembolso precisa recusar um protocolo de cancelamento
+    // em vez de responder "nao encontrado".
+    expect(() => assertProtocol(cancelamento)).toThrow();
   });
 
   it('respeita a janela de 7 dias', () => {
