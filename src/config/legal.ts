@@ -45,7 +45,7 @@ const PENDENTE = '[PREENCHER]';
 export const EMPRESA = {
   razaoSocial: 'Isabelle Vitoria Maia de Souza - ME',
   cnpj: '63.141.608/0001-56',
-  endereco: PENDENTE,
+  endereco: 'Rua Silvio Costa, 94 - Anchieta, Rio de Janeiro - RJ, CEP 21645-570',
   /** Pessoa encarregada pelo tratamento de dados (art. 41 da LGPD). */
   encarregada: PENDENTE,
   emailContato: 'contato@focaoapp.com.br',
@@ -65,8 +65,12 @@ export const PRAZOS = {
   eliminacao: 'imediata',
   /** Retenção de lead de e-book sem interação. */
   leads: '24 meses',
-  /** Antecedência do aviso de mudança nos Termos. */
-  avisoMudanca: PENDENTE,
+  /**
+   * Antecedência do aviso de mudança nos Termos. 30 dias para bater com a
+   * seção 8, que já promete esse prazo para reajuste de preço — prazos
+   * diferentes para a mesma situação fariam o documento se contradizer.
+   */
+  avisoMudanca: '30 dias',
   /**
    * Janela de novas tentativas de cobrança. Stripe → Recuperação de receitas:
    * Smart Retries, até 8 tentativas em 2 semanas; depois a assinatura é cancelada
