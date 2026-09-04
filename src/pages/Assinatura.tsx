@@ -141,7 +141,12 @@ export function Assinatura() {
       });
 
       if (!response.ok) {
-        throw new Error('Falha ao registrar a solicitação. Tente novamente.');
+        // O pedido é registrado mesmo quando o cancelamento na Stripe falha, então
+        // a mensagem da API descreve melhor a situação do que um texto genérico.
+        const detalhe = await readJson<{ message?: string }>(response).catch(() => null);
+        throw new Error(
+          detalhe?.message || 'Não foi possível concluir o cancelamento. Tente novamente.',
+        );
       }
       // Confirma que quem respondeu foi a API, e não o app.html do Hosting com 200.
       await readJson<{ success?: boolean }>(response);
