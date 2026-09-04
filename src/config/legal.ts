@@ -47,7 +47,7 @@ export const EMPRESA = {
   cnpj: '63.141.608/0001-56',
   endereco: 'Rua Silvio Costa, 94 - Anchieta, Rio de Janeiro - RJ, CEP 21645-570',
   /** Pessoa encarregada pelo tratamento de dados (art. 41 da LGPD). */
-  encarregada: PENDENTE,
+  encarregada: 'Isabelle Vitória Maia de Souza',
   emailContato: 'contato@focaoapp.com.br',
   emailPrivacidade: 'privacidade@focaoapp.com.br',
 } as const;
@@ -111,7 +111,7 @@ export const TERCEIROS = {
 } as const;
 
 /** Data de última atualização exibida no topo dos documentos. */
-export const LEGAL_ATUALIZADO_EM = PENDENTE;
+export const LEGAL_ATUALIZADO_EM = '04 de setembro de 2026';
 
 /** Valores injetados nos `{{marcadores}}` do markdown. */
 export const LEGAL_VALORES: Record<string, string> = {
