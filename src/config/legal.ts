@@ -102,8 +102,6 @@ export const TERCEIROS = {
    * (East US, Ohio) — por isso entra na seção de transferência internacional.
    */
   supabaseRegiao: 'EUA',
-  /** Endereço do regulamento do Indique e Ganhe. */
-  urlRegulamentoIndique: PENDENTE,
 } as const;
 
 /** Data de última atualização exibida no topo dos documentos. */
@@ -133,7 +131,6 @@ export const LEGAL_VALORES: Record<string, string> = {
   kirvanoPais: TERCEIROS.kirvanoPais,
   kirvanoPapel: TERCEIROS.kirvanoPapel,
   supabaseRegiao: TERCEIROS.supabaseRegiao,
-  urlRegulamentoIndique: TERCEIROS.urlRegulamentoIndique,
 };
 
 /** Campos ainda não preenchidos. Vazio = documentos prontos para publicar. */

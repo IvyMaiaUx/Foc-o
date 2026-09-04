@@ -130,7 +130,7 @@ Por se tratar de conteúdo digital de acesso imediato, aplica-se o prazo de **7 
 
 ## 13. Programa "Indique e Ganhe"
 
-O programa segue o regulamento disponível em {{urlRegulamentoIndique}}. Benefícios são liberados apenas após confirmação da assinatura do indicado e cumprimento das regras vigentes.
+As regras vigentes ficam na própria tela do programa, dentro do app. Em resumo: a indicação é válida quando a pessoa indicada cria a conta, conclui o onboarding, faz pelo menos **2 check-ins** e ativa uma assinatura Premium. Cada indicação válida dá **7 dias de Premium** a quem indicou, limitado a **3 indicações por usuário** — até 21 dias. Os benefícios só são liberados após a confirmação da assinatura do indicado.
 
 Autoindicação, contas múltiplas, indicações fraudulentas ou envio de spam anulam os benefícios e podem levar ao encerramento da conta.
 
