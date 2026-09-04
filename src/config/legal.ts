@@ -67,8 +67,12 @@ export const PRAZOS = {
   leads: '24 meses',
   /** Antecedência do aviso de mudança nos Termos. */
   avisoMudanca: PENDENTE,
-  /** Novas tentativas de cobrança antes de suspender o acesso. */
-  tentativasCobranca: PENDENTE,
+  /**
+   * Janela de novas tentativas de cobrança. Stripe → Recuperação de receitas:
+   * Smart Retries, até 8 tentativas em 2 semanas; depois a assinatura é cancelada
+   * e a fatura fica vencida.
+   */
+  tentativasCobranca: '2 semanas',
   /** Análise de um pedido de reembolso. */
   analiseReembolso: '3 dias úteis',
   /**

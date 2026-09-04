@@ -79,7 +79,7 @@ A conta é **pessoal e intransferível**. Você é responsável por manter a sen
 
 **Processamento:** os pagamentos da assinatura são processados pela **Stripe**. O Focão **não armazena** os dados completos do seu cartão — recebemos apenas status da transação, últimos dígitos e bandeira.
 
-**Falha na cobrança:** novas tentativas poderão ser feitas por até **{{prazoTentativasCobranca}}**. Persistindo a falha, o acesso aos recursos pagos será suspenso.
+**Falha na cobrança:** se a cobrança não passar, novas tentativas são feitas automaticamente por até **{{prazoTentativasCobranca}}**, em até 8 tentativas. Persistindo a falha, **a assinatura é cancelada** e o acesso aos recursos pagos termina — para voltar a usar, é preciso assinar novamente.
 
 **Alteração de preço:** reajustes serão comunicados com **antecedência mínima de 30 dias**, válidos apenas para ciclos seguintes. Discordando, você pode cancelar antes da próxima renovação, sem multa.
 
