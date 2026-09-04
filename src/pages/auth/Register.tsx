@@ -17,6 +17,7 @@ import { UserProfileService } from '@/src/services/UserProfileService';
 import { DogRepository } from '@/src/repositories/DogRepository';
 import { UserRepository } from '@/src/repositories/UserRepository';
 import { registrarAceite } from '@/src/lib/aceiteLegal';
+import { LEGAL_URLS } from '@/src/config/legal';
 import { getAppBaseType, getBetaRegistrationMetadata } from '@/src/lib/beta';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -301,13 +302,22 @@ export function Register() {
               className="mt-0.5 h-4 w-4 shrink-0 accent-[#055A43]"
             />
             <span className="text-[12.5px] leading-[1.5] text-[#6B7A6E]">
+              {/* Os tres documentos, e nao dois: o aceite grava termos_versao,
+                  privacidade_versao E cookies_versao. Citar so dois aqui fazia o
+                  registro afirmar mais do que a tela pediu -- e o registro existe
+                  justamente para ser prova do que a pessoa viu. O modal de nova
+                  versao ja citava os tres; agora as duas telas dizem o mesmo. */}
               Li e concordo com os{' '}
-              <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
+              <a href={LEGAL_URLS.termos} target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
                 Termos de Uso
+              </a>
+              , a{' '}
+              <a href={LEGAL_URLS.privacidade} target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
+                Política de Privacidade
               </a>{' '}
               e a{' '}
-              <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
-                Política de Privacidade
+              <a href={LEGAL_URLS.cookies} target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
+                Política de Cookies
               </a>
               .
             </span>
