@@ -90,7 +90,7 @@ export const PRAZOS = {
 } as const;
 
 /** Horário de atendimento do suporte, como aparece nos Termos. */
-export const HORARIO_ATENDIMENTO = PENDENTE;
+export const HORARIO_ATENDIMENTO = 'de segunda a sexta, das 9h às 17h';
 
 /** Pontos que dependem de confirmação externa. */
 export const TERCEIROS = {
