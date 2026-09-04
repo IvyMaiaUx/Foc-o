@@ -1,5 +1,4 @@
-/* GERADO por scripts/gerar-legal.mjs a partir de docs/legal/cookies.md. Nao editar aqui. */
-export const COOKIES = `# POLÍTICA DE COOKIES — FOCÃO
+# POLÍTICA DE COOKIES — FOCÃO
 
 **Última atualização:** {{atualizadoEm}} · **Versão:** {{versaoCookies}}
 
@@ -7,7 +6,7 @@ export const COOKIES = `# POLÍTICA DE COOKIES — FOCÃO
 
 ## 1. O que esta página cobre
 
-O Focão usa cookies e outras tecnologias de armazenamento no navegador (\`localStorage\` e \`sessionStorage\`) para funcionar, lembrar suas escolhas e, mediante seu consentimento, medir a eficácia das nossas campanhas.
+O Focão usa cookies e outras tecnologias de armazenamento no navegador (`localStorage` e `sessionStorage`) para funcionar, lembrar suas escolhas e, mediante seu consentimento, medir a eficácia das nossas campanhas.
 
 Esta página lista **todas as chaves realmente em uso**, com finalidade e duração. Ela complementa a [Política de Privacidade](https://focaoapp.com.br/privacidade).
 
@@ -21,11 +20,11 @@ Esta página lista **todas as chaves realmente em uso**, com finalidade e duraç
 
 | Chave | Onde fica | Para quê | Duração |
 |---|---|---|---|
-| \`lgpd_consent\` | localStorage | Guarda sua decisão sobre cookies de marketing | Até você limpar o navegador ou alterar a escolha |
-| \`focao_session\` | localStorage | Mantém sua sessão autenticada no app | Até você sair da conta |
-| \`focao_referred_by\` | localStorage | Registra quem indicou você, para o programa Indique e Ganhe | Até limpar o navegador |
-| \`focao_presell_email\` \`focao_presell_dog_name\` | localStorage | Levam o que você já preencheu na presell para o cadastro, evitando digitar de novo | Até limpar o navegador |
-| \`focao_beta_*\` \`focao_plan_upgrade_dismissed\` | localStorage | Lembram quais avisos da interface você já dispensou | Até limpar o navegador |
+| `lgpd_consent` | localStorage | Guarda sua decisão sobre cookies de marketing | Até você limpar o navegador ou alterar a escolha |
+| `focao_session` | localStorage | Mantém sua sessão autenticada no app | Até você sair da conta |
+| `focao_referred_by` | localStorage | Registra quem indicou você, para o programa Indique e Ganhe | Até limpar o navegador |
+| `focao_presell_email` `focao_presell_dog_name` | localStorage | Levam o que você já preencheu na presell para o cadastro, evitando digitar de novo | Até limpar o navegador |
+| `focao_beta_*` `focao_plan_upgrade_dismissed` | localStorage | Lembram quais avisos da interface você já dispensou | Até limpar o navegador |
 
 ## 4. Chaves de marketing e mensuração
 
@@ -33,17 +32,17 @@ Carregadas **somente após o aceite**.
 
 | Chave | Onde fica | Para quê | Duração |
 |---|---|---|---|
-| \`fct_vid\` | Cookie + localStorage | Identificador do visitante no nosso sistema próprio de mensuração | 365 dias |
-| \`fct_sid\` | sessionStorage | Identificador da sessão atual | Até fechar a aba |
-| \`fct_attr\` | localStorage | Guarda a origem do clique que trouxe você (campanha, UTM) | Até limpar o navegador |
-| \`_fbp\` \`_fbc\` | Cookie | Meta Pixel — identificam o navegador e o clique de anúncio para medir conversões | Definida pela Meta (até 90 dias) |
+| `fct_vid` | Cookie + localStorage | Identificador do visitante no nosso sistema próprio de mensuração | 365 dias |
+| `fct_sid` | sessionStorage | Identificador da sessão atual | Até fechar a aba |
+| `fct_attr` | localStorage | Guarda a origem do clique que trouxe você (campanha, UTM) | Até limpar o navegador |
+| `_fbp` `_fbc` | Cookie | Meta Pixel — identificam o navegador e o clique de anúncio para medir conversões | Definida pela Meta (até 90 dias) |
 
 Os eventos coletados por essas chaves são enviados para o **Supabase** (mensuração própria) e para a **Meta** (Meta Pixel). **Não enviamos à Meta seu e-mail, telefone ou qualquer outro dado que identifique você.** Detalhes em [Política de Privacidade](https://focaoapp.com.br/privacidade).
 
 ## 5. Como controlar
 
 **No Focão:**
-- \`Perfil → Privacidade & LGPD → Preferências de cookies\`, dentro do app
+- `Perfil → Privacidade & LGPD → Preferências de cookies`, dentro do app
 - **Preferências de cookies**, no rodapé das páginas públicas e das páginas do funil
 
 Você pode mudar de ideia quantas vezes quiser. Ao recusar, os rastreadores de marketing deixam de ser carregados e os cookies correspondentes são removidos.
@@ -52,7 +51,7 @@ Você pode mudar de ideia quantas vezes quiser. Ao recusar, os rastreadores de m
 
 ## 6. Cookies de terceiros
 
-Os cookies \`_fbp\` e \`_fbc\` são definidos pela **Meta Platforms**. O tratamento dos dados do lado deles segue as políticas próprias da Meta, disponíveis em facebook.com/privacy/policy.
+Os cookies `_fbp` e `_fbc` são definidos pela **Meta Platforms**. O tratamento dos dados do lado deles segue as políticas próprias da Meta, disponíveis em facebook.com/privacy/policy.
 
 ## 7. Alterações
 
@@ -66,4 +65,3 @@ Sempre que adicionarmos ou removermos uma tecnologia de rastreamento, atualizare
 
 **{{razaoSocial}} — CNPJ {{cnpj}}**
 focaoapp.com.br
-`;

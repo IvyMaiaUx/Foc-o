@@ -1,8 +1,7 @@
-/* GERADO por scripts/gerar-legal.mjs a partir de docs/legal/privacidade.md. Nao editar aqui. */
-export const PRIVACIDADE = `# POLÍTICA DE PRIVACIDADE — FOCÃO
+# POLÍTICA DE PRIVACIDADE — FOCÃO
 
 **Última atualização:** {{atualizadoEm}} · **Versão:** {{versaoPrivacidade}}
-**Substitui a versão de 02/06/2025** · **Publicar em:** \`focaoapp.com.br/privacidade\`
+**Substitui a versão de 02/06/2025** · **Publicar em:** `focaoapp.com.br/privacidade`
 
 ---
 
@@ -90,7 +89,7 @@ Em resumo:
 - **Essenciais** — sessão autenticada, registro do seu consentimento e funcionamento do PWA. Não podem ser desativados.
 - **Marketing e mensuração** — Meta Pixel e rastreamento próprio. **Só são ativados após o seu aceite** no banner; nada é carregado antes disso.
 
-Você pode alterar sua escolha a qualquer momento em **\`Perfil → Privacidade & LGPD → Preferências de cookies\`** ou pelo link **Preferências de cookies** no rodapé das páginas públicas.
+Você pode alterar sua escolha a qualquer momento em **`Perfil → Privacidade & LGPD → Preferências de cookies`** ou pelo link **Preferências de cookies** no rodapé das páginas públicas.
 
 ## 8. Por quanto tempo guardamos
 
@@ -129,7 +128,7 @@ Você pode a qualquer momento:
 
 ### Como exercer
 
-Diretamente no app, em **\`Perfil → Privacidade & LGPD\`**:
+Diretamente no app, em **`Perfil → Privacidade & LGPD`**:
 
 - **Portabilidade** — *Exportar Meus Dados*, com download imediato em formato JSON
 - **Eliminação** — *Excluir Minha Conta*
@@ -165,4 +164,3 @@ Você também pode registrar reclamação na **Autoridade Nacional de Proteção
 
 **{{razaoSocial}} — CNPJ {{cnpj}}**
 focaoapp.com.br
-`;

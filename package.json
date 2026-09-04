@@ -10,7 +10,8 @@
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "legal": "node scripts/gerar-legal.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
