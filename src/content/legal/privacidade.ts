@@ -108,7 +108,7 @@ Vencidos os prazos, os dados são **eliminados ou anonimizados**.
 
 ## 9. Segurança
 
-Adotamos criptografia em trânsito (HTTPS/TLS), senhas armazenadas com *hash*, controle de acesso por perfil, regras de autorização no banco de dados, registro de atividades, backups e revisão periódica de fornecedores.
+Adotamos criptografia em trânsito (HTTPS/TLS), senhas armazenadas com *hash*, controle de acesso por perfil, regras de autorização no banco de dados, registro de atividades e revisão periódica de fornecedores.
 
 Nenhum sistema é totalmente seguro. Havendo incidente com risco relevante, **comunicaremos você e a ANPD** nos prazos legais (art. 48 da LGPD).
 
