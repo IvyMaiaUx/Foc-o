@@ -62,3 +62,25 @@ export function documentosDesatualizados(aceite: AceiteAtual | null | undefined)
   if (aceite?.cookies_versao !== LEGAL_VERSIONS.cookies) mudou.push('Política de Cookies');
   return mudou;
 }
+
+/**
+ * Rotas onde o modal de aceite NÃO pode aparecer.
+ *
+ * O modal manda ler os documentos e linka para eles — mas os links abrem em outra
+ * aba do próprio app, com a mesma sessão, e o modal reaparecia por cima. Resultado:
+ * para ler os Termos era preciso aceitar os Termos antes.
+ *
+ * Isso não é só incômodo. Aceite de documento que a pessoa foi impedida de ler não
+ * vale como consentimento informado — o registro que guardamos como prova ficaria
+ * provando o contrário do que pretende.
+ *
+ * Liberar estas rotas não afrouxa o bloqueio: todo o resto do app segue barrado
+ * até aceitar.
+ */
+const ROTAS_LEGAIS = ['/termos', '/privacidade', '/cookies'];
+
+export function ehRotaLegal(pathname: string): boolean {
+  const limpo = pathname.replace(/\/+$/, '').toLowerCase() || '/';
+  return ROTAS_LEGAIS.includes(limpo);
+}
+

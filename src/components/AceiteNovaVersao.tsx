@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { LEGAL_URLS } from '../config/legal';
 import {
   documentosDesatualizados,
+  ehRotaLegal,
   precisaAceitarNovamente,
   registrarAceite,
   type AceiteAtual,
@@ -39,8 +40,13 @@ export function AceiteNovaVersao() {
   const [aceito, setAceito] = useState(false);
   const [saindo, setSaindo] = useState(false);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
-  const precisa = !!user && !!userProfile && precisaAceitarNovamente(userProfile.aceiteAtual);
+  const precisa =
+    !!user &&
+    !!userProfile &&
+    !ehRotaLegal(pathname) &&
+    precisaAceitarNovamente(userProfile.aceiteAtual);
   const mudaram = documentosDesatualizados(userProfile?.aceiteAtual);
 
   // Some assim que o perfil volta com o aceite novo, sem precisar recarregar.
