@@ -33,7 +33,7 @@ export function Welcome() {
       </div>
 
       <div className="welcome-item welcome-logo w-full pt-14 flex justify-center relative z-10">
-        <Wordmark tone="light" width={60} />
+        <Wordmark tone="light" width={88} />
       </div>
 
       <div
@@ -74,7 +74,7 @@ export function Welcome() {
             onClick={() => { hapticLightTap(); navigate(isBeta ? '/beta' : '/login'); }}
             className="welcome-item welcome-secondary-action w-full bg-transparent border border-[#E0E7E4]/25 text-[#E0E7E4] h-14 rounded-2xl font-medium text-base flex items-center justify-center transition-all active:scale-[0.98] hover:bg-[#E0E7E4]/10"
           >
-            {isBeta ? 'Saiba como funciona' : 'Já tenho uma conta — entrar'}
+            {isBeta ? 'Saiba como funciona' : 'Já tenho conta'}
           </button>
           {isBeta && (
             <button
