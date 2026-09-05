@@ -100,3 +100,50 @@ body {
 @utility mt-safe {
   margin-top: env(safe-area-inset-top, 0px);
 }
+
+/* ===========================================================================
+   Entrada da tela /welcome
+   ---------------------------------------------------------------------------
+   Em CSS, e nao com a biblioteca de animacao, por dois motivos praticos:
+
+   1) Se o JavaScript da animacao falhar, o conteudo continua visivel. Com
+      animacao por JS, o estado inicial `opacity: 0` e aplicado inline e, se o
+      script nao roda, a tela fica preta com os botoes invisiveis -- pior do que
+      nao ter animacao nenhuma.
+   2) `prefers-reduced-motion` vira uma media query de verdade, respeitada pelo
+      sistema, sem precisar detectar nada em JS.
+
+   Os elementos NAO ficam com pointer-events desligados: a animacao e so
+   opacidade e deslocamento, entao o botao ja e clicavel enquanto entra.
+   =========================================================================== */
+
+@keyframes welcome-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-item {
+  opacity: 0;
+  animation: welcome-enter 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.welcome-logo             { animation-delay: 120ms; }
+.welcome-title-1          { animation-delay: 420ms; }
+.welcome-title-2          { animation-delay: 520ms; }
+.welcome-subtitle         { animation-delay: 720ms; }
+.welcome-primary-action   { animation-delay: 960ms; }
+.welcome-secondary-action { animation-delay: 1080ms; }
+
+/* A duas linhas do titulo animam separadas, entao precisam ser blocos -- mas
+   `display: block` num <span> dentro do <h1> ja quebra a linha sozinho, o que
+   dispensa o <br> e evita um salto de layout quando a fonte serifada carrega. */
+.welcome-title-1,
+.welcome-title-2 { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-item {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}

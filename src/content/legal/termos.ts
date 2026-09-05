@@ -57,7 +57,7 @@ Não nos responsabilizamos por decisões tomadas com base no conteúdo do SOS ne
 
 ## 6. Cadastro e conta
 
-Para usar o Focão você precisa ter **18 anos ou mais**, capacidade civil plena, e fornecer informações verdadeiras e atualizadas.
+Para **criar conta e assinar** você precisa ter **18 anos ou mais**, capacidade civil plena, e fornecer informações verdadeiras e atualizadas. A exigência é de quem contrata: menores podem usar o app sob a conta e a supervisão de um responsável, que permanece titular da assinatura e responsável pelo uso.
 
 A conta é **pessoal e intransferível**. Você é responsável por manter a senha em sigilo e por tudo que ocorrer na sua conta. Em caso de uso não autorizado, avise em {{emailContato}}.
 

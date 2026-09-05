@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const STORAGE_KEY = 'lgpd_consent';
@@ -30,6 +30,7 @@ function lerConsentimento(): { marketing?: unknown } | null {
 
 export function LgpdBanner() {
   const [visible, setVisible] = useState(false);
+  const caixaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const consent = lerConsentimento();
@@ -65,10 +66,39 @@ export function LgpdBanner() {
     if (revogou) window.location.reload();
   }
 
+  // O banner é `position: fixed` e flutua sobre a página. Medido em tela de
+  // celular (390px), ele cobria o botão "entrar" da tela de boas-vindas: banner
+  // em 559-621px, botão em 549-605px. Quem já era assinante não conseguia tocar
+  // no botão sem antes despachar o banner.
+  //
+  // Em vez de empurrar o layout de todas as telas, ele publica a própria altura
+  // em `--lgpd-banner-h` e cada tela que precisa reserva o espaço. Fica 0 assim
+  // que o banner sai, e telas que não usam a variável seguem como estavam.
+  useEffect(() => {
+    const raiz = document.documentElement;
+    if (!visible) {
+      raiz.style.removeProperty('--lgpd-banner-h');
+      return;
+    }
+    const medir = () => {
+      const alt = caixaRef.current?.offsetHeight;
+      if (alt) raiz.style.setProperty('--lgpd-banner-h', `${alt + 24}px`);
+    };
+    medir();
+    // O banner quebra em mais linhas quando a tela é estreita, então a altura
+    // muda ao girar o aparelho.
+    window.addEventListener('resize', medir);
+    return () => {
+      window.removeEventListener('resize', medir);
+      raiz.style.removeProperty('--lgpd-banner-h');
+    };
+  }, [visible]);
+
   if (!visible) return null;
 
   return (
     <div
+      ref={caixaRef}
       role="dialog"
       aria-label="Aviso de privacidade"
       aria-live="polite"

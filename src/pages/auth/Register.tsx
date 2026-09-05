@@ -307,15 +307,15 @@ export function Register() {
                   registro afirmar mais do que a tela pediu -- e o registro existe
                   justamente para ser prova do que a pessoa viu. O modal de nova
                   versao ja citava os tres; agora as duas telas dizem o mesmo. */}
-              Li e concordo com os{' '}
+              Declaro ter <strong className="font-semibold">18 anos ou mais</strong>. Li e concordo com os{' '}
               <a href={LEGAL_URLS.termos} target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
                 Termos de Uso
               </a>
-              , a{' '}
+              {' '}e estou ciente da{' '}
               <a href={LEGAL_URLS.privacidade} target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
                 Política de Privacidade
               </a>{' '}
-              e a{' '}
+              e da{' '}
               <a href={LEGAL_URLS.cookies} target="_blank" rel="noopener noreferrer" className="text-[#055A43] underline underline-offset-2">
                 Política de Cookies
               </a>
