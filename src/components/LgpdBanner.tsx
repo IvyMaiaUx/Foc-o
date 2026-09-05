@@ -81,8 +81,13 @@ export function LgpdBanner() {
       return;
     }
     const medir = () => {
-      const alt = caixaRef.current?.offsetHeight;
-      if (alt) raiz.style.setProperty('--lgpd-banner-h', `${alt + 24}px`);
+      const caixa = caixaRef.current;
+      if (!caixa) return;
+      // Mede quanto o banner ocupa CONTADO A PARTIR DO RODAPÉ, em vez de somar
+      // altura + uma folga chutada: assim continua correto se o afastamento de
+      // baixo mudar, inclusive o que vem da área segura do aparelho.
+      const ocupado = window.innerHeight - caixa.getBoundingClientRect().top;
+      if (ocupado > 0) raiz.style.setProperty('--lgpd-banner-h', `${Math.ceil(ocupado + 12)}px`);
     };
     medir();
     // O banner quebra em mais linhas quando a tela é estreita, então a altura
@@ -104,14 +109,22 @@ export function LgpdBanner() {
       aria-live="polite"
       style={{
         position: 'fixed',
-        bottom: '12px',
+        // No Chrome do iOS a barra de ferramentas fica por cima do rodape da
+        // pagina: com 12px o banner ficava embaixo dela e o botao "Aceitar" nao
+        // dava pra tocar. `env(safe-area-inset-bottom)` cobre o indicador de
+        // home, e a folga extra tira o banner de debaixo da barra do navegador.
+        bottom: 'calc(28px + env(safe-area-inset-bottom, 0px))',
         left: '12px',
         right: '12px',
         maxWidth: '560px',
         margin: '0 auto',
         zIndex: 9999,
         padding: '12px 14px',
-        background: '#0a2e22',
+        background: 'rgba(10, 46, 34, 0.82)',
+        // O desfoque é o que mantém o texto legível com o fundo translúcido:
+        // sem ele, conteúdo claro passando atrás encavala com o texto branco.
+        backdropFilter: 'blur(14px)',
+        WebkitBackdropFilter: 'blur(14px)',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: '14px',
         boxShadow: '0 8px 30px rgba(0,0,0,0.25)',
