@@ -72,12 +72,12 @@ export function LgpdBanner() {
   // no botão sem antes despachar o banner.
   //
   // Em vez de empurrar o layout de todas as telas, ele publica a própria altura
-  // em `--lgpd-banner-h` e cada tela que precisa reserva o espaço. Fica 0 assim
+  // em `--rodape-flutuante-h` e cada tela que precisa reserva o espaço. Fica 0 assim
   // que o banner sai, e telas que não usam a variável seguem como estavam.
   useEffect(() => {
     const raiz = document.documentElement;
     if (!visible) {
-      raiz.style.removeProperty('--lgpd-banner-h');
+      raiz.style.removeProperty('--rodape-flutuante-h');
       return;
     }
     const medir = () => {
@@ -87,7 +87,7 @@ export function LgpdBanner() {
       // altura + uma folga chutada: assim continua correto se o afastamento de
       // baixo mudar, inclusive o que vem da área segura do aparelho.
       const ocupado = window.innerHeight - caixa.getBoundingClientRect().top;
-      if (ocupado > 0) raiz.style.setProperty('--lgpd-banner-h', `${Math.ceil(ocupado + 12)}px`);
+      if (ocupado > 0) raiz.style.setProperty('--rodape-flutuante-h', `${Math.ceil(ocupado + 12)}px`);
     };
     medir();
     // O banner quebra em mais linhas quando a tela é estreita, então a altura
@@ -95,7 +95,7 @@ export function LgpdBanner() {
     window.addEventListener('resize', medir);
     return () => {
       window.removeEventListener('resize', medir);
-      raiz.style.removeProperty('--lgpd-banner-h');
+      raiz.style.removeProperty('--rodape-flutuante-h');
     };
   }, [visible]);
 

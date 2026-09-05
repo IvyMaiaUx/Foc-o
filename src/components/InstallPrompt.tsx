@@ -1,4 +1,4 @@
-import { useState, useEffect, type CSSProperties } from 'react';
+import { useState, useEffect, useRef, type CSSProperties } from 'react';
 import { Download, X, Share } from 'lucide-react';
 
 const DISMISS_KEY = 'focao_install_dismissed';
@@ -52,6 +52,32 @@ type Mode = 'none' | 'android' | 'ios' | 'mac-safari';
 export function InstallPrompt() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [mode, setMode] = useState<Mode>('none');
+  const caixaRef = useRef<HTMLDivElement>(null);
+
+  // Mesma medição do banner de cookies, na MESMA variável: este aviso também é
+  // `position: fixed` e também cobria o botão "Já tenho conta" da tela de
+  // boas-vindas. Os dois nunca aparecem juntos -- este só surge depois que a
+  // pessoa decidiu sobre cookies --, então compartilhar a variável é suficiente
+  // e evita que uma tela tenha que somar dois avisos que nunca coexistem.
+  useEffect(() => {
+    const raiz = document.documentElement;
+    if (mode === 'none') {
+      raiz.style.removeProperty('--rodape-flutuante-h');
+      return;
+    }
+    const medir = () => {
+      const caixa = caixaRef.current;
+      if (!caixa) return;
+      const ocupado = window.innerHeight - caixa.getBoundingClientRect().top;
+      if (ocupado > 0) raiz.style.setProperty('--rodape-flutuante-h', `${Math.ceil(ocupado + 12)}px`);
+    };
+    medir();
+    window.addEventListener('resize', medir);
+    return () => {
+      window.removeEventListener('resize', medir);
+      raiz.style.removeProperty('--rodape-flutuante-h');
+    };
+  }, [mode]);
 
   useEffect(() => {
     if (isStandalone()) return;
@@ -151,7 +177,7 @@ export function InstallPrompt() {
   // Banner com instrução manual (Safari iOS / macOS).
   if (mode === 'ios' || mode === 'mac-safari') {
     return (
-      <div role="dialog" aria-label="Instalar aplicativo" style={wrapStyle}>
+      <div ref={caixaRef} role="dialog" aria-label="Instalar aplicativo" style={wrapStyle}>
         {icon}
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ margin: 0, fontSize: '13.5px', fontWeight: 600, color: '#fff' }}>Instalar o Focão</p>
@@ -177,7 +203,7 @@ export function InstallPrompt() {
 
   // Chromium: botão de instalar (prompt nativo de 1 toque).
   return (
-    <div role="dialog" aria-label="Instalar aplicativo" style={wrapStyle}>
+    <div ref={caixaRef} role="dialog" aria-label="Instalar aplicativo" style={wrapStyle}>
       {icon}
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{ margin: 0, fontSize: '13.5px', fontWeight: 600, color: '#fff' }}>Instalar o Focão</p>

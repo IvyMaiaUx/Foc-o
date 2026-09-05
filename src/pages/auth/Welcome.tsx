@@ -10,7 +10,7 @@ import { isBetaEnvironment } from '@/src/lib/beta';
  * biblioteca de animação: assim o conteúdo continua visível se o JavaScript da
  * animação falhar, e `prefers-reduced-motion` é respeitado pelo sistema.
  *
- * O espaço reservado embaixo (`--lgpd-banner-h`) existe porque o banner de
+ * O espaço reservado embaixo (`--rodape-flutuante-h`) existe porque o banner de
  * cookies é `position: fixed` e, em tela de celular, cobria o botão "entrar" --
  * quem já era assinante não conseguia tocar nele sem antes lidar com o banner.
  */
@@ -19,7 +19,7 @@ export function Welcome() {
   const isBeta = isBetaEnvironment();
 
   return (
-    <div className="relative min-h-screen w-full font-sans flex flex-col justify-between overflow-hidden bg-[#041411]">
+    <div className="relative min-h-screen w-full font-sans flex flex-col overflow-hidden bg-[#041411]">
       {/* O fundo não anima: precisa estar pintado no primeiro quadro, senão
           aparece o branco da página antes do verde. */}
       <div className="absolute inset-0 z-0">
@@ -32,13 +32,13 @@ export function Welcome() {
         />
       </div>
 
-      <div className="welcome-item welcome-logo w-full pt-14 flex justify-center relative z-10">
+      <div className="welcome-item welcome-logo w-full pt-10 pb-2 flex justify-center relative z-10 shrink-0">
         <Wordmark tone="light" width={88} />
       </div>
 
       <div
-        className="relative z-10 p-8 flex flex-col w-full max-w-md mx-auto"
-        style={{ paddingBottom: 'calc(3rem + var(--lgpd-banner-h, 0px))' }}
+        className="relative z-10 flex-1 flex flex-col justify-center px-8 pt-4 w-full max-w-md mx-auto"
+        style={{ paddingBottom: 'calc(1rem + var(--rodape-flutuante-h, 0px))' }}
       >
         <h1 className="font-serif text-[2.75rem] text-[#F2F5F3] leading-[1.1] mb-5 tracking-tight drop-shadow-md">
           {isBeta ? (
@@ -54,7 +54,7 @@ export function Welcome() {
           )}
         </h1>
 
-        <p className="welcome-item welcome-subtitle text-[#A8BDB4] text-[17px] font-light leading-relaxed mb-12 max-w-[320px]">
+        <p className="welcome-item welcome-subtitle text-[#A8BDB4] text-[17px] font-light leading-relaxed mb-9 max-w-[320px]">
           {isBeta
             ? 'Você foi convidado para testar gratuitamente a versão inicial do app. Seu uso e seu feedback vão nos ajudar a melhorar a experiência antes do lançamento oficial.'
             : 'Um plano personalizado de rotina e treino para entender melhor o seu cão e construir uma convivência mais tranquila.'}
