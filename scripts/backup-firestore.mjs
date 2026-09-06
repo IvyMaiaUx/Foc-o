@@ -25,9 +25,28 @@
  */
 import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync, statSync, appendFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
+
+// O log e escrito pelo proprio script, e nao por redirecionamento no .bat, porque
+// a tarefa agendada deixou de passar pelo cmd: rodando via `.bat`, o Windows
+// matava o processo nos primeiros segundos com STATUS_CONTROL_C_EXIT e nenhum
+// backup era gerado -- ficaram dois dias sem copia sem ninguem notar. Chamando o
+// node direto funciona, mas ai nao ha shell pra redirecionar a saida.
+const LOG = process.env.FOCAO_BACKUP_LOG || join(homedir(), 'focao-backup', 'backup.log');
+const consoleOriginal = console.log;
+console.log = (...args) => {
+  consoleOriginal(...args);
+  try {
+    appendFileSync(LOG, args.join(' ') + '\n', 'utf8');
+  } catch {
+    // Log e conveniencia: se nao der pra escrever, o backup continua.
+  }
+};
+try {
+  appendFileSync(LOG, `\n===== ${new Date().toLocaleString('pt-BR')} =====\n`, 'utf8');
+} catch { /* idem */ }
 
 const CRED = process.env.FOCAO_BACKUP_CRED || join(homedir(), 'focao-backup', 'credencial.json');
 const DEST = process.env.FOCAO_BACKUP_DIR || join(homedir(), 'focao-backup', 'dumps');
