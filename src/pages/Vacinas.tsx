@@ -78,9 +78,26 @@ export function Vacinas() {
   // Upcoming vaccines (next 6 months)
   const today = new Date();
   today.setHours(0, 0, 0, 0); // comparar por DIA local (dose de hoje conta como próxima)
-  const upcoming = vaccines.filter(v => v.nextDose && parseLocalDateKey(v.nextDose) >= today).sort((a,b) => parseLocalDateKey(a.nextDose!).getTime() - parseLocalDateKey(b.nextDose!).getTime());
+  const upcoming = vaccines.filter(v => v.nextDose).sort((a,b) => parseLocalDateKey(a.nextDose!).getTime() - parseLocalDateKey(b.nextDose!).getTime());
   const history = vaccines.filter(v => !upcoming.some(u => u.id === v.id)).sort((a, b) => parseLocalDateKey(b.dateApplied).getTime() - parseLocalDateKey(a.dateApplied).getTime());
   const hasUrgentDose = upcoming.length > 0 && parseLocalDateKey(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000;
+  const temDoseVencida = upcoming.some(v => parseLocalDateKey(v.nextDose!).getTime() < today.getTime());
+
+  /**
+   * Prazo em linguagem de gente. O texto anterior era sempre "Em N meses":
+   * dava "Em 1 meses" no singular, "Em 0 meses" para o que faltava dias, e uma
+   * dose vencida nunca chegava aqui porque era filtrada antes.
+   */
+  function prazoDaDose(nextDose: string) {
+    const dias = Math.round((parseLocalDateKey(nextDose).getTime() - today.getTime()) / 86400000);
+    if (dias < -1) return { texto: `Vencida há ${Math.abs(dias)} dias`, vencida: true };
+    if (dias === -1) return { texto: 'Venceu ontem', vencida: true };
+    if (dias === 0) return { texto: 'Hoje', vencida: true };
+    if (dias === 1) return { texto: 'Amanhã', vencida: false };
+    if (dias < 30) return { texto: `Em ${dias} dias`, vencida: false };
+    const meses = Math.round(dias / 30);
+    return { texto: meses === 1 ? 'Em 1 mês' : `Em ${meses} meses`, vencida: false };
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F5EF] font-sans flex flex-col relative">
@@ -118,7 +135,7 @@ export function Vacinas() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className={`relative z-10 rounded-[20px] p-5 border border-white/10 overflow-hidden ${hasUrgentDose ? 'bg-orange-500 shadow-lg shadow-orange-500/20' : 'bg-black/15'}`}
+            className={`relative z-10 rounded-[20px] p-5 border border-white/10 overflow-hidden ${hasUrgentDose ? 'bg-[#C88A3A] shadow-lg shadow-[#C88A3A]/25' : 'bg-black/15'}`}
           >
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -128,10 +145,12 @@ export function Vacinas() {
               </div>
               <div className="pt-1">
                 <h2 className="font-serif text-[20px] text-white tracking-tight leading-tight mb-1">
-                  {hasUrgentDose ? 'Atenção às Doses' : 'Proteção em dia'}
+                  {temDoseVencida ? 'Dose em atraso' : hasUrgentDose ? 'Atenção às Doses' : 'Proteção em dia'}
                 </h2>
                 <p className="text-white/70 font-light text-[13px] leading-relaxed">
-                  {hasUrgentDose ? 'Há vacinas que vencem este mês.' : 'Não há doses críticas pendentes.'}
+                  {temDoseVencida
+                    ? 'Há dose com data já passada. Vale conferir com o veterinário.'
+                    : hasUrgentDose ? 'Há vacinas que vencem este mês.' : 'Não há doses críticas pendentes.'}
                 </p>
               </div>
             </div>
@@ -153,18 +172,18 @@ export function Vacinas() {
               <>
                 <h3 className="font-medium text-[#055A43] text-sm tracking-widest uppercase mb-4 px-2">Próximas doses</h3>
                 {upcoming.map(item => {
-                  const monthsDiff = Math.max(0, Math.round((parseLocalDateKey(item.nextDose!).getTime() - today.getTime()) / (1000*60*60*24*30)));
+                  const prazo = prazoDaDose(item.nextDose!);
                   return (
                     <div key={item.id} className="bg-white rounded-[1.5rem] p-5 border border-[#055A43]/5 shadow-[0_4px_24px_rgba(45,74,58,0.08)] mb-4 flex gap-4 items-center">
-                      <div className="w-12 h-12 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0">
-                         <Calendar className="w-5 h-5 text-orange-400" />
+                      <div className="w-12 h-12 rounded-full bg-[#C88A3A]/10 border border-[#C88A3A]/20 flex items-center justify-center shrink-0">
+                         <Calendar className="w-5 h-5 text-[#C88A3A]" />
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-start mb-1">
                           <p className="font-medium text-[#506352] text-[15px]">{item.name}</p>
                         </div>
-                        <div className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-600 px-2.5 py-1 rounded-md text-[10px] font-medium tracking-wide uppercase mt-1">
-                          Em {monthsDiff} meses ({parseLocalDateKey(item.nextDose!).toLocaleDateString()})
+                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium tracking-wide uppercase mt-1 ${prazo.vencida ? 'bg-[#C2703E]/12 text-[#A85A2A]' : 'bg-[#C88A3A]/12 text-[#96682A]'}`}>
+                          {prazo.texto} ({parseLocalDateKey(item.nextDose!).toLocaleDateString()})
                         </div>
                       </div>
                     </div>
