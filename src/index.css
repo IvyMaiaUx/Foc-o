@@ -147,3 +147,15 @@ body {
     animation: none;
   }
 }
+
+/* Compensacao do viewport-fit=cover.
+   Ligar `viewport-fit=cover` era necessario pro `pb-safe` da barra de navegacao
+   funcionar em tela cheia -- sem ele a barra ficava embaixo do indicador de home
+   do iPhone. Mas o mesmo ajuste faz o conteudo do TOPO subir pra debaixo da barra
+   de status, e os cabecalhos verdes full-bleed do app engoliriam o relogio.
+   Reservar a area de cima aqui mantem o topo exatamente como estava; quem ganha
+   o espaco novo e so o rodape, que era o problema. Elementos `fixed` nao sao
+   afetados por este padding, entao a barra segue colada embaixo. */
+#root {
+  padding-top: env(safe-area-inset-top, 0px);
+}
