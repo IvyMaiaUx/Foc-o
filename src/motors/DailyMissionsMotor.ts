@@ -11,6 +11,9 @@ export interface DailyMission {
 
 export interface GapDirective {
   skillLabel: string;
+  /** O rótulo já com a contração certa: "à obediência", "ao foco". A tela não
+   *  tem como adivinhar o gênero, e "voltar um pouco a obediência" fica errado. */
+  skillComArtigo: string;
   daysSince: number;
   suggestion: string;
 }
@@ -30,6 +33,20 @@ const OBJECTIVE_TAG_LABELS: Record<string, string> = {
   convivencia: 'convivência',
   independencia: 'permanência',
   vinculo: 'vínculo',
+};
+
+// Gênero de cada rótulo, só para a contração. Fica ao lado dos rótulos de
+// propósito: quem editar um tem que olhar o outro.
+const OBJECTIVE_TAG_ARTICLE: Record<string, string> = {
+  foco: 'ao',
+  obediencia: 'à',
+  passeio: 'ao',
+  calma: 'à',
+  social: 'à',
+  rotina: 'à',
+  convivencia: 'à',
+  independencia: 'à',
+  vinculo: 'ao',
 };
 
 const OBJECTIVE_TAG_SUGGESTION: Record<string, (name: string) => string> = {
@@ -119,6 +136,7 @@ export class DailyMissionsMotor {
     const name = dogProfile?.name || 'seu cão';
     return {
       skillLabel: OBJECTIVE_TAG_LABELS[biggestGapTag],
+      skillComArtigo: `${OBJECTIVE_TAG_ARTICLE[biggestGapTag] || 'a'} ${OBJECTIVE_TAG_LABELS[biggestGapTag]}`,
       daysSince: biggestGapDays,
       suggestion:
         OBJECTIVE_TAG_SUGGESTION[biggestGapTag]?.(name) ??

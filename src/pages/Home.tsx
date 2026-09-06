@@ -554,11 +554,16 @@ export function Home() {
             transition={{ duration: 0.5, delay: 0.13 }}
             className="bg-[#FBF3E4] rounded-[20px] p-[18px] shadow-[0_8px_24px_rgba(45,74,58,0.08)]"
           >
+            {/* "Hoje X precisa..." afirmava uma necessidade do cão quando o que
+                houve foi o tutor parar de treinar aquilo. Somado a um contador de
+                dias parados, o card virava cobrança -- o oposto do que a marca
+                defende (o e-book da casa se chama "Fim da Culpa"). Agora é
+                convite: sem "precisa", sem contador. */}
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#B07C3A] mb-2">
-              Hoje {dogName} precisa...
+              Que tal hoje
             </p>
             <p className="text-[15px] font-semibold text-[#4A3A22] leading-snug mb-2">
-              Que tal retomar {gapDirective.skillLabel}?
+              Voltar um pouco {gapDirective.skillComArtigo}
             </p>
             <p className="text-[13px] text-[#9A6A2E] leading-relaxed">
               {gapDirective.suggestion}
