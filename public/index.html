@@ -544,6 +544,39 @@
     .fone-item.in .fone{animation:none}
   }
 
+  
+  /* ---- Prova visual dentro de "como funciona" ------------------------ */
+  /* Duas telas so, e amarradas a um passo cada. Mostrar as cinco aqui
+     diluiria o argumento: o que precisa ficar claro neste ponto e que existe
+     uma sequencia (Plano) e que ela e medida (Evolucao). */
+  .prova{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:52px;max-width:760px;margin-inline:auto}
+  .prova-item{text-align:center}
+  .prova-item .fone{max-width:290px;margin-inline:auto}
+  .prova-item .n{display:block;margin:22px 0 6px}
+  .prova-item h3{font-size:19px;margin:0 0 7px}
+  .prova-item p{color:var(--ink-soft);font-size:15px;line-height:1.6;max-width:300px;margin-inline:auto}
+  .prova-item.in .fone{animation:flutua 4.6s ease-in-out infinite alternate}
+  .prova-item:nth-child(2).in .fone{animation-delay:.9s}
+  @media (max-width:760px){
+    .prova{grid-template-columns:1fr;gap:48px;max-width:320px}
+  }
+
+  /* ---- Recursos complementares --------------------------------------- */
+  /* Uma tela so, e menor: sao recursos de apoio. Dar a eles o mesmo peso
+     visual do nucleo faria o Focao parecer app generico de cuidados. */
+  .compl{display:grid;grid-template-columns:.8fr 1.2fr;gap:44px;align-items:center;margin-top:42px}
+  .compl-item .fone{max-width:248px;margin-inline:auto}
+  .compl-item.in .fone{animation:flutua 5s ease-in-out infinite alternate}
+  .compl-texto h3{font-size:20px;margin:0 0 8px}
+  .compl-texto p{color:var(--ink-soft);font-size:16px;line-height:1.65;max-width:460px}
+  @media (max-width:760px){
+    .compl{grid-template-columns:1fr;gap:34px}
+    .compl-texto{text-align:left}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .prova-item.in .fone, .compl-item.in .fone{animation:none}
+  }
+
   </style>
 </head>
 <body>
@@ -621,7 +654,7 @@
 <a class="nav-link" href="#como-funciona">Como funciona</a>
 <a class="nav-link" href="#planos">Planos</a><a class="nav-link" href="focao-ebooks.html">E-books</a>
 <a class="nav-link" href="#avaliacoes">Avaliações</a><a class="nav-link" href="#faq">Dúvidas</a>
-<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Criar o plano do meu cão</a>
+<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Começar meu plano grátis</a>
 </nav>
 </div>
 </header>
@@ -632,19 +665,19 @@
 <div class="hero-copy">
 <span class="eyebrow">Comportamento &amp; Rotina</span>
 <h1>Seu cão não precisa de mais uma <span class="hl">dica solta</span>. Precisa de um plano que evolua com ele.</h1>
-<p class="sub">O Focão transforma as dificuldades do seu cão em um plano de treino progressivo, com o próximo passo sempre claro, check-in diário e evolução que você acompanha na rotina.</p>
+<p class="sub">O Focão cria uma rotina personalizada para o seu cão, mostra o que treinar hoje e acompanha a evolução ao longo do tempo. Responda algumas perguntas, receba um plano e saiba exatamente qual é o próximo passo.</p>
 <div class="hero-cta" id="hero-cta">
-<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Criar o plano do meu cão <span aria-hidden="true" class="arw">→</span></a>
+<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Começar meu plano grátis <span aria-hidden="true" class="arw">→</span></a>
 <a class="btn btn-ghost" href="#como-funciona">Ver como funciona</a>
 </div>
-<p class="micro">7 dias grátis para testar. Depois R$67/mês. Cancele quando quiser.</p>
+<p class="micro">7 dias grátis. Cartão necessário para ativar o teste. Depois R$67/mês. Cancele quando quiser.</p>
 <div class="hero-benefits">
 <span class="chip"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></path></svg> Plano feito para o seu cão</span>
 <span class="chip"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></path></svg> Um passo por vez, sem sobrecarga</span>
 <span class="chip"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></path></svg> Progresso que dá para ver</span>
 </div>
 </div>
-<div class="hero-fone reveal d2">
+<div class="hero-fone reveal d2" title="Home: tudo o que importa para hoje em um só lugar">
 <div class="fone"><img src="/img/app-home.webp" width="960" height="2077" fetchpriority="high" decoding="async" alt="Tela inicial do Focao: treino do dia, check-in e missoes da semana"></div>
 </div>
 <!-- phone: treino do dia -->
@@ -709,35 +742,22 @@
 <p>Cada bloco constrói uma base antes do próximo. Você avança quando o cão está pronto, e repete quando precisa.</p>
 </div>
 </div>
+<div class="prova">
+<div class="prova-item reveal">
+<div class="fone"><img src="/img/app-plano.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Plano de treino do Focao com etapas concluidas, treino atual e proximos passos bloqueados"></div>
+<span class="n">Passo 02</span>
+<h3>Plano</h3>
+<p>Veja o treino recomendado para o momento atual do seu cão — e o próximo, que só abre quando este fizer sentido.</p>
 </div>
-</section>
-<section id="por-dentro">
-<div class="wrap">
-<div class="section-head reveal">
-<span class="eyebrow">Por dentro</span>
-<h2>Deixa eu te mostrar funcionando.</h2>
-<p class="lede">Não é um catálogo de vídeos. É uma trilha que sabe onde o seu cão está hoje e o que vem depois.</p>
-</div>
-<div class="fones">
-<div class="fone-item reveal">
-<div class="fone"><img src="/img/app-home.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Tela inicial do Focão mostrando o treino do dia, o check-in pendente e as missões da semana"></div>
-<h3>O dia começa resolvido</h3>
-<p>Você abre e já sabe o que praticar hoje, quanto tempo leva e o que isso constrói. Sem escolher, sem adivinhar.</p>
-</div>
-<div class="fone-item reveal d1">
-<div class="fone"><img src="/img/app-plano.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Plano de treino do Focão com etapas concluídas, treino atual e próximos passos bloqueados"></div>
-<h3>Um passo destrava o outro</h3>
-<p>A trilha é sequencial de propósito: o próximo treino só abre quando o atual faz sentido. É o oposto de sair testando dica solta.</p>
-</div>
-<div class="fone-item reveal d2">
-<div class="fone"><img src="/img/app-evolucao.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Tela de evolução do Focão com progresso por habilidade e queda de reatividade e agitação"></div>
-<h3>A mudança fica visível</h3>
-<p>Calma, foco, passeio, obediência e convivência acompanhados um a um — e a reatividade e a agitação medidas ao longo do tempo.</p>
+<div class="prova-item reveal d2">
+<div class="fone"><img src="/img/app-evolucao.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Tela de evolucao do Focao com progresso por habilidade e queda de reatividade e agitacao"></div>
+<span class="n">Passo 04</span>
+<h3>Evolução</h3>
+<p>Acompanhe o que já foi feito, identifique padrões e saiba quando avançar.</p>
 </div>
 </div>
 </div>
 </section>
-
 <section id="acompanha" style="background:var(--paper-2)">
 <div class="wrap">
 <div class="section-head reveal">
@@ -750,29 +770,8 @@
 <div class="item reveal d1"><span class="ico-sm"><svg fill="none" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Treino personalizado</h4><p>Saiba exatamente o que praticar hoje e o que vem depois.</p></div>
 <div class="item reveal d2"><span class="ico-sm"><svg fill="none" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 7-7M14 8h7v7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Evolução que você enxerga</h4><p>Acompanhe habilidades, consistência e mudanças comportamentais.</p></div>
 <div class="item reveal d3"><span class="ico-sm"><svg fill="none" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Agenda e rotina</h4><p>Os cuidados do mês visíveis antes de virarem urgência.</p></div>
-<div class="item reveal d4"><span class="ico-sm"><svg fill="none" viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4.4-3 8.3-7 9-4-.7-7-4.6-7-9V7l7-4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Vacinas</h4><p>Histórico registrado e aviso de dose próxima do vencimento.</p></div>
-<div class="item reveal d5"><span class="ico-sm"><svg fill="none" viewBox="0 0 24 24"><path d="M4 4v9a4 4 0 004 4h0M8 4v9M18 4v16M18 4c1.5 1.7 2 3.6 2 5.5S19.5 13 18 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Nutrição</h4><p>A orientação da ração cadastrada traduzida em quanto dar por dia e por refeição.</p></div>
-</div>
-</div>
-</section>
 
-<section id="problemas">
-<div class="wrap">
-<div class="section-head reveal">
-<span class="eyebrow">Onde costuma ajudar</span>
-<h2>Se alguma dessas cenas é a sua, você está no lugar certo.</h2>
-<p class="lede">Nenhuma delas se resolve com uma dica isolada — todas melhoram com prática curta, na ordem certa, repetida.</p>
-</div>
-<div class="chips reveal">
-<span class="chip-prob"><span></span>Ansiedade quando fica sozinho</span>
-<span class="chip-prob"><span></span>Puxa muito na coleira</span>
-<span class="chip-prob"><span></span>Não atende quando chamado</span>
-<span class="chip-prob"><span></span>Late demais</span>
-<span class="chip-prob"><span></span>Agitação que não baixa</span>
-<span class="chip-prob"><span></span>Reatividade com outros cães</span>
-<span class="chip-prob"><span></span>Pula nas visitas</span>
-<span class="chip-prob"><span></span>Destrói coisas em casa</span>
-<span class="chip-prob"><span></span>Rotina bagunçada</span>
+
 </div>
 </div>
 </section>
@@ -781,7 +780,7 @@
 <div class="wrap">
 <div class="wrap narrow reveal" style="text-align:center;padding:0">
 <span class="eyebrow center">A virada</span>
-<h2>Em vez de mais uma biblioteca para explorar sozinho, o Focão mostra o próximo passo.</h2>
+<h2>Em vez de você decidir por onde começar, o Focão mostra o próximo passo.</h2>
 <p class="lede" style="margin-top:16px">Ele parte do perfil do seu cão, organiza o treino em blocos e conduz um passo por vez. Você não precisa aprender tudo sobre comportamento canino. Precisa saber o que fazer hoje, e quando avançar.</p>
 </div>
 <div class="mech-grid">
@@ -804,7 +803,7 @@
 <h3><svg fill="none" height="22" viewbox="0 0 24 24" width="22"><path d="M12 22a10 10 0 100-20 10 10 0 000 20zM8 12l3 3 5-6" stroke="var(--pine)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"></path></svg> O Focão é para você</h3>
 <ul>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Quer uma rotina mais tranquila em casa.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Está cansado de improvisar com dicas soltas.</li>
+<li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Está cansado de tentar sem uma ordem clara de treino.</li>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Deseja educar com consistência, sem punição.</li>
 <li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Precisa de orientação clara sobre por onde começar.</li>
 </ul>
@@ -850,10 +849,9 @@
 <p class="lede">O método é baseado em princípios modernos de comportamento canino: reforço positivo, rotinas previsíveis, comunicação clara e progressão gradual.</p>
 </div>
 <div class="safe-grid">
-<div class="safe reveal"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><p><b>Sem punição física.</b> Nada de gritos, coleira de choque ou métodos ultrapassados que ensinam medo.</p></div>
-<div class="safe reveal"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><p><b>Progressão conforme o cão.</b> Você avança no ritmo dele, e recua um passo quando faz sentido.</p></div>
-<div class="safe reveal"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><p><b>Sem promessas absolutas.</b> Orientação responsável e progressiva, não “resultado garantido”.</p></div>
-<div class="safe reveal"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><p><b>Casos graves pedem um profissional.</b> O Focão não substitui a avaliação de um veterinário ou adestrador qualificado.</p></div>
+<div class="safe reveal"><svg fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><p>O Focão usa <b>reforço positivo</b>, rotina previsível e progressão gradual. Você avança no ritmo do seu cão — e recua um passo quando faz sentido.</p></div>
+<div class="safe reveal"><svg fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><p><b>Não usa punição física</b> e <b>não substitui</b> o acompanhamento de veterinários ou profissionais especializados em casos graves.</p></div>
+</div>
 </div>
 </div>
 </div>
@@ -863,8 +861,8 @@
 <div class="wrap">
 <div class="section-head center-head reveal" style="text-align:center">
 <span class="eyebrow center">Avaliações</span>
-<h2>O que os tutores estão dizendo</h2>
-<div class="rv-summary" id="rv-summary">
+<h2>Os primeiros tutores já estão usando</h2>
+<div class="rv-summary" id="rv-summary" hidden>
 <span aria-hidden="true" class="rv-stars-big" id="rv-avg-stars"><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg><svg viewbox="0 0 24 24" fill="currentColor" class="rv-star"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 18.3 5.9 21.4l1.4-6.8L2.2 9.9l6.9-.8L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg></span>
 <span class="rv-avg-num" id="rv-avg-num">5.0</span>
 <span class="rv-count" id="rv-count">· 1 avaliação</span>
@@ -898,6 +896,27 @@
 </div>
 </section>
 <!-- FAQ -->
+<section id="complementares" style="background:var(--paper-2)">
+<div class="wrap">
+<div class="section-head reveal">
+<span class="eyebrow">Também no app</span>
+<h2>Além do treino, a rotina do seu cão organizada.</h2>
+<p class="lede">O Focão também ajuda você a centralizar cuidados importantes do dia a dia.</p>
+</div>
+<div class="compl">
+<div class="compl-item reveal">
+<div class="fone"><img src="/img/app-vacinas.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Tela de vacinas do Focao com proximas doses e historico registrado"></div>
+</div>
+<div class="compl-texto reveal d1">
+<h3>Vacinas</h3>
+<p>Organize o histórico e acompanhe os cuidados de saúde do seu cão, com aviso quando a próxima dose se aproxima.</p>
+<h3 style="margin-top:26px">Nutrição</h3>
+<p>Tenha informações importantes da alimentação sempre à mão: a orientação da ração cadastrada, traduzida em quanto dar por dia e por refeição.</p>
+</div>
+</div>
+</div>
+</section>
+
 <section id="planos">
 <div class="wrap">
 <div class="section-head center-head reveal" style="text-align:center">
@@ -943,7 +962,7 @@
 <span class="eyebrow">Comece hoje</span>
 <h2>Saia do improviso. Comece com clareza.</h2>
 <p>Um plano feito para o seu cão, um passo por vez, com a evolução acontecendo dentro da sua rotina, e a convivência ficando mais tranquila.</p>
-<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Criar o plano do meu cão <span aria-hidden="true" class="arw">→</span></a>
+<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Começar meu plano grátis <span aria-hidden="true" class="arw">→</span></a>
 <p class="micro">7 dias grátis para testar, no ritmo do seu cão. Cancele quando quiser.</p>
 </div>
 </div>
@@ -1015,6 +1034,10 @@
       document.getElementById('rv-avg-stars').innerHTML = starsRow(avg);
       document.getElementById('rv-avg-num').textContent = avg.toFixed(1);
       document.getElementById('rv-count').textContent = `· ${items.length} avaliaç${items.length===1?'ão':'ões'}`;
+      // Nota media so aparece com amostra que a sustente: "5.0 · 1 avaliacao"
+      // chama atencao pro tamanho da amostra, nao pra qualidade.
+      const resumo = document.getElementById('rv-summary');
+      if (resumo) resumo.hidden = items.length < 5;
       document.getElementById('rv-summary').hidden = false;
       // cards
       listEl.innerHTML = items.slice(0,12).map(r=>`
