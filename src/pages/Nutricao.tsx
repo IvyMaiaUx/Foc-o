@@ -226,19 +226,19 @@ export function Nutricao() {
                 <span className="font-serif text-[52px] font-semibold leading-none text-white">
                   {foodInfo.daily > 0 ? foodInfo.daily : '--'}
                 </span>
-                <span className="text-white/55 text-sm font-medium">g / dia</span>
+                <span className="text-white/55 text-sm font-medium whitespace-nowrap">g / dia</span>
               </div>
             </div>
           </div>
-          <div className="shrink-0">
+          <div className="min-w-0">
             {foodInfo.fallsback ? (
-              <span className="bg-white/10 text-white border border-white/20 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Referência</span>
+              <span className="bg-white/10 text-white border border-white/20 inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-medium text-right leading-snug max-w-[126px]">Dados limitados</span>
             ) : foodInfo.meta.confidence === 'high' ? (
-              <span className="bg-[#4ADE80]/20 text-[#4ADE80] border border-[#4ADE80]/30 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Alta precisão</span>
+              <span className="bg-[#4ADE80]/20 text-[#4ADE80] border border-[#4ADE80]/30 inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-medium text-right leading-snug max-w-[126px]">Dados completos da ração</span>
             ) : foodInfo.meta.confidence === 'medium' ? (
-              <span className="bg-[#FBBF24]/20 text-[#FBBF24] border border-[#FBBF24]/30 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Boa precisão</span>
+              <span className="bg-[#FBBF24]/20 text-[#FBBF24] border border-[#FBBF24]/30 inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-medium text-right leading-snug max-w-[126px]">Dados suficientes</span>
             ) : (
-              <span className="bg-white/10 text-white border border-white/20 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Aproximado</span>
+              <span className="bg-white/10 text-white border border-white/20 inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-medium text-right leading-snug max-w-[126px]">Dados limitados</span>
             )}
           </div>
         </div>
