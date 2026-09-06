@@ -220,7 +220,7 @@ export function Nutricao() {
             </div>
             <div>
               <p className="text-[11px] font-medium text-white/55 uppercase tracking-widest mb-1.5">
-                Plano diário de {dogData?.name || 'seu cão'}
+                Referência diária de {dogData?.name || 'seu cão'}
               </p>
               <div className="flex items-baseline gap-1.5">
                 <span className="font-serif text-[52px] font-semibold leading-none text-white">
@@ -232,7 +232,7 @@ export function Nutricao() {
           </div>
           <div className="shrink-0">
             {foodInfo.fallsback ? (
-              <span className="bg-white/10 text-white border border-white/20 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Recomendado</span>
+              <span className="bg-white/10 text-white border border-white/20 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Referência</span>
             ) : foodInfo.meta.confidence === 'high' ? (
               <span className="bg-[#4ADE80]/20 text-[#4ADE80] border border-[#4ADE80]/30 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest font-medium whitespace-nowrap">Alta precisão</span>
             ) : foodInfo.meta.confidence === 'medium' ? (
@@ -281,12 +281,20 @@ export function Nutricao() {
                 <Info className="w-4 h-4 text-white/45 shrink-0 mt-0.5" />
                 <p className="text-[11px] text-white/55 leading-relaxed font-light">
                   {dogData?.foodBrand ? (
-                    `Essa recomendação foi calculada com base no peso informado (${foodInfo.meta.weightUsed} kg), nível de energia (${foodInfo.meta.activityLevel}) e alimentação cadastrada.`
+                    `Estimativa baseada nas orientações da ração cadastrada (${dogData.foodBrand}), considerando o peso e as informações de ${dogData?.name || 'seu cão'}.`
                   ) : (
-                    'Configure a alimentação atual para receber uma recomendação mais precisa.'
+                    'Cadastre a alimentação atual para ver a estimativa a partir das orientações da embalagem.'
                   )}
                 </p>
               </div>
+
+              {/* Ressalva de escopo. Fica DENTRO do card e com o mesmo tom das
+                  outras notas -- sem ícone de alerta, sem vermelho, sem caixa
+                  própria: precisa ser lida, não assustar. O recurso lê a tabela
+                  da embalagem; quem avalia o animal é o veterinário. */}
+              <p className="text-[10.5px] text-white/40 leading-relaxed font-light border-t border-white/10 pt-3">
+                Use como referência e confira as orientações da embalagem. Necessidades individuais podem variar. Em caso de dúvida, procure orientação médico-veterinária.
+              </p>
             </div>
           </div>
 
