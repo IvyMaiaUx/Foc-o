@@ -275,12 +275,14 @@ export function Perfil() {
     if (!user) return;
 
     const confirmFirst = window.confirm(
-      "Excluir sua conta apaga permanentemente todos os seus dados do Focão — treinos, check-ins, vacinas e perfil. Essa ação não pode ser desfeita. Deseja continuar?"
+      (isPremium
+        ? "Excluir sua conta CANCELA SUA ASSINATURA na hora e apaga permanentemente todos os seus dados do Focão — treinos, check-ins, vacinas e perfil. Você perde o acesso imediatamente, sem reembolso do período já pago. Essa ação não pode ser desfeita. Deseja continuar?"
+        : "Excluir sua conta apaga permanentemente todos os seus dados do Focão — treinos, check-ins, vacinas e perfil. Essa ação não pode ser desfeita. Deseja continuar?")
     );
     if (!confirmFirst) return;
 
     const confirmSecond = window.confirm(
-      "Para confirmar e cumprir a LGPD, o Focão irá deletar seu histórico de treinos, check-ins, vacinas, perfil do cão e cadastro. Toque em OK para confirmar a exclusão imediata."
+      "Para confirmar e cumprir a LGPD, o Focão irá deletar seu histórico de treinos, check-ins, vacinas, perfil do cão e cadastro. O registro de que sua assinatura foi encerrada é mantido por obrigação fiscal. Toque em OK para confirmar a exclusão imediata."
     );
     if (!confirmSecond) return;
 

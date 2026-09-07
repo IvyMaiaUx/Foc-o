@@ -86,6 +86,87 @@ async function handleBillingPortal(req, res, decoded) {
 
 // --- Histórico de cobranças do próprio usuário ---------------------------------------
 
+/**
+ * Exclusao de conta (LGPD), do lado do servidor.
+ *
+ * Existe porque a tela chamava `/api/delete-account`, endpoint que NUNCA existiu:
+ * respondia 404, e a exclusao falhava sempre. A Politica de Privacidade promete
+ * exclusao -- entao o produto precisava passar a cumprir.
+ *
+ * Tem que ser servidor: as regras do Firestore so deixam admin apagar
+ * `users/{uid}`, e o Admin SDK ignora regras. Do cliente, e impossivel.
+ *
+ * A ORDEM importa mais que os passos:
+ *   1. cancela a assinatura na Stripe;
+ *   2. registra o encerramento numa colecao de TOPO;
+ *   3. so entao apaga.
+ *
+ * Invertida, uma falha na Stripe deixaria a pessoa pagando R$67 por uma conta que
+ * nao existe mais, sem login pra cancelar -- e sem o `stripeCustomerId`, que mora
+ * no documento apagado, nem o suporte acharia a cobranca.
+ */
+async function handleExcluirConta(req, res, decoded) {
+  const db = getDb();
+  const uid = decoded.uid;
+  const userDoc = await db.collection('users').doc(uid).get();
+  const userData = userDoc.exists ? userDoc.data() : null;
+  const subscriptionId = userData?.subscription?.stripeSubscriptionId;
+  const customerId = userData?.subscription?.stripeCustomerId;
+
+  // ---- 1. Assinatura ----
+  let statusAssinatura = 'sem_assinatura';
+  if (subscriptionId) {
+    const stripe = getStripe(res);
+    if (!stripe) return;
+    try {
+      const cancelada = await stripe.subscriptions.cancel(subscriptionId);
+      statusAssinatura = cancelada?.status || 'canceled';
+    } catch (error) {
+      const jaNaoExiste = error?.statusCode === 404 || error?.code === 'resource_missing';
+      if (!jaNaoExiste) {
+        // Aborta ANTES de apagar. Melhor a conta continuar existindo do que a
+        // pessoa ficar pagando sem conseguir cancelar.
+        res.status(502).json({ error: 'stripe_cancel_failed', detalhe: error?.message || 'falha ao cancelar assinatura' });
+        return;
+      }
+      statusAssinatura = 'nao_encontrada_na_stripe';
+    }
+  }
+
+  // ---- 2. Registro que sobrevive a exclusao ----
+  // Colecao de topo, mesma logica de `aceitesLegais`: e a unica prova de que a
+  // cobranca foi encerrada, e a politica retem dado fiscal por 5 anos.
+  await db.collection('encerramentosDeConta').doc(uid).set({
+    uid,
+    email: decoded.email || userData?.email || null,
+    stripeCustomerId: customerId || null,
+    stripeSubscriptionId: subscriptionId || null,
+    statusAssinatura,
+    excluidoEm: Date.now(),
+  });
+
+  // ---- 3. Apagar ----
+  // `recursiveDelete` cuida das subcolecoes sem precisar list-las uma a uma --
+  // subcolecao nova entra sozinha, sem ninguem lembrar de atualizar este arquivo.
+  await db.recursiveDelete(db.collection('users').doc(uid));
+
+  try {
+    const bucket = admin.storage().bucket();
+    await bucket.deleteFiles({ prefix: `users/${uid}/` });
+  } catch (error) {
+    // Storage e acessorio: se falhar, o resto ja foi e a conta nao pode voltar.
+    console.error('[excluir-conta] storage', error?.message);
+  }
+
+  try {
+    await admin.auth().deleteUser(uid);
+  } catch (error) {
+    if (error?.code !== 'auth/user-not-found') throw error;
+  }
+
+  res.status(200).json({ ok: true, statusAssinatura });
+}
+
 async function handleCharges(req, res, decoded) {
   const db = getDb();
   const userDoc = await db.collection('users').doc(decoded.uid).get();
@@ -263,6 +344,10 @@ export default async function customerPortal(req, res) {
     }
     if (mode === 'refund-request') {
       await handleUserRefundAction(req, res, decoded);
+      return;
+    }
+    if (mode === 'excluir-conta') {
+      await handleExcluirConta(req, res, decoded);
       return;
     }
 

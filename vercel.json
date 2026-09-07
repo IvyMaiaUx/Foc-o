@@ -21,6 +21,10 @@
       "destination": "/api/customer-portal?mode=refund-request"
     },
     {
+      "source": "/api/delete-account",
+      "destination": "/api/customer-portal?mode=excluir-conta"
+    },
+    {
       "source": "/api/admin-refund",
       "destination": "/api/customer-portal?mode=admin-refund"
     }
