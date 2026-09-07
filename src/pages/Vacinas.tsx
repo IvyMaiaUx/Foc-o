@@ -78,7 +78,27 @@ export function Vacinas() {
   // Upcoming vaccines (next 6 months)
   const today = new Date();
   today.setHours(0, 0, 0, 0); // comparar por DIA local (dose de hoje conta como próxima)
-  const upcoming = vaccines.filter(v => v.nextDose).sort((a,b) => parseLocalDateKey(a.nextDose!).getTime() - parseLocalDateKey(b.nextDose!).getTime());
+  /**
+   * Só a dose MAIS RECENTE de cada vacina disputa "Próximas doses".
+   *
+   * Não existe editar nem excluir: `saveVaccine` sempre cria registro novo. Então
+   * quem toma a Antirrábica atrasada registra a dose nova e fica com DUAS
+   * Antirrábicas -- a velha, vencida, sem nenhuma forma de sair da lista.
+   *
+   * Agrupar por nome resolve sem mexer no modelo de dados: a próxima dose de uma
+   * vacina é definida pelo registro mais recente dela, e os anteriores são
+   * histórico. Registrar a dose nova passa a "dar baixa" no atraso, que é o que
+   * a pessoa espera que aconteça.
+   */
+  const maisRecentePorNome = new Map<string, VaccineData>();
+  for (const v of vaccines) {
+    if (!v.nextDose) continue;
+    const atual = maisRecentePorNome.get(v.name);
+    if (!atual || parseLocalDateKey(v.dateApplied).getTime() > parseLocalDateKey(atual.dateApplied).getTime()) {
+      maisRecentePorNome.set(v.name, v);
+    }
+  }
+  const upcoming = [...maisRecentePorNome.values()].sort((a,b) => parseLocalDateKey(a.nextDose!).getTime() - parseLocalDateKey(b.nextDose!).getTime());
   const history = vaccines.filter(v => !upcoming.some(u => u.id === v.id)).sort((a, b) => parseLocalDateKey(b.dateApplied).getTime() - parseLocalDateKey(a.dateApplied).getTime());
   const hasUrgentDose = upcoming.length > 0 && parseLocalDateKey(upcoming[0].nextDose!).getTime() - today.getTime() < 30*24*60*60*1000;
   const temDoseVencida = upcoming.some(v => parseLocalDateKey(v.nextDose!).getTime() < today.getTime());
