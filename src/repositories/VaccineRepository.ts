@@ -1,5 +1,5 @@
 import { db } from '@/src/lib/firebase';
-import { collection, doc, setDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs, deleteDoc, serverTimestamp } from 'firebase/firestore';
 
 export interface VaccineData {
   id?: string;
@@ -23,6 +23,10 @@ export class VaccineRepository {
     }, { merge: true });
     
     return vaccineId;
+  }
+
+  static async deleteVaccine(userId: string, vaccineId: string): Promise<void> {
+    await deleteDoc(doc(db, 'users', userId, 'vaccines', vaccineId));
   }
 
   static async getVaccines(userId: string): Promise<VaccineData[]> {

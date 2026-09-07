@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Syringe, Calendar, CheckCircle2, X, ChevronDown } from 'lucide-react';
+import { ChevronLeft, Syringe, Calendar, CheckCircle2, X, ChevronDown, Pencil, Trash2 } from 'lucide-react';
 import { auth } from '@/src/lib/firebase';
 import { VaccineRepository, VaccineData } from '@/src/repositories/VaccineRepository';
 import { NotificationRepository } from '@/src/repositories/NotificationRepository';
@@ -51,22 +51,48 @@ export function Vacinas() {
     }
   };
 
+  // Confirmacao em duas etapas, no proprio card: `confirm()` do navegador trava
+  // a pagina e destoa do app. Guardar o id de quem esta "armado" basta.
+  const [confirmandoExclusao, setConfirmandoExclusao] = useState<string | null>(null);
+
+  const editarVacina = (item: VaccineData) => {
+    setFormData({
+      id: item.id,
+      name: item.name,
+      dateApplied: item.dateApplied,
+      nextDose: item.nextDose || '',
+      notes: item.notes || '',
+    });
+    setShowAddForm(true);
+  };
+
+  const excluirVacina = async (item: VaccineData) => {
+    const user = auth.currentUser;
+    if (!user || !item.id) return;
+    setConfirmandoExclusao(null);
+    // O lembrete vai junto: deixa-lo para tras faria o app avisar de uma dose
+    // que nao existe mais.
+    await NotificationRepository.deleteVaccineReminders(user.uid, item.id);
+    await VaccineRepository.deleteVaccine(user.uid, item.id);
+    await loadVaccines();
+  };
+
   const handleSave = async () => {
     const user = auth.currentUser;
     if (!user) return;
     
     setIsSaving(true);
     try {
-      await VaccineRepository.saveVaccine(user.uid, formData);
+      const vaccineId = await VaccineRepository.saveVaccine(user.uid, formData);
       
       if (formData.nextDose) {
         const dog = await DogRepository.getDogProfile(user.uid);
         const dogName = dog?.name || 'Seu cão';
-        await NotificationRepository.scheduleVaccineReminders(user.uid, dogName, formData.name, formData.nextDose);
+        await NotificationRepository.scheduleVaccineReminders(user.uid, dogName, formData.name, formData.nextDose, vaccineId);
       }
       
       setShowAddForm(false);
-      setFormData({ name: '', dateApplied: '', nextDose: '', notes: '' });
+      setFormData({ id: undefined, name: '', dateApplied: '', nextDose: '', notes: '' });
       await loadVaccines();
     } catch (err) {
       console.error(err);
@@ -206,6 +232,18 @@ export function Vacinas() {
                           {prazo.texto} ({parseLocalDateKey(item.nextDose!).toLocaleDateString()})
                         </div>
                       </div>
+
+                      {confirmandoExclusao === item.id ? (
+                        <div className="flex flex-col gap-1.5 shrink-0">
+                          <button onClick={() => excluirVacina(item)} className="text-[11px] font-semibold text-[#A85A2A] bg-[#C2703E]/12 px-3 py-1.5 rounded-lg active:scale-95 transition">Excluir</button>
+                          <button onClick={() => setConfirmandoExclusao(null)} className="text-[11px] text-[#6B7A6E] px-3 py-1.5">Cancelar</button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button onClick={() => editarVacina(item)} aria-label={`Editar ${item.name}`} className="w-9 h-9 rounded-full flex items-center justify-center text-[#6B7A6E] active:scale-90 transition"><Pencil className="w-4 h-4" /></button>
+                          <button onClick={() => setConfirmandoExclusao(item.id!)} aria-label={`Excluir ${item.name}`} className="w-9 h-9 rounded-full flex items-center justify-center text-[#6B7A6E] active:scale-90 transition"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -229,7 +267,17 @@ export function Vacinas() {
                           <p className="text-[11px] text-[#6B7A6E] font-light">Aplicada em {new Date(item.dateApplied).toLocaleDateString()}</p>
                         </div>
                       </div>
-                      <CheckCircle2 className="w-5 h-5 text-[#055A43]/50" />
+                      {confirmandoExclusao === item.id ? (
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button onClick={() => excluirVacina(item)} className="text-[11px] font-semibold text-[#A85A2A] bg-[#C2703E]/12 px-3 py-1.5 rounded-lg active:scale-95 transition">Excluir</button>
+                          <button onClick={() => setConfirmandoExclusao(null)} className="text-[11px] text-[#6B7A6E] px-2 py-1.5">Cancelar</button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-0.5 shrink-0">
+                          <button onClick={() => editarVacina(item)} aria-label={`Editar ${item.name}`} className="w-9 h-9 rounded-full flex items-center justify-center text-[#6B7A6E] active:scale-90 transition"><Pencil className="w-4 h-4" /></button>
+                          <button onClick={() => setConfirmandoExclusao(item.id!)} aria-label={`Excluir ${item.name}`} className="w-9 h-9 rounded-full flex items-center justify-center text-[#6B7A6E] active:scale-90 transition"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      )}
                     </div>
                     {item.notes && (
                       <div className="ml-14 bg-[#F7F5EF] rounded-xl p-3 border border-gray-100">
@@ -270,7 +318,7 @@ export function Vacinas() {
               >
                 <X className="w-5 h-5" />
               </button>
-              <h1 className="font-serif text-[20px] text-[#055A43]">Nova vacina</h1>
+              <h1 className="font-serif text-[20px] text-[#055A43]">{formData.id ? 'Editar vacina' : 'Nova vacina'}</h1>
               <div className="w-10" />
             </header>
             
@@ -311,7 +359,7 @@ export function Vacinas() {
                   onClick={handleSave}
                   className="w-full mt-auto bg-[#055A43] text-white h-14 rounded-2xl font-medium text-base active:scale-[0.98] transition-transform flex items-center justify-center disabled:opacity-50 mb-8 pb-safe"
                 >
-                  {isSaving ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Salvar registro'}
+                  {isSaving ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : formData.id ? 'Salvar alterações' : 'Salvar registro'}
                 </button>
             </div>
           </motion.div>

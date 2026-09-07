@@ -1,5 +1,5 @@
 import { db } from '@/src/lib/firebase';
-import { doc, setDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 
 export class NotificationRepository {
   static async scheduleCheckupReminders(userId: string, dogName: string, nextCheckupDate: string): Promise<void> {
@@ -22,7 +22,17 @@ export class NotificationRepository {
     });
   }
 
-  static async scheduleVaccineReminders(userId: string, dogName: string, vaccineName: string, nextDoseDate: string): Promise<void> {
+  /**
+   * Lembrete de vacina.
+   *
+   * Recebe `vaccineId` para o lembrete ficar amarrado ao registro que o gerou.
+   * Sem esse vinculo, editar a data criava um segundo lembrete e o antigo
+   * continuava avisando de uma dose que mudou; e excluir a vacina deixava o
+   * lembrete orfao, avisando de dose que nao existe mais.
+   */
+  static async scheduleVaccineReminders(userId: string, dogName: string, vaccineName: string, nextDoseDate: string, vaccineId?: string): Promise<void> {
+    // Antes de agendar, limpa o que ja havia para esta vacina.
+    if (vaccineId) await NotificationRepository.deleteVaccineReminders(userId, vaccineId);
     // In a real mobile app, here we would call local notifications API (e.g. from react-native-push-notification) 
     // or register in a backend worker to push through FCM.
     // In this web context, we can just save it to a notifications collection to show in app.
@@ -35,6 +45,7 @@ export class NotificationRepository {
     const notifyAt = new Date(dueDate.getTime() - (3 * 24 * 60 * 60 * 1000));
     
     await setDoc(doc(notifsRef, notifId), {
+      vaccineId: vaccineId || null,
       title: 'Lembrete de vacina',
       body: `A vacina ${vaccineName} de ${dogName} precisa ser aplicada em breve (vence em ${dueDate.toLocaleDateString()}).`,
       notifyAt: notifyAt.toISOString(),
@@ -42,6 +53,12 @@ export class NotificationRepository {
       read: false,
       createdAt: Date.now()
     });
+  }
+
+  static async deleteVaccineReminders(userId: string, vaccineId: string): Promise<void> {
+    const notifsRef = collection(db, 'users', userId, 'notifications');
+    const snap = await getDocs(query(notifsRef, where('vaccineId', '==', vaccineId)));
+    await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
   }
 
   static async getActiveNotifications(userId: string): Promise<any[]> {
