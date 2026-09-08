@@ -20,6 +20,14 @@ import { sanitizeText } from '@/src/lib/textSanitizer';
 import { AnalyticsRepository } from '@/src/repositories/AnalyticsRepository';
 import { toLocalDateKey } from '@/src/lib/dateKeys';
 import { getDailyTrainingLimit, countTrainingSessionsToday } from '@/src/lib/trainingLimits';
+import {
+  getFailureCauses,
+  getGuidance,
+  getProfessionalHelpNote,
+  countUnsuccessfulAttempts,
+  shouldOfferProfessionalHelp,
+  PROFESSIONAL_HELP_LABEL,
+} from '@/src/lib/trainingTroubleshooting';
 
 export function Treino() {
   const navigate = useNavigate();
@@ -39,6 +47,12 @@ export function Treino() {
   const [hasCheckinToday, setHasCheckinToday] = useState(false);
   const [shouldOfferCheckin, setShouldOfferCheckin] = useState(false);
   const [trainingSessionsToday, setTrainingSessionsToday] = useState(0);
+
+  // "E agora?" — o que aparece quando o treino não funciona.
+  const [previousLogs, setPreviousLogs] = useState<any[]>([]);
+  const [showTroubleshooting, setShowTroubleshooting] = useState(false);
+  const [selectedCause, setSelectedCause] = useState<string | null>(null);
+  const [unsuccessfulAttempts, setUnsuccessfulAttempts] = useState(0);
 
   const [timerRunning, setTimerRunning] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -90,6 +104,8 @@ export function Treino() {
           const todayStart = new Date();
           todayStart.setHours(0, 0, 0, 0);
           setTrainingSessionsToday(countTrainingSessionsToday(recentLogs, todayStart.getTime()));
+          // Guardado para contar tentativas sem sucesso neste mesmo treino sem uma segunda leitura.
+          setPreviousLogs(recentLogs);
 
           let task: TrainingTask | null = null;
           if (id) {
@@ -216,7 +232,18 @@ export function Treino() {
       setIsSaving(false);
       setShowFeedback(false);
       setShouldOfferCheckin(offerCheckinAfterCompletion);
-      setIsCompleted(true);
+
+      // Quando o treino não funcionou, a sessão não termina aqui: antes de encerrar,
+      // perguntamos o que aconteceu e devolvemos um ajuste. Ninguém sai sem próximo passo.
+      const naoFuncionou = score === 'hard' || score === 'failed';
+      if (naoFuncionou && activeTask) {
+        // +1 porque a tentativa que acabou de acontecer ainda não está em previousLogs.
+        setUnsuccessfulAttempts(countUnsuccessfulAttempts(previousLogs, activeTask.id) + 1);
+        setSelectedCause(null);
+        setShowTroubleshooting(true);
+      } else {
+        setIsCompleted(true);
+      }
     }
   };
 
@@ -288,6 +315,110 @@ export function Treino() {
                <span className="w-6 h-6 border-2 border-[#055A43]/30 border-t-[#055A43] rounded-full animate-spin inline-block" />
              </div>
            )}
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (showTroubleshooting) {
+    const dogName = dogProfile?.name || null;
+    const blockId = (activeTask?.id && TRAINING_TEMPLATES[activeTask.id]?.blockId) || activeTask?.module;
+    const causes = getFailureCauses(blockId, dogName);
+    const offerProfessional = shouldOfferProfessionalHelp(unsuccessfulAttempts);
+    const guidance =
+      selectedCause === 'profissional'
+        ? getProfessionalHelpNote(blockId)
+        : selectedCause
+        ? getGuidance(selectedCause, blockId, dogName)
+        : null;
+
+    const finish = () => navigate(shouldOfferCheckin ? '/checkin' : '/');
+
+    return (
+      <div className="min-h-screen bg-white font-sans flex flex-col justify-center px-6 py-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md mx-auto flex flex-col"
+        >
+          {!guidance ? (
+            <>
+              <span className="text-[#6B7A6E] font-medium tracking-widest uppercase text-xs mb-3 text-center">
+                E agora?
+              </span>
+              <h2 className="font-serif text-[32px] text-[#055A43] mb-2 text-center leading-tight">
+                O que aconteceu?
+              </h2>
+              <p className="text-[#6B7A6E] text-[15px] font-light mb-8 text-center text-balance">
+                {feedbackScore === 'failed'
+                  ? `Parar quando ${dogName || 'seu cão'} pede também é cuidado. Antes de encerrar, me diga o que você viu.`
+                  : 'Difícil não é errado — é sinal de que alguma coisa precisa de ajuste. Me diga o que você viu.'}
+              </p>
+
+              <div className="flex flex-col gap-3 w-full">
+                {causes.map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setSelectedCause(opt.id)}
+                    className="w-full text-left p-5 rounded-2xl border border-[#055A43]/8 bg-white hover:border-[#055A43]/30 transition-all active:scale-[0.98]"
+                  >
+                    <span className="font-semibold text-[#055A43] text-[15px]">{opt.label}</span>
+                  </button>
+                ))}
+
+                {offerProfessional && (
+                  <button
+                    onClick={() => setSelectedCause('profissional')}
+                    className="w-full text-left p-5 rounded-2xl border border-[#C88A3A]/30 bg-[#C88A3A]/5 hover:border-[#C88A3A]/60 transition-all active:scale-[0.98]"
+                  >
+                    <span className="font-semibold text-[#8A5A22] text-[15px]">{PROFESSIONAL_HELP_LABEL}</span>
+                  </button>
+                )}
+              </div>
+
+              <button
+                onClick={() => {
+                  setShowTroubleshooting(false);
+                  setIsCompleted(true);
+                }}
+                className="mt-6 h-10 text-sm font-medium text-[#6B7A6E] hover:text-[#055A43] transition-colors"
+              >
+                Prefiro não dizer agora
+              </button>
+            </>
+          ) : (
+            <>
+              <span className="text-[#6B7A6E] font-medium tracking-widest uppercase text-xs mb-3 text-center">
+                {selectedCause === 'profissional' ? 'Até onde o Focão vai' : 'O que ajustar'}
+              </span>
+
+              <p className="font-serif text-[24px] text-[#055A43] leading-snug mb-6 text-center text-balance">
+                {guidance.cause}
+              </p>
+
+              <div className="rounded-2xl bg-[#F7F5EF] border border-[#055A43]/8 p-5 mb-4">
+                <p className="text-[#3F4F42] text-[15px] leading-relaxed">{guidance.action}</p>
+              </div>
+
+              <p className="text-[#6B7A6E] text-sm font-light leading-relaxed mb-8 text-center text-balance">
+                {guidance.next}
+              </p>
+
+              <button
+                onClick={finish}
+                className="bg-[#C2703E] text-white w-full h-14 rounded-full font-medium text-[15px] shadow-[0_8px_30px_rgba(194,112,62,0.3)] active:scale-[0.98] transition-transform"
+              >
+                {shouldOfferCheckin ? 'Fazer check-in de hoje' : 'Entendi'}
+              </button>
+
+              <button
+                onClick={() => setSelectedCause(null)}
+                className="mt-4 h-10 text-sm font-medium text-[#6B7A6E] hover:text-[#055A43] transition-colors"
+              >
+                Foi outra coisa
+              </button>
+            </>
+          )}
         </motion.div>
       </div>
     );
@@ -620,7 +751,7 @@ export function Treino() {
       </main>
 
       {/* Bottom Action */}
-      <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
+      <div className="fixed bottom-0 left-conteudo right-0 px-6 pt-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
         <button
           onClick={handleCompleteRequest}
           disabled={isSaving}
