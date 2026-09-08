@@ -234,6 +234,30 @@ describe('agrupamento em threads', () => {
     });
   });
 
+  it('tira o nome do remetente do header From, não do campo `from`', async () => {
+    // A API do Resend devolve `from` só com o endereço; o nome fica no header.
+    const { threadId } = await persistInboundEmail(db, {
+      detail: receivedDetail({
+        from: 'ana@exemplo.com',
+        headers: { 'Message-ID': '<ana-1@mail.exemplo.com>', From: '"Tutora Ana" <ana@exemplo.com>' },
+      }),
+      event: receivedEvent().data,
+      inbox: SUPORTE,
+    });
+    const thread = await db.collection('emailThreads').doc(threadId).get();
+    expect(thread.data()).toMatchObject({ participantName: 'Tutora Ana', participantEmail: 'ana@exemplo.com' });
+  });
+
+  it('cai no endereço quando não há nome nenhum', async () => {
+    const { threadId } = await persistInboundEmail(db, {
+      detail: receivedDetail({ from: 'ana@exemplo.com', headers: { 'Message-ID': '<ana-1@x>' } }),
+      event: receivedEvent().data,
+      inbox: SUPORTE,
+    });
+    const thread = await db.collection('emailThreads').doc(threadId).get();
+    expect(thread.data().participantName).toBe('ana@exemplo.com');
+  });
+
   it('agrupa a resposta pelo In-Reply-To, mesmo com assunto diferente', async () => {
     const primeira = await persistInboundEmail(db, {
       detail: receivedDetail(),

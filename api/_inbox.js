@@ -319,8 +319,12 @@ function headerLookup(headers) {
 export async function persistInboundEmail(db, { detail, event, inbox }) {
   const now = Date.now();
   const emailId = String(detail?.id || event?.email_id || '');
-  const from = parseAddress(detail?.from || event?.from);
   const headerValue = headerLookup(detail?.headers);
+  // O campo `from` da API vem só com o endereço — o nome de exibição existe apenas no
+  // header `From` (medido em produção: campo `contato@focaoapp.com.br`, header
+  // `"Teste da Central" <contato@focaoapp.com.br>`). Sem ler o header primeiro, a lista
+  // de conversas mostraria e-mail no lugar de nome em todas as mensagens.
+  const from = parseAddress(headerValue('from') || detail?.from || event?.from);
 
   const subject = String(detail?.subject || event?.subject || '(sem assunto)');
   const messageId = normalizeMessageId(detail?.message_id || event?.message_id || `${emailId}@resend`);
