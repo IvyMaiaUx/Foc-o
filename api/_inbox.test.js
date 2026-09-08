@@ -288,6 +288,30 @@ describe('agrupamento em threads', () => {
     expect(thread.data().messageCount).toBe(2);
   });
 
+  it('a thread NÃO troca de caixa quando a resposta chega em outro endereço', async () => {
+    const primeira = await persistInboundEmail(db, {
+      detail: receivedDetail(),
+      event: receivedEvent().data,
+      inbox: SUPORTE,
+    });
+
+    // Mesma conversa (In-Reply-To bate), mas endereçada a contato@ — acontece com
+    // cópia, alias ou encaminhamento.
+    const segunda = await persistInboundEmail(db, {
+      detail: receivedDetail({
+        id: 'inb_5',
+        message_id: '<ana-5@x>',
+        headers: { 'Message-ID': '<ana-5@x>', 'In-Reply-To': '<ana-1@mail.exemplo.com>' },
+      }),
+      event: receivedEvent({ email_id: 'inb_5' }).data,
+      inbox: GERAL,
+    });
+
+    expect(segunda.threadId).toBe(primeira.threadId);
+    const thread = await db.collection('emailThreads').doc(primeira.threadId).get();
+    expect(thread.data().inbox).toBe('suporte');
+  });
+
   it('NÃO junta pessoas diferentes que escreveram o mesmo assunto', async () => {
     const ana = await persistInboundEmail(db, {
       detail: receivedDetail({ subject: 'Dúvida' }),

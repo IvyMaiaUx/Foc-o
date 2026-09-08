@@ -374,7 +374,13 @@ export async function persistInboundEmail(db, { detail, event, inbox }) {
 
   await threadRef.set(
     {
-      inbox: inbox.id,
+      // A caixa é decidida por quem CRIOU a thread e nunca muda. Medido em produção: uma
+      // resposta endereçada a contato@ chegou numa thread nascida em suporte@ (via
+      // References) e regravava `inbox` para 'geral' — a conversa trocava de caixa
+      // sozinha e, pior, a resposta seguinte sairia por contato@ em vez de suporte@,
+      // que é justamente a promessa da central. Acontece de verdade com cópia, alias ou
+      // encaminhamento.
+      inbox: previous.inbox || inbox.id,
       subject: previous.subject || subject,
       participantEmail: from.email,
       participantName: previous.participantName || from.name || from.email,
