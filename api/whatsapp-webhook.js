@@ -1,7 +1,12 @@
 import crypto from 'node:crypto';
 import { getDb } from './_firebase.js';
+import { handleResendInbound } from './_inbox.js';
 
-// Precisamos do corpo CRU pra validar a assinatura HMAC da Meta.
+// Precisamos do corpo CRU pra validar a assinatura HMAC da Meta — e, pelo mesmo motivo,
+// a assinatura Svix do Resend. É por isso que o inbound da Central de Atendimento mora
+// aqui e não em arquivo próprio: `bodyParser: false` é por arquivo, e o repo está no
+// teto de 12 Serverless Functions da Vercel (api/README.md). A rota pública continua
+// sendo /api/resend-inbound, por rewrite no vercel.json.
 export const config = { api: { bodyParser: false } };
 
 function getQueryValue(req, key) {
@@ -51,6 +56,12 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     const rawBuf = await readRawBody(req);
+
+    // Central de Atendimento por e-mail: assinatura, idempotência e persistência são
+    // outras (ver _inbox.js). Nada abaixo desta linha é tocado por esse caminho.
+    if (req.query?.mode === 'resend-inbound') {
+      return handleResendInbound(req, res, rawBuf);
+    }
 
     if (!verifyMetaSignature(req, rawBuf)) {
       // Antes: qualquer POST gravava no Firestore sem autenticação.

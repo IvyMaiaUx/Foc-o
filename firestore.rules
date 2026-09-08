@@ -367,6 +367,35 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // --- Central de Atendimento por e-mail --------------------------------------
+    //
+    // Threads e mensagens: leitura e escrita só do painel admin. O tutor nunca vê isso
+    // (a conversa dele com o suporte é `supportThreads`); aqui é a caixa de e-mail da
+    // operação, com mensagem de qualquer remetente da internet.
+    //
+    // Ler, marcar como lida, arquivar e excluir o painel faz direto por aqui. Responder
+    // NÃO passa por aqui: precisa da chave do Resend e vai pela API (/api/admin-inbox),
+    // que confere o papel do admin de novo no servidor.
+    match /emailThreads/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Índices de agrupamento e ledger de idempotência do webhook. Escritos SÓ pelo
+    // Admin SDK, que ignora estas regras. Fechados inclusive para admin: são estrutura
+    // interna do webhook, e uma escrita à mão aqui faria mensagem futura cair na thread
+    // errada — silenciosamente. O painel nunca precisa deles.
+    match /emailMessageIndex/{messageHash} {
+      allow read, write: if false;
+    }
+
+    match /emailThreadIndex/{threadKey} {
+      allow read, write: if false;
+    }
+
+    match /emailInboundEvents/{eventId} {
+      allow read, write: if false;
+    }
+
     match /nutritionFormulas/{document=**} {
       allow read: if signedIn();
       allow write: if isAdmin();
