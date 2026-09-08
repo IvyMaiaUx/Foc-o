@@ -293,7 +293,7 @@ export function Vacinas() {
       </main>
       
       {/* Footer CTA */}
-      <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent z-10" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
+      <div className="fixed bottom-0 left-conteudo right-0 px-6 pt-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent z-10" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}>
         <button
           onClick={() => setShowAddForm(true)}
           className="w-full bg-[#C2703E] text-white h-14 rounded-2xl font-semibold text-base shadow-[0_8px_30px_rgba(45,74,58,0.08)] active:scale-[0.98] transition-transform"

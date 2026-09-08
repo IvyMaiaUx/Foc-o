@@ -101,6 +101,18 @@ body {
   margin-top: env(safe-area-inset-top, 0px);
 }
 
+/* Barras de ação fixas (o botão que flutua no rodapé da tela).
+   No mobile ocupam a largura toda. No desktop precisam recuar a largura do menu
+   lateral — o conteúdo já recua via `lg:pl-[284px]` no MainLayout, mas elemento
+   `fixed` não herda esse padding e acabava passando por cima do menu.
+   Se a largura do menu mudar no MainLayout, mude aqui também. */
+@utility left-conteudo {
+  left: 0;
+  @media (width >= 64rem) {
+    left: 284px;
+  }
+}
+
 /* ===========================================================================
    Entrada da tela /welcome
    ---------------------------------------------------------------------------

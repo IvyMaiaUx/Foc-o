@@ -219,7 +219,7 @@ export function Suporte() {
       </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-[#E4E1D6] pb-safe">
+      <div className="fixed bottom-0 left-conteudo right-0 p-4 bg-white border-t border-[#E4E1D6] pb-safe">
         <div className="flex flex-col gap-2 max-w-2xl mx-auto">
           {previewUrl && (
             <div className="relative self-start mb-2">

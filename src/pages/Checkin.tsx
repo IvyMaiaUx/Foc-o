@@ -506,7 +506,7 @@ export function Checkin() {
       </main>
 
       {/* Footer */}
-      <div className="fixed bottom-[80px] left-0 right-0 p-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent z-40 pointer-events-none">
+      <div className="fixed bottom-[80px] lg:bottom-0 left-conteudo right-0 p-6 bg-gradient-to-t from-[#F7F5EF] via-[#F7F5EF] to-transparent z-40 pointer-events-none">
         {saveError && (
           <p className="mb-3 text-center text-[13px] text-[#B42318] pointer-events-auto">
             {saveErrorMsg}
