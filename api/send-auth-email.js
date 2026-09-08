@@ -47,9 +47,13 @@ function setCors(req, res) {
     'https://focaoadm.web.app',
     'https://foc-o.vercel.app',
     'http://localhost:3000',
+    // 3001 é a porta do dev do painel admin (focaoadm/vite.config.ts). Sem ela, testar a
+    // Central de Atendimento em localhost esbarra em CORS na hora de responder.
+    'http://localhost:3001',
     'http://localhost:5173',
     'http://localhost:5174',
     'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
     'http://127.0.0.1:5173',
   ]);
   const origin = req.headers.origin || '';
