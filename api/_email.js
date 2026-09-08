@@ -3,9 +3,15 @@ import { getDb } from './_firebase.js';
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const FROM_EMAIL = 'Focão <contato@focaoapp.com.br>';
+// Confirmação de conta e reset de senha saem por noreply@ porque ninguém deve responder
+// a eles — e, desde que o MX da raiz aponta pro Resend, resposta a e-mail de sistema
+// cairia na Central de Atendimento junto com contato de gente de verdade. Os demais
+// transacionais (cobrança, reembolso, e-book) continuam em contato@: ali a resposta é
+// bem-vinda e o lugar dela é a caixa Geral.
+export const AUTH_FROM_EMAIL = 'Focão <noreply@focaoapp.com.br>';
 const APP_URL = 'https://app.focaoapp.com.br';
 
-const BRAND = {
+export const BRAND = {
   paper: '#F4F2EB',
   card: '#FBFAF5',
   rule: '#d9d4c6',
@@ -20,7 +26,7 @@ const BRAND = {
  * Envia um e-mail transacional via API REST do Resend (sem SDK — evita adicionar
  * dependência só pra um POST). Exige RESEND_API_KEY configurada no ambiente (Vercel).
  */
-export async function sendEmail({ to, subject, html, text }) {
+export async function sendEmail({ to, subject, html, text, from, cc, replyTo, headers, attachments }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error('RESEND_API_KEY is not configured.');
 
@@ -31,11 +37,15 @@ export async function sendEmail({ to, subject, html, text }) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: FROM_EMAIL,
+      from: from || FROM_EMAIL,
       to,
       subject,
       html,
       ...(text ? { text } : {}),
+      ...(cc && cc.length ? { cc } : {}),
+      ...(replyTo ? { reply_to: replyTo } : {}),
+      ...(headers && Object.keys(headers).length ? { headers } : {}),
+      ...(attachments && attachments.length ? { attachments } : {}),
     }),
   });
 

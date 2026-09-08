@@ -27,6 +27,14 @@
     {
       "source": "/api/admin-refund",
       "destination": "/api/customer-portal?mode=admin-refund"
+    },
+    {
+      "source": "/api/resend-inbound",
+      "destination": "/api/whatsapp-webhook?mode=resend-inbound"
+    },
+    {
+      "source": "/api/admin-inbox",
+      "destination": "/api/send-auth-email?type=admin_inbox"
     }
   ],
   "redirects": [

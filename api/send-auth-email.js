@@ -1,5 +1,6 @@
 import { admin, emailKey, getDb } from './_firebase.js';
 import {
+  AUTH_FROM_EMAIL,
   leadMagnetFimDaCulpaEmail,
   marketingUnsubscribeUrl,
   passwordResetEmail,
@@ -7,6 +8,8 @@ import {
   sendEmail,
   verificationEmail,
 } from './_email.js';
+import { resolveAdminActor } from './_refunds.js';
+import { resolveAttachmentUrl, sendThreadReply } from './_inbox.js';
 import { clientIp, withinRateLimit } from './_rateLimit.js';
 
 const APP_URL = 'https://focaoapp.com.br';
@@ -77,7 +80,7 @@ async function sendVerification(req, res) {
       url: `${APP_URL}/email-confirmado`,
       handleCodeInApp: true,
     });
-    await sendEmail({ to: email, ...verificationEmail({ actionUrl: appEmailVerificationUrl(actionUrl) }) });
+    await sendEmail({ to: email, from: AUTH_FROM_EMAIL, ...verificationEmail({ actionUrl: appEmailVerificationUrl(actionUrl) }) });
   }
 
   res.status(200).json({ sent: true });
@@ -113,6 +116,7 @@ async function sendPasswordReset(req, res) {
       });
       await sendEmail({
         to: email,
+        from: AUTH_FROM_EMAIL,
         ...passwordResetEmail({ actionUrl: appPasswordResetUrl(firebaseActionUrl) }),
       });
     }
@@ -187,6 +191,60 @@ async function sendLeadMagnet(req, res) {
   }
 }
 
+/**
+ * Ações da Central de Atendimento (painel admin). Mora aqui, e não num
+ * api/admin-inbox.js próprio, pelo teto de 12 Serverless Functions da Vercel — a rota
+ * pública /api/admin-inbox existe por rewrite no vercel.json, igual ao
+ * /api/send-lead-magnet logo acima.
+ *
+ * Só o que exige a chave do Resend passa por aqui: responder e assinar a URL de um
+ * anexo. Ler, marcar como lida, arquivar e excluir o painel faz direto no Firestore,
+ * onde as regras já exigem isAdmin().
+ */
+async function handleAdminInbox(req, res) {
+  // O papel do admin é resolvido no servidor a partir do ID token — o que o painel diz
+  // sobre si mesmo é ignorado.
+  const actor = await resolveAdminActor(req);
+  if (!actor) {
+    res.status(401).json({ error: 'Unauthenticated' });
+    return;
+  }
+
+  const action = String(req.body?.action || '');
+
+  try {
+    if (action === 'reply') {
+      const result = await sendThreadReply(getDb(), {
+        threadId: req.body?.threadId,
+        text: req.body?.text,
+        attachments: req.body?.attachments,
+        actor,
+      });
+      res.status(200).json({ ok: true, ...result });
+      return;
+    }
+
+    if (action === 'attachment_url') {
+      const result = await resolveAttachmentUrl(getDb(), {
+        threadId: req.body?.threadId,
+        messageId: req.body?.messageId,
+        attachmentId: req.body?.attachmentId,
+      });
+      res.status(200).json({ ok: true, ...result });
+      return;
+    }
+
+    res.status(400).json({ error: 'Ação inválida.' });
+  } catch (error) {
+    if (error?.status) {
+      res.status(error.status).json({ error: error.message });
+      return;
+    }
+    console.error('[send-auth-email:admin_inbox] falhou', error);
+    res.status(502).json({ error: 'Não foi possível concluir a ação.' });
+  }
+}
+
 export default async function sendAuthEmail(req, res) {
   setCors(req, res);
 
@@ -217,6 +275,11 @@ export default async function sendAuthEmail(req, res) {
 
     if (type === 'lead_magnet') {
       await sendLeadMagnet(req, res);
+      return;
+    }
+
+    if (type === 'admin_inbox') {
+      await handleAdminInbox(req, res);
       return;
     }
 

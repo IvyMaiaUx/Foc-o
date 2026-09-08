@@ -1,7 +1,8 @@
 // Firestore de mentira, só para os testes (o prefixo `_` já mantém o arquivo fora das
-// funções serverless da Vercel). Cobre o que os endpoints de reembolso usam: doc/collection
-// aninhados, where/limit, add, e runTransaction com get/set/create — incluindo o
-// ALREADY_EXISTS do `create`, que é a trava de idempotência do webhook.
+// funções serverless da Vercel). Cobre o que os endpoints de reembolso e a Central de
+// Atendimento usam: doc/collection aninhados, where/orderBy/limit, add, delete, e
+// runTransaction com get/set/create — incluindo o ALREADY_EXISTS do `create`, que é a
+// trava de idempotência dos dois webhooks.
 
 function cloneValue(value) {
   return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
@@ -46,36 +47,59 @@ class FakeDocRef {
     }
     this.store.set(this.path, cloneValue(data));
   }
+
+  async delete() {
+    this.store.delete(this.path);
+  }
 }
 
 class FakeQuery {
-  constructor(store, path, filters = [], max = null) {
+  constructor(store, path, filters = [], max = null, order = null) {
     this.store = store;
     this.path = path;
     this.filters = filters;
     this.max = max;
+    this.order = order;
   }
 
   where(field, op, value) {
     if (op !== '==') throw new Error(`operador não suportado no fake: ${op}`);
-    return new FakeQuery(this.store, this.path, [...this.filters, { field, value }], this.max);
+    return new FakeQuery(this.store, this.path, [...this.filters, { field, value }], this.max, this.order);
+  }
+
+  orderBy(field, direction = 'asc') {
+    return new FakeQuery(this.store, this.path, this.filters, this.max, { field, direction });
   }
 
   limit(max) {
-    return new FakeQuery(this.store, this.path, this.filters, max);
+    return new FakeQuery(this.store, this.path, this.filters, max, this.order);
   }
 
   async get() {
     const prefix = `${this.path}/`;
-    const docs = [];
+    let docs = [];
     for (const [path, data] of this.store.entries()) {
       if (!path.startsWith(prefix)) continue;
       // Só filhos diretos: `refundRequests/X` entra, `refundRequests/X/events/Y` não.
       if (path.slice(prefix.length).includes('/')) continue;
       if (!this.filters.every((filter) => data[filter.field] === filter.value)) continue;
       docs.push(new FakeDocRef(this.store, path).snapshot());
-      if (this.max && docs.length >= this.max) break;
     }
+
+    // O `limit` só corta DEPOIS de ordenar — no Firestore de verdade também é assim, e
+    // trocar a ordem aqui esconderia bug de "pegar o mais recente".
+    if (this.order) {
+      const { field, direction } = this.order;
+      const factor = direction === 'desc' ? -1 : 1;
+      docs.sort((a, b) => {
+        const left = a.data()?.[field];
+        const right = b.data()?.[field];
+        if (left === right) return 0;
+        return (left > right ? 1 : -1) * factor;
+      });
+    }
+
+    if (this.max) docs = docs.slice(0, this.max);
     return { docs, empty: docs.length === 0, size: docs.length };
   }
 }
