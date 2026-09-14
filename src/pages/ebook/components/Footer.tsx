@@ -1,8 +1,9 @@
 import { BrandLogo } from "./BrandLogo";
+import { LEGAL_URLS } from "../../../config/legal";
 
 const footerLinks = [
-  { label: "Privacidade", href: "/welcome" },
-  { label: "Termos", href: "/welcome" },
+  { label: "Privacidade", href: LEGAL_URLS.privacidade },
+  { label: "Termos", href: LEGAL_URLS.termos },
   { label: "Contato", href: "mailto:focaosupport@gmail.com" },
 ];
 

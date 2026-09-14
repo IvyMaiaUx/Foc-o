@@ -33,7 +33,11 @@ export function EbookLanding() {
       <LearnSection />
       <BenefitsSection />
       <EditorialSection />
-      <LeadForm formRef={formRef} />
+      <section style={{ backgroundColor: '#F7F5EF' }} className="py-24 px-6 md:px-16 lg:px-24">
+        <div className="max-w-xl mx-auto">
+          <LeadForm formRef={formRef} />
+        </div>
+      </section>
       <AppCTA />
       <Footer />
     </div>
