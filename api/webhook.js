@@ -1,5 +1,20 @@
+import { timingSafeEqual } from 'node:crypto';
 import { getDb } from './_firebase.js';
 import { clientIp, withinRateLimit } from './_rateLimit.js';
+
+/**
+ * A engine (engine.focaoapp.com.br) manda cópia dos leads dela para cá, servidor a
+ * servidor. Sem isto, todos esses leads sairiam do mesmo IP da Vercel e o limite de
+ * 10/hora por IP travaria a captura em minutos. Com o segredo certo, o limite passa a valer
+ * para o IP do visitante que a engine repassa — o anti-flood continua, só muda de quem.
+ * Sem ENGINE_LEADS_SECRET configurada, ninguém é tratado como engine (fail-closed).
+ */
+function isTrustedEngine(req) {
+  const expected = (process.env.ENGINE_LEADS_SECRET || '').trim();
+  const got = String(req.headers['x-engine-lead-secret'] || '').trim();
+  if (!expected || got.length !== expected.length) return false;
+  return timingSafeEqual(Buffer.from(got), Buffer.from(expected));
+}
 
 const ALLOWED_ORIGINS = new Set([
   'https://focao.web.app',
@@ -58,8 +73,9 @@ async function collectMarketingLead(req, res) {
     }
 
     // Anti-flood: no máx. 10 leads por IP por hora.
-    const ip = clientIp(req);
-    if (!(await withinRateLimit('lead', ip, 10, 60 * 60 * 1000))) {
+    const fromEngine = isTrustedEngine(req);
+    const ip = fromEngine ? cleanString(req.headers['x-lead-client-ip'], 64) || 'unknown' : clientIp(req);
+    if (!(await withinRateLimit(fromEngine ? 'lead_engine' : 'lead', ip, 10, 60 * 60 * 1000))) {
       res.status(429).json({ error: 'too_many_requests' });
       return;
     }
@@ -72,6 +88,8 @@ async function collectMarketingLead(req, res) {
       source: cleanString(req.body?.source || 'presell_quiz', 60),
       dogName: cleanString(req.body?.dogName, 80),
       quizProfile: cleanString(req.body?.quizProfile, 80),
+      // Nome do material ou quiz da engine que captou o lead (vazio nas LPs do site).
+      material: cleanString(req.body?.material, 120),
       answers: req.body?.answers && typeof req.body.answers === 'object' ? req.body.answers : {},
       page: cleanString(req.body?.page, 180),
       referrer: cleanString(req.body?.referrer, 220),
