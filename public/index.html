@@ -578,7 +578,62 @@
     .prova-item.in .fone, .compl-item.in .fone{animation:none}
   }
 
-  </style>
+  
+  /* ---------- homepage visual refresh ---------- */
+  .hero{padding-top:72px;padding-bottom:76px}
+  .hero-grid{min-height:620px}
+  @media(min-width:900px){.hero-grid{grid-template-columns:minmax(0,1.12fr) minmax(300px,.62fr);gap:72px}}
+  .hero-copy{max-width:650px}
+  .hero .sub{max-width:610px}
+  .hero-fone{max-width:300px;transform:rotate(1.5deg)}
+  .hero-fone .fone{box-shadow:0 42px 80px -32px rgba(27,36,31,.52),0 10px 28px -18px rgba(27,36,31,.35)}
+  #treinos .id-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  #treinos .id-card{min-height:82px;align-items:center;padding:18px 20px;box-shadow:var(--shadow-soft);transition:transform .18s ease,border-color .18s ease}
+  #treinos .id-card::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--sand);flex:none}
+  #treinos .id-card:hover{transform:translateY(-2px);border-color:#c8c1b1}
+  #treinos .id-card:last-child{grid-column:1/-1}
+  #como-funciona .steps{position:relative;gap:12px}
+  #como-funciona .step{padding:24px 18px 22px;box-shadow:var(--shadow-soft);min-height:205px}
+  #como-funciona .step .n{font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800}
+  #como-funciona .step h3{font-size:17px;line-height:1.25}
+  #como-funciona .prova{margin-top:56px}
+  #acompanha .acomp{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #acompanha .item{min-height:160px;position:relative;overflow:hidden}
+  #acompanha .item::before{content:"";display:block;width:28px;height:3px;border-radius:99px;background:var(--sand);margin-bottom:18px}
+  #solucao>.wrap>.narrow{max-width:780px}
+  #solucao .mech-grid{margin-top:48px}
+  #solucao .mech{min-height:160px;padding:25px}
+  #solucao .merged-block{background:var(--pine-tint);border:1px solid rgba(39,74,61,.10);border-radius:var(--radius-lg);padding:38px;margin-top:56px}
+  #solucao .merged-block .section-head{max-width:780px}
+  #ajuda .prob-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  #ajuda .prob{min-height:150px;padding:21px}
+  #complementares{padding-top:64px;padding-bottom:64px}
+  #faq .faq{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);padding:0 24px;box-shadow:var(--shadow-soft)}
+  #faq .faq details:last-child{border-bottom:0}
+  @media(max-width:900px){
+    .hero-grid{min-height:0}
+    .hero-fone{max-width:270px;transform:none}
+    #acompanha .acomp{grid-template-columns:repeat(2,minmax(0,1fr))}
+    #ajuda .prob-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media(max-width:640px){
+    .hero{padding-top:46px;padding-bottom:54px}
+    .hero-grid{gap:38px}
+    .hero-fone{max-width:235px}
+    .hero-cta .btn{width:100%}
+    .hero-benefits{display:grid;grid-template-columns:1fr}
+    .chip{width:100%;border-radius:14px}
+    #treinos .id-grid{grid-template-columns:1fr}
+    #treinos .id-card:last-child{grid-column:auto}
+    #como-funciona .steps{grid-template-columns:1fr}
+    #como-funciona .step{min-height:0}
+    #acompanha .acomp{grid-template-columns:1fr}
+    #ajuda .prob-grid{grid-template-columns:1fr}
+    #solucao .merged-block{padding:26px 22px;margin-left:-4px;margin-right:-4px}
+    #faq .faq{padding:0 17px}
+  }
+
+</style>
 </head>
 <body>
 <script type="application/ld+json">
