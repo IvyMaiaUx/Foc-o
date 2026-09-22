@@ -22,7 +22,9 @@ const AUTH_EMAIL_COOLDOWN_MS = 60 * 1000;
 // já era feito com /api/process-referral.
 const LEAD_MAGNET_KIND = 'lead_magnet_fim_da_culpa';
 const LEAD_MAGNET_COOLDOWN_MS = 15 * 60 * 1000;
-const DEFAULT_MATERIAL_URL = 'https://drive.google.com/file/d/1Ru6qMB_fbHg8sOfUzLT5jZVBcQ5kNTPQ/view?usp=sharing';
+// Mantemos o arquivo no próprio domínio para que o lead receba exatamente a versão
+// publicada com esta landing page e não dependa de permissão ou disponibilidade do Drive.
+const DEFAULT_MATERIAL_URL = 'https://focaoapp.com.br/ebooks/o-fim-da-culpa.pdf';
 
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
