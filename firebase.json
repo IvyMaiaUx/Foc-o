@@ -68,6 +68,22 @@
         "destination": "/ebook.html"
       },
       {
+        "source": "/ebook-volta-sem-estresse",
+        "destination": "/ebook.html"
+      },
+      {
+        "source": "/ebook-adestre-7-dias",
+        "destination": "/ebook-adestre-7-dias.html"
+      },
+      {
+        "source": "/ebook-ansiedade-separacao-7-dias",
+        "destination": "/ebook-ansiedade-separacao-7-dias.html"
+      },
+      {
+        "source": "/ebook-primeiros-90-dias",
+        "destination": "/ebook-primeiros-90-dias.html"
+      },
+      {
         "source": "/upsell",
         "destination": "/upsell.html"
       },
