@@ -1,6 +1,30 @@
 {
   "rewrites": [
     {
+      "source": "/ebooks",
+      "destination": "/focao-ebooks.html"
+    },
+    {
+      "source": "/ebook",
+      "destination": "/ebook.html"
+    },
+    {
+      "source": "/ebook-volta-sem-estresse",
+      "destination": "/ebook.html"
+    },
+    {
+      "source": "/ebook-adestre-7-dias",
+      "destination": "/ebook-adestre-7-dias.html"
+    },
+    {
+      "source": "/ebook-ansiedade-separacao-7-dias",
+      "destination": "/ebook-ansiedade-separacao-7-dias.html"
+    },
+    {
+      "source": "/ebook-primeiros-90-dias",
+      "destination": "/ebook-primeiros-90-dias.html"
+    },
+    {
       "source": "/api/process-referral",
       "destination": "/api/create-user-profile?mode=referral"
     },
