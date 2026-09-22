@@ -11,8 +11,8 @@
   } catch (e) {}
 </script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Focão: um plano de treino que evolui com o seu cão</title>
-<meta content="O Focão transforma as dificuldades do seu cão em um plano de treino progressivo, com o próximo passo sempre claro, check-in diário e evolução acompanhada na rotina." name="description"/>
+<title>Focão | App de Adestramento para Cachorro</title>
+<meta content="Focão é um app de adestramento para cachorros com plano de treino personalizado. Treine passo a passo, acompanhe a evolução e organize a rotina do seu cão." name="description"/>
 <meta content="index, follow" name="robots"/>
 <link href="https://focaoapp.com.br/" rel="canonical"/>
 <!-- Open Graph -->
@@ -20,19 +20,19 @@
 <meta content="Focão" property="og:site_name"/>
 <meta content="https://focaoapp.com.br/" property="og:url"/>
 <meta content="pt_BR" property="og:locale"/>
-<meta content="Focão: um plano de treino que evolui com o seu cão" property="og:title"/>
-<meta content="O Focão transforma as dificuldades do seu cão em um plano de treino progressivo, com o próximo passo sempre claro, check-in diário e evolução acompanhada na rotina." property="og:description"/>
+<meta content="Focão | App de Adestramento para Cachorro" property="og:title"/>
+<meta content="Focão é um app de adestramento para cachorros com plano de treino personalizado. Treine passo a passo, acompanhe a evolução e organize a rotina do seu cão." property="og:description"/>
 <meta content="https://focaoapp.com.br/og-image.png" property="og:image"/>
 <meta content="1200" property="og:image:width"/>
 <meta content="630" property="og:image:height"/>
 <meta content="image/png" property="og:image:type"/>
-<meta content="Focão — um plano de treino que evolui com o seu cão" property="og:image:alt"/>
+<meta content="Tela do Focão, app de treino e rotina para cães" property="og:image:alt"/>
 <!-- Twitter Card -->
 <meta content="summary_large_image" name="twitter:card"/>
-<meta content="Focão: um plano de treino que evolui com o seu cão" name="twitter:title"/>
-<meta content="O Focão transforma as dificuldades do seu cão em um plano de treino progressivo, com o próximo passo sempre claro, check-in diário e evolução acompanhada na rotina." name="twitter:description"/>
+<meta content="Focão | App de Adestramento para Cachorro" name="twitter:title"/>
+<meta content="Focão é um app de adestramento para cachorros com plano de treino personalizado. Treine passo a passo, acompanhe a evolução e organize a rotina do seu cão." name="twitter:description"/>
 <meta content="https://focaoapp.com.br/og-image.png" name="twitter:image"/>
-<meta content="Focão — um plano de treino que evolui com o seu cão" name="twitter:image:alt"/>
+<meta content="Tela do Focão, app de treino e rotina para cães" name="twitter:image:alt"/>
 <link href="/favicon.svg?v=5" rel="icon" type="image/svg+xml"/>
 <link href="/favicon-32x32.png?v=5" rel="icon" sizes="32x32" type="image/png"/>
 <link href="/favicon-16x16.png?v=5" rel="icon" sizes="16x16" type="image/png"/>
@@ -276,7 +276,8 @@
 
   /* steps / how it works */
   .steps{display:grid;gap:18px;margin-top:44px;counter-reset:step}
-  @media(min-width:760px){.steps{grid-template-columns:repeat(4,1fr)}}
+  @media(min-width:760px){.steps{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:1000px){.steps{grid-template-columns:repeat(5,1fr)}}
   .step{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:24px 20px;position:relative}
   .step .n{font-family:"Lora",serif;font-size:15px;font-weight:600;color:var(--sand);letter-spacing:.05em;margin-bottom:14px;display:block}
   .step h3{font-size:17.5px;margin-bottom:8px}
@@ -589,7 +590,7 @@
       "@id": "https://focaoapp.com.br/#organization",
       "name": "Focão",
       "alternateName": ["Focão App", "FocãoApp"],
-      "description": "Aplicativo brasileiro de treino e rotina para cães, com plano progressivo que se adapta às dificuldades de cada cão, check-in diário e acompanhamento da evolução.",
+      "description": "Aplicativo brasileiro de adestramento e rotina para cães, com plano de treino personalizado, check-ins e acompanhamento da evolução.",
       "url": "https://focaoapp.com.br/",
       "logo": "https://focaoapp.com.br/icon-512.png",
       "sameAs": ["https://www.instagram.com/_focao_/"],
@@ -616,9 +617,9 @@
       "alternateName": "Focão App",
       "url": "https://focaoapp.com.br/",
       "publisher": { "@id": "https://focaoapp.com.br/#organization" },
-      "description": "O Focão transforma as dificuldades do seu cão em um plano de treino progressivo, com o próximo passo sempre claro, check-in diário e evolução acompanhada na rotina.",
+      "description": "Focão é um app de adestramento para cachorros com plano de treino personalizado. Treine passo a passo, acompanhe a evolução e organize a rotina do seu cão.",
       "applicationCategory": "LifestyleApplication",
-      "operatingSystem": "Android, iOS, Web",
+      "operatingSystem": "Web",
       "inLanguage": "pt-BR",
       "offers": {
         "@type": "Offer",
@@ -636,11 +637,11 @@
     {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Preciso entender de adestramento?", "acceptedAnswer": { "@type": "Answer", "text": "Não. O Focão foi feito justamente para quem não quer estudar comportamento canino. Você segue o próximo passo indicado para o seu caso. A ordem e a explicação já vêm prontas." } },
-        { "@type": "Question", "name": "Funciona para filhotes e para cães adultos?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. O plano parte do perfil do cão, então filhote e adulto seguem caminhos diferentes. Com filhotes, o foco costuma ser construir a base certa; com adultos, reorganizar hábitos já existentes. O que não fazemos é tratar todos os casos como se tivessem a mesma causa." } },
-        { "@type": "Question", "name": "Quanto tempo preciso por dia?", "acceptedAnswer": { "@type": "Answer", "text": "Os treinos são curtos e pensados para caber na rotina. A ideia central é constância, não sessões longas: pouca prática todos os dias rende mais do que muito esforço de vez em quando." } },
-        { "@type": "Question", "name": "O Focão substitui um adestrador ou veterinário?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Ele é uma orientação responsável e progressiva para o dia a dia. Casos mais intensos, como automutilação, agressividade consistente ou quadros que não evoluem com constância, devem ser acompanhados por um profissional qualificado." } },
-        { "@type": "Question", "name": "Preciso pagar para começar?", "acceptedAnswer": { "@type": "Answer", "text": "Você testa o Focão completo por 7 dias sem pagar nada. Para ativar o teste, é preciso cadastrar um cartão — mas nenhuma cobrança acontece durante os 7 primeiros dias. Depois desse período, a assinatura é R$67/mês, e você pode cancelar quando quiser, direto pelo app, antes disso." } }
+        { "@type": "Question", "name": "O Focão é um app de adestramento para cachorro?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. O Focão é um aplicativo de adestramento para cachorros que organiza uma rotina de treino de acordo com o perfil do seu cão. Você recebe atividades para praticar, acompanha os treinos e registra a evolução." } },
+        { "@type": "Question", "name": "Preciso entender de adestramento para usar o Focão?", "acceptedAnswer": { "@type": "Answer", "text": "Não. O Focão foi pensado para quem quer começar a treinar o cachorro mesmo sem experiência com adestramento." } },
+        { "@type": "Question", "name": "O Focão funciona para filhotes e cães adultos?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. O plano considera informações do cachorro, como idade e rotina, para orientar os treinos." } },
+        { "@type": "Question", "name": "Quanto tempo preciso treinar por dia?", "acceptedAnswer": { "@type": "Answer", "text": "Os treinos são pensados para fazer parte da rotina. O tempo pode variar de acordo com o exercício e com o perfil do cachorro." } },
+        { "@type": "Question", "name": "Posso usar o Focão para problemas de comportamento?", "acceptedAnswer": { "@type": "Answer", "text": "O Focão pode ajudar a trabalhar comportamentos comuns do dia a dia, como falta de resposta a comandos, excesso de energia e dificuldades relacionadas à rotina. Casos que envolvam agressividade ou outros problemas mais sérios podem precisar da avaliação de um profissional especializado." } }
       ]
     }
   ]
@@ -663,50 +664,44 @@
 <div aria-hidden="true" class="hero-bg"><span class="glow"></span><span class="glow2"></span></div>
 <div class="wrap hero-grid">
 <div class="hero-copy">
-<span class="eyebrow">Comportamento &amp; Rotina</span>
-<h1>Seu cão não precisa de mais uma <span class="hl">dica solta</span>. Precisa de um plano que evolua com ele.</h1>
-<p class="sub">O Focão cria uma rotina personalizada para o seu cão, mostra o que treinar hoje e acompanha a evolução ao longo do tempo. Responda algumas perguntas, receba um plano e saiba exatamente qual é o próximo passo.</p>
+<span class="eyebrow">Adestramento &amp; rotina</span>
+<h1>App de adestramento para cachorro que evolui com o seu cão</h1>
+<p class="sub">O Focão monta uma rotina de treino de acordo com o perfil do seu cachorro e ajuda você a saber o que praticar em cada etapa.</p>
+<p class="sub" style="font-size:16px;margin-top:-14px">Você acompanha os exercícios, registra como ele está indo e continua o treino conforme ele evolui.</p>
 <div class="hero-cta" id="hero-cta">
-<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Começar meus 7 dias grátis <span aria-hidden="true" class="arw">→</span></a>
+<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Começar agora <span aria-hidden="true" class="arw">→</span></a>
 <a class="btn btn-ghost" href="#como-funciona">Ver como funciona</a>
 </div>
 <p class="micro">7 dias grátis. Cartão necessário para ativar o teste. Depois R$67/mês. Cancele quando quiser.</p>
 <div class="hero-benefits">
-<span class="chip"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></path></svg> Plano feito para o seu cão</span>
-<span class="chip"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></path></svg> Um passo por vez, sem sobrecarga</span>
-<span class="chip"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></path></svg> Progresso que dá para ver</span>
+<span class="chip"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></path></svg> Plano de treino personalizado</span>
+<span class="chip"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></path></svg> Exercícios organizados por etapa</span>
+<span class="chip"><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></path></svg> Check-ins e evolução no mesmo lugar</span>
 </div>
 </div>
-<div class="hero-fone reveal d2" title="Tudo o que importa para hoje, em um só lugar: treino, check-in e próximos passos.">
-<div class="fone"><img src="/img/app-home.webp" width="960" height="2077" fetchpriority="high" decoding="async" alt="Tela inicial do Focão: tudo o que importa para hoje — treino, check-in e próximos passos"></div>
+<div class="hero-fone reveal d2" title="Tela inicial do Focão com treino, check-in e próximos passos.">
+<div class="fone"><img src="/img/app-home.webp" width="960" height="2077" fetchpriority="high" decoding="async" alt="Tela inicial do Focão com treino do dia, check-in e próximos passos"></div>
 </div>
-<!-- phone: treino do dia -->
 </div>
 </section>
 <!-- PROBLEMA (identificação + causa raiz) -->
-<section id="problema">
+<section id="treinos">
 <div class="wrap">
 <div class="section-head reveal">
-<span class="eyebrow">Talvez soe familiar</span>
-<h2>Você já tentou de tudo. E mesmo assim, a cena se repete.</h2>
-<p class="lede">Não é falta de amor nem de esforço. É o que acontece quando um comportamento complexo é enfrentado com dicas soltas, uma de cada vez, sem ordem.</p>
+<span class="eyebrow">Treinos no Focão</span>
+<h2>O que você quer melhorar no comportamento do seu cachorro?</h2>
+<p class="lede">Cada cachorro tem uma rotina e dificuldades diferentes. Por isso, o Focão leva em conta o perfil do seu cão para organizar os treinos.</p>
 </div>
 <div class="id-grid">
-<div class="id-card reveal"><span class="ic"><svg fill="none" viewbox="0 0 24 24"><path d="M15 7a3 3 0 11-6 0M6 21v-2a6 6 0 0112 0v2" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path></svg></span><p>Você pega a chave e o cão já entra em alerta, antes mesmo de a porta abrir.</p></div>
-<div class="id-card reveal"><span class="ic"><svg fill="none" viewbox="0 0 24 24"><path d="M4 20h16M6 20V10l6-5 6 5v10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg></span><p>Limpa xixi fora do lugar de novo, sem saber se é falta de treino, ansiedade ou tédio.</p></div>
-<div class="id-card reveal"><span class="ic"><svg fill="none" viewbox="0 0 24 24"><path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"></path></svg></span><p>Tenta um vídeo hoje, outro método amanhã, e nunca sabe se algo está funcionando.</p></div>
+<div class="id-card reveal"><p>Ensinar comandos básicos.</p></div>
+<div class="id-card reveal"><p>Melhorar a resposta aos comandos.</p></div>
+<div class="id-card reveal"><p>Ensinar o cachorro a fazer xixi no lugar certo.</p></div>
+<div class="id-card reveal"><p>Lidar com excesso de energia e agitação.</p></div>
+<div class="id-card reveal"><p>Ajudar o cachorro a ficar sozinho.</p></div>
+<div class="id-card reveal"><p>Estabelecer uma rotina para filhotes.</p></div>
+<div class="id-card reveal"><p>Trabalhar comportamentos que atrapalham o dia a dia.</p></div>
 </div>
-<div class="villain reveal" style="margin-top:36px">
-<span class="eyebrow">O verdadeiro problema</span>
-<h2>O inimigo não é o seu cão. É a informação solta.</h2>
-<p style="max-width:620px;margin-top:14px">Dica de rede social, vídeo aleatório, palpite do vizinho. Cada fonte manda em uma direção, e nenhuma diz por onde começar, quando avançar ou como saber se deu certo. Técnicas isoladas falham quando:</p>
-<ul class="villain-list">
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"></path></svg> Atacam o sintoma errado: tratam como ansiedade o que era tédio, ou como teimosia o que era falta de treino.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"></path></svg> São feitas fora de ordem, pulando a base que faria o resto funcionar.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"></path></svg> Não respeitam o limite do cão, e o que era para acalmar acaba reforçando o problema.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"></path></svg> Não têm como medir evolução: sem registro, tudo depende da impressão do dia.</li>
-</ul>
-</div>
+<p class="lede reveal" style="margin-top:28px">O objetivo é você saber o que treinar, como treinar e qual é o próximo passo.</p>
 </div>
 </section>
 <!-- HOW IT WORKS -->
@@ -714,46 +709,47 @@
 <div class="wrap">
 <div class="section-head center-head reveal" style="text-align:center">
 <span class="eyebrow center">Como funciona</span>
-<h2>Quatro passos, do improviso à rotina.</h2>
+<h2>Como o plano de treino funciona</h2>
 </div>
 <div class="steps">
 <div class="step reveal">
-<span class="ico"><svg fill="none" viewbox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path></svg></span>
 <span class="n">Passo 01</span>
-<h3>Conte sobre seu cão</h3>
-<p>Idade, rotina, o que mais incomoda. Poucos minutos que revelam o que está por trás do comportamento.</p>
+<h3>Conte sobre o seu cachorro</h3>
+<p>Você responde algumas perguntas sobre idade, rotina, comportamento e outros detalhes importantes.</p>
 </div>
 <div class="step reveal">
-<span class="ico"><svg fill="none" viewbox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg></span>
 <span class="n">Passo 02</span>
-<h3>Receba o primeiro plano</h3>
-<p>Um caminho montado para o perfil e a dificuldade dele, não uma lista genérica igual para todo cão.</p>
+<h3>Receba seu plano de treino</h3>
+<p>Com essas informações, o Focão organiza os treinos de acordo com o perfil do seu cachorro.</p>
 </div>
 <div class="step reveal">
-<span class="ico"><svg fill="none" viewbox="0 0 24 24"><path d="M12 6v6l4 2M12 22a10 10 0 110-20 10 10 0 010 20z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg></span>
 <span class="n">Passo 03</span>
-<h3>Treine e faça o check-in</h3>
-<p>O treino do dia é curto e claro. Você registra como foi, e o progresso deixa de depender da memória.</p>
+<h3>Treine um pouco por dia</h3>
+<p>Você recebe as atividades e pode encaixar os treinos na rotina de vocês.</p>
 </div>
 <div class="step reveal">
-<span class="ico"><svg fill="none" viewbox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M21 7v6M21 7h-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg></span>
 <span class="n">Passo 04</span>
-<h3>Acompanhe e avance</h3>
-<p>Cada bloco constrói uma base antes do próximo. Você avança quando o cão está pronto, e repete quando precisa.</p>
+<h3>Faça os check-ins</h3>
+<p>Depois dos treinos, você registra como seu cachorro está se saindo.</p>
+</div>
+<div class="step reveal">
+<span class="n">Passo 05</span>
+<h3>Acompanhe a evolução</h3>
+<p>Conforme vocês avançam, você consegue acompanhar o que já foi trabalhado e continuar para as próximas etapas.</p>
 </div>
 </div>
 <div class="prova">
 <div class="prova-item reveal">
-<div class="fone"><img src="/img/app-plano.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Plano de treino do Focão com etapas concluídas, treino atual e próximos passos bloqueados"></div>
-<span class="n">Exemplo do passo 02</span>
-<h3>Plano</h3>
-<p>Veja o treino recomendado para o momento atual do seu cão — e o próximo, que só abre quando este fizer sentido.</p>
+<div class="fone"><img src="/img/app-plano.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Tela do plano de treino do Focão com etapas concluídas, treino atual e próximos passos"></div>
+<span class="n">Plano de treino</span>
+<h3>O próximo exercício fica claro</h3>
+<p>O plano organiza o que está em andamento e as próximas etapas para você não precisar escolher um exercício aleatório a cada treino.</p>
 </div>
 <div class="prova-item reveal d2">
-<div class="fone"><img src="/img/app-evolucao.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Tela de evolução do Focão com progresso por habilidade e queda de reatividade e agitação"></div>
-<span class="n">Exemplo do passo 04</span>
-<h3>Evolução</h3>
-<p>Acompanhe o que já foi feito, identifique padrões e saiba quando avançar.</p>
+<div class="fone"><img src="/img/app-evolucao.webp" width="960" height="2077" loading="lazy" decoding="async" alt="Tela de evolução do Focão com histórico do progresso do cachorro"></div>
+<span class="n">Acompanhamento</span>
+<h3>O histórico fica registrado</h3>
+<p>Os check-ins ajudam a acompanhar o que já foi praticado, onde ainda é preciso repetir e quando seguir para a próxima etapa.</p>
 </div>
 </div>
 </div>
@@ -761,17 +757,20 @@
 <section id="acompanha" style="background:var(--paper-2)">
 <div class="wrap">
 <div class="section-head reveal">
-<span class="eyebrow">O que o Focão acompanha</span>
-<h2>Um plano que acompanha a vida real do seu cão.</h2>
-<p class="lede">Quatro frentes acompanhadas no mesmo lugar, cada uma com o seu próprio histórico — sem depender da sua memória para lembrar o que já foi feito.</p>
+<span class="eyebrow">Acompanhamento</span>
+<h2>Acompanhe o que está funcionando</h2>
+<p class="lede">Treinar não termina depois de ensinar um comando.</p>
+<p class="lede" style="margin-top:12px">Conforme você registra os treinos e os check-ins, fica mais fácil perceber o que seu cachorro já aprendeu, onde ainda precisa de prática e quais comportamentos precisam de mais atenção.</p>
+<p class="lede" style="margin-top:12px">O Focão reúne esse acompanhamento no mesmo lugar para você conseguir enxergar a evolução ao longo do tempo.</p>
 </div>
 <div class="acomp">
-<div class="item reveal"><span class="ico-sm"><svg fill="none" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.9 2.9M16.2 16.2l2.9 2.9M2 12h4M18 12h4M4.9 19.1l2.9-2.9M16.2 7.8l2.9-2.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Comportamento</h4><p>O que está por trás do que incomoda, não só o sintoma.</p></div>
-<div class="item reveal d1"><span class="ico-sm"><svg fill="none" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Treino personalizado</h4><p>Saiba exatamente o que praticar hoje e o que vem depois.</p></div>
-<div class="item reveal d2"><span class="ico-sm"><svg fill="none" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 7-7M14 8h7v7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Evolução que você enxerga</h4><p>Acompanhe habilidades, consistência e mudanças comportamentais.</p></div>
-<div class="item reveal d3"><span class="ico-sm"><svg fill="none" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h4>Agenda e rotina</h4><p>Veja os próximos cuidados importantes e mantenha a rotina do seu cão organizada.</p></div>
-
-
+<div class="item reveal"><h4>Treinos realizados</h4><p>Veja o que já foi trabalhado e mantenha o histórico das atividades.</p></div>
+<div class="item reveal d1"><h4>Check-ins</h4><p>Registre como o cachorro respondeu depois dos treinos.</p></div>
+<div class="item reveal d2"><h4>Pontos que precisam de prática</h4><p>Use os registros para perceber o que ainda precisa ser repetido.</p></div>
+<div class="item reveal d3"><h4>Próximas etapas</h4><p>Continue o plano conforme o treino avança.</p></div>
+</div>
+<div class="reveal" style="margin-top:30px">
+<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Quero começar o treino <span aria-hidden="true" class="arw">→</span></a>
 </div>
 </div>
 </section>
@@ -779,44 +778,24 @@
 <section id="solucao">
 <div class="wrap">
 <div class="wrap narrow reveal" style="text-align:center;padding:0">
-<span class="eyebrow center">A virada</span>
-<h2>Em vez de você decidir por onde começar, o Focão mostra o próximo passo.</h2>
-<p class="lede" style="margin-top:16px">Ele parte do perfil do seu cão, organiza o treino em blocos e conduz um passo por vez. Você não precisa aprender tudo sobre comportamento canino. Precisa saber o que fazer hoje, e quando avançar.</p>
+<span class="eyebrow center">Rotina de treino</span>
+<h2>Treino que cabe na rotina</h2>
+<p class="lede" style="margin-top:16px">Você não precisa passar horas treinando seu cachorro.</p>
+<p class="lede" style="margin-top:12px">A ideia é transformar o treino em uma atividade que faça parte do dia a dia. Alguns minutos de prática, com frequência, podem ser mais fáceis de manter do que tentar fazer uma sessão longa de vez em quando.</p>
+<p class="lede" style="margin-top:12px">O Focão organiza essa rotina para você não precisar ficar procurando o próximo exercício toda vez que for treinar.</p>
 </div>
 <div class="mech-grid">
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Perfil do cão</b></div><p>O treino parte de quem é o seu cão (idade, rotina e dificuldade), em vez de uma receita única.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Evolução em blocos</b></div><p>Nada de informação demais de uma vez. Você avança conforme cria uma base consistente.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Check-in diário</b></div><p>O progresso deixa de depender da memória. Você enxerga padrões, não impressões.</p></div>
-<div class="mech reveal"><div class="mh"><span class="d"></span><b>Ajustes</b></div><p>O plano acompanha o comportamento: quando avançar, quando repetir, quando recuar um passo.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Treino organizado</b></div><p>As atividades aparecem dentro de uma sequência, de acordo com o plano do cachorro.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Prática no dia a dia</b></div><p>Você pode encaixar os exercícios na rotina sem depender de sessões longas.</p></div>
+<div class="mech reveal"><div class="mh"><span class="d"></span><b>Próximo passo definido</b></div><p>Depois de registrar o treino, você continua pelas próximas etapas do plano.</p></div>
 </div>
-</div>
-
-<!-- para-quem: fundida aqui, era secao propria -->
 <div class="merged-block">
-<div class="wrap">
 <div class="section-head reveal">
-<span class="eyebrow">É para você?</span>
-<h3>Feito para quem quer entender antes de corrigir.</h3>
-</div>
-<div class="fit-grid">
-<div class="fit yes reveal">
-<h3><svg fill="none" height="22" viewbox="0 0 24 24" width="22"><path d="M12 22a10 10 0 100-20 10 10 0 000 20zM8 12l3 3 5-6" stroke="var(--pine)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"></path></svg> O Focão é para você</h3>
-<ul>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Quer uma rotina mais tranquila em casa.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Está cansado de tentar sem uma ordem clara de treino.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Deseja educar com consistência, sem punição.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg> Precisa de orientação clara sobre por onde começar.</li>
-</ul>
-</div>
-<div class="fit no reveal">
-<h3><svg fill="none" height="22" viewbox="0 0 24 24" width="22"><path d="M12 22a10 10 0 100-20 10 10 0 000 20zM15 9l-6 6M9 9l6 6" stroke="#a99" stroke-linecap="round" stroke-width="1.9"></path></svg> Talvez não seja o momento</h3>
-<ul>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg> Quem procura resultado instantâneo.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg> Quem quer usar punição para “resolver” rápido.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg> Quem espera que o app faça tudo sozinho.</li>
-<li><svg fill="none" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg> Quem precisa de atendimento veterinário de urgência.</li>
-</ul>
-</div>
+<span class="eyebrow">Fases da vida</span>
+<h2>Para filhotes e cães adultos</h2>
+<p class="lede">O treino pode começar em diferentes fases da vida.</p>
+<p class="lede" style="margin-top:12px">Filhotes podem começar trabalhando comandos, rotina e comportamentos básicos. Cães adultos também podem aprender novos comportamentos e trabalhar dificuldades que já fazem parte da rotina.</p>
+<p class="lede" style="margin-top:12px">O plano considera informações do cachorro, como idade e rotina, para orientar os próximos treinos.</p>
 </div>
 </div>
 </div>
@@ -827,8 +806,8 @@
 <div class="wrap">
 <div class="section-head reveal">
 <span class="eyebrow">O que o Focão ajuda a organizar</span>
-<h2>Um método para o comportamento, não uma promessa de cura.</h2>
-<p class="lede">O Focão dá ordem e acompanhamento a cada frente. O que ele não faz é prometer resolver tudo da mesma forma para todo cão.</p>
+<h2>Treinos para comportamentos comuns do dia a dia</h2>
+<p class="lede">O app organiza exercícios para situações comuns de adestramento e rotina. O plano orienta a prática, mas casos mais sérios podem precisar de acompanhamento profissional.</p>
 </div>
 <div class="prob-grid">
 <div class="prob reveal"><div class="ph"><svg fill="none" viewbox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a7 7 0 0114 0c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.7"></path></svg><b>Ficar sozinho</b></div><p>Ansiedade e dificuldade de lidar com a ausência, trabalhadas de forma gradual.</p></div>
@@ -845,7 +824,7 @@
 <div class="wrap">
 <div class="section-head reveal">
 <span class="eyebrow">Segurança e responsabilidade</span>
-<h3>Educar é cuidar. Sem gritos, sem violência, sem promessa mágica.</h3>
+<h3>Como os treinos são orientados</h3>
 <p class="lede">O método é baseado em princípios modernos de comportamento canino: reforço positivo, rotinas previsíveis, comunicação clara e progressão gradual.</p>
 </div>
 <div class="safe-grid">
@@ -943,14 +922,16 @@
 <div class="wrap narrow">
 <div class="section-head center-head reveal" style="text-align:center">
 <span class="eyebrow center">Dúvidas frequentes</span>
-<h2>O que os tutores costumam perguntar.</h2>
+<h2>Perguntas sobre o app e os treinos</h2>
 </div>
 <div class="faq reveal">
-<details><summary>Preciso entender de adestramento?</summary><div class="fa">Não. O Focão foi feito justamente para quem não quer estudar comportamento canino. Você segue o próximo passo indicado para o seu caso. A ordem e a explicação já vêm prontas.</div></details>
-<details><summary>Funciona para filhotes e para cães adultos?</summary><div class="fa">Sim. O plano parte do perfil do cão, então filhote e adulto seguem caminhos diferentes. Com filhotes, o foco costuma ser construir a base certa; com adultos, reorganizar hábitos já existentes. O que não fazemos é tratar todos os casos como se tivessem a mesma causa.</div></details>
-<details><summary>Quanto tempo preciso por dia?</summary><div class="fa">Os treinos são curtos e pensados para caber na rotina. A ideia central é constância, não sessões longas: pouca prática todos os dias rende mais do que muito esforço de vez em quando.</div></details>
-<details><summary>O Focão substitui um adestrador ou veterinário?</summary><div class="fa">Não. Ele é uma orientação responsável e progressiva para o dia a dia. Casos mais intensos, como automutilação, agressividade consistente ou quadros que não evoluem com constância, devem ser acompanhados por um profissional qualificado.</div></details>
-<details><summary>Preciso pagar para começar?</summary><div class="fa">Você testa o Focão completo por 7 dias sem pagar nada. Para ativar o teste, é preciso cadastrar um cartão — mas nenhuma cobrança acontece durante os 7 primeiros dias. Depois desse período, a assinatura é R$67/mês, e você pode cancelar quando quiser, direto pelo app, antes disso.</div></details>
+<details><summary>O Focão é um app de adestramento para cachorro?</summary><div class="fa">Sim. O Focão é um aplicativo de adestramento para cachorros que organiza uma rotina de treino de acordo com o perfil do seu cão. Você recebe atividades para praticar, acompanha os treinos e registra a evolução.</div></details>
+<details><summary>Preciso entender de adestramento para usar o Focão?</summary><div class="fa">Não. O Focão foi pensado para quem quer começar a treinar o cachorro mesmo sem experiência com adestramento.</div></details>
+<details><summary>O Focão funciona para filhotes e cães adultos?</summary><div class="fa">Sim. O plano considera informações do cachorro, como idade e rotina, para orientar os treinos.</div></details>
+<details><summary>Quanto tempo preciso treinar por dia?</summary><div class="fa">Os treinos são pensados para fazer parte da rotina. O tempo pode variar de acordo com o exercício e com o perfil do cachorro.</div></details>
+<details><summary>Posso usar o Focão para problemas de comportamento?</summary><div class="fa">O Focão pode ajudar a trabalhar comportamentos comuns do dia a dia, como falta de resposta a comandos, excesso de energia e dificuldades relacionadas à rotina. Casos que envolvam agressividade ou outros problemas mais sérios podem precisar da avaliação de um profissional especializado.</div></details>
+<details><summary>O Focão substitui um adestrador ou veterinário?</summary><div class="fa">Não. O aplicativo ajuda a organizar treinos e acompanhar a rotina, mas não substitui avaliação profissional quando o caso exige acompanhamento individual.</div></details>
+<details><summary>Preciso pagar para começar?</summary><div class="fa">Você testa o Focão por 7 dias sem cobrança. Para ativar o teste, é preciso cadastrar um cartão. Depois desse período, a assinatura é R$67/mês e pode ser cancelada pelo app.</div></details>
 </div>
 </div>
 </section>
@@ -959,11 +940,11 @@
 <div class="wrap">
 <div class="final reveal">
 <span aria-hidden="true" class="glow-f"></span>
-<span class="eyebrow">Comece hoje</span>
-<h2>Saia do improviso. Comece com clareza.</h2>
-<p>Um plano feito para o seu cão, um passo por vez, com a evolução acontecendo dentro da sua rotina, e a convivência ficando mais tranquila.</p>
-<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Começar meus 7 dias grátis <span aria-hidden="true" class="arw">→</span></a>
-<p class="micro">7 dias grátis para testar, no ritmo do seu cão. Cancele quando quiser.</p>
+<span class="eyebrow">Começar</span>
+<h2>Comece o plano de treino do seu cachorro</h2>
+<p>Responda às perguntas iniciais, receba o plano e acompanhe os treinos e check-ins no Focão.</p>
+<a class="btn btn-primary" href="https://buy.stripe.com/dRm3cxdwp3Na7Bfdbrbo402" rel="noopener noreferrer" target="_blank">Começar agora <span aria-hidden="true" class="arw">→</span></a>
+<p class="micro">7 dias grátis para testar. Depois R$67/mês. Cancele quando quiser.</p>
 </div>
 </div>
 </section>
@@ -973,6 +954,7 @@
 <div class="foot-in">
 <a class="brand" href="#"><img alt="Focão" class="brand-logo" src="data:image/png;base64,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"/></a>
 <div class="foot-links">
+<a href="#treinos">O que treinar</a>
 <a href="#como-funciona">Como funciona</a>
 <a href="#planos">Planos</a><a href="focao-ebooks.html">E-books</a>
 <a href="#avaliacoes">Avaliações</a><a href="#faq">Dúvidas</a>
