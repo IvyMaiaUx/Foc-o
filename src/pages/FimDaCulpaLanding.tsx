@@ -141,6 +141,7 @@ export function FimDaCulpaLanding() {
 
     const description = 'Baixe grátis O Fim da Culpa, um guia prático para entender a ansiedade de separação do seu cão e começar um treino gradual.';
     let meta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    const createdMeta = !meta;
     const previousDescription = meta?.content;
     if (!meta) {
       meta = document.createElement('meta');
@@ -151,7 +152,8 @@ export function FimDaCulpaLanding() {
 
     return () => {
       document.title = previousTitle;
-      if (meta && previousDescription !== undefined) meta.content = previousDescription;
+      if (meta && createdMeta) meta.remove();
+      else if (meta && previousDescription !== undefined) meta.content = previousDescription;
     };
   }, []);
 
