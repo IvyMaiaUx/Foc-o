@@ -100,7 +100,7 @@ async function sendPasswordReset(req, res) {
   // Anti-bombardeio: além do cooldown por e-mail, limita por IP (máx 8/hora).
   // Resposta neutra (sent:true) pra não vazar que houve bloqueio.
   const ip = clientIp(req);
-  if (!(await withinRateLimit('pwreset', ip, 8, 60 * 60 * 1000))) {
+  if (!(await withinRateLimit('pwreset', ip, 8, 60 * 60 * 1000, { failClosed: true }))) {
     res.status(200).json({ sent: true });
     return;
   }
@@ -152,7 +152,7 @@ async function sendLeadMagnet(req, res) {
     res.status(400).json({ error: 'consent_required' });
     return;
   }
-  if (!(await withinRateLimit('lead_magnet_email', clientIp(req), 5, 60 * 60 * 1000))) {
+  if (!(await withinRateLimit('lead_magnet_email', clientIp(req), 5, 60 * 60 * 1000, { failClosed: true }))) {
     res.status(429).json({ error: 'too_many_requests' });
     return;
   }
