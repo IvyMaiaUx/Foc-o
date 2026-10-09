@@ -1,0 +1,13 @@
+---
+const base = import.meta.env.BASE_URL; // '/blog'
+---
+<header style="background:var(--color-surface);border-bottom:1px solid var(--color-line);">
+  <div class="container" style="height:64px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="/" aria-label="Focão" style="display:flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--color-brand);font-weight:700;">
+      <img src="/assets/focao-logo.png" alt="Focão" width="104" height="28" style="display:block;" onerror="this.replaceWith(document.createTextNode('Focão'))" />
+    </a>
+    <nav aria-label="Blog">
+      <a href={base} style="color:var(--color-ink);text-decoration:none;font-weight:500;">Blog</a>
+    </nav>
+  </div>
+</header>
