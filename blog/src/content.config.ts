@@ -2,9 +2,10 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { PILARES } from './lib/pilares';
 
-// glob loader ignora arquivos começando com "_" → _modelo.md e fixtures não viram páginas.
+// O padrão exclui arquivos começando com "_" (negação `!**/_*`) → _modelo.md e fixtures
+// não viram páginas. (No Astro 5 o glob loader NÃO ignora "_" automaticamente.)
 const blog = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
+  loader: glob({ pattern: ['**/*.{md,mdx}', '!**/_*'], base: './src/content/blog' }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
