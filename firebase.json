@@ -9,13 +9,15 @@
   "hosting": {
     "site": "focao",
     "public": "dist",
+    "cleanUrls": true,
+    "trailingSlash": false,
     "headers": [
       {
         "source": "**",
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://track-up.vercel.app https://connect.facebook.net https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net; img-src 'self' data: blob: https: https://www.facebook.com; font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net; worker-src 'self' blob:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.google.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasestorage.app https://*.firebaseapp.com https://foc-o.vercel.app https://app.focaoapp.com.br https://track-up.vercel.app https://connect.facebook.net https://www.facebook.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src 'self' https://www.google.com"
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://track-up.vercel.app https://connect.facebook.net https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net; img-src 'self' data: blob: https: https://www.facebook.com; font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net; worker-src 'self' blob:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.google.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasestorage.app https://*.firebaseapp.com https://foc-o.vercel.app https://app.focaoapp.com.br https://track-up.vercel.app https://connect.facebook.net https://www.facebook.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src 'self' https://www.google.com https://engine.focaoapp.com.br"
           },
           {
             "key": "X-Frame-Options",
@@ -57,6 +59,17 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "redirects": [
+      { "source": "/focao-ebooks.html", "destination": "/ebooks", "type": 301 },
+      { "source": "/ebook.html", "destination": "/ebook", "type": 301 },
+      { "source": "/upsell.html", "destination": "/upsell", "type": 301 },
+      { "source": "/obrigado.html", "destination": "/obrigado", "type": 301 },
+      { "source": "/vsl-ansiedade.html", "destination": "/vsl-ansiedade", "type": 301 },
+      { "source": "/quiz-ansiedade.html", "destination": "/quiz-ansiedade", "type": 301 },
+      { "source": "/ebook-adestre-7-dias.html", "destination": "/ebook-adestre-7-dias", "type": 301 },
+      { "source": "/ebook-ansiedade-separacao-7-dias.html", "destination": "/ebook-ansiedade-separacao-7-dias", "type": 301 },
+      { "source": "/ebook-primeiros-90-dias.html", "destination": "/ebook-primeiros-90-dias", "type": 301 }
     ],
     "rewrites": [
       {
