@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { AUTORA } from '../config/autora';
+import { personJsonLd, breadcrumbJsonLd } from '../lib/jsonld';
+
+const base = import.meta.env.BASE_URL;
+const site = 'https://focaoapp.com.br';
+const canonical = `${site}${base}/autora`;
+const crumbs = [
+  { nome: 'Blog', href: base },
+  { nome: 'Autora', href: `${base}/autora` },
+];
+const jsonLd = [
+  personJsonLd({ name: AUTORA.nome, url: canonical, jobTitle: AUTORA.cargo, description: AUTORA.bio }),
+  breadcrumbJsonLd(crumbs.map((c) => ({ name: c.nome, url: `${site}${c.href}` }))),
+];
+---
+<BaseLayout
+  title={`${AUTORA.nome}, ${AUTORA.cargo} | Blog do Focão`}
+  description={AUTORA.bio}
+  canonical={canonical}
+  jsonLd={jsonLd}
+>
+  <div class="container">
+    <Breadcrumb itens={crumbs} />
+    <article class="prose" style="margin:0 auto;">
+      <h1 style="font-family:var(--font-serif);">{AUTORA.nome}</h1>
+      <p style="color:var(--color-ink-soft);">{AUTORA.cargo}</p>
+      <h2>Formação</h2>
+      <p>{AUTORA.formacao}</p>
+      <h2>Método</h2>
+      <p>{AUTORA.metodo}</p>
+      <p style="margin-top:2rem;font-size:.82rem;color:var(--color-ink-soft);">
+        Este conteúdo é educativo e não substitui a avaliação de um médico-veterinário.
+      </p>
+    </article>
+  </div>
+</BaseLayout>
