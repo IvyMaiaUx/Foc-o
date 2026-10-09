@@ -1,0 +1,17 @@
+---
+import { APP_URL, TESTE_CONDICOES } from '../lib/destinos';
+import { withUtm } from '../lib/utm';
+interface Props { pilar: string; slug: string; }
+const { pilar, slug } = Astro.props;
+const href = withUtm(APP_URL, { pilar, slug });
+---
+<div class="sticky-mobile" style="position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--color-surface);border-top:1px solid var(--color-line);padding:.6rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;">
+  <span style="font-size:.78rem;color:var(--color-ink-soft);">{TESTE_CONDICOES}</span>
+  <a href={href} style="flex:0 0 auto;background:var(--color-brand);color:#fff;padding:.6rem 1rem;border-radius:50px;text-decoration:none;font-weight:600;font-size:.85rem;">Teste grátis</a>
+</div>
+<style>
+  .sticky-mobile { display: flex; }
+  @media (min-width: 768px) { .sticky-mobile { display: none; } }
+  main { padding-bottom: 5rem; }
+  @media (min-width: 768px) { main { padding-bottom: 0; } }
+</style>

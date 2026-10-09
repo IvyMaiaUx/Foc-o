@@ -1,0 +1,17 @@
+---
+interface Props { titulo: string; }
+const { titulo } = Astro.props;
+---
+<li style="counter-increment:etapa;display:flex;gap:.9rem;align-items:flex-start;">
+  <span aria-hidden="true" style="flex:0 0 auto;width:2rem;height:2rem;border-radius:50%;background:var(--color-brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">
+    <span style="font-size:.95rem;" data-num></span>
+  </span>
+  <div>
+    <strong style="display:block;">{titulo}</strong>
+    <div><slot /></div>
+  </div>
+</li>
+<script is:inline>
+  // numera as etapas em ordem (counter CSS não imprime texto em todos os browsers de forma acessível)
+  document.querySelectorAll('ol [data-num]').forEach((el, i) => { el.textContent = String(i + 1); });
+</script>

@@ -1,0 +1,13 @@
+---
+import { APP_URL, TESTE_CONDICOES } from '../lib/destinos';
+import { withUtm } from '../lib/utm';
+interface Props { pilar: string; slug: string; }
+const { pilar, slug } = Astro.props;
+const href = withUtm(APP_URL, { pilar, slug });
+---
+<section style="background:var(--color-brand);color:#F7F5EF;border-radius:18px;padding:1.75rem;margin:2.5rem 0;text-align:center;">
+  <h2 style="margin:0 0 .5rem;color:#fff;font-family:var(--font-serif);">Teste o Focão por 7 dias</h2>
+  <p style="margin:0 0 1.25rem;opacity:.9;">Plano de treino personalizado para o seu cão, passo a passo.</p>
+  <a href={href} style="display:inline-block;background:#F2F5F3;color:#033B2B;padding:.9rem 1.6rem;border-radius:50px;font-weight:600;text-decoration:none;">Começar teste grátis</a>
+  <p style="margin:1rem 0 0;font-size:.8rem;opacity:.85;">{TESTE_CONDICOES}</p>
+</section>
