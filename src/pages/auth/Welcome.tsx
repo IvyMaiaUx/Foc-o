@@ -84,6 +84,13 @@ export function Welcome() {
               Já tenho conta
             </button>
           )}
+          {/* Blog é página estática fora da SPA: usa <a> (navegação real), não navigate(). */}
+          <a
+            href="/blog"
+            className="welcome-item welcome-secondary-action text-[#A8BDB4] text-sm font-medium text-center"
+          >
+            Blog
+          </a>
         </div>
       </div>
     </div>
