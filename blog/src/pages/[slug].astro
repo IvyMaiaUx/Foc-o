@@ -1,0 +1,97 @@
+---
+import { getCollection, render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import RespostaRapida from '../components/RespostaRapida.astro';
+import CtaIntermediario from '../components/CtaIntermediario.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import MobileStickyBar from '../components/MobileStickyBar.astro';
+import AutoraBox from '../components/AutoraBox.astro';
+import Etapas from '../components/Etapas.astro';
+import Etapa from '../components/Etapa.astro';
+import { PILAR_INFO } from '../lib/pilares';
+import { escolherRelacionados } from '../lib/relacionados';
+import { articleJsonLd, breadcrumbJsonLd } from '../lib/jsonld';
+import { AUTORA } from '../config/autora';
+
+export async function getStaticPaths() {
+  const artigos = await getCollection('blog');
+  return artigos.map((artigo) => ({
+    params: { slug: artigo.data.slug },
+    props: { artigo, todos: artigos },
+  }));
+}
+
+const { artigo, todos } = Astro.props;
+const d = artigo.data;
+const base = import.meta.env.BASE_URL; // '/blog'
+const site = 'https://focaoapp.com.br';
+const canonical = `${site}${base}/${d.slug}`;
+const pilarInfo = PILAR_INFO[d.pilar];
+
+const capa = await getImage({ src: d.imagemCapa, width: 1200, format: 'webp' });
+const capaAbs = `${site}${capa.src}`;
+
+const relacionados = escolherRelacionados(
+  { slug: d.slug, pilar: d.pilar, relacionados: d.relacionados },
+  todos.map((a) => ({ slug: a.data.slug, pilar: a.data.pilar })),
+  3,
+).map((r) => todos.find((a) => a.data.slug === r.slug)!);
+
+const crumbs = [
+  { nome: 'Blog', href: base },
+  { nome: pilarInfo.nome, href: `${base}/tema/${d.pilar}` },
+  { nome: d.title, href: `${base}/${d.slug}` },
+];
+
+const jsonLd = [
+  articleJsonLd({
+    title: d.title, description: d.description, url: canonical, image: capaAbs,
+    publicadoEm: d.publicadoEm, atualizadoEm: d.atualizadoEm,
+    autoraNome: d.autora, autoraUrl: `${site}${base}/autora`,
+  }),
+  breadcrumbJsonLd(crumbs.map((c) => ({ name: c.nome, url: `${site}${c.href}` }))),
+];
+
+const { Content } = await render(artigo);
+const fmtData = (dt: Date) => dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+---
+<BaseLayout
+  title={d.seoTitle}
+  description={d.description}
+  canonical={canonical}
+  image={capaAbs}
+  type="article"
+  jsonLd={jsonLd}
+>
+  <div class="container">
+    <Breadcrumb itens={crumbs} />
+    <article class="prose" style="margin:0 auto;">
+      <h1 style="font-family:var(--font-serif);line-height:1.15;">{d.title}</h1>
+      <p style="color:var(--color-ink-soft);font-size:.9rem;margin:.25rem 0 1.25rem;">
+        {d.autora} · adestradora · atualizado em {fmtData(d.atualizadoEm)}
+      </p>
+
+      <RespostaRapida texto={d.respostaRapida} />
+
+      <Content components={{ Etapas, Etapa }} />
+
+      <CtaIntermediario ctaIntermediario={d.ctaIntermediario} quizId={d.quizId} pilar={d.pilar} slug={d.slug} />
+      <CtaFinal pilar={d.pilar} slug={d.slug} />
+      <AutoraBox base={base} />
+
+      {relacionados.length > 0 && (
+        <section style="margin:2.5rem 0;">
+          <h2 style="font-family:var(--font-serif);">Leia também em {pilarInfo.nome}</h2>
+          <ul>
+            {relacionados.map((r) => (
+              <li><a href={`${base}/${r.data.slug}`}>{r.data.title}</a></li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </article>
+  </div>
+  <MobileStickyBar pilar={d.pilar} slug={d.slug} />
+</BaseLayout>
