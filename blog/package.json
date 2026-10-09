@@ -1,0 +1,20 @@
+{
+  "name": "focao-blog",
+  "type": "module",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/sitemap": "^3.4.0",
+    "astro": "^5.8.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}
