@@ -79,7 +79,7 @@ async function sendPasswordReset(req, res) {
   // Anti-bombardeio: além do cooldown por e-mail, limita por IP (máx 8/hora).
   // Resposta neutra (sent:true) pra não vazar que houve bloqueio.
   const ip = clientIp(req);
-  if (!(await withinRateLimit('pwreset', ip, 8, 60 * 60 * 1000))) {
+  if (!(await withinRateLimit('pwreset', ip, 8, 60 * 60 * 1000, { failClosed: true }))) {
     res.status(200).json({ sent: true });
     return;
   }
