@@ -7,5 +7,4 @@ export const AUTORA = {
   metodo: 'Método da autora. (Preencher.)',
   // Coloque a foto em blog/src/assets/autora.jpg e importe na página; placeholder por ora.
   fotoAlt: 'Foto de Ivy, adestradora do Focão',
-  url: 'https://focaoapp.com.br/blog/autora',
 };

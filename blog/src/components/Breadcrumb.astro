@@ -6,7 +6,7 @@ const { itens } = Astro.props;
   {itens.map((it, i) => (
     <>
       {i > 0 && <span aria-hidden="true"> / </span>}
-      {i < itens.length - 1 ? <a href={it.href}>{it.nome}</a> : <span>{it.nome}</span>}
+      {i < itens.length - 1 ? <a href={it.href}>{it.nome}</a> : <span aria-current="page">{it.nome}</span>}
     </>
   ))}
 </nav>

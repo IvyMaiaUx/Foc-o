@@ -42,8 +42,11 @@ const recentes = artigos.slice(0, 6);
 
     <aside style="background:var(--color-surface-soft);border-radius:16px;padding:1.5rem;margin:1.5rem 0;text-align:center;">
       <strong>Não sabe qual é o caso do seu cão?</strong>
-      <p style="margin:.5rem 0 1rem;color:var(--color-ink-soft);">Faça o quiz e descubra por onde começar.</p>
-      <a href={`${base}/${guiaPrincipal?.data.slug ?? ''}`} style="display:inline-block;background:var(--color-brand);color:#fff;padding:.75rem 1.4rem;border-radius:50px;text-decoration:none;font-weight:600;">Fazer o quiz</a>
+      <p style="margin:.5rem 0 1rem;color:var(--color-ink-soft);">Comece pelo guia principal e descubra o próximo passo.</p>
+      {/* O quiz embutido fica dentro dos artigos (ctaIntermediario). Aqui levamos ao
+          guia pilar; quando não houver guia ainda, mandamos para um tema inicial —
+          nunca para um slug vazio. */}
+      <a href={guiaPrincipal ? `${base}/${guiaPrincipal.data.slug}` : `${base}/tema/ficar-sozinho`} style="display:inline-block;background:var(--color-brand);color:#fff;padding:.75rem 1.4rem;border-radius:50px;text-decoration:none;font-weight:600;">Descobrir por onde começar</a>
     </aside>
 
     {recentes.length > 0 && (
