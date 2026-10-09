@@ -1,0 +1,26 @@
+---
+interface Props {
+  title: string;        // vai no <title> (usar seoTitle quando houver)
+  description: string;
+  canonical: string;    // URL absoluta, sem barra final
+  image?: string;       // URL absoluta
+  type?: 'website' | 'article';
+}
+const { title, description, canonical, image = 'https://focaoapp.com.br/og-image.png', type = 'website' } = Astro.props;
+---
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content="Focão" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={image} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
