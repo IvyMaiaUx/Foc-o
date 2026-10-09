@@ -50,7 +50,8 @@ export default async function cancelSubscription(req, res) {
       return;
     }
 
-    const { reason, feedback } = req.body;
+    const reason = typeof req.body?.reason === 'string' ? req.body.reason.slice(0, 500) : '';
+    const feedback = typeof req.body?.feedback === 'string' ? req.body.feedback.slice(0, 2000) : '';
 
     const db = getDb();
     const userDoc = await db.collection('users').doc(decoded.uid).get();

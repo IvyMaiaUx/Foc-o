@@ -54,6 +54,12 @@ export default async function claimPremium(req, res) {
       res.status(401).json({ error: 'Unauthenticated' });
       return;
     }
+    // Só confia no e-mail do token se ele for verificado — o claim é indexado por e-mail,
+    // então um e-mail não verificado poderia reivindicar premium provisionado p/ outra pessoa.
+    if (decoded.email_verified !== true) {
+      res.status(200).json({ claimed: false });
+      return;
+    }
 
     const email = normalizeEmail(decoded.email);
     const db = getDb();

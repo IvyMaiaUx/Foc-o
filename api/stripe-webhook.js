@@ -241,6 +241,28 @@ async function handleInvoicePaymentFailed(stripe, invoice) {
     paymentFailedEmail({ dogName, actionUrl: `${APP_URL}/assinatura` }));
 }
 
+// 'paid' = pago; 'no_payment_required' = trial/cupom 100% (legítimo, sem cobrança imediata).
+// 'unpaid' = boleto/Pix emitido e ainda NÃO compensado: não concede acesso aqui — espera
+// o evento checkout.session.async_payment_succeeded.
+function isCheckoutPaid(session) {
+  return session.payment_status === 'paid' || session.payment_status === 'no_payment_required';
+}
+
+// Processa a sessão paga: resolve a assinatura e concede/atualiza o acesso. Chamado só
+// depois de confirmado o pagamento (completed pago OU async_payment_succeeded).
+async function processCheckoutSession(stripe, session) {
+  const email = extractEmailFromSession(session);
+  if (!email) return { skipped: 'missing_email' };
+
+  let subscription = null;
+  if (session.subscription) {
+    subscription = await stripe.subscriptions.retrieve(session.subscription);
+  }
+
+  await upsertClaim(claimPayload({ email, session, subscription }));
+  return { processed: true };
+}
+
 export default async function stripeWebhook(req, res) {
   if (req.method !== 'POST') {
     res.status(405).send('Method Not Allowed');
@@ -264,18 +286,22 @@ export default async function stripeWebhook(req, res) {
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
-      const email = extractEmailFromSession(session);
-      if (!email) {
-        res.status(200).json({ received: true, skipped: 'missing_email' });
+      // Boleto/Pix emitido mas ainda não compensado: não concede acesso. Espera o
+      // checkout.session.async_payment_succeeded.
+      if (!isCheckoutPaid(session)) {
+        res.status(200).json({ received: true, pending: session.payment_status });
         return;
       }
+      const result = await processCheckoutSession(stripe, session);
+      res.status(200).json({ received: true, ...result });
+      return;
+    }
 
-      let subscription = null;
-      if (session.subscription) {
-        subscription = await stripe.subscriptions.retrieve(session.subscription);
-      }
-
-      await upsertClaim(claimPayload({ email, session, subscription }));
+    if (event.type === 'checkout.session.async_payment_succeeded') {
+      // Pagamento assíncrono (boleto/Pix) compensou: concede o acesso agora.
+      const result = await processCheckoutSession(stripe, event.data.object);
+      res.status(200).json({ received: true, ...result });
+      return;
     }
 
     if (event.type === 'customer.subscription.updated') {
