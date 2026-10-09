@@ -1,0 +1,31 @@
+/* Tokens espelhados de src/index.css do site (paleta unificada). */
+:root {
+  --color-brand: #055A43;
+  --color-background: #F7F5EF;
+  --color-surface: #FFFEFB;
+  --color-surface-soft: #EAF0E8;
+  --color-ink: #2E3830;
+  --color-ink-soft: #6B7A6E;
+  --color-ink-faint: #8A9589;
+  --color-line: #E4E1D6;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-serif: 'Lora', Georgia, serif;
+  --leitura: 70ch;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  font-size: 1.0625rem;
+}
+.container { width: 100%; max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; }
+.prose { max-width: var(--leitura); }
+.prose h2, .prose h3 { font-family: var(--font-serif); color: var(--color-ink); line-height: 1.25; }
+a { color: var(--color-brand); }
+:focus-visible { outline: 3px solid var(--color-brand); outline-offset: 2px; }
+img { max-width: 100%; height: auto; }
