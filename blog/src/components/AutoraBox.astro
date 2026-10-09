@@ -1,0 +1,13 @@
+---
+import { AUTORA } from '../config/autora';
+interface Props { base: string; }
+const { base } = Astro.props;
+---
+<section style="background:var(--color-surface);border:1px solid var(--color-line);border-radius:16px;padding:1.5rem;margin:2.5rem 0;">
+  <h2 style="margin:0 0 .5rem;font-family:var(--font-serif);">Sobre a autora</h2>
+  <p style="margin:0 0 .5rem;"><strong>{AUTORA.nome}</strong> — {AUTORA.cargo}. {AUTORA.bio}</p>
+  <a href={`${base}/autora`} style="font-weight:600;">Conhecer a autora e o método →</a>
+  <p style="margin:1rem 0 0;font-size:.82rem;color:var(--color-ink-soft);">
+    Este conteúdo é educativo e não substitui a avaliação de um médico-veterinário.
+  </p>
+</section>

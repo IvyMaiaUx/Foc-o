@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { PILARES, PILAR_INFO } from '../../lib/pilares';
+import { breadcrumbJsonLd } from '../../lib/jsonld';
+
+export async function getStaticPaths() {
+  return PILARES.map((pilar) => ({ params: { pilar } }));
+}
+
+const { pilar } = Astro.params;
+const info = PILAR_INFO[pilar as keyof typeof PILAR_INFO];
+const base = import.meta.env.BASE_URL;
+const site = 'https://focaoapp.com.br';
+const canonical = `${site}${base}/tema/${pilar}`;
+
+const artigos = (await getCollection('blog')).filter((a) => a.data.pilar === pilar);
+const guia = artigos.find((a) => a.data.tipo === 'pilar');
+const apoios = artigos.filter((a) => a.data.tipo !== 'pilar');
+
+const crumbs = [
+  { nome: 'Blog', href: base },
+  { nome: info.nome, href: `${base}/tema/${pilar}` },
+];
+const jsonLd = [breadcrumbJsonLd(crumbs.map((c) => ({ name: c.nome, url: `${site}${c.href}` })))];
+---
+<BaseLayout
+  title={`${info.nome} | Blog do Focão`}
+  description={info.descricao}
+  canonical={canonical}
+  jsonLd={jsonLd}
+>
+  <div class="container">
+    <Breadcrumb itens={crumbs} />
+    <h1 style="font-family:var(--font-serif);">{info.nome}</h1>
+    <p style="color:var(--color-ink-soft);max-width:var(--leitura);">{info.descricao}</p>
+
+    {guia && (
+      <a href={`${base}/${guia.data.slug}`} style="display:block;background:var(--color-surface);border:1px solid var(--color-line);border-radius:16px;padding:1.5rem;margin:1.5rem 0;text-decoration:none;color:var(--color-ink);">
+        <span style="color:var(--color-brand);font-weight:600;font-size:.8rem;">COMECE POR AQUI</span>
+        <strong style="display:block;font-size:1.25rem;font-family:var(--font-serif);margin-top:.25rem;">{guia.data.title}</strong>
+        <span style="color:var(--color-ink-soft);">{guia.data.description}</span>
+      </a>
+    )}
+
+    {apoios.length > 0 && (
+      <section>
+        <h2 style="font-family:var(--font-serif);">Artigos deste tema</h2>
+        <ul>
+          {apoios.map((a) => (
+            <li><a href={`${base}/${a.data.slug}`}>{a.data.title}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {!guia && apoios.length === 0 && (
+      <p style="background:var(--color-surface-soft);border-radius:12px;padding:1rem;">Ainda não há artigos neste tema. Em breve!</p>
+    )}
+  </div>
+</BaseLayout>

@@ -1,0 +1,17 @@
+---
+import QuizEmbed from './QuizEmbed.astro';
+import { EBOOKS_URL } from '../lib/destinos';
+import { withUtm } from '../lib/utm';
+interface Props { ctaIntermediario: 'quiz' | 'ebook'; quizId?: string; pilar: string; slug: string; }
+const { ctaIntermediario, quizId, pilar, slug } = Astro.props;
+const usaQuiz = ctaIntermediario === 'quiz' && !!quizId;
+const ebookHref = withUtm(EBOOKS_URL, { pilar, slug });
+---
+{usaQuiz ? (
+  <QuizEmbed quizId={quizId!} pilar={pilar} slug={slug} />
+) : (
+  <aside style="background:var(--color-surface-soft);border:1px solid var(--color-line);border-radius:14px;padding:1.25rem;margin:2.5rem 0;text-align:center;">
+    <p style="margin:0 0 .75rem;"><strong>Não sabe qual é o caso do seu cão?</strong></p>
+    <a href={ebookHref} style="display:inline-block;background:var(--color-brand);color:#fff;padding:.75rem 1.4rem;border-radius:50px;text-decoration:none;font-weight:600;">Ver os e-books gratuitos</a>
+  </aside>
+)}

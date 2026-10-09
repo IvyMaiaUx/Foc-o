@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BOTOES_TUTOR, PILAR_INFO } from '../lib/pilares';
+import { AUTORA } from '../config/autora';
+
+const base = import.meta.env.BASE_URL;
+const site = 'https://focaoapp.com.br';
+const canonical = `${site}${base}`;
+
+const artigos = (await getCollection('blog')).sort(
+  (a, b) => b.data.publicadoEm.getTime() - a.data.publicadoEm.getTime(),
+);
+const guiaPrincipal = artigos.find((a) => a.data.tipo === 'pilar');
+const recentes = artigos.slice(0, 6);
+---
+<BaseLayout
+  title="Blog do Focão — comportamento e rotina canina"
+  description="Guias práticos de comportamento canino escritos por adestradora: ansiedade de separação, xixi no lugar, filhotes, agitação, comandos e rotina."
+  canonical={canonical}
+  type="website"
+>
+  <div class="container">
+    <section style="padding:2rem 0 1rem;">
+      <h1 style="font-family:var(--font-serif);">O que está acontecendo com o seu cão?</h1>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin-top:1.25rem;">
+        {BOTOES_TUTOR.map((b) => (
+          <a href={`${base}/tema/${b.pilar}`} style="background:var(--color-surface);border:1px solid var(--color-line);border-radius:14px;padding:1rem 1.25rem;text-decoration:none;color:var(--color-ink);font-weight:500;">
+            {b.texto}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {guiaPrincipal && (
+      <a href={`${base}/${guiaPrincipal.data.slug}`} style="display:block;background:var(--color-brand);color:#F7F5EF;border-radius:18px;padding:1.75rem;margin:1.5rem 0;text-decoration:none;">
+        <span style="font-size:.8rem;opacity:.85;">COMECE POR AQUI</span>
+        <strong style="display:block;font-size:1.4rem;font-family:var(--font-serif);margin-top:.25rem;color:#fff;">{guiaPrincipal.data.title}</strong>
+        <span style="opacity:.9;">{guiaPrincipal.data.description}</span>
+      </a>
+    )}
+
+    <aside style="background:var(--color-surface-soft);border-radius:16px;padding:1.5rem;margin:1.5rem 0;text-align:center;">
+      <strong>Não sabe qual é o caso do seu cão?</strong>
+      <p style="margin:.5rem 0 1rem;color:var(--color-ink-soft);">Comece pelo guia principal e descubra o próximo passo.</p>
+      {/* O quiz embutido fica dentro dos artigos (ctaIntermediario). Aqui levamos ao
+          guia pilar; quando não houver guia ainda, mandamos para um tema inicial —
+          nunca para um slug vazio. */}
+      <a href={guiaPrincipal ? `${base}/${guiaPrincipal.data.slug}` : `${base}/tema/ficar-sozinho`} style="display:inline-block;background:var(--color-brand);color:#fff;padding:.75rem 1.4rem;border-radius:50px;text-decoration:none;font-weight:600;">Descobrir por onde começar</a>
+    </aside>
+
+    {recentes.length > 0 && (
+      <section style="margin:2rem 0;">
+        <h2 style="font-family:var(--font-serif);">Artigos recentes</h2>
+        <ul>
+          {recentes.map((a) => (
+            <li><a href={`${base}/${a.data.slug}`}>{a.data.title}</a> <span style="color:var(--color-ink-faint);">· {PILAR_INFO[a.data.pilar].nome}</span></li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <section style="background:var(--color-surface);border:1px solid var(--color-line);border-radius:16px;padding:1.5rem;margin:2rem 0;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+      <div style="flex:1;min-width:220px;">
+        <strong style="font-family:var(--font-serif);font-size:1.1rem;">{AUTORA.nome}, {AUTORA.cargo}</strong>
+        <p style="margin:.5rem 0 0;color:var(--color-ink-soft);">{AUTORA.bio}</p>
+        <a href={`${base}/autora`} style="font-weight:600;">Sobre a autora →</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

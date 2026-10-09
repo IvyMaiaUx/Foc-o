@@ -61,3 +61,4 @@ User-agent: Applebot-Extended
 Allow: /
 
 Sitemap: https://focaoapp.com.br/sitemap.xml
+Sitemap: https://focaoapp.com.br/blog/sitemap-index.xml

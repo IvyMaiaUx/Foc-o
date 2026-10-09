@@ -1,0 +1,27 @@
+---
+import { quizEmbedUrl } from '../lib/quiz';
+interface Props { quizId: string; pilar: string; slug: string; }
+const { quizId, pilar, slug } = Astro.props;
+const src = quizEmbedUrl(quizId, { pilar, slug });
+---
+<div style="margin:2.5rem 0;">
+  <iframe
+    data-quiz
+    src={src}
+    title="Quiz do Focão"
+    loading="lazy"
+    style="width:100%;border:0;border-radius:16px;min-height:520px;"
+  ></iframe>
+</div>
+<script is:inline>
+  // A engine (quiz) emite { type: 'focao-quiz-height', height } via postMessage.
+  // Só aceita mensagens da origem da engine.
+  window.addEventListener('message', (e) => {
+    if (e.origin !== 'https://engine.focaoapp.com.br') return;
+    const d = e.data;
+    if (d && d.type === 'focao-quiz-height' && typeof d.height === 'number') {
+      const f = document.querySelector('iframe[data-quiz]');
+      if (f) f.style.height = d.height + 'px';
+    }
+  });
+</script>
